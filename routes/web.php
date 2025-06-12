@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Helpers\AssetHelper;
+
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 
@@ -22,8 +23,10 @@ Route::get('/{any}', function () {
         ]);
         $userScript = "<script type=\"application/json\" data-user>{$userData}</script>";
     }
+
     $css = AssetHelper::asset('resources/css/app.css');
     $js = AssetHelper::asset('resources/js/app.js');
+
 
     return <<<HTML
 <!DOCTYPE html>

@@ -8,7 +8,7 @@ This repository uses Laravel with Vue.js. Please follow these guidelines:
    - Backend: Use `phpunit`.
    - Frontend: Use `jest` for Vue.js components.
 4. **PSR-12 Code Style**: Ensure PHP code follows PSR-12.
-5. **Commit Practices**: Keep commits focused and descriptive.
+5. **Práticas de Commit**: mantenha commits focados e descritivos; todas as mensagens de commit e comentários no código devem ser escritas em português detalhado. Este padrão é obrigatório.
 
 6. **Environment Variables**: Never commit real credentials. Use `.env.example` as reference for new env variables.
 7. **Directory Structure**: Keep `resources/js` for Vue components, `tests` for PHP tests, and `resources/tests` for Jest tests.

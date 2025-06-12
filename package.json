@@ -7,8 +7,12 @@
         "test": "jest"
     },
     "devDependencies": {
+        "@babel/preset-env": "^7.27.2",
         "@vitejs/plugin-vue": "^5.2.4",
+        "@vue/test-utils": "^2.4.6",
+        "@vue/vue3-jest": "^29.2.6",
         "axios": "^1.6.4",
+        "babel-jest": "^30.0.0",
         "jest": "^29.7.0",
         "jest-environment-jsdom": "^30.0.0",
         "laravel-vite-plugin": "^1.0.0",

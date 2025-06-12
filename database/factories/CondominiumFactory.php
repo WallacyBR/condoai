@@ -15,6 +15,7 @@ class CondominiumFactory extends Factory
     public function definition(): array
     {
         return [
+
             'name' => $this->faker->company . ' Condominium',
             'document' => $this->faker->unique()->numerify('##############'),
             'address' => $this->faker->streetAddress,
@@ -26,6 +27,7 @@ class CondominiumFactory extends Factory
             'responsible' => $this->faker->name,
             'active' => $this->faker->boolean(90),
             'domain' => $this->faker->domainName,
+
         ];
     }
 }

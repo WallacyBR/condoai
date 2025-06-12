@@ -22,6 +22,8 @@ Route::middleware('auth')->group(function () {
         return view('dashboard');
     })->name('dashboard');
 
+    Route::view('/vue-admin', 'vue-admin')->name('vue.admin');
+
     Route::resource('residents', App\Http\Controllers\Web\ResidentController::class);
     Route::resource('apartments', App\Http\Controllers\Web\ApartmentController::class);
 });

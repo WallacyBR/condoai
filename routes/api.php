@@ -8,6 +8,8 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\TowerController;
 use App\Http\Controllers\API\BlockController;
 use App\Http\Controllers\API\ApartmentController;
+use App\Http\Controllers\API\ProfileController;
+use App\Http\Controllers\API\UserController;
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('auth/login', 'login');
@@ -23,6 +25,8 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('towers', TowerController::class);
     Route::apiResource('blocks', BlockController::class);
     Route::apiResource('apartments', ApartmentController::class);
+    Route::apiResource('profiles', ProfileController::class);
+    Route::apiResource('users', UserController::class);
 
     // Rotas adicionais para gerenciar moradores de apartamentos
     Route::post('apartments/{apartment}/residents', [ApartmentController::class, 'addResident']);

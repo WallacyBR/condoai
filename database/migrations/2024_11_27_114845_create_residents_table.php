@@ -17,7 +17,9 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('email')->unique();
             $table->boolean('active')->default(true);
-            $table->foreignId('condominium_id')->constrained()->onDelete('cascade');
+            $table->foreignId('condominium_id')
+                ->constrained('condominiums')
+                ->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -15,7 +15,7 @@ class TenantMiddleware
         $base = env('TENANT_BASE_DOMAIN');
 
         $subdomain = null;
-        if ($base && str_ends_with($host, $base)) {
+        if ($base && str_ends_with($host, $base) && $host !== $base) {
             $subdomain = trim(str_replace('.' . $base, '', $host));
         } else {
             $parts = explode('.', $host);

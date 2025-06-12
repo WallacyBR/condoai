@@ -29,5 +29,7 @@
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="TENANT_BASE_DOMAIN" value="localhost"/>
+        <env name="APP_KEY" value="base64:fNDic8ECc0vid6SkuZlOCKQxJuyI5mnQLzHcyjahDK0="/>
+        <env name="JWT_SECRET" value="5e5dd561ce977d85df7407d969315df16b6383e5eea70b38e14f79d654b063ff"/>
     </php>
 </phpunit>

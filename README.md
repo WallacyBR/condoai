@@ -49,6 +49,16 @@ We would like to extend our thanks to the following sponsors for funding Laravel
 - **[byte5](https://byte5.de)**
 - **[OP.GG](https://op.gg)**
 
+## Ambiente de Testes
+
+Use SQLite para rodar os testes automatizados. Copie o arquivo `.env.testing.example` para `.env.testing` antes de executar os testes:
+
+```bash
+cp .env.testing.example .env.testing
+```
+
+O ambiente de produção continua utilizando MySQL conforme definido em `.env.example`.
+
 ## Contribuição
 
 Para colaborar com este projeto, leia o [guia de contribuição](.github/CONTRIBUTING.md) preparado especialmente para este repositório.

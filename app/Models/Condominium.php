@@ -9,6 +9,11 @@ class Condominium extends Model
 {
     use HasFactory;
 
+    /**
+     * Define o nome da tabela explicitamente para evitar pluralização incorreta.
+     */
+    protected $table = 'condominiums';
+
     protected $fillable = [
         'name',
         'document',

@@ -161,7 +161,7 @@ const handleLogin = async () => {
   loading.value = true
 
   try {
-    const response = await axios.post('/login', {
+    const response = await axios.post('/api/auth/login', {
       email: form.email,
       password: form.password,
       remember: form.remember

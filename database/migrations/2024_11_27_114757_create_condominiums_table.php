@@ -13,6 +13,17 @@ return new class extends Migration
     {
         Schema::create('condominiums', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('document')->unique();
+            $table->string('address');
+            $table->string('city');
+            $table->string('state', 2);
+            $table->string('zip_code');
+            $table->string('phone')->nullable();
+            $table->string('email')->unique();
+            $table->string('responsible');
+            $table->boolean('active')->default(true);
+            $table->string('domain')->unique();
             $table->timestamps();
         });
     }

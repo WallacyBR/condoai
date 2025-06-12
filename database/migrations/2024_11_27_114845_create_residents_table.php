@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('residents', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('phone')->nullable();
+            $table->string('email')->unique();
+            $table->boolean('active')->default(true);
+            $table->foreignId('condominium_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

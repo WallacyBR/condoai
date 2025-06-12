@@ -17,8 +17,11 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::post('logout', [LoginController::class, 'logout'])->name('logout');
-    
+
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+
+    Route::resource('residents', App\Http\Controllers\Web\ResidentController::class);
+    Route::resource('apartments', App\Http\Controllers\Web\ApartmentController::class);
 });

@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Vite;
+use App\Helpers\AssetHelper;
+
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 
@@ -22,13 +23,10 @@ Route::get('/{any}', function () {
         ]);
         $userScript = "<script type=\"application/json\" data-user>{$userData}</script>";
     }
-    try {
-        $css = Vite::asset('resources/css/app.css');
-        $js = Vite::asset('resources/js/app.js');
-    } catch (\Exception $e) {
-        $css = '/build/assets/app.css';
-        $js = '/build/assets/app.js';
-    }
+
+    $css = AssetHelper::asset('resources/css/app.css');
+    $js = AssetHelper::asset('resources/js/app.js');
+
 
     return <<<HTML
 <!DOCTYPE html>

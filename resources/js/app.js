@@ -1,11 +1,6 @@
 import { createApp } from 'vue';
-import LoginView from './components/LoginView.vue';
+import App from './components/App.vue';
+import router from './router';
 
-// Criar aplicação Vue
-const app = createApp(LoginView);
-
-// Montar aplicação no elemento #app
-app.mount('#app');
-
-// Log para debug
-console.log('Vue app montada com sucesso!'); 
+createApp(App).use(router).mount('#app');
+console.log('Vue app montada com sucesso!');

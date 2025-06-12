@@ -5,9 +5,9 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 
 // Rota principal - exibe apenas o LoginView
-Route::get('/', function () {
+Route::get('/{any}', function () {
     return view('app');
-})->name('home');
+})->where('any', '.*');
 
 // Routes de autenticação
 Route::post('login', [LoginController::class, 'login'])->name('login');

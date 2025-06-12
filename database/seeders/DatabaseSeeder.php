@@ -12,6 +12,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call([
+            DefaultProfileSeeder::class,
+            TestUserSeeder::class,
+        ]);
+
         \App\Models\Condominium::factory()
             ->count(3)
             ->has(\App\Models\Resident::factory()->count(5), 'residents')

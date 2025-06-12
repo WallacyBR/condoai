@@ -11,5 +11,6 @@ This repository uses Laravel with Vue.js. Please follow these guidelines:
 5. **Práticas de Commit**: mantenha commits focados e descritivos; todas as mensagens de commit e comentários no código devem ser escritas em português detalhado. Este padrão é obrigatório.
 
 6. **Environment Variables**: Never commit real credentials. Use `.env.example` as reference for new env variables.
-7. **Directory Structure**: Keep `resources/js` for Vue components, `tests` for PHP tests, and `resources/tests` for Jest tests.
+7. **Estrutura de Diretórios**: mantenha `resources/js` para componentes Vue, `tests` para testes PHP, `resources/tests` para testes Jest e `public/docs` para a documentação gerada pelo Scribe.
 8. **Pull Requests**: Ensure CI passes (`phpunit` and `npm test`) before submitting.
+9. **Documentação de API**: utilize o [Laravel Scribe](https://scribe.knuckles.wtf/) para documentar todas as rotas. Configure em `config/scribe.php` e gere os arquivos em `public/docs` com `php artisan scribe:generate` sempre que houver mudanças nas rotas.

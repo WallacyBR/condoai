@@ -15,5 +15,7 @@ class ExampleTest extends TestCase
         $response = $this->get('/');
 
         $response->assertStatus(200);
+        $jsPath = \App\Helpers\AssetHelper::asset('resources/js/app.js');
+        $response->assertSee($jsPath, false);
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Helpers\AssetHelper;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 
@@ -21,6 +22,8 @@ Route::get('/{any}', function () {
         ]);
         $userScript = "<script type=\"application/json\" data-user>{$userData}</script>";
     }
+    $css = AssetHelper::asset('resources/css/app.css');
+    $js = AssetHelper::asset('resources/js/app.js');
 
     return <<<HTML
 <!DOCTYPE html>
@@ -29,8 +32,8 @@ Route::get('/{any}', function () {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>CondoAI</title>
-    <link rel="stylesheet" href="/build/assets/app.css">
-    <script type="module" src="/build/assets/app.js"></script>
+    <link rel="stylesheet" href="{$css}">
+    <script type="module" src="{$js}"></script>
 </head>
 <body class="min-h-screen bg-background font-sans antialiased">
     <div id="app"></div>

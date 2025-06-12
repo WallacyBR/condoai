@@ -12,11 +12,23 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        \App\Models\Condominium::factory()
+            ->count(3)
+            ->has(\App\Models\Resident::factory()->count(5), 'residents')
+            ->has(
+                \App\Models\Tower::factory()
+                    ->count(2)
+                    ->has(
+                        \App\Models\Block::factory()
+                            ->count(2)
+                            ->state(function (array $attributes, \App\Models\Tower $tower) {
+                                return ['condominium_id' => $tower->condominium_id];
+                            })
+                            ->has(\App\Models\Apartment::factory()->count(3), 'apartments'),
+                        'blocks'
+                    ),
+                'towers'
+            )
+            ->create();
     }
 }

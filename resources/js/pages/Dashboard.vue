@@ -26,36 +26,28 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <StatsCard
         title="Total de Apartamentos"
-        value="156"
-        change="+2.1% este mês"
-        change-direction="up"
+        :value="stats.apartments"
         :icon="BuildingIcon"
         color="primary"
       />
-      
+
       <StatsCard
         title="Moradores Ativos"
-        value="423"
-        change="+5.4% este mês"
-        change-direction="up"
+        :value="stats.residents"
         :icon="UsersIcon"
         color="accent"
       />
-      
+
       <StatsCard
-        title="Taxa de Ocupação"
-        value="94.2%"
-        change="+1.2% este mês"
-        change-direction="up"
+        title="Condomínios Cadastrados"
+        :value="stats.condominiums"
         :icon="ChartIcon"
         color="secondary"
       />
-      
+
       <StatsCard
-        title="Receita Mensal"
-        value="R$ 45,2K"
-        change="-2.3% este mês"
-        change-direction="down"
+        title="Apartamentos Ocupados"
+        :value="stats.occupied"
         :icon="MoneyIcon"
         color="primary"
       />
@@ -66,28 +58,24 @@
       <div class="lg:col-span-2">
         <div class="bg-card rounded-xl p-6 shadow-sm border border-border">
           <div class="flex justify-between items-center mb-6">
-            <h3 class="text-lg font-semibold text-foreground">Atividades Recentes</h3>
-            <button class="text-sm text-primary hover:text-primary/80 transition-colors">
-              Ver todas
-            </button>
+            <h3 class="text-lg font-semibold text-foreground">Últimos Moradores</h3>
           </div>
           <div class="space-y-4">
-            <div 
-              v-for="activity in recentActivities" 
-              :key="activity.id"
+            <div
+              v-for="resident in recentResidents"
+              :key="resident.id"
               class="flex items-start space-x-4 p-4 rounded-lg hover:bg-muted/50 transition-colors"
             >
-              <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" :class="activity.iconBg">
-                <component :is="activity.icon" class="w-4 h-4" :class="activity.iconColor" />
+              <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 bg-primary/10">
+                <component :is="UserIcon" class="w-4 h-4 text-primary" />
               </div>
               <div class="flex-1 min-w-0">
                 <p class="text-sm font-medium text-foreground">
-                  {{ activity.title }}
+                  {{ resident.name }}
                 </p>
                 <p class="text-sm text-muted-foreground">
-                  {{ activity.description }}
+                  {{ resident.email }}
                 </p>
-                <p class="text-xs text-muted-foreground mt-1">{{ activity.time }}</p>
               </div>
             </div>
           </div>
@@ -192,36 +180,38 @@ const PlusIcon = {
   `
 }
 
-// Dados mockados
-const recentActivities = ref([
-  {
-    id: 1,
-    title: 'Novo morador cadastrado',
-    description: 'João Silva foi adicionado ao apartamento 142',
-    time: '2 horas atrás',
-    icon: UserIcon,
-    iconBg: 'bg-primary/10',
-    iconColor: 'text-primary'
-  },
-  {
-    id: 2,
-    title: 'Pagamento recebido',
-    description: 'Condomínio de dezembro - Apartamento 85',
-    time: '4 horas atrás',
-    icon: MoneyIcon,
-    iconBg: 'bg-accent/10',
-    iconColor: 'text-accent'
-  },
-  {
-    id: 3,
-    title: 'Manutenção agendada',
-    description: 'Limpeza da caixa d\'água programada para amanhã',
-    time: '6 horas atrás',
-    icon: PlusIcon,
-    iconBg: 'bg-secondary/10',
-    iconColor: 'text-secondary'
+import axios from 'axios'
+import { onMounted } from 'vue'
+
+const stats = ref({
+  apartments: 0,
+  residents: 0,
+  condominiums: 0,
+  occupied: 0
+})
+
+const recentResidents = ref([])
+
+const loadDashboard = async () => {
+  try {
+    const [residentsRes, apartmentsRes, condominiumsRes] = await Promise.all([
+      axios.get('/api/residents'),
+      axios.get('/api/apartments'),
+      axios.get('/api/condominiums')
+    ])
+
+    stats.value.residents = residentsRes.data.length
+    stats.value.apartments = apartmentsRes.data.length
+    stats.value.condominiums = condominiumsRes.data.length
+    stats.value.occupied = apartmentsRes.data.filter(a => a.residents && a.residents.length > 0).length
+
+    recentResidents.value = residentsRes.data.slice(0, 5)
+  } catch (error) {
+    console.error('Erro ao carregar dashboard', error)
   }
-])
+}
+
+onMounted(loadDashboard)
 
 const quickActions = ref([
   {

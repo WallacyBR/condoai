@@ -91,8 +91,8 @@ export default {
   name: 'LoginView',
   setup() {
     const form = ref({
-      email: '',
-      password: '',
+      email: import.meta.env.VITE_DEFAULT_LOGIN_EMAIL || '',
+      password: import.meta.env.VITE_DEFAULT_LOGIN_PASSWORD || '',
       remember: false
     });
     
@@ -105,11 +105,10 @@ export default {
       error.value = '';
       
       try {
-        const response = await fetch('/login', {
+        const response = await fetch('/api/auth/login', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify(form.value)
         });
@@ -118,7 +117,8 @@ export default {
 
         if (response.ok) {
           console.log('Login bem-sucedido:', data);
-          window.location.reload();
+          localStorage.setItem('token', data.authorization.token);
+          window.location.href = '/dashboard';
         } else {
           console.error('Erro ao fazer login:', data);
           error.value = data.message || 'Erro ao fazer login';

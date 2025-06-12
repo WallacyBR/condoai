@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-
 use App\Models\Condominium;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

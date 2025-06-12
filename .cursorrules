@@ -1,0 +1,5 @@
+ignore:
+  - vendor/
+  - node_modules/
+  - storage/
+  - public/

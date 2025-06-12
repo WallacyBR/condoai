@@ -187,13 +187,7 @@ const isAuthenticated = computed(() => {
 
 const logout = async () => {
   try {
-    await fetch('/logout', {
-      method: 'POST',
-      headers: {
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-        'Content-Type': 'application/json'
-      }
-    })
+    await axios.post('/api/auth/logout')
     window.location.href = '/login'
   } catch (error) {
     console.error('Erro no logout:', error)

@@ -9,7 +9,34 @@ Route::post('login', [LoginController::class, 'login'])->name('login');
 Route::post('register', [RegisterController::class, 'register'])->name('register');
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
-// Rota principal - sempre serve o SPA
+// Rota principal - serve o SPA sem Blade
 Route::get('/{any}', function () {
-    return view('layouts.app');
+    $authenticated = auth()->check() ? 'true' : 'false';
+    $userScript = '';
+    if (auth()->check()) {
+        $userData = json_encode([
+            'id' => auth()->id(),
+            'name' => auth()->user()->name,
+            'email' => auth()->user()->email,
+        ]);
+        $userScript = "<script type=\"application/json\" data-user>{$userData}</script>";
+    }
+
+    return <<<HTML
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CondoAI</title>
+    <link rel="stylesheet" href="/build/assets/app.css">
+    <script type="module" src="/build/assets/app.js"></script>
+</head>
+<body class="min-h-screen bg-background font-sans antialiased">
+    <div id="app"></div>
+    <meta name="user-authenticated" content="{$authenticated}">
+    {$userScript}
+</body>
+</html>
+HTML;
 })->where('any', '.*');

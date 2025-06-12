@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -12,11 +11,6 @@ use Illuminate\Validation\Rules;
 
 class RegisterController extends Controller
 {
-    public function showRegistrationForm()
-    {
-        return view('auth.register');
-    }
-
     public function register(Request $request)
     {
         $request->validate([
@@ -33,6 +27,14 @@ class RegisterController extends Controller
 
         Auth::login($user);
 
-        return redirect(RouteServiceProvider::HOME);
+        return response()->json([
+            'success' => true,
+            'message' => 'Usuário registrado com sucesso!',
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+            ]
+        ]);
     }
 } 

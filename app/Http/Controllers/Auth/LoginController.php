@@ -3,17 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    public function showLoginForm()
-    {
-        return view('auth.login');
-    }
-
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -23,12 +17,25 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended(RouteServiceProvider::HOME);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Login realizado com sucesso!',
+                'user' => [
+                    'id' => auth()->user()->id,
+                    'name' => auth()->user()->name,
+                    'email' => auth()->user()->email,
+                ]
+            ]);
         }
 
-        return back()->withErrors([
-            'email' => 'As credenciais fornecidas não correspondem aos nossos registros.',
-        ])->onlyInput('email');
+        return response()->json([
+            'success' => false,
+            'message' => 'As credenciais fornecidas não correspondem aos nossos registros.',
+            'errors' => [
+                'email' => ['As credenciais fornecidas não correspondem aos nossos registros.']
+            ]
+        ], 422);
     }
 
     public function logout(Request $request)
@@ -36,6 +43,10 @@ class LoginController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/');
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Logout realizado com sucesso!'
+        ]);
     }
 } 

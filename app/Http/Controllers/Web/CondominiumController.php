@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\Condominium;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CondominiumController extends Controller
 {

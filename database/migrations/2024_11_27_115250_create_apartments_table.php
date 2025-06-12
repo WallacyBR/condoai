@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('number', 10);
             $table->integer('floor');
-            $table->foreignId('block_id')->constrained()->onDelete('cascade');
+            $table->foreignId('block_id')->constrained('blocks')->onDelete('cascade');
             $table->foreignId('owner_id')->nullable()->constrained('residents')->nullOnDelete();
             $table->foreignId('tenant_id')->nullable()->constrained('residents')->nullOnDelete();
             $table->boolean('active')->default(true);

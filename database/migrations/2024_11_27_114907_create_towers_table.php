@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('towers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('condominium_id')->constrained()->onDelete('cascade');
+            $table->foreignId('condominium_id')->constrained('condominiums')->onDelete('cascade');
             $table->boolean('active')->default(true);
             $table->timestamps();
             $table->unique(['condominium_id', 'name']);

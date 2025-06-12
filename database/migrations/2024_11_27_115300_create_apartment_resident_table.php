@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('apartment_resident', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('apartment_id')->constrained()->onDelete('cascade');
-            $table->foreignId('resident_id')->constrained()->onDelete('cascade');
+            $table->foreignId('apartment_id')->constrained('apartments')->onDelete('cascade');
+            $table->foreignId('resident_id')->constrained('residents')->onDelete('cascade');
             $table->string('type');
             $table->boolean('active')->default(true);
             $table->timestamps();

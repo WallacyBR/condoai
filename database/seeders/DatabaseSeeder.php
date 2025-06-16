@@ -14,8 +14,15 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             DefaultProfileSeeder::class,
+            ModuleSeeder::class,
             TestUserSeeder::class,
         ]);
+
+        $modules = \App\Models\Module::pluck('id');
+        $sysOp = \App\Models\Profile::where('name', 'SysOp')->first();
+        if ($sysOp) {
+            $sysOp->modules()->sync($modules);
+        }
 
         \App\Models\Condominium::factory()
             ->count(3)

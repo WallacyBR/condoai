@@ -1496,6 +1496,16 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         custom: []
+      modules:
+        name: modules
+        description: 'The <code>id</code> of an existing record in the modules table.'
+        required: false
+        example: null
+        type: 'string[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
     cleanBodyParameters:
       name: b
       description: 'Et animi quos velit et fugiat.'
@@ -1560,6 +1570,16 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         custom: []
+      modules:
+        name: modules
+        description: 'The <code>id</code> of an existing record in the modules table.'
+        required: false
+        example: null
+        type: 'string[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
     cleanBodyParameters:
       name: b
       description: 'Et animi quos velit et fugiat.'
@@ -1591,6 +1611,163 @@ endpoints:
       id:
         name: id
         description: 'The ID of the profile.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - POST
+    uri: api/modules
+    metadata:
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Store a newly created resource in storage.'
+      description: ''
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        name: name
+        description: 'Must not be greater than 255 characters.'
+        required: true
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      description:
+        name: description
+        description: 'Must not be greater than 255 characters.'
+        required: false
+        example: 'Et animi quos velit et fugiat.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+    cleanBodyParameters:
+      name: b
+      description: 'Et animi quos velit et fugiat.'
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'api/modules/{id}'
+    metadata:
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Update the specified resource in storage.'
+      description: ''
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        name: id
+        description: 'The ID of the module.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        name: name
+        description: 'Must not be greater than 255 characters.'
+        required: false
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      description:
+        name: description
+        description: 'Must not be greater than 255 characters.'
+        required: false
+        example: 'Et animi quos velit et fugiat.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+    cleanBodyParameters:
+      name: b
+      description: 'Et animi quos velit et fugiat.'
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - DELETE
+    uri: 'api/modules/{id}'
+    metadata:
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Remove the specified resource from storage.'
+      description: ''
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        name: id
+        description: 'The ID of the module.'
         required: true
         example: 16
         type: integer

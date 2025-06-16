@@ -1,5 +1,6 @@
 <template>
   <AuthenticatedLayout page-title="Dashboard">
+    <p v-if="selectedCondoName" class="text-cyan-400 mb-4">Condomínio atual: {{ selectedCondoName }}</p>
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       <div class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl shadow-xl p-8 border-2 border-cyan-500/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
@@ -41,6 +42,7 @@ export default {
     const totalCondominiums = ref(0);
     const activeCondominiums = ref(0);
     const lastUpdate = ref('');
+    const selectedCondoName = ref(localStorage.getItem('selectedCondominiumName'));
 
     const updateStats = (stats) => {
       totalCondominiums.value = stats.total;
@@ -52,6 +54,7 @@ export default {
       totalCondominiums, 
       activeCondominiums, 
       lastUpdate,
+      selectedCondoName,
       updateStats
     };
   }

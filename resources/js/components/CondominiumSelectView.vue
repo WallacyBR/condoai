@@ -17,6 +17,7 @@ export default {
 
     const selectCondominium = (condo) => {
       localStorage.setItem('selectedCondominium', condo.id);
+      localStorage.setItem('selectedCondominiumName', condo.name);
       router.push('/dashboard');
     };
 

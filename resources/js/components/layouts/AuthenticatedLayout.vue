@@ -169,6 +169,14 @@ export default {
               </svg>`
       },
       {
+        name: 'Áreas',
+        path: '/common-areas',
+        icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M3 7h18M3 12h18M3 17h18" />
+               </svg>`
+      },
+      {
         name: 'Relatórios',
         path: '/reports',
         icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

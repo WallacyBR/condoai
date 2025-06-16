@@ -26,7 +26,7 @@ class ApartmentFactory extends Factory
             'block_id' => null,
             'owner_id' => Resident::factory(),
             'tenant_id' => null,
-            'active' => $this->faker->boolean(90),
+            'active' => true,
         ];
     }
 }

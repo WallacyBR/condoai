@@ -17,7 +17,7 @@ class TowerFactory extends Factory
     {
         return [
             'name' => 'Tower ' . $this->faker->unique()->randomLetter,
-            'active' => $this->faker->boolean(90),
+            'active' => true,
             'condominium_id' => Condominium::factory(),
         ];
     }

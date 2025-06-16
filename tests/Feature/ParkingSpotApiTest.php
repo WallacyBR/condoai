@@ -98,6 +98,29 @@ class ParkingSpotApiTest extends TestCase
             ->assertJsonFragment(['rented_to_apartment_id' => $secondRenter->id]);
     }
 
+    public function test_cancel_parking_spot_rent(): void
+    {
+        if (config('database.default') === 'sqlite') {
+            $this->markTestSkipped('SQLite não suporta alteração de colunas');
+        }
+        $token = $this->authenticate();
+        $condo = Condominium::factory()->create();
+        $owner = Apartment::factory()->create(['condominium_id' => $condo->id]);
+        $renter = Apartment::factory()->create(['condominium_id' => $condo->id]);
+        $spot = ParkingSpot::factory()->create([
+            'condominium_id' => $condo->id,
+            'apartment_id' => $owner->id,
+            'rented_to_apartment_id' => $renter->id,
+        ]);
+
+        $this->withHeader('Authorization', 'Bearer '.$token)
+            ->postJson('/api/parking-spots/'.$spot->id.'/rent', [
+                'rented_to_apartment_id' => null,
+            ])
+            ->assertStatus(200)
+            ->assertJsonFragment(['rented_to_apartment_id' => null]);
+    }
+
     public function test_fail_rent_to_apartment_from_other_condominium(): void
     {
         if (config('database.default') === 'sqlite') {

@@ -7,7 +7,7 @@
           <option :value="null">Selecione a unidade</option>
           <option v-for="a in apartments" :value="a.id" :key="a.id">{{ a.number }}</option>
         </select>
-        <button type="submit" class="px-3 py-1 bg-cyan-600 text-white rounded">Salvar</button>
+        <button type="submit" class="px-3 py-1 bg-cyan-600 hover:bg-cyan-500 transition-colors text-white rounded">Salvar</button>
       </form>
       <ul class="list-disc ml-5 text-cyan-100">
         <li v-for="spot in spots" :key="spot.id" class="space-x-2">
@@ -58,10 +58,13 @@ export default {
     };
 
     const rentSpot = async (spot) => {
+      const payload = {
+        rented_to_apartment_id: spot.rented_to_apartment_id ?? null
+      };
       const resp = await fetch(`/api/parking-spots/${spot.id}/rent`, {
         method: 'POST',
         headers,
-        body: JSON.stringify({ rented_to_apartment_id: spot.rented_to_apartment_id })
+        body: JSON.stringify(payload)
       });
       if (resp.ok) {
         const updated = await resp.json();

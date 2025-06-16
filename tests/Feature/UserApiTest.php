@@ -33,7 +33,10 @@ class UserApiTest extends TestCase
     {
         $token = $this->authenticate();
         $profile = Profile::factory()->create();
-        $data = User::factory()->make(['profile_id' => $profile->id])->getAttributes();
+        $data = User::factory()->make([
+            'profile_id' => $profile->id,
+            'condominium_id' => \App\Models\Condominium::factory()->create()->id,
+        ])->getAttributes();
         $response = $this->withHeader('Authorization', 'Bearer ' . $token)
             ->postJson('/api/users', $data);
         $response->assertStatus(201)

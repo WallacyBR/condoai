@@ -24,11 +24,17 @@ class AuthController extends Controller
             'password' => 'required|string|min:6|confirmed',
         ]);
 
-        $user = User::create([
+        $data = [
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-        ]);
+        ];
+
+        if (app()->bound('currentCondominium')) {
+            $data['condominium_id'] = app('currentCondominium')->id;
+        }
+
+        $user = User::create($data);
 
         $token = Auth::guard('api')->login($user);
 
@@ -58,9 +64,18 @@ class AuthController extends Controller
             ]);
         }
 
+        $user = Auth::guard('api')->user();
+        if (app()->bound('currentCondominium') &&
+            $user->condominium_id !== app('currentCondominium')->id) {
+            Auth::guard('api')->logout();
+            throw ValidationException::withMessages([
+                'email' => ['Usuário não pertence a este condomínio.'],
+            ]);
+        }
+
         return response()->json([
             'status' => 'success',
-            'user' => Auth::guard('api')->user(),
+            'user' => $user,
             'authorization' => [
                 'token' => $token,
                 'type' => 'bearer',

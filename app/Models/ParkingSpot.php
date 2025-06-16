@@ -36,4 +36,9 @@ class ParkingSpot extends Model
     {
         return $this->belongsTo(Apartment::class, 'rented_to_apartment_id');
     }
+
+    public function vehicles()
+    {
+        return $this->hasMany(Vehicle::class);
+    }
 }

@@ -16,7 +16,7 @@ class CondominiumFactory extends Factory
     {
         return [
 
-            'name' => $this->faker->company . ' Condominium',
+            'name' => $this->faker->company.' Condominium',
             'document' => $this->faker->unique()->numerify('##############'),
             'address' => $this->faker->streetAddress,
             'city' => $this->faker->city,

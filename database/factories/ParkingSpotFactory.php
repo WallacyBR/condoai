@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\ParkingSpot;
-use App\Models\Condominium;
 use App\Models\Apartment;
+use App\Models\Condominium;
+use App\Models\ParkingSpot;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

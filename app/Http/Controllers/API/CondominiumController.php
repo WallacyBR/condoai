@@ -27,7 +27,7 @@ class CondominiumController extends Controller
             'email' => 'required|email|unique:condominiums',
             'responsible' => 'required|string|max:255',
             'domain' => 'required|string|unique:condominiums|max:100',
-            'active' => 'boolean'
+            'active' => 'boolean',
         ]);
 
         return Condominium::create($validated);
@@ -51,16 +51,18 @@ class CondominiumController extends Controller
             'email' => ['email', Rule::unique('condominiums')->ignore($condominium->id)],
             'responsible' => 'string|max:255',
             'domain' => ['string', Rule::unique('condominiums')->ignore($condominium->id), 'max:100'],
-            'active' => 'boolean'
+            'active' => 'boolean',
         ]);
 
         $condominium->update($validated);
+
         return $condominium;
     }
 
     public function destroy(Condominium $condominium)
     {
         $condominium->delete();
+
         return response()->json(null, 204);
     }
 }

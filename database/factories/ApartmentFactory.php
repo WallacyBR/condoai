@@ -3,10 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Apartment;
-use App\Models\Block;
-use App\Models\Tower;
-use App\Models\Resident;
 use App\Models\Condominium;
+use App\Models\Resident;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

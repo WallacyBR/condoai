@@ -37,13 +37,13 @@ class TenantIsolationTest extends TestCase
         Resident::factory()->count(3)->create(['condominium_id' => $beta->id]);
 
         app()->instance('currentCondominium', $alpha);
-        $responseAlpha = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $responseAlpha = $this->withHeader('Authorization', 'Bearer '.$token)
             ->getJson('/api/residents');
 
         $responseAlpha->assertStatus(200)->assertJsonCount(2);
 
         app()->instance('currentCondominium', $beta);
-        $responseBeta = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $responseBeta = $this->withHeader('Authorization', 'Bearer '.$token)
             ->getJson('/api/residents');
 
         $responseBeta->assertStatus(200)->assertJsonCount(3);

@@ -3,8 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\Block;
-use App\Models\Condominium;
-use App\Models\Tower;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +15,7 @@ class BlockFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => 'Block ' . $this->faker->unique()->randomLetter,
+            'name' => 'Block '.$this->faker->unique()->randomLetter,
             'active' => true,
         ];
     }

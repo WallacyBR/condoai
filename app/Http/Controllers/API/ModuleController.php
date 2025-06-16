@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Module;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class ModuleController extends Controller
@@ -49,6 +49,7 @@ class ModuleController extends Controller
         ]);
 
         $module->update($validated);
+
         return $module;
     }
 
@@ -58,6 +59,7 @@ class ModuleController extends Controller
     public function destroy(Module $module)
     {
         $module->delete();
+
         return response()->json(null, 204);
     }
 }

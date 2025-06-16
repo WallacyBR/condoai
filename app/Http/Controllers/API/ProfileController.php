@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Profile;
 use App\Models\Module;
+use App\Models\Profile;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class ProfileController extends Controller
@@ -27,7 +27,7 @@ class ProfileController extends Controller
             'name' => 'required|string|max:255|unique:profiles',
             'description' => 'nullable|string|max:255',
             'modules' => 'array',
-            'modules.*' => 'exists:modules,id'
+            'modules.*' => 'exists:modules,id',
         ]);
 
         $modules = $validated['modules'] ?? [];
@@ -61,7 +61,7 @@ class ProfileController extends Controller
             'name' => ['string', 'max:255', Rule::unique('profiles')->ignore($profile->id)],
             'description' => 'nullable|string|max:255',
             'modules' => 'array',
-            'modules.*' => 'exists:modules,id'
+            'modules.*' => 'exists:modules,id',
         ]);
 
         $modules = $validated['modules'] ?? null;
@@ -86,6 +86,7 @@ class ProfileController extends Controller
     public function destroy(Profile $profile)
     {
         $profile->delete();
+
         return response()->json(null, 204);
     }
 }

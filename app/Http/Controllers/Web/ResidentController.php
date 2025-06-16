@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use App\Models\Resident;
 use App\Models\Condominium;
+use App\Models\Resident;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -27,6 +27,7 @@ class ResidentController extends Controller
     public function create()
     {
         $condominiums = Condominium::pluck('name', 'id');
+
         return view('residents.create', compact('condominiums'));
     }
 
@@ -38,9 +39,9 @@ class ResidentController extends Controller
             'email' => 'required|email|unique:residents',
             'condominium_id' => [
                 'required',
-                Rule::exists('condominiums', 'id')->where(fn($q) => $q->where('active', true)),
+                Rule::exists('condominiums', 'id')->where(fn ($q) => $q->where('active', true)),
             ],
-            'active' => 'boolean'
+            'active' => 'boolean',
         ]);
 
         $resident = Resident::create($validated);
@@ -53,12 +54,14 @@ class ResidentController extends Controller
     public function show(Resident $resident)
     {
         $resident->load(['condominium', 'residingApartments.block.tower']);
+
         return view('residents.show', compact('resident'));
     }
 
     public function edit(Resident $resident)
     {
         $condominiums = Condominium::pluck('name', 'id');
+
         return view('residents.edit', compact('resident', 'condominiums'));
     }
 
@@ -67,12 +70,12 @@ class ResidentController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:20',
-            'email' => ['required','email', Rule::unique('residents')->ignore($resident->id)],
+            'email' => ['required', 'email', Rule::unique('residents')->ignore($resident->id)],
             'condominium_id' => [
                 'required',
-                Rule::exists('condominiums', 'id')->where(fn($q) => $q->where('active', true)),
+                Rule::exists('condominiums', 'id')->where(fn ($q) => $q->where('active', true)),
             ],
-            'active' => 'boolean'
+            'active' => 'boolean',
         ]);
 
         $resident->update($validated);

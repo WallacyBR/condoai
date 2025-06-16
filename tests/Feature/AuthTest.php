@@ -22,11 +22,11 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'status',
-                     'user',
-                     'authorization' => ['token', 'type'],
-                 ]);
+            ->assertJsonStructure([
+                'status',
+                'user',
+                'authorization' => ['token', 'type'],
+            ]);
     }
 
     public function test_protected_route_requires_authentication(): void
@@ -49,8 +49,8 @@ class AuthTest extends TestCase
 
         $token = $login['authorization']['token'];
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-                         ->getJson('/api/condominiums');
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->getJson('/api/condominiums');
 
         $response->assertStatus(200);
     }

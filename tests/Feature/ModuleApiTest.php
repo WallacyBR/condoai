@@ -18,6 +18,7 @@ class ModuleApiTest extends TestCase
             'email' => $user->email,
             'password' => 'secret',
         ]);
+
         return $login['authorization']['token'];
     }
 
@@ -25,7 +26,7 @@ class ModuleApiTest extends TestCase
     {
         $token = $this->authenticate();
         $data = Module::factory()->make()->toArray();
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
             ->postJson('/api/modules', $data);
         $response->assertStatus(201)
             ->assertJsonFragment(['name' => $data['name']]);
@@ -36,8 +37,8 @@ class ModuleApiTest extends TestCase
         $token = $this->authenticate();
         $module = Module::factory()->create();
         $update = ['name' => 'Atualizado'];
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->putJson('/api/modules/' . $module->id, $update);
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->putJson('/api/modules/'.$module->id, $update);
         $response->assertStatus(200)
             ->assertJsonFragment($update);
     }
@@ -46,8 +47,8 @@ class ModuleApiTest extends TestCase
     {
         $token = $this->authenticate();
         $module = Module::factory()->create();
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->deleteJson('/api/modules/' . $module->id);
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->deleteJson('/api/modules/'.$module->id);
         $response->assertStatus(204);
     }
 }

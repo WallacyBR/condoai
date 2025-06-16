@@ -40,11 +40,11 @@ class CondominiumApiTest extends TestCase
 
         $data = Condominium::factory()->make()->toArray();
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-                         ->postJson('/api/condominiums', $data);
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->postJson('/api/condominiums', $data);
 
         $response->assertStatus(201)
-                 ->assertJsonFragment(['name' => $data['name']]);
+            ->assertJsonFragment(['name' => $data['name']]);
     }
 
     public function test_authenticated_user_can_update_condominium(): void
@@ -54,11 +54,11 @@ class CondominiumApiTest extends TestCase
         $condo = Condominium::factory()->create();
         $update = ['name' => 'Updated'];
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-                         ->putJson('/api/condominiums/' . $condo->id, $update);
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->putJson('/api/condominiums/'.$condo->id, $update);
 
         $response->assertStatus(200)
-                 ->assertJsonFragment($update);
+            ->assertJsonFragment($update);
     }
 
     public function test_authenticated_user_can_delete_condominium(): void
@@ -67,8 +67,8 @@ class CondominiumApiTest extends TestCase
 
         $condo = Condominium::factory()->create();
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-                         ->deleteJson('/api/condominiums/' . $condo->id);
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->deleteJson('/api/condominiums/'.$condo->id);
 
         $response->assertStatus(204);
 

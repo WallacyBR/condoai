@@ -29,7 +29,7 @@ class ResidentApiTest extends TestCase
         $condo = Condominium::factory()->create();
         $data = Resident::factory()->make(['condominium_id' => $condo->id])->toArray();
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
             ->postJson('/api/residents', $data);
 
         $response->assertStatus(201)
@@ -41,8 +41,8 @@ class ResidentApiTest extends TestCase
         $token = $this->authenticate();
         $resident = Resident::factory()->create();
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->putJson('/api/residents/' . $resident->id, ['name' => 'Alterado']);
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->putJson('/api/residents/'.$resident->id, ['name' => 'Alterado']);
 
         $response->assertStatus(200)
             ->assertJsonFragment(['name' => 'Alterado']);

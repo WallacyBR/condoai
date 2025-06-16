@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\CondominiumScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Scopes\CondominiumScope;
-use App\Models\Apartment;
 
 class Tower extends Model
 {
@@ -13,17 +12,17 @@ class Tower extends Model
 
     protected static function booted()
     {
-        static::addGlobalScope(new CondominiumScope());
+        static::addGlobalScope(new CondominiumScope);
     }
 
     protected $fillable = [
         'name',
         'condominium_id',
-        'active'
+        'active',
     ];
 
     protected $casts = [
-        'active' => 'boolean'
+        'active' => 'boolean',
     ];
 
     public function condominium()

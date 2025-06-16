@@ -17,7 +17,7 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Login realizado com sucesso!',
@@ -25,7 +25,7 @@ class LoginController extends Controller
                     'id' => auth()->user()->id,
                     'name' => auth()->user()->name,
                     'email' => auth()->user()->email,
-                ]
+                ],
             ]);
         }
 
@@ -33,8 +33,8 @@ class LoginController extends Controller
             'success' => false,
             'message' => 'As credenciais fornecidas não correspondem aos nossos registros.',
             'errors' => [
-                'email' => ['As credenciais fornecidas não correspondem aos nossos registros.']
-            ]
+                'email' => ['As credenciais fornecidas não correspondem aos nossos registros.'],
+            ],
         ], 422);
     }
 
@@ -43,10 +43,10 @@ class LoginController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        
+
         return response()->json([
             'success' => true,
-            'message' => 'Logout realizado com sucesso!'
+            'message' => 'Logout realizado com sucesso!',
         ]);
     }
-} 
+}

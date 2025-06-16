@@ -18,6 +18,7 @@ class ProfileApiTest extends TestCase
             'email' => $user->email,
             'password' => 'secret',
         ]);
+
         return $login['authorization']['token'];
     }
 
@@ -32,7 +33,7 @@ class ProfileApiTest extends TestCase
     {
         $token = $this->authenticate();
         $data = Profile::factory()->make()->toArray();
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
             ->postJson('/api/profiles', $data);
         $response->assertStatus(201)
             ->assertJsonFragment(['name' => $data['name']]);
@@ -43,8 +44,8 @@ class ProfileApiTest extends TestCase
         $token = $this->authenticate();
         $profile = Profile::factory()->create();
         $update = ['name' => 'Atualizado'];
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->putJson('/api/profiles/' . $profile->id, $update);
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->putJson('/api/profiles/'.$profile->id, $update);
         $response->assertStatus(200)
             ->assertJsonFragment($update);
     }
@@ -53,8 +54,8 @@ class ProfileApiTest extends TestCase
     {
         $token = $this->authenticate();
         $profile = Profile::factory()->create();
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->deleteJson('/api/profiles/' . $profile->id);
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->deleteJson('/api/profiles/'.$profile->id);
         $response->assertStatus(204);
     }
 }

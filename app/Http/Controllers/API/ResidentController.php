@@ -43,12 +43,14 @@ class ResidentController extends Controller
         ]);
 
         $resident->update($validated);
+
         return $resident;
     }
 
     public function destroy(Resident $resident)
     {
         $resident->delete();
+
         return response()->json(null, 204);
     }
 }

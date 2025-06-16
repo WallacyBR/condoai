@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use App\Models\Tower;
 use App\Models\Condominium;
+use App\Models\Tower;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -13,7 +13,7 @@ class TowerController extends Controller
     public function index(Request $request)
     {
         $query = Tower::with('condominium');
-        
+
         if ($request->has('condominium_id')) {
             $query->where('condominium_id', $request->condominium_id);
         }
@@ -27,6 +27,7 @@ class TowerController extends Controller
     public function create()
     {
         $condominiums = Condominium::pluck('name', 'id');
+
         return view('towers.create', compact('condominiums'));
     }
 
@@ -39,7 +40,7 @@ class TowerController extends Controller
                 'max:255',
                 Rule::unique('towers')->where(function ($query) use ($request) {
                     return $query->where('condominium_id', $request->condominium_id);
-                })
+                }),
             ],
             'condominium_id' => [
                 'required',
@@ -47,7 +48,7 @@ class TowerController extends Controller
                     return $query->where('active', true);
                 }),
             ],
-            'active' => 'boolean'
+            'active' => 'boolean',
         ]);
 
         $tower = Tower::create($validated);
@@ -60,12 +61,14 @@ class TowerController extends Controller
     public function show(Tower $tower)
     {
         $tower->load(['blocks.apartments', 'condominium']);
+
         return view('towers.show', compact('tower'));
     }
 
     public function edit(Tower $tower)
     {
         $condominiums = Condominium::pluck('name', 'id');
+
         return view('towers.edit', compact('tower', 'condominiums'));
     }
 
@@ -78,8 +81,8 @@ class TowerController extends Controller
                 'max:255',
                 Rule::unique('towers')->where(function ($query) use ($request, $tower) {
                     return $query->where('condominium_id', $request->condominium_id ?? $tower->condominium_id)
-                                ->where('id', '!=', $tower->id);
-                })
+                        ->where('id', '!=', $tower->id);
+                }),
             ],
             'condominium_id' => [
                 'required',
@@ -87,7 +90,7 @@ class TowerController extends Controller
                     return $query->where('active', true);
                 }),
             ],
-            'active' => 'boolean'
+            'active' => 'boolean',
         ]);
 
         $tower->update($validated);
@@ -105,4 +108,4 @@ class TowerController extends Controller
             ->route('towers.index')
             ->with('success', 'Torre removida com sucesso!');
     }
-} 
+}

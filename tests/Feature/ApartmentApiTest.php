@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
+use App\Models\Apartment;
+use App\Models\Block;
 use App\Models\Condominium;
 use App\Models\Tower;
-use App\Models\Block;
-use App\Models\Apartment;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -21,6 +21,7 @@ class ApartmentApiTest extends TestCase
             'email' => $user->email,
             'password' => 'secret',
         ]);
+
         return $login['authorization']['token'];
     }
 
@@ -38,11 +39,11 @@ class ApartmentApiTest extends TestCase
             'tenant_id' => null,
         ])->toArray();
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
             ->postJson('/api/apartments', $data);
 
         $response->assertStatus(201)
-                 ->assertJsonFragment(['number' => $data['number']]);
+            ->assertJsonFragment(['number' => $data['number']]);
     }
 
     public function test_create_apartment_with_tower_and_block(): void
@@ -63,11 +64,11 @@ class ApartmentApiTest extends TestCase
             'tenant_id' => null,
         ])->toArray();
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
             ->postJson('/api/apartments', $data);
 
         $response->assertStatus(201)
-                 ->assertJsonFragment(['tower_id' => $tower->id, 'block_id' => $block->id]);
+            ->assertJsonFragment(['tower_id' => $tower->id, 'block_id' => $block->id]);
     }
 
     public function test_authenticated_user_can_update_apartment(): void
@@ -78,11 +79,11 @@ class ApartmentApiTest extends TestCase
         $token = $this->authenticate();
         $apartment = Apartment::factory()->create();
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->putJson('/api/apartments/' . $apartment->id, ['number' => '999']);
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->putJson('/api/apartments/'.$apartment->id, ['number' => '999']);
 
         $response->assertStatus(200)
-                 ->assertJsonFragment(['number' => '999']);
+            ->assertJsonFragment(['number' => '999']);
     }
 
     public function test_authenticated_user_can_delete_apartment(): void
@@ -93,8 +94,8 @@ class ApartmentApiTest extends TestCase
         $token = $this->authenticate();
         $apartment = Apartment::factory()->create();
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->deleteJson('/api/apartments/' . $apartment->id);
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->deleteJson('/api/apartments/'.$apartment->id);
 
         $response->assertStatus(204);
     }

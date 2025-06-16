@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -45,7 +45,7 @@ class AuthController extends Controller
             'authorization' => [
                 'token' => $token,
                 'type' => 'bearer',
-            ]
+            ],
         ]);
     }
 
@@ -58,7 +58,7 @@ class AuthController extends Controller
 
         $credentials = $request->only('email', 'password');
 
-        if (!$token = Auth::guard('api')->attempt($credentials)) {
+        if (! $token = Auth::guard('api')->attempt($credentials)) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
@@ -79,13 +79,14 @@ class AuthController extends Controller
             'authorization' => [
                 'token' => $token,
                 'type' => 'bearer',
-            ]
+            ],
         ]);
     }
 
     public function logout()
     {
         Auth::guard('api')->logout();
+
         return response()->json([
             'status' => 'success',
             'message' => 'Successfully logged out',
@@ -100,7 +101,7 @@ class AuthController extends Controller
             'authorization' => [
                 'token' => Auth::guard('api')->refresh(),
                 'type' => 'bearer',
-            ]
+            ],
         ]);
     }
 
@@ -108,4 +109,4 @@ class AuthController extends Controller
     {
         return response()->json(Auth::guard('api')->user());
     }
-} 
+}

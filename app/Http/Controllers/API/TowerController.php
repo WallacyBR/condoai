@@ -4,7 +4,6 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tower;
-use App\Models\Condominium;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -13,7 +12,7 @@ class TowerController extends Controller
     public function index(Request $request)
     {
         $query = Tower::query();
-        
+
         if ($request->has('condominium_id')) {
             $query->where('condominium_id', $request->condominium_id);
         }
@@ -30,7 +29,7 @@ class TowerController extends Controller
                 'max:255',
                 Rule::unique('towers')->where(function ($query) use ($request) {
                     return $query->where('condominium_id', $request->condominium_id);
-                })
+                }),
             ],
             'condominium_id' => [
                 'required',
@@ -38,7 +37,7 @@ class TowerController extends Controller
                     return $query->where('active', true);
                 }),
             ],
-            'active' => 'boolean'
+            'active' => 'boolean',
         ]);
 
         return Tower::create($validated);
@@ -57,24 +56,26 @@ class TowerController extends Controller
                 'max:255',
                 Rule::unique('towers')->where(function ($query) use ($request, $tower) {
                     return $query->where('condominium_id', $request->condominium_id ?? $tower->condominium_id)
-                                ->where('id', '!=', $tower->id);
-                })
+                        ->where('id', '!=', $tower->id);
+                }),
             ],
             'condominium_id' => [
                 Rule::exists('condominiums', 'id')->where(function ($query) {
                     return $query->where('active', true);
                 }),
             ],
-            'active' => 'boolean'
+            'active' => 'boolean',
         ]);
 
         $tower->update($validated);
+
         return $tower;
     }
 
     public function destroy(Tower $tower)
     {
         $tower->delete();
+
         return response()->json(null, 204);
     }
 }

@@ -1,17 +1,16 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\CondominiumController;
-use App\Http\Controllers\API\ResidentController;
-use App\Http\Controllers\API\AuthController;
-use App\Http\Controllers\API\TowerController;
-use App\Http\Controllers\API\BlockController;
 use App\Http\Controllers\API\ApartmentController;
-use App\Http\Controllers\API\ProfileController;
-use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\BlockController;
+use App\Http\Controllers\API\CondominiumController;
 use App\Http\Controllers\API\ModuleController;
 use App\Http\Controllers\API\ParkingSpotController;
+use App\Http\Controllers\API\ProfileController;
+use App\Http\Controllers\API\ResidentController;
+use App\Http\Controllers\API\TowerController;
+use App\Http\Controllers\API\UserController;
+use Illuminate\Support\Facades\Route;
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('auth/login', 'login');

@@ -19,6 +19,7 @@ class TowerApiTest extends TestCase
             'email' => $user->email,
             'password' => 'secret',
         ]);
+
         return $login['authorization']['token'];
     }
 
@@ -28,7 +29,7 @@ class TowerApiTest extends TestCase
         $condo = Condominium::factory()->create(['active' => true]);
         $data = Tower::factory()->make(['condominium_id' => $condo->id])->toArray();
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
             ->postJson('/api/towers', $data);
 
         $response->assertStatus(201)
@@ -40,8 +41,8 @@ class TowerApiTest extends TestCase
         $token = $this->authenticate();
         $tower = Tower::factory()->create();
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->putJson('/api/towers/' . $tower->id, ['name' => 'Atualizada']);
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->putJson('/api/towers/'.$tower->id, ['name' => 'Atualizada']);
 
         $response->assertStatus(200)
             ->assertJsonFragment(['name' => 'Atualizada']);
@@ -52,8 +53,8 @@ class TowerApiTest extends TestCase
         $token = $this->authenticate();
         $tower = Tower::factory()->create();
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->deleteJson('/api/towers/' . $tower->id);
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->deleteJson('/api/towers/'.$tower->id);
 
         $response->assertStatus(204);
     }

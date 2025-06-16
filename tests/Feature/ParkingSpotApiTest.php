@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\Condominium;
 use App\Models\Apartment;
+use App\Models\Condominium;
 use App\Models\ParkingSpot;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -20,6 +20,7 @@ class ParkingSpotApiTest extends TestCase
             'email' => $user->email,
             'password' => 'secret',
         ]);
+
         return $login['authorization']['token'];
     }
 
@@ -37,7 +38,7 @@ class ParkingSpotApiTest extends TestCase
             'rented_to_apartment_id' => null,
         ])->toArray();
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
             ->postJson('/api/parking-spots', $data);
 
         $response->assertStatus(201)
@@ -58,8 +59,8 @@ class ParkingSpotApiTest extends TestCase
             'apartment_id' => $owner->id,
         ]);
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->postJson('/api/parking-spots/' . $spot->id . '/rent', [
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->postJson('/api/parking-spots/'.$spot->id.'/rent', [
                 'rented_to_apartment_id' => $renter->id,
             ]);
 

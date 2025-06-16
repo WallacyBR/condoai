@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 class TestUserSeeder extends Seeder
@@ -17,4 +17,4 @@ class TestUserSeeder extends Seeder
             'profile_id' => 1, // Assumindo que 1 é o ID do perfil padrão
         ]);
     }
-} 
+}

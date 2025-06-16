@@ -8,13 +8,11 @@ use Illuminate\Database\Eloquent\Scope;
 
 class CondominiumScope implements Scope
 {
-    public function __construct(private ?string $relation = null)
-    {
-    }
+    public function __construct(private ?string $relation = null) {}
 
     public function apply(Builder $builder, Model $model): void
     {
-        if (!app()->bound('currentCondominium')) {
+        if (! app()->bound('currentCondominium')) {
             return;
         }
 
@@ -25,7 +23,7 @@ class CondominiumScope implements Scope
                 $q->where('condominium_id', $condominium->id);
             });
         } else {
-            $builder->where($model->getTable() . '.condominium_id', $condominium->id);
+            $builder->where($model->getTable().'.condominium_id', $condominium->id);
         }
     }
 }

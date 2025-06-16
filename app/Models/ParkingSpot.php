@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\CondominiumScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Scopes\CondominiumScope;
 
 class ParkingSpot extends Model
 {
@@ -12,7 +12,7 @@ class ParkingSpot extends Model
 
     protected static function booted()
     {
-        static::addGlobalScope(new CondominiumScope());
+        static::addGlobalScope(new CondominiumScope);
     }
 
     protected $fillable = [

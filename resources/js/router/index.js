@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import LoginView from '../components/LoginView.vue';
 import DashboardView from '../components/DashboardView.vue';
+import CondominiumSelectView from '../components/CondominiumSelectView.vue';
 
 const routes = [
   {
@@ -17,6 +18,12 @@ const routes = [
     path: '/dashboard',
     name: 'dashboard',
     component: DashboardView,
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/selecionar-condominio',
+    name: 'select-condominium',
+    component: CondominiumSelectView,
     meta: { requiresAuth: true }
   },
   {
@@ -53,11 +60,14 @@ const router = createRouter({
 // Navigation Guard
 router.beforeEach((to, from, next) => {
   const isAuthenticated = !!localStorage.getItem('token');
-  
+  const hasCondo = !!localStorage.getItem('selectedCondominium');
+
   if (to.meta.requiresAuth && !isAuthenticated) {
     next('/login');
   } else if (to.path === '/login' && isAuthenticated) {
-    next('/dashboard');
+    next(hasCondo ? '/dashboard' : '/selecionar-condominio');
+  } else if (to.meta.requiresCondo && !hasCondo) {
+    next('/selecionar-condominio');
   } else {
     next();
   }

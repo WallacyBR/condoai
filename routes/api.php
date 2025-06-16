@@ -11,6 +11,7 @@ use App\Http\Controllers\API\ApartmentController;
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\ModuleController;
+use App\Http\Controllers\API\PetController;
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('auth/login', 'login');
@@ -29,6 +30,7 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('profiles', ProfileController::class);
     Route::apiResource('modules', ModuleController::class);
     Route::apiResource('users', UserController::class);
+    Route::apiResource('pets', PetController::class);
 
     // Rotas adicionais para gerenciar moradores de apartamentos
     Route::post('apartments/{apartment}/residents', [ApartmentController::class, 'addResident']);

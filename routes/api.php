@@ -11,6 +11,7 @@ use App\Http\Controllers\API\ApartmentController;
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\ModuleController;
+use App\Http\Controllers\API\ParkingSpotController;
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('auth/login', 'login');
@@ -29,6 +30,9 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('profiles', ProfileController::class);
     Route::apiResource('modules', ModuleController::class);
     Route::apiResource('users', UserController::class);
+    Route::apiResource('parking-spots', ParkingSpotController::class);
+
+    Route::post('parking-spots/{parking_spot}/rent', [ParkingSpotController::class, 'rent']);
 
     // Rotas adicionais para gerenciar moradores de apartamentos
     Route::post('apartments/{apartment}/residents', [ApartmentController::class, 'addResident']);

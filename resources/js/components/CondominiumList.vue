@@ -14,7 +14,7 @@
       </div>
 
       <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div v-for="condo in condominiums" :key="condo.id" 
+        <div v-for="condo in condominiums" :key="condo.id"
              class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl shadow-xl border-2 border-cyan-500/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
           <div class="p-8">
             <div class="flex items-center justify-between mb-4">
@@ -45,8 +45,8 @@
             </div>
 
             <div class="mt-6 pt-6 border-t border-cyan-800/40 flex">
-              <NeonButton class="flex-1">
-                Gerenciar
+              <NeonButton class="flex-1" @click="handleAction(condo)">
+                {{ selectable ? 'Selecionar' : 'Gerenciar' }}
               </NeonButton>
             </div>
           </div>
@@ -65,7 +65,10 @@ export default {
   components: {
     NeonButton
   },
-  emits: ['update-stats'],
+  props: {
+    selectable: { type: Boolean, default: false }
+  },
+  emits: ['update-stats', 'selected'],
   setup(props, { emit }) {
     const condominiums = ref([]);
     const error = ref('');
@@ -98,9 +101,15 @@ export default {
       }
     };
 
+    const handleAction = (condo) => {
+      if (props.selectable) {
+        emit('selected', condo);
+      }
+    };
+
     onMounted(loadData);
 
-    return { condominiums, error, loading };
+    return { condominiums, error, loading, handleAction, selectable: props.selectable };
   }
 };
 </script>

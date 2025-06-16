@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Profile;
+use App\Models\Module;
 use Illuminate\Validation\Rule;
 
 class ProfileController extends Controller
@@ -14,7 +15,7 @@ class ProfileController extends Controller
      */
     public function index()
     {
-        return Profile::all();
+        return Profile::with('modules')->get();
     }
 
     /**
@@ -25,9 +26,22 @@ class ProfileController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:profiles',
             'description' => 'nullable|string|max:255',
+            'modules' => 'array',
+            'modules.*' => 'exists:modules,id'
         ]);
 
-        return Profile::create($validated);
+        $modules = $validated['modules'] ?? [];
+        unset($validated['modules']);
+
+        $profile = Profile::create($validated);
+
+        if ($profile->name === 'SysOp') {
+            $modules = Module::pluck('id');
+        }
+
+        $profile->modules()->sync($modules);
+
+        return $profile->load('modules');
     }
 
     /**
@@ -35,7 +49,7 @@ class ProfileController extends Controller
      */
     public function show(Profile $profile)
     {
-        return $profile;
+        return $profile->load('modules');
     }
 
     /**
@@ -46,10 +60,24 @@ class ProfileController extends Controller
         $validated = $request->validate([
             'name' => ['string', 'max:255', Rule::unique('profiles')->ignore($profile->id)],
             'description' => 'nullable|string|max:255',
+            'modules' => 'array',
+            'modules.*' => 'exists:modules,id'
         ]);
 
+        $modules = $validated['modules'] ?? null;
+        unset($validated['modules']);
+
         $profile->update($validated);
-        return $profile;
+
+        if ($profile->name === 'SysOp') {
+            $modules = Module::pluck('id');
+        }
+
+        if (is_array($modules)) {
+            $profile->modules()->sync($modules);
+        }
+
+        return $profile->load('modules');
     }
 
     /**

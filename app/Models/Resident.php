@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\CondominiumScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Scopes\CondominiumScope;
 
 class Resident extends Model
 {
@@ -12,7 +12,7 @@ class Resident extends Model
 
     protected static function booted()
     {
-        static::addGlobalScope(new CondominiumScope());
+        static::addGlobalScope(new CondominiumScope);
     }
 
     protected $fillable = [
@@ -20,11 +20,11 @@ class Resident extends Model
         'phone',
         'email',
         'active',
-        'condominium_id'
+        'condominium_id',
     ];
 
     protected $casts = [
-        'active' => 'boolean'
+        'active' => 'boolean',
     ];
 
     public function condominium()

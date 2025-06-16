@@ -35,7 +35,7 @@ class CondominiumController extends Controller
             'email' => 'required|email|unique:condominiums',
             'responsible' => 'required|string|max:255',
             'domain' => 'required|string|unique:condominiums|max:100',
-            'active' => 'boolean'
+            'active' => 'boolean',
         ]);
 
         $condominium = Condominium::create($validated);
@@ -48,6 +48,7 @@ class CondominiumController extends Controller
     public function show(Condominium $condominium)
     {
         $condominium->load(['towers.blocks', 'blocks.apartments']);
+
         return view('condominiums.show', compact('condominium'));
     }
 
@@ -69,7 +70,7 @@ class CondominiumController extends Controller
             'email' => ['required', 'email', Rule::unique('condominiums')->ignore($condominium)],
             'responsible' => 'required|string|max:255',
             'domain' => ['required', 'string', 'max:100', Rule::unique('condominiums')->ignore($condominium)],
-            'active' => 'boolean'
+            'active' => 'boolean',
         ]);
 
         $condominium->update($validated);
@@ -87,4 +88,4 @@ class CondominiumController extends Controller
             ->route('condominiums.index')
             ->with('success', 'Condomínio removido com sucesso!');
     }
-} 
+}

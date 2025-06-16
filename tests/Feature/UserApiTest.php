@@ -18,6 +18,7 @@ class UserApiTest extends TestCase
             'email' => $user->email,
             'password' => 'secret',
         ]);
+
         return $login['authorization']['token'];
     }
 
@@ -37,7 +38,7 @@ class UserApiTest extends TestCase
             'profile_id' => $profile->id,
             'condominium_id' => \App\Models\Condominium::factory()->create()->id,
         ])->getAttributes();
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
             ->postJson('/api/users', $data);
         $response->assertStatus(201)
             ->assertJsonFragment(['email' => $data['email']]);
@@ -49,8 +50,8 @@ class UserApiTest extends TestCase
         $profile = Profile::factory()->create();
         $user = User::factory()->create(['profile_id' => $profile->id]);
         $update = ['name' => 'Atualizado'];
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->putJson('/api/users/' . $user->id, $update);
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->putJson('/api/users/'.$user->id, $update);
         $response->assertStatus(200)
             ->assertJsonFragment($update);
     }
@@ -60,8 +61,8 @@ class UserApiTest extends TestCase
         $token = $this->authenticate();
         $profile = Profile::factory()->create();
         $user = User::factory()->create(['profile_id' => $profile->id]);
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->deleteJson('/api/users/' . $user->id);
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->deleteJson('/api/users/'.$user->id);
         $response->assertStatus(204);
     }
 }

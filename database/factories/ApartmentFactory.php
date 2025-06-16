@@ -3,10 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Apartment;
-use App\Models\Block;
-use App\Models\Tower;
-use App\Models\Resident;
 use App\Models\Condominium;
+use App\Models\Resident;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -26,7 +24,7 @@ class ApartmentFactory extends Factory
             'block_id' => null,
             'owner_id' => Resident::factory(),
             'tenant_id' => null,
-            'active' => $this->faker->boolean(90),
+            'active' => true,
         ];
     }
 }

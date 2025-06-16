@@ -161,6 +161,14 @@ export default {
               </svg>`
       },
       {
+        name: 'Vagas',
+        path: '/parking-spots',
+        icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M8 17v-6h5a3 3 0 000-6H6v14h2zm2-8h3a1 1 0 010 2h-3V9z" />
+              </svg>`
+      },
+      {
         name: 'Relatórios',
         path: '/reports',
         icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Tower;
 use App\Models\Condominium;
+use App\Models\Tower;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,8 +16,8 @@ class TowerFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => 'Tower ' . $this->faker->unique()->randomLetter,
-            'active' => $this->faker->boolean(90),
+            'name' => 'Tower '.$this->faker->unique()->randomLetter,
+            'active' => true,
             'condominium_id' => Condominium::factory(),
         ];
     }

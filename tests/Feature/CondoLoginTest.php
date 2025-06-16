@@ -49,6 +49,6 @@ class CondoLoginTest extends TestCase
         ]);
 
         $response->assertStatus(200)
-                 ->assertJsonPath('user.condominium_id', $condo->id);
+            ->assertJsonPath('user.condominium_id', $condo->id);
     }
 }

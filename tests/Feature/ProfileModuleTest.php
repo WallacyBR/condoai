@@ -19,6 +19,7 @@ class ProfileModuleTest extends TestCase
             'email' => $user->email,
             'password' => 'secret',
         ]);
+
         return $login['authorization']['token'];
     }
 
@@ -28,7 +29,7 @@ class ProfileModuleTest extends TestCase
         $modules = Module::factory()->count(2)->create();
         $data = Profile::factory()->make()->toArray();
         $data['modules'] = $modules->pluck('id')->toArray();
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
             ->postJson('/api/profiles', $data);
         $response->assertStatus(201)
             ->assertJsonCount(2, 'modules');
@@ -42,7 +43,7 @@ class ProfileModuleTest extends TestCase
             'name' => 'SysOp',
             'description' => 'sysop',
         ];
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
             ->postJson('/api/profiles', $data);
         $response->assertStatus(201)
             ->assertJsonCount(3, 'modules');

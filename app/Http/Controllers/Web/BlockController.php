@@ -13,13 +13,13 @@ class BlockController extends Controller
     public function index(Request $request)
     {
         $query = Block::with(['tower.condominium']);
-        
+
         if ($request->has('tower_id')) {
             $query->where('tower_id', $request->tower_id);
         }
 
         $blocks = $query->orderBy('name')->paginate(10);
-        $towers = Tower::whereHas('condominium', function($query) {
+        $towers = Tower::whereHas('condominium', function ($query) {
             $query->where('active', true);
         })->pluck('name', 'id');
 
@@ -28,7 +28,7 @@ class BlockController extends Controller
 
     public function create(Request $request)
     {
-        $towers = Tower::whereHas('condominium', function($query) {
+        $towers = Tower::whereHas('condominium', function ($query) {
             $query->where('active', true);
         })->pluck('name', 'id');
 
@@ -46,17 +46,17 @@ class BlockController extends Controller
                 'max:255',
                 Rule::unique('blocks')->where(function ($query) use ($request) {
                     return $query->where('tower_id', $request->tower_id);
-                })
+                }),
             ],
             'tower_id' => [
                 'required',
                 Rule::exists('towers', 'id')->where(function ($query) {
-                    return $query->whereHas('condominium', function($q) {
+                    return $query->whereHas('condominium', function ($q) {
                         $q->where('active', true);
                     });
                 }),
             ],
-            'active' => 'boolean'
+            'active' => 'boolean',
         ]);
 
         $block = Block::create($validated);
@@ -69,12 +69,13 @@ class BlockController extends Controller
     public function show(Block $block)
     {
         $block->load(['tower.condominium', 'apartments']);
+
         return view('blocks.show', compact('block'));
     }
 
     public function edit(Block $block)
     {
-        $towers = Tower::whereHas('condominium', function($query) {
+        $towers = Tower::whereHas('condominium', function ($query) {
             $query->where('active', true);
         })->pluck('name', 'id');
 
@@ -90,18 +91,18 @@ class BlockController extends Controller
                 'max:255',
                 Rule::unique('blocks')->where(function ($query) use ($request, $block) {
                     return $query->where('tower_id', $request->tower_id ?? $block->tower_id)
-                                ->where('id', '!=', $block->id);
-                })
+                        ->where('id', '!=', $block->id);
+                }),
             ],
             'tower_id' => [
                 'required',
                 Rule::exists('towers', 'id')->where(function ($query) {
-                    return $query->whereHas('condominium', function($q) {
+                    return $query->whereHas('condominium', function ($q) {
                         $q->where('active', true);
                     });
                 }),
             ],
-            'active' => 'boolean'
+            'active' => 'boolean',
         ]);
 
         $block->update($validated);
@@ -119,4 +120,4 @@ class BlockController extends Controller
             ->route('blocks.index')
             ->with('success', 'Bloco removido com sucesso!');
     }
-} 
+}

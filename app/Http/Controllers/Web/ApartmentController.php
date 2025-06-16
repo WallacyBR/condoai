@@ -47,12 +47,12 @@ class ApartmentController extends Controller
                     return $query->whereHas('block', function ($q) use ($block) {
                         $q->where('condominium_id', $block->condominium_id);
                     });
-                })
+                }),
             ],
             'floor' => 'required|integer',
             'block_id' => [
                 'required',
-                Rule::exists('blocks', 'id')->where(fn($q) => $q->where('active', true)),
+                Rule::exists('blocks', 'id')->where(fn ($q) => $q->where('active', true)),
             ],
             'owner_id' => [
                 'nullable',
@@ -66,16 +66,16 @@ class ApartmentController extends Controller
                     return $q->where('active', true)->where('condominium_id', $block->condominium_id);
                 }),
             ],
-            'active' => 'boolean'
+            'active' => 'boolean',
         ]);
 
         $apartment = Apartment::create($validated);
 
-        if (!empty($validated['owner_id'])) {
+        if (! empty($validated['owner_id'])) {
             $apartment->residents()->attach($validated['owner_id'], ['type' => 'owner']);
         }
 
-        if (!empty($validated['tenant_id'])) {
+        if (! empty($validated['tenant_id'])) {
             $apartment->residents()->attach($validated['tenant_id'], ['type' => 'tenant']);
         }
 
@@ -87,6 +87,7 @@ class ApartmentController extends Controller
     public function show(Apartment $apartment)
     {
         $apartment->load(['block.tower', 'owner', 'tenant', 'residents']);
+
         return view('apartments.show', compact('apartment'));
     }
 
@@ -94,6 +95,7 @@ class ApartmentController extends Controller
     {
         $blocks = Block::pluck('name', 'id');
         $residents = Resident::pluck('name', 'id');
+
         return view('apartments.edit', compact('apartment', 'blocks', 'residents'));
     }
 
@@ -109,11 +111,11 @@ class ApartmentController extends Controller
                     return $query->whereHas('block', function ($q) use ($block) {
                         $q->where('condominium_id', $block->condominium_id);
                     })->where('id', '!=', $apartment->id);
-                })
+                }),
             ],
             'floor' => 'integer',
             'block_id' => [
-                Rule::exists('blocks', 'id')->where(fn($q) => $q->where('active', true)),
+                Rule::exists('blocks', 'id')->where(fn ($q) => $q->where('active', true)),
             ],
             'owner_id' => [
                 'nullable',
@@ -127,7 +129,7 @@ class ApartmentController extends Controller
                     return $q->where('active', true)->where('condominium_id', $block->condominium_id);
                 }),
             ],
-            'active' => 'boolean'
+            'active' => 'boolean',
         ]);
 
         if (isset($validated['owner_id']) && $apartment->owner_id !== $validated['owner_id']) {

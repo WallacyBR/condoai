@@ -12,7 +12,7 @@ class BlockController extends Controller
     public function index(Request $request)
     {
         $query = Block::query();
-        
+
         if ($request->has('condominium_id')) {
             $query->where('condominium_id', $request->condominium_id);
         }
@@ -33,7 +33,7 @@ class BlockController extends Controller
                 'max:255',
                 Rule::unique('blocks')->where(function ($query) use ($request) {
                     return $query->where('condominium_id', $request->condominium_id);
-                })
+                }),
             ],
             'condominium_id' => [
                 'required',
@@ -47,7 +47,7 @@ class BlockController extends Controller
                     return $query->where('active', true);
                 }),
             ],
-            'active' => 'boolean'
+            'active' => 'boolean',
         ]);
 
         return Block::create($validated);
@@ -66,8 +66,8 @@ class BlockController extends Controller
                 'max:255',
                 Rule::unique('blocks')->where(function ($query) use ($request, $block) {
                     return $query->where('condominium_id', $request->condominium_id ?? $block->condominium_id)
-                                ->where('id', '!=', $block->id);
-                })
+                        ->where('id', '!=', $block->id);
+                }),
             ],
             'condominium_id' => [
                 Rule::exists('condominiums', 'id')->where(function ($query) {
@@ -80,16 +80,18 @@ class BlockController extends Controller
                     return $query->where('active', true);
                 }),
             ],
-            'active' => 'boolean'
+            'active' => 'boolean',
         ]);
 
         $block->update($validated);
+
         return $block;
     }
 
     public function destroy(Block $block)
     {
         $block->delete();
+
         return response()->json(null, 204);
     }
 }

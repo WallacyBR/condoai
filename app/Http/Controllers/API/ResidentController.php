@@ -18,12 +18,10 @@ class ResidentController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'apartment' => 'required|string|max:10',
-            'block' => 'required|string|max:10',
             'phone' => 'nullable|string|max:20',
             'email' => 'required|email|unique:residents',
             'active' => 'boolean',
-            'condominium_id' => 'required|exists:condominiums,id'
+            'condominium_id' => 'required|exists:condominiums,id',
         ]);
 
         return Resident::create($validated);
@@ -38,21 +36,21 @@ class ResidentController extends Controller
     {
         $validated = $request->validate([
             'name' => 'string|max:255',
-            'apartment' => 'string|max:10',
-            'block' => 'string|max:10',
             'phone' => 'nullable|string|max:20',
             'email' => ['email', Rule::unique('residents')->ignore($resident->id)],
             'active' => 'boolean',
-            'condominium_id' => 'exists:condominiums,id'
+            'condominium_id' => 'exists:condominiums,id',
         ]);
 
         $resident->update($validated);
+
         return $resident;
     }
 
     public function destroy(Resident $resident)
     {
         $resident->delete();
+
         return response()->json(null, 204);
     }
 }

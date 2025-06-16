@@ -4,7 +4,6 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Apartment;
-use App\Models\Block;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -13,7 +12,7 @@ class ApartmentController extends Controller
     public function index(Request $request)
     {
         $query = Apartment::query();
-        
+
         if ($request->has('block_id')) {
             $query->where('block_id', $request->block_id);
         }
@@ -38,39 +37,39 @@ class ApartmentController extends Controller
                 'required',
                 'string',
                 'max:10',
-                Rule::unique('apartments')->where(fn($q) => $q->where('condominium_id', $condoId))
+                Rule::unique('apartments')->where(fn ($q) => $q->where('condominium_id', $condoId)),
             ],
             'floor' => 'required|integer',
             'condominium_id' => [
                 'required',
-                Rule::exists('condominiums', 'id')->where(fn($q) => $q->where('active', true)),
+                Rule::exists('condominiums', 'id')->where(fn ($q) => $q->where('active', true)),
             ],
             'tower_id' => [
                 'nullable',
-                Rule::exists('towers', 'id')->where(fn($q) => $q->where('condominium_id', $condoId)->where('active', true)),
+                Rule::exists('towers', 'id')->where(fn ($q) => $q->where('condominium_id', $condoId)->where('active', true)),
             ],
             'block_id' => [
                 'nullable',
-                Rule::exists('blocks', 'id')->where(fn($q) => $q->where('condominium_id', $condoId)->where('active', true)),
+                Rule::exists('blocks', 'id')->where(fn ($q) => $q->where('condominium_id', $condoId)->where('active', true)),
             ],
             'owner_id' => [
                 'nullable',
-                Rule::exists('residents', 'id')->where(fn($q) => $q->where('active', true)->where('condominium_id', $condoId)),
+                Rule::exists('residents', 'id')->where(fn ($q) => $q->where('active', true)->where('condominium_id', $condoId)),
             ],
             'tenant_id' => [
                 'nullable',
-                Rule::exists('residents', 'id')->where(fn($q) => $q->where('active', true)->where('condominium_id', $condoId)),
+                Rule::exists('residents', 'id')->where(fn ($q) => $q->where('active', true)->where('condominium_id', $condoId)),
             ],
-            'active' => 'boolean'
+            'active' => 'boolean',
         ]);
 
         $apartment = Apartment::create($validated);
 
-        if (!empty($validated['owner_id'])) {
+        if (! empty($validated['owner_id'])) {
             $apartment->residents()->attach($validated['owner_id'], ['type' => 'owner']);
         }
 
-        if (!empty($validated['tenant_id'])) {
+        if (! empty($validated['tenant_id'])) {
             $apartment->residents()->attach($validated['tenant_id'], ['type' => 'tenant']);
         }
 
@@ -90,29 +89,29 @@ class ApartmentController extends Controller
             'number' => [
                 'string',
                 'max:10',
-                Rule::unique('apartments')->where(fn($q) => $q->where('condominium_id', $condoId)->where('id', '!=', $apartment->id))
+                Rule::unique('apartments')->where(fn ($q) => $q->where('condominium_id', $condoId)->where('id', '!=', $apartment->id)),
             ],
             'floor' => 'integer',
             'condominium_id' => [
-                Rule::exists('condominiums', 'id')->where(fn($q) => $q->where('active', true)),
+                Rule::exists('condominiums', 'id')->where(fn ($q) => $q->where('active', true)),
             ],
             'tower_id' => [
                 'nullable',
-                Rule::exists('towers', 'id')->where(fn($q) => $q->where('condominium_id', $condoId)->where('active', true)),
+                Rule::exists('towers', 'id')->where(fn ($q) => $q->where('condominium_id', $condoId)->where('active', true)),
             ],
             'block_id' => [
                 'nullable',
-                Rule::exists('blocks', 'id')->where(fn($q) => $q->where('condominium_id', $condoId)->where('active', true)),
+                Rule::exists('blocks', 'id')->where(fn ($q) => $q->where('condominium_id', $condoId)->where('active', true)),
             ],
             'owner_id' => [
                 'nullable',
-                Rule::exists('residents', 'id')->where(fn($q) => $q->where('active', true)->where('condominium_id', $condoId)),
+                Rule::exists('residents', 'id')->where(fn ($q) => $q->where('active', true)->where('condominium_id', $condoId)),
             ],
             'tenant_id' => [
                 'nullable',
-                Rule::exists('residents', 'id')->where(fn($q) => $q->where('active', true)->where('condominium_id', $condoId)),
+                Rule::exists('residents', 'id')->where(fn ($q) => $q->where('active', true)->where('condominium_id', $condoId)),
             ],
-            'active' => 'boolean'
+            'active' => 'boolean',
         ]);
 
         if (isset($validated['owner_id']) && $apartment->owner_id !== $validated['owner_id']) {
@@ -134,12 +133,14 @@ class ApartmentController extends Controller
         }
 
         $apartment->update($validated);
+
         return $apartment->load(['owner', 'tenant', 'residents', 'block', 'tower']);
     }
 
     public function destroy(Apartment $apartment)
     {
         $apartment->delete();
+
         return response()->json(null, 204);
     }
 
@@ -150,14 +151,14 @@ class ApartmentController extends Controller
                 'required',
                 Rule::exists('residents', 'id')->where(function ($query) use ($apartment) {
                     return $query->where('active', true)
-                                ->where('condominium_id', $apartment->condominium_id);
+                        ->where('condominium_id', $apartment->condominium_id);
                 }),
-            ]
+            ],
         ]);
 
         $apartment->residents()->attach($validated['resident_id'], [
             'type' => 'resident',
-            'active' => true
+            'active' => true,
         ]);
 
         return $apartment->load(['residents']);
@@ -169,7 +170,7 @@ class ApartmentController extends Controller
             'resident_id' => [
                 'required',
                 Rule::exists('residents', 'id'),
-            ]
+            ],
         ]);
 
         $apartment->residents()->wherePivot('type', 'resident')->detach($validated['resident_id']);

@@ -26,11 +26,11 @@ class Condominium extends Model
         'email',
         'responsible',
         'active',
-        'domain'
+        'domain',
     ];
 
     protected $casts = [
-        'active' => 'boolean'
+        'active' => 'boolean',
     ];
 
     public function residents()

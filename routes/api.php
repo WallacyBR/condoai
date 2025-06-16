@@ -33,6 +33,7 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('users', UserController::class);
     Route::apiResource('parking-spots', ParkingSpotController::class);
     Route::apiResource('vehicles', VehicleController::class);
+    Route::apiResource('pets', \App\Http\Controllers\API\PetController::class);
     Route::apiResource('common-areas', CommonAreaController::class);
     Route::apiResource('packages', \App\Http\Controllers\API\PackageController::class);
 

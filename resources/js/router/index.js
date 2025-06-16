@@ -51,6 +51,12 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/pets',
+    name: 'pets',
+    component: () => import('../components/PetsView.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/packages',
     name: 'packages',
     component: () => import('../components/PackagesView.vue'),

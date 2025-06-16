@@ -123,9 +123,17 @@ export default {
         name: 'Condomínios',
         path: '/condominiums',
         icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
               </svg>`
+      },
+      {
+        name: 'Unidades',
+        path: '/units',
+        icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M3 7v13h18V7H3zm5 10H6v-4h2v4zm4 0h-2v-6h2v6zm4 0h-2v-3h2v3zM3 5h18V3H3v2z" />
+               </svg>`
       },
       {
         name: 'Moradores',

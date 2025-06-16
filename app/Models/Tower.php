@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Scopes\CondominiumScope;
+use App\Models\Apartment;
 
 class Tower extends Model
 {
@@ -33,5 +34,10 @@ class Tower extends Model
     public function blocks()
     {
         return $this->hasMany(Block::class);
+    }
+
+    public function apartments()
+    {
+        return $this->hasMany(Apartment::class);
     }
 }

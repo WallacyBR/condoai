@@ -12,13 +12,15 @@ class Apartment extends Model
 
     protected static function booted()
     {
-        static::addGlobalScope(new CondominiumScope('block'));
+        static::addGlobalScope(new CondominiumScope());
     }
 
     protected $fillable = [
         'number',
         'floor',
+        'condominium_id',
         'block_id',
+        'tower_id',
         'owner_id',
         'tenant_id',
         'active'
@@ -29,9 +31,19 @@ class Apartment extends Model
         'floor' => 'integer'
     ];
 
+    public function condominium()
+    {
+        return $this->belongsTo(Condominium::class);
+    }
+
     public function block()
     {
         return $this->belongsTo(Block::class);
+    }
+
+    public function tower()
+    {
+        return $this->belongsTo(Tower::class);
     }
 
     public function owner()

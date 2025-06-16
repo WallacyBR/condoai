@@ -71,5 +71,7 @@ class CondominiumApiTest extends TestCase
                          ->deleteJson('/api/condominiums/' . $condo->id);
 
         $response->assertStatus(204);
+
+        $this->assertSoftDeleted('condominiums', ['id' => $condo->id]);
     }
 }

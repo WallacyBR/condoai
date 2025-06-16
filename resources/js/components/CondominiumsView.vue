@@ -102,12 +102,12 @@
               </p>
             </div>
             <div class="mt-6 pt-6 border-t border-cyan-800/40 flex space-x-2">
-              <button class="flex-1 px-4 py-2 bg-gradient-to-r from-cyan-500 to-pink-500 text-white font-semibold rounded-2xl shadow-md hover:from-pink-500 hover:to-cyan-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-400/50">
+              <button @click="editCondominium(condo)" class="flex-1 px-4 py-2 bg-gradient-to-r from-cyan-500 to-pink-500 text-white font-semibold rounded-2xl shadow-md hover:from-pink-500 hover:to-cyan-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-400/50">
                 Gerenciar
               </button>
               <button class="p-2 rounded-full bg-gray-900/60 text-cyan-300 hover:bg-cyan-900/40 hover:text-pink-400 transition-all duration-200 shadow-md">
                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
                 </svg>
               </button>
@@ -115,6 +115,7 @@
           </div>
         </div>
       </div>
+      <CondominiumForm :show="showModal" :condominium="selected" @close="closeModal" @saved="refresh" />
     </div>
   </AuthenticatedLayout>
 </template>
@@ -122,16 +123,19 @@
 <script>
 import { ref, computed } from 'vue';
 import AuthenticatedLayout from './layouts/AuthenticatedLayout.vue';
+import CondominiumForm from './CondominiumForm.vue';
 
 export default {
   name: 'CondominiumsView',
-  components: { AuthenticatedLayout },
+  components: { AuthenticatedLayout, CondominiumForm },
   setup() {
     const condominiums = ref([]);
     const loading = ref(true);
     const error = ref('');
     const search = ref('');
     const filter = ref('all');
+    const showModal = ref(false);
+    const selected = ref(null);
 
     const loadData = async () => {
       try {
@@ -165,8 +169,22 @@ export default {
     });
 
     const openNewCondominiumModal = () => {
-      // Implementar lógica para abrir modal de novo condomínio
-      console.log('Abrir modal de novo condomínio');
+      selected.value = null;
+      showModal.value = true;
+    };
+
+    const editCondominium = (condo) => {
+      selected.value = condo;
+      showModal.value = true;
+    };
+
+    const closeModal = () => {
+      showModal.value = false;
+    };
+
+    const refresh = async () => {
+      showModal.value = false;
+      await loadData();
     };
 
     // Carregar dados ao montar o componente
@@ -179,8 +197,13 @@ export default {
       search,
       filter,
       filteredCondominiums,
-      openNewCondominiumModal
+      openNewCondominiumModal,
+      editCondominium,
+      closeModal,
+      showModal,
+      selected,
+      refresh
     };
   }
 };
-</script> 
+</script>

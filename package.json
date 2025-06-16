@@ -4,7 +4,7 @@
     "scripts": {
         "dev": "vite",
         "build": "vite build",
-        "test": "jest"
+        "test": "NODE_OPTIONS=--experimental-vm-modules jest"
     },
     "devDependencies": {
         "@babel/preset-env": "^7.27.2",

@@ -18,7 +18,7 @@ class BlockFactory extends Factory
     {
         return [
             'name' => 'Block ' . $this->faker->unique()->randomLetter,
-            'active' => $this->faker->boolean(90),
+            'active' => true,
         ];
     }
 }

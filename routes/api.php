@@ -34,11 +34,13 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('parking-spots', ParkingSpotController::class);
     Route::apiResource('vehicles', VehicleController::class);
     Route::apiResource('common-areas', CommonAreaController::class);
+    Route::apiResource('packages', \App\Http\Controllers\API\PackageController::class);
 
     Route::get('common-areas/{common_area}/bookings', [CommonAreaController::class, 'bookings']);
     Route::post('common-areas/{common_area}/bookings', [CommonAreaController::class, 'book']);
 
     Route::post('parking-spots/{parking_spot}/rent', [ParkingSpotController::class, 'rent']);
+    Route::post('packages/{package}/withdraw', [\App\Http\Controllers\API\PackageController::class, 'withdraw']);
 
     // Rotas adicionais para gerenciar moradores de apartamentos
     Route::post('apartments/{apartment}/residents', [ApartmentController::class, 'addResident']);

@@ -51,6 +51,12 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/packages',
+    name: 'packages',
+    component: () => import('../components/PackagesView.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/common-areas',
     name: 'common-areas',
     component: () => import('../components/CommonAreasView.vue'),
@@ -97,4 +103,4 @@ router.beforeEach((to, from, next) => {
   }
 });
 
-export default router; 
+export default router;

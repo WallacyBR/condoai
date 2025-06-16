@@ -69,4 +69,33 @@ class ApartmentApiTest extends TestCase
         $response->assertStatus(201)
                  ->assertJsonFragment(['tower_id' => $tower->id, 'block_id' => $block->id]);
     }
+
+    public function test_authenticated_user_can_update_apartment(): void
+    {
+        if (config('database.default') === 'sqlite') {
+            $this->markTestSkipped('SQLite não suporta alteração de colunas');
+        }
+        $token = $this->authenticate();
+        $apartment = Apartment::factory()->create();
+
+        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->putJson('/api/apartments/' . $apartment->id, ['number' => '999']);
+
+        $response->assertStatus(200)
+                 ->assertJsonFragment(['number' => '999']);
+    }
+
+    public function test_authenticated_user_can_delete_apartment(): void
+    {
+        if (config('database.default') === 'sqlite') {
+            $this->markTestSkipped('SQLite não suporta alteração de colunas');
+        }
+        $token = $this->authenticate();
+        $apartment = Apartment::factory()->create();
+
+        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->deleteJson('/api/apartments/' . $apartment->id);
+
+        $response->assertStatus(204);
+    }
 }

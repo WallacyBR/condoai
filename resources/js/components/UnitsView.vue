@@ -67,6 +67,7 @@ export default {
   components: { AuthenticatedLayout },
   setup() {
     const token = localStorage.getItem('token');
+    const selectedCondo = localStorage.getItem('selectedCondominium');
     const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
 
     const towers = ref([]);
@@ -78,19 +79,19 @@ export default {
     const newApartment = ref({ number: '', floor: 1, tower_id: null, block_id: null, condominium_id: null });
 
     const loadData = async () => {
-      const respTowers = await fetch('/api/towers', { headers });
+      const respTowers = await fetch(`/api/towers?condominium_id=${selectedCondo}`, { headers });
       towers.value = respTowers.ok ? await respTowers.json() : [];
 
-      const respBlocks = await fetch('/api/blocks', { headers });
+      const respBlocks = await fetch(`/api/blocks?condominium_id=${selectedCondo}`, { headers });
       blocks.value = respBlocks.ok ? await respBlocks.json() : [];
 
-      const respApartments = await fetch('/api/apartments', { headers });
+      const respApartments = await fetch(`/api/apartments?condominium_id=${selectedCondo}`, { headers });
       apartments.value = respApartments.ok ? await respApartments.json() : [];
     };
 
     const createTower = async () => {
       if (!newTower.value.name) return;
-      newTower.value.condominium_id = towers.value[0]?.condominium_id || 1;
+      newTower.value.condominium_id = selectedCondo;
       const resp = await fetch('/api/towers', { method: 'POST', headers, body: JSON.stringify(newTower.value) });
       if (resp.ok) {
         towers.value.push(await resp.json());
@@ -100,7 +101,7 @@ export default {
 
     const createBlock = async () => {
       if (!newBlock.value.name) return;
-      newBlock.value.condominium_id = towers.value[0]?.condominium_id || 1;
+      newBlock.value.condominium_id = selectedCondo;
       const resp = await fetch('/api/blocks', { method: 'POST', headers, body: JSON.stringify(newBlock.value) });
       if (resp.ok) {
         blocks.value.push(await resp.json());
@@ -111,7 +112,7 @@ export default {
 
     const createApartment = async () => {
       if (!newApartment.value.number) return;
-      newApartment.value.condominium_id = towers.value[0]?.condominium_id || blocks.value[0]?.condominium_id || 1;
+      newApartment.value.condominium_id = selectedCondo;
       const resp = await fetch('/api/apartments', { method: 'POST', headers, body: JSON.stringify(newApartment.value) });
       if (resp.ok) {
         apartments.value.push(await resp.json());

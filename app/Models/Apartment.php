@@ -67,4 +67,9 @@ class Apartment extends Model
     {
         return $this->residents()->wherePivot('type', 'resident');
     }
+
+    public function vehicles()
+    {
+        return $this->hasMany(Vehicle::class);
+    }
 }

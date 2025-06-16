@@ -89,8 +89,8 @@ export default {
   components: { NeonButton },
   setup() {
     const form = ref({
-      email: import.meta.env.VITE_DEFAULT_LOGIN_EMAIL || '',
-      password: import.meta.env.VITE_DEFAULT_LOGIN_PASSWORD || '',
+      email: '',
+      password: '',
       remember: false
     });
     

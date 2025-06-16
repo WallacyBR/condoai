@@ -5,5 +5,6 @@ export default {
     '^.+\\.js$': 'babel-jest'
   },
   moduleFileExtensions: ['js', 'vue'],
-  testPathIgnorePatterns: ['/node_modules/', '/vendor/']
+  testPathIgnorePatterns: ['/vendor/'],
+  transformIgnorePatterns: []
 };

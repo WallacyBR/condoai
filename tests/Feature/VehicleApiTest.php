@@ -52,4 +52,58 @@ class VehicleApiTest extends TestCase
                 'parking_spot_id' => $spot->id,
             ]);
     }
+
+    public function test_create_vehicle_without_parking_spot(): void
+    {
+        if (config('database.default') === 'sqlite') {
+            $this->markTestSkipped('SQLite n\xC3\A3o suporta altera\xC3\A7\xC3\A3o de colunas');
+        }
+        $token = $this->authenticate();
+        $condo = Condominium::factory()->create();
+        $apartment = Apartment::factory()->create(['condominium_id' => $condo->id]);
+        $data = Vehicle::factory()->make([
+            'apartment_id' => $apartment->id,
+            'parking_spot_id' => null,
+        ])->toArray();
+
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->postJson('/api/vehicles', $data);
+
+        $response->assertStatus(201)
+            ->assertJsonFragment([
+                'license_plate' => $data['license_plate'],
+                'apartment_id' => $apartment->id,
+                'parking_spot_id' => null,
+            ]);
+    }
+
+    public function test_update_vehicle_add_parking_spot(): void
+    {
+        if (config('database.default') === 'sqlite') {
+            $this->markTestSkipped('SQLite n\xC3\A3o suporta altera\xC3\A7\xC3\A3o de colunas');
+        }
+        $token = $this->authenticate();
+        $condo = Condominium::factory()->create();
+        $apartment = Apartment::factory()->create(['condominium_id' => $condo->id]);
+        $spot = ParkingSpot::factory()->create([
+            'condominium_id' => $condo->id,
+            'apartment_id' => $apartment->id,
+        ]);
+
+        $vehicle = Vehicle::factory()->create([
+            'apartment_id' => $apartment->id,
+            'parking_spot_id' => null,
+        ]);
+
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->patchJson('/api/vehicles/'.$vehicle->id, [
+                'parking_spot_id' => $spot->id,
+            ]);
+
+        $response->assertStatus(200)
+            ->assertJsonFragment([
+                'id' => $vehicle->id,
+                'parking_spot_id' => $spot->id,
+            ]);
+    }
 }

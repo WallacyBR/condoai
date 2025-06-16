@@ -7,6 +7,7 @@ use App\Http\Controllers\API\CondominiumController;
 use App\Http\Controllers\API\ModuleController;
 use App\Http\Controllers\API\ParkingSpotController;
 use App\Http\Controllers\API\VehicleController;
+use App\Http\Controllers\API\CommonAreaController;
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\ResidentController;
 use App\Http\Controllers\API\TowerController;
@@ -32,6 +33,10 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('users', UserController::class);
     Route::apiResource('parking-spots', ParkingSpotController::class);
     Route::apiResource('vehicles', VehicleController::class);
+    Route::apiResource('common-areas', CommonAreaController::class);
+
+    Route::get('common-areas/{common_area}/bookings', [CommonAreaController::class, 'bookings']);
+    Route::post('common-areas/{common_area}/bookings', [CommonAreaController::class, 'book']);
 
     Route::post('parking-spots/{parking_spot}/rent', [ParkingSpotController::class, 'rent']);
 

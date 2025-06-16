@@ -51,6 +51,12 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/common-areas',
+    name: 'common-areas',
+    component: () => import('../components/CommonAreasView.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/reports',
     name: 'reports',
     component: () => import('../components/ReportsView.vue'),

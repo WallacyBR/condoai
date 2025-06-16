@@ -55,6 +55,12 @@ const routes = [
     name: 'profiles',
     component: () => import('../components/ProfilesView.vue'),
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/areas-comuns',
+    name: 'common-areas',
+    component: () => import('../components/CommonAreaList.vue'),
+    meta: { requiresAuth: true }
   }
 ];
 
@@ -79,4 +85,4 @@ router.beforeEach((to, from, next) => {
   }
 });
 
-export default router; 
+export default router;

@@ -26,7 +26,7 @@ class BlockApiTest extends TestCase
     public function test_authenticated_user_can_create_block(): void
     {
         $token = $this->authenticate();
-        $condo = Condominium::factory()->create();
+        $condo = Condominium::factory()->create(['active' => true]);
         $tower = Tower::factory()->create(['condominium_id' => $condo->id]);
         $data = Block::factory()->make([
             'condominium_id' => $condo->id,

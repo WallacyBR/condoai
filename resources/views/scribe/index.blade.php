@@ -2910,7 +2910,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"number\": \"bngzmi\",
     \"floor\": 16,
-    \"block_id\": \"architecto\",
+    \"condominium_id\": \"architecto\",
     \"active\": false
 }"
 </code></pre></div>
@@ -2929,7 +2929,7 @@ const headers = {
 let body = {
     "number": "bngzmi",
     "floor": 16,
-    "block_id": "architecto",
+    "condominium_id": "architecto",
     "active": false
 };
 
@@ -3036,15 +3036,37 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>Example: <code>16</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>block_id</code></b>&nbsp;&nbsp;
+            <b style="line-height: 2;"><code>condominium_id</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="block_id"                data-endpoint="POSTapi-apartments"
+                              name="condominium_id"                data-endpoint="POSTapi-apartments"
                value="architecto"
                data-component="body">
     <br>
 <p>Example: <code>architecto</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>tower_id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="tower_id"                data-endpoint="POSTapi-apartments"
+               value=""
+               data-component="body">
+    <br>
+
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>block_id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="block_id"                data-endpoint="POSTapi-apartments"
+               value=""
+               data-component="body">
+    <br>
+
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>owner_id</code></b>&nbsp;&nbsp;
@@ -3248,6 +3270,28 @@ You can check the Dev Tools console for debugging information.</code></pre>
                data-component="body">
     <br>
 <p>Example: <code>16</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>condominium_id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="condominium_id"                data-endpoint="PUTapi-apartments--id-"
+               value=""
+               data-component="body">
+    <br>
+
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>tower_id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="tower_id"                data-endpoint="PUTapi-apartments--id-"
+               value=""
+               data-component="body">
+    <br>
+
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>block_id</code></b>&nbsp;&nbsp;

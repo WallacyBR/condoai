@@ -18,7 +18,7 @@ class TowerController extends Controller
             $query->where('condominium_id', $request->condominium_id);
         }
 
-        return $query->with(['blocks'])->get();
+        return $query->with(['blocks', 'apartments'])->get();
     }
 
     public function store(Request $request)
@@ -46,7 +46,7 @@ class TowerController extends Controller
 
     public function show(Tower $tower)
     {
-        return $tower->load(['blocks.apartments', 'condominium']);
+        return $tower->load(['blocks.apartments', 'apartments', 'condominium']);
     }
 
     public function update(Request $request, Tower $tower)

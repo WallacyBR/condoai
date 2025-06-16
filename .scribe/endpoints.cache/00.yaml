@@ -1216,8 +1216,8 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         custom: []
-      block_id:
-        name: block_id
+      condominium_id:
+        name: condominium_id
         description: ''
         required: true
         example: architecto
@@ -1225,6 +1225,26 @@ endpoints:
         enumValues: []
         exampleWasSpecified: false
         nullable: false
+        custom: []
+      tower_id:
+        name: tower_id
+        description: ''
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      block_id:
+        name: block_id
+        description: ''
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
         custom: []
       owner_id:
         name: owner_id
@@ -1259,7 +1279,7 @@ endpoints:
     cleanBodyParameters:
       number: bngzmi
       floor: 16
-      block_id: architecto
+      condominium_id: architecto
       active: false
     fileParameters: []
     responses: []
@@ -1322,6 +1342,26 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         custom: []
+      condominium_id:
+        name: condominium_id
+        description: ''
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      tower_id:
+        name: tower_id
+        description: ''
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
       block_id:
         name: block_id
         description: ''
@@ -1330,7 +1370,7 @@ endpoints:
         type: string
         enumValues: []
         exampleWasSpecified: false
-        nullable: false
+        nullable: true
         custom: []
       owner_id:
         name: owner_id

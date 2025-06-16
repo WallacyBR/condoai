@@ -25,7 +25,7 @@ class TowerApiTest extends TestCase
     public function test_authenticated_user_can_create_tower(): void
     {
         $token = $this->authenticate();
-        $condo = Condominium::factory()->create();
+        $condo = Condominium::factory()->create(['active' => true]);
         $data = Tower::factory()->make(['condominium_id' => $condo->id])->toArray();
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $token)

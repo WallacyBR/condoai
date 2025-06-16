@@ -29,6 +29,7 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('profiles', ProfileController::class);
     Route::apiResource('modules', ModuleController::class);
     Route::apiResource('users', UserController::class);
+    Route::apiResource('visitors', \App\Http\Controllers\API\VisitorController::class);
 
     // Rotas adicionais para gerenciar moradores de apartamentos
     Route::post('apartments/{apartment}/residents', [ApartmentController::class, 'addResident']);

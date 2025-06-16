@@ -67,4 +67,57 @@ class ParkingSpotApiTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonFragment(['rented_to_apartment_id' => $renter->id]);
     }
+
+    public function test_reallocate_parking_spot_same_condominium(): void
+    {
+        if (config('database.default') === 'sqlite') {
+            $this->markTestSkipped('SQLite n\xC3\A3o suporta altera\xC3\A7\xC3\A3o de colunas');
+        }
+        $token = $this->authenticate();
+        $condo = Condominium::factory()->create();
+        $owner = Apartment::factory()->create(['condominium_id' => $condo->id]);
+        $firstRenter = Apartment::factory()->create(['condominium_id' => $condo->id]);
+        $secondRenter = Apartment::factory()->create(['condominium_id' => $condo->id]);
+        $spot = ParkingSpot::factory()->create([
+            'condominium_id' => $condo->id,
+            'apartment_id' => $owner->id,
+        ]);
+
+        $this->withHeader('Authorization', 'Bearer '.$token)
+            ->postJson('/api/parking-spots/'.$spot->id.'/rent', [
+                'rented_to_apartment_id' => $firstRenter->id,
+            ])
+            ->assertStatus(200)
+            ->assertJsonFragment(['rented_to_apartment_id' => $firstRenter->id]);
+
+        $this->withHeader('Authorization', 'Bearer '.$token)
+            ->postJson('/api/parking-spots/'.$spot->id.'/rent', [
+                'rented_to_apartment_id' => $secondRenter->id,
+            ])
+            ->assertStatus(200)
+            ->assertJsonFragment(['rented_to_apartment_id' => $secondRenter->id]);
+    }
+
+    public function test_fail_rent_to_apartment_from_other_condominium(): void
+    {
+        if (config('database.default') === 'sqlite') {
+            $this->markTestSkipped('SQLite n\xC3\A3o suporta altera\xC3\A7\xC3\A3o de colunas');
+        }
+        $token = $this->authenticate();
+        $condoA = Condominium::factory()->create();
+        $condoB = Condominium::factory()->create();
+        $owner = Apartment::factory()->create(['condominium_id' => $condoA->id]);
+        $spot = ParkingSpot::factory()->create([
+            'condominium_id' => $condoA->id,
+            'apartment_id' => $owner->id,
+        ]);
+        $foreignApartment = Apartment::factory()->create(['condominium_id' => $condoB->id]);
+
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->postJson('/api/parking-spots/'.$spot->id.'/rent', [
+                'rented_to_apartment_id' => $foreignApartment->id,
+            ]);
+
+        $response->assertStatus(422);
+    }
 }

@@ -6,5 +6,8 @@ export default {
   },
   moduleFileExtensions: ['js', 'vue'],
   testPathIgnorePatterns: ['/vendor/'],
-  transformIgnorePatterns: []
+  transformIgnorePatterns: [],
+  moduleNameMapper: {
+    '\\.(css|scss)$': 'identity-obj-proxy'
+  }
 };

@@ -22,6 +22,7 @@ class User extends Authenticatable implements JWTSubject
         'email',
         'password',
         'profile_id',
+        'condominium_id',
     ];
 
     /**
@@ -57,5 +58,10 @@ class User extends Authenticatable implements JWTSubject
     public function profile()
     {
         return $this->belongsTo(Profile::class);
+    }
+
+    public function condominium()
+    {
+        return $this->belongsTo(Condominium::class);
     }
 }

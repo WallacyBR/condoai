@@ -27,6 +27,7 @@ class UserController extends Controller
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6',
             'profile_id' => 'required|exists:profiles,id',
+            'condominium_id' => 'required|exists:condominiums,id',
         ]);
 
         $validated['password'] = bcrypt($validated['password']);
@@ -52,6 +53,7 @@ class UserController extends Controller
             'email' => ['email', Rule::unique('users')->ignore($user->id)],
             'password' => 'nullable|string|min:6',
             'profile_id' => 'exists:profiles,id',
+            'condominium_id' => 'exists:condominiums,id',
         ]);
 
         if (isset($validated['password'])) {

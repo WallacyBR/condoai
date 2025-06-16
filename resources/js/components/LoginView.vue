@@ -116,7 +116,12 @@ export default {
         if (response.ok) {
           console.log('Login bem-sucedido:', data);
           localStorage.setItem('token', data.authorization.token);
-          window.location.href = '/selecionar-condominio';
+          if (data.user && data.user.condominium_id) {
+            localStorage.setItem('selectedCondominium', data.user.condominium_id);
+            window.location.href = '/dashboard';
+          } else {
+            window.location.href = '/selecionar-condominio';
+          }
         } else {
           console.error('Erro ao fazer login:', data);
           error.value = data.message || 'Erro ao fazer login';

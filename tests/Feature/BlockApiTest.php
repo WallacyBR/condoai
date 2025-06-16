@@ -27,7 +27,10 @@ class BlockApiTest extends TestCase
     {
         $token = $this->authenticate();
         $condo = Condominium::factory()->create();
-        $tower = Tower::factory()->create(['condominium_id' => $condo->id]);
+        $tower = Tower::factory()->create([
+            'condominium_id' => $condo->id,
+            'active' => true,
+        ]);
         $data = Block::factory()->make([
             'condominium_id' => $condo->id,
             'tower_id' => $tower->id

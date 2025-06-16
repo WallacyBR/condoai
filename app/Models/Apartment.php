@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Scopes\CondominiumScope;
+use App\Models\ParkingSpot;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -71,5 +72,13 @@ class Apartment extends Model
     public function vehicles()
     {
         return $this->hasMany(Vehicle::class);
+    }
+
+    /**
+     * Relaciona as vagas de estacionamento deste apartamento.
+     */
+    public function parkingSpots()
+    {
+        return $this->hasMany(ParkingSpot::class);
     }
 }

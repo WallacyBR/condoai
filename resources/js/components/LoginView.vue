@@ -9,7 +9,7 @@
           Faça login em sua conta
         </p>
         <p class="mt-1 text-center text-xs text-gray-400">
-          Para teste: teste@teste.com / 123456
+          Para teste: teste@teste.com / teste
         </p>
       </div>
       <form class="mt-8 space-y-6" @submit.prevent="login">
@@ -98,6 +98,9 @@ export default {
       email: '',
       password: ''
     });
+    const form = ref({
+      remember: false
+    });
     const error = ref('');
     const loading = ref(false);
 
@@ -126,6 +129,7 @@ export default {
 
     return {
       credentials,
+      form,
       error,
       loading,
       login

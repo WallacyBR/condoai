@@ -54,8 +54,8 @@ class AuthService {
                 body: JSON.stringify(credentials)
             });
 
-            if (response && response.token) {
-                this.token = response.token;
+            if (response && response.authorization && response.authorization.token) {
+                this.token = response.authorization.token;
                 localStorage.setItem('token', this.token);
                 this.setupTokenRefresh();
                 return response;
@@ -72,8 +72,8 @@ class AuthService {
                 method: 'POST'
             });
 
-            if (response && response.token) {
-                this.token = response.token;
+            if (response && response.authorization && response.authorization.token) {
+                this.token = response.authorization.token;
                 localStorage.setItem('token', this.token);
                 this.setupTokenRefresh();
                 return true;

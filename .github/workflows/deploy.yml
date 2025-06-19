@@ -23,13 +23,17 @@ jobs:
             cd /var/www/condoai
             git config --global --add safe.directory /var/www/condoai
 
-            sudo chown -R www-data:www-data /var/www/condoai
+            # Corrige dono do repositório inteiro para evitar erros do git e chmod
+            sudo chown -R ubuntu:ubuntu /var/www/condoai
+
+            # Garante permissões corretas
             sudo find /var/www/condoai -type f -exec chmod 664 {} \;
             sudo find /var/www/condoai -type d -exec chmod 775 {} \;
 
             git pull origin master
 
-            sudo chown -R www-data:www-data storage bootstrap/cache
+            # Corrige storage e cache
+            sudo chown -R ubuntu:ubuntu storage bootstrap/cache
             sudo chmod -R 775 storage bootstrap/cache
 
             composer install --no-dev --optimize-autoloader

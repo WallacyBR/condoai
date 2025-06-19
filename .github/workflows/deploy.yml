@@ -32,9 +32,13 @@ jobs:
 
             git pull origin master
 
-            # Corrige storage e cache
-            sudo chown -R ubuntu:ubuntu storage bootstrap/cache
+            # Permissões adequadas para Laravel (NGINX/PHP-FPM usa www-data)
+            sudo chown -R www-data:www-data storage bootstrap/cache
             sudo chmod -R 775 storage bootstrap/cache
+
+            # Inclui logs e sessões explicitamente
+            sudo chown -R www-data:www-data storage/logs storage/framework/sessions
+            sudo chmod -R 775 storage/logs storage/framework/sessions
 
             composer install --no-dev --optimize-autoloader
             php artisan migrate --force

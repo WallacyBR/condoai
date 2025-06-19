@@ -4,12 +4,13 @@ namespace App\Models;
 
 use App\Models\Scopes\CondominiumScope;
 use App\Models\ParkingSpot;
+use App\Traits\SmartOrdering;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Apartment extends Model
 {
-    use HasFactory;
+    use HasFactory, SmartOrdering;
 
     protected static function booted()
     {

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ResidentClassification;
 use App\Models\Scopes\CondominiumScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,14 +18,25 @@ class Resident extends Model
 
     protected $fillable = [
         'name',
+        'rg',
+        'cpf',
         'phone',
+        'whatsapp',
         'email',
+        'billing_address_type',
+        'cep',
+        'address',
+        'neighborhood',
+        'city',
+        'state',
+        'classification',
         'active',
         'condominium_id',
     ];
 
     protected $casts = [
         'active' => 'boolean',
+        'classification' => ResidentClassification::class,
     ];
 
     public function condominium()
@@ -52,5 +64,31 @@ class Resident extends Model
     public function residingApartments()
     {
         return $this->apartments()->wherePivot('type', 'resident');
+    }
+
+    // Métodos auxiliares para verificar classificações
+    public function isProprietario(): bool
+    {
+        return $this->classification === ResidentClassification::PROPRIETARIO;
+    }
+
+    public function isMorador(): bool
+    {
+        return $this->classification === ResidentClassification::MORADOR;
+    }
+
+    public function isInquilino(): bool
+    {
+        return $this->classification === ResidentClassification::INQUILINO;
+    }
+
+    public function isProprietarioMorador(): bool
+    {
+        return $this->classification === ResidentClassification::PROPRIETARIO;
+    }
+
+    public function getClassificationLabel(): string
+    {
+        return $this->classification->label();
     }
 }

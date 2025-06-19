@@ -8,14 +8,14 @@
         <input v-model="newPet.photo" class="border rounded px-2" placeholder="URL da foto" />
         <select v-model="newPet.apartment_id" class="border rounded px-2">
           <option :value="null">Unidade</option>
-          <option v-for="a in apartments" :key="a.id" :value="a.id">{{ a.number }}</option>
+          <option v-for="a in apartments" :key="a.id" :value="a.id">{{ formatApartmentDescription(a) }}</option>
         </select>
         <button type="submit" class="px-3 py-1 bg-cyan-600 text-white rounded">Salvar</button>
       </form>
       <ul class="list-disc ml-5 text-cyan-100">
         <li v-for="p in pets" :key="p.id" class="space-x-2">
           <span>{{ p.name }} - {{ p.species }} - {{ p.breed }}</span>
-          <span>Unidade {{ p.apartment.number }}</span>
+          <span>{{ formatApartmentDescription(p.apartment) }}</span>
         </li>
       </ul>
     </div>
@@ -25,44 +25,69 @@
 <script>
 import { ref, onMounted } from 'vue';
 import AuthenticatedLayout from './layouts/AuthenticatedLayout.vue';
+import { formatApartmentDescription } from '../utils/formatters.js';
 
 export default {
   name: 'PetsView',
   components: { AuthenticatedLayout },
   setup() {
-    const token = localStorage.getItem('token');
-    const condo = localStorage.getItem('selectedCondominium');
-    const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
-
     const pets = ref([]);
     const apartments = ref([]);
-    const newPet = ref({ name: '', species: '', breed: '', photo: '', apartment_id: null });
+    const newPet = ref({
+      name: '',
+      species: '',
+      breed: '',
+      photo: '',
+      apartment_id: null
+    });
 
     const loadData = async () => {
-      const [aRes, pRes] = await Promise.all([
-        fetch(`/api/apartments?condominium_id=${condo}`, { headers }),
-        fetch('/api/pets', { headers })
-      ]);
-      apartments.value = aRes.ok ? await aRes.json() : [];
-      pets.value = pRes.ok ? await pRes.json() : [];
+      const token = localStorage.getItem('token');
+      const condo = localStorage.getItem('selectedCondominium');
+      const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+
+      try {
+        const respApts = await fetch(`/api/apartments?condominium_id=${condo}`, { headers });
+        if (respApts.ok) apartments.value = await respApts.json();
+
+        const respPets = await fetch(`/api/pets?condominium_id=${condo}`, { headers });
+        if (respPets.ok) pets.value = await respPets.json();
+      } catch (e) {
+        console.error('Erro ao carregar dados:', e);
+      }
     };
 
     const createPet = async () => {
-      if (!newPet.value.name || !newPet.value.species || !newPet.value.breed || !newPet.value.apartment_id) return;
-      const resp = await fetch('/api/pets', { method: 'POST', headers, body: JSON.stringify(newPet.value) });
-      if (resp.ok) {
-        pets.value.push(await resp.json());
-        newPet.value.name = '';
-        newPet.value.species = '';
-        newPet.value.breed = '';
-        newPet.value.photo = '';
-        newPet.value.apartment_id = null;
+      const token = localStorage.getItem('token');
+      const condo = localStorage.getItem('selectedCondominium');
+      const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+
+      try {
+        const resp = await fetch('/api/pets', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ ...newPet.value, condominium_id: condo })
+        });
+
+        if (resp.ok) {
+          const pet = await resp.json();
+          pets.value.push(pet);
+          newPet.value = { name: '', species: '', breed: '', photo: '', apartment_id: null };
+        }
+      } catch (e) {
+        console.error('Erro ao criar pet:', e);
       }
     };
 
     onMounted(loadData);
 
-    return { pets, apartments, newPet, createPet };
+    return {
+      pets,
+      apartments,
+      newPet,
+      createPet,
+      formatApartmentDescription
+    };
   }
 };
 </script>

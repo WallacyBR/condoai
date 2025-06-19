@@ -21,7 +21,7 @@ class BlockController extends Controller
             $query->where('tower_id', $request->tower_id);
         }
 
-        return $query->with(['tower', 'apartments'])->get();
+        return $query->with(['tower', 'apartments'])->orderByNameSmart()->get();
     }
 
     public function store(Request $request)

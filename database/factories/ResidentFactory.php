@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\ResidentClassification;
 use App\Models\Condominium;
 use App\Models\Resident;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -19,8 +20,39 @@ class ResidentFactory extends Factory
             'name' => $this->faker->name,
             'phone' => $this->faker->phoneNumber,
             'email' => $this->faker->unique()->safeEmail,
+            'classification' => $this->faker->randomElement(ResidentClassification::cases()),
             'active' => $this->faker->boolean(90),
             'condominium_id' => Condominium::factory(),
         ];
+    }
+
+    /**
+     * Indica que o residente é um proprietário
+     */
+    public function proprietario(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'classification' => ResidentClassification::PROPRIETARIO,
+        ]);
+    }
+
+    /**
+     * Indica que o residente é um morador
+     */
+    public function morador(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'classification' => ResidentClassification::MORADOR,
+        ]);
+    }
+
+    /**
+     * Indica que o residente é um inquilino
+     */
+    public function inquilino(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'classification' => ResidentClassification::INQUILINO,
+        ]);
     }
 }

@@ -25,7 +25,7 @@ class ApartmentController extends Controller
             $query->where('condominium_id', $request->condominium_id);
         }
 
-        return $query->with(['owner', 'tenant', 'residents', 'block', 'tower'])->get();
+        return $query->with(['owner', 'tenant', 'residents', 'block', 'tower'])->orderByFieldSmart('number')->get();
     }
 
     public function store(Request $request)
@@ -37,7 +37,21 @@ class ApartmentController extends Controller
                 'required',
                 'string',
                 'max:10',
-                Rule::unique('apartments')->where(fn ($q) => $q->where('condominium_id', $condoId)),
+                Rule::unique('apartments')->where(function ($query) use ($request, $condoId) {
+                    $query->where('condominium_id', $condoId);
+                    
+                    // Se um bloco foi especificado, verifica unicidade apenas dentro do bloco
+                    if ($request->block_id) {
+                        $query->where('block_id', $request->block_id);
+                    }
+                    
+                    // Se uma torre foi especificada (sem bloco), verifica unicidade apenas dentro da torre
+                    if ($request->tower_id && !$request->block_id) {
+                        $query->where('tower_id', $request->tower_id);
+                    }
+                    
+                    return $query;
+                }),
             ],
             'floor' => 'required|integer',
             'condominium_id' => [
@@ -63,17 +77,51 @@ class ApartmentController extends Controller
             'active' => 'boolean',
         ]);
 
-        $apartment = Apartment::create($validated);
+        try {
+            $apartment = Apartment::create($validated);
 
-        if (! empty($validated['owner_id'])) {
-            $apartment->residents()->attach($validated['owner_id'], ['type' => 'owner']);
+            if (! empty($validated['owner_id'])) {
+                $apartment->residents()->attach($validated['owner_id'], ['type' => 'owner']);
+            }
+
+            if (! empty($validated['tenant_id'])) {
+                $apartment->residents()->attach($validated['tenant_id'], ['type' => 'tenant']);
+            }
+
+            return $apartment->load(['owner', 'tenant', 'residents', 'block', 'tower']);
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Capturar erro de constraint violation
+            if ($e->getCode() == 23000 && strpos($e->getMessage(), 'apartments_condominium_id_number_unique') !== false) {
+                // Verificar se o número já existe no mesmo bloco/torre
+                $existingQuery = Apartment::where('condominium_id', $condoId)
+                    ->where('number', $validated['number']);
+                
+                if ($request->block_id) {
+                    $existingQuery->where('block_id', $request->block_id);
+                } elseif ($request->tower_id) {
+                    $existingQuery->where('tower_id', $request->tower_id);
+                }
+                
+                if ($existingQuery->exists()) {
+                    return response()->json([
+                        'message' => 'O número do apartamento já existe no bloco/torre selecionado.',
+                        'errors' => [
+                            'number' => ['O número do apartamento já existe no bloco/torre selecionado.']
+                        ]
+                    ], 422);
+                } else {
+                    return response()->json([
+                        'message' => 'O número do apartamento já existe no condomínio.',
+                        'errors' => [
+                            'number' => ['O número do apartamento já existe no condomínio.']
+                        ]
+                    ], 422);
+                }
+            }
+            
+            // Re-throw outras exceções
+            throw $e;
         }
-
-        if (! empty($validated['tenant_id'])) {
-            $apartment->residents()->attach($validated['tenant_id'], ['type' => 'tenant']);
-        }
-
-        return $apartment->load(['owner', 'tenant', 'residents', 'block', 'tower']);
     }
 
     public function show(Apartment $apartment)
@@ -89,7 +137,22 @@ class ApartmentController extends Controller
             'number' => [
                 'string',
                 'max:10',
-                Rule::unique('apartments')->where(fn ($q) => $q->where('condominium_id', $condoId)->where('id', '!=', $apartment->id)),
+                Rule::unique('apartments')->where(function ($query) use ($request, $condoId, $apartment) {
+                    $query->where('condominium_id', $condoId)
+                          ->where('id', '!=', $apartment->id);
+                    
+                    // Se um bloco foi especificado, verifica unicidade apenas dentro do bloco
+                    if ($request->block_id) {
+                        $query->where('block_id', $request->block_id);
+                    }
+                    
+                    // Se uma torre foi especificada (sem bloco), verifica unicidade apenas dentro da torre
+                    if ($request->tower_id && !$request->block_id) {
+                        $query->where('tower_id', $request->tower_id);
+                    }
+                    
+                    return $query;
+                }),
             ],
             'floor' => 'integer',
             'condominium_id' => [
@@ -132,9 +195,43 @@ class ApartmentController extends Controller
             }
         }
 
-        $apartment->update($validated);
-
-        return $apartment->load(['owner', 'tenant', 'residents', 'block', 'tower']);
+        try {
+            $apartment->update($validated);
+            return $apartment->load(['owner', 'tenant', 'residents', 'block', 'tower']);
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Capturar erro de constraint violation
+            if ($e->getCode() == 23000 && strpos($e->getMessage(), 'apartments_condominium_id_number_unique') !== false) {
+                // Verificar se o número já existe no mesmo bloco/torre
+                $existingQuery = Apartment::where('condominium_id', $condoId)
+                    ->where('number', $validated['number'])
+                    ->where('id', '!=', $apartment->id);
+                
+                if ($request->block_id) {
+                    $existingQuery->where('block_id', $request->block_id);
+                } elseif ($request->tower_id) {
+                    $existingQuery->where('tower_id', $request->tower_id);
+                }
+                
+                if ($existingQuery->exists()) {
+                    return response()->json([
+                        'message' => 'O número do apartamento já existe no bloco/torre selecionado.',
+                        'errors' => [
+                            'number' => ['O número do apartamento já existe no bloco/torre selecionado.']
+                        ]
+                    ], 422);
+                } else {
+                    return response()->json([
+                        'message' => 'O número do apartamento já existe no condomínio.',
+                        'errors' => [
+                            'number' => ['O número do apartamento já existe no condomínio.']
+                        ]
+                    ], 422);
+                }
+            }
+            
+            // Re-throw outras exceções
+            throw $e;
+        }
     }
 
     public function destroy(Apartment $apartment)

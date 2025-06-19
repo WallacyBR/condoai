@@ -20,7 +20,6 @@ return new class extends Migration
             $table->dropUnique(['block_id', 'number']);
             $table->foreignId('condominium_id')->after('id')->constrained('condominiums')->onDelete('cascade');
             $table->foreignId('tower_id')->nullable()->after('condominium_id')->constrained('towers')->onDelete('cascade');
-            $table->unique(['condominium_id', 'number']);
         });
     }
 
@@ -34,7 +33,6 @@ return new class extends Migration
         }
 
         Schema::table('apartments', function (Blueprint $table) {
-            $table->dropUnique(['condominium_id', 'number']);
             $table->dropForeign(['condominium_id']);
             $table->dropForeign(['tower_id']);
             $table->dropColumn(['condominium_id', 'tower_id']);

@@ -12,7 +12,7 @@
           Para teste: teste@teste.com / 123456
         </p>
       </div>
-      <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
+      <form class="mt-8 space-y-6" @submit.prevent="login">
         <div class="space-y-4">
           <div class="relative">
             <label for="email" class="text-sm font-medium text-cyan-300 mb-1 block">Email</label>
@@ -22,7 +22,7 @@
               type="email"
               autocomplete="email"
               required
-              v-model="form.email"
+              v-model="credentials.email"
               class="appearance-none rounded-2xl relative block w-full px-4 py-3 bg-gray-800 border-2 border-cyan-500/20 placeholder-gray-400 text-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all duration-300 ease-in-out hover:border-cyan-500/40 hover:shadow-[0_0_15px_rgba(6,182,212,0.3)]"
               placeholder="Seu endereço de email"
             />
@@ -35,7 +35,7 @@
               type="password"
               autocomplete="current-password"
               required
-              v-model="form.password"
+              v-model="credentials.password"
               class="appearance-none rounded-2xl relative block w-full px-4 py-3 bg-gray-800 border-2 border-cyan-500/20 placeholder-gray-400 text-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all duration-300 ease-in-out hover:border-cyan-500/40 hover:shadow-[0_0_15px_rgba(6,182,212,0.3)]"
               placeholder="Sua senha"
             />
@@ -87,84 +87,48 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import NeonButton from './NeonButton.vue';
+import auth from '../services/auth';
 
 export default {
   name: 'LoginView',
   components: { NeonButton },
   setup() {
     const router = useRouter();
-    const form = ref({
+    const credentials = ref({
       email: '',
-      password: '',
-      remember: false
+      password: ''
     });
-    
-    const loading = ref(false);
     const error = ref('');
+    const loading = ref(false);
 
-    const handleLogin = async () => {
-      console.log('Tentando fazer login com:', form.value);
+    const login = async () => {
       loading.value = true;
       error.value = '';
       
-      // Limpar qualquer seleção anterior de condomínio
-      localStorage.removeItem('selectedCondominium');
-      localStorage.removeItem('selectedCondominiumName');
-      
-      // MODO DE TESTE - remover em produção
-      if (form.value.email === 'teste@teste.com' && form.value.password === '123456') {
-        console.log('Login de teste bem-sucedido');
-        localStorage.setItem('token', 'test-token-123');
-        // Simular usuário sem condomínio para forçar seleção
-        router.push('/condominium-select');
-        loading.value = false;
-        return;
-      }
-      
       try {
-        const response = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(form.value)
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          console.log('Login bem-sucedido:', data);
-          localStorage.setItem('token', data.authorization.token);
-          
-          // FORÇAR SELEÇÃO DE CONDOMÍNIO - comentar as linhas abaixo para comportamento normal
-          // if (data.user && data.user.condominium_id) {
-          //   localStorage.setItem('selectedCondominium', data.user.condominium_id);
-          //   localStorage.setItem('selectedCondominiumName', data.user.condominium_name || 'Condomínio');
-          //   router.push('/dashboard');
-          // } else {
-          //   router.push('/condominium-select');
-          // }
-          
-          // SEMPRE redirecionar para seleção de condomínio
-          console.log('Redirecionando para seleção de condomínio...');
-          router.push('/condominium-select');
+        await auth.login(credentials.value);
+        
+        // Verifica se há uma rota salva para redirecionamento
+        const savedRoute = localStorage.getItem('redirectAfterLogin');
+        if (savedRoute) {
+          const route = JSON.parse(savedRoute);
+          localStorage.removeItem('redirectAfterLogin');
+          await router.push(route);
         } else {
-          console.error('Erro ao fazer login:', data);
-          error.value = data.message || 'Erro ao fazer login';
+          await router.push({ name: 'dashboard' });
         }
-      } catch (err) {
-        console.error('Erro de conexão:', err);
-        error.value = 'Erro de conexão - Tente: teste@teste.com / 123456';
+      } catch (e) {
+        error.value = e.message || 'Erro ao fazer login';
       } finally {
         loading.value = false;
       }
     };
 
     return {
-      form,
-      loading,
+      credentials,
       error,
-      handleLogin
+      loading,
+      login
     };
   }
 };

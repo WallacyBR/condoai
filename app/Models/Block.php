@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use App\Models\Scopes\CondominiumScope;
+use App\Traits\SmartOrdering;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Block extends Model
 {
-    use HasFactory;
+    use HasFactory, SmartOrdering;
 
     protected static function booted()
     {
@@ -25,6 +26,8 @@ class Block extends Model
     protected $casts = [
         'active' => 'boolean',
     ];
+
+
 
     public function condominium()
     {

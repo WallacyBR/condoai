@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Enums\ResidentClassification;
 use App\Http\Controllers\Controller;
 use App\Models\Condominium;
 use App\Models\Resident;
@@ -27,8 +28,9 @@ class ResidentController extends Controller
     public function create()
     {
         $condominiums = Condominium::pluck('name', 'id');
+        $classifications = ResidentClassification::options();
 
-        return view('residents.create', compact('condominiums'));
+        return view('residents.create', compact('condominiums', 'classifications'));
     }
 
     public function store(Request $request)
@@ -37,6 +39,7 @@ class ResidentController extends Controller
             'name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:20',
             'email' => 'required|email|unique:residents',
+            'classification' => ['required', Rule::in(ResidentClassification::cases())],
             'condominium_id' => [
                 'required',
                 Rule::exists('condominiums', 'id')->where(fn ($q) => $q->where('active', true)),
@@ -61,8 +64,9 @@ class ResidentController extends Controller
     public function edit(Resident $resident)
     {
         $condominiums = Condominium::pluck('name', 'id');
+        $classifications = ResidentClassification::options();
 
-        return view('residents.edit', compact('resident', 'condominiums'));
+        return view('residents.edit', compact('resident', 'condominiums', 'classifications'));
     }
 
     public function update(Request $request, Resident $resident)
@@ -71,6 +75,7 @@ class ResidentController extends Controller
             'name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:20',
             'email' => ['required', 'email', Rule::unique('residents')->ignore($resident->id)],
+            'classification' => ['required', Rule::in(ResidentClassification::cases())],
             'condominium_id' => [
                 'required',
                 Rule::exists('condominiums', 'id')->where(fn ($q) => $q->where('active', true)),

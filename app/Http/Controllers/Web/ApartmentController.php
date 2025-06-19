@@ -44,9 +44,7 @@ class ApartmentController extends Controller
                 'string',
                 'max:10',
                 Rule::unique('apartments')->where(function ($query) use ($block) {
-                    return $query->whereHas('block', function ($q) use ($block) {
-                        $q->where('condominium_id', $block->condominium_id);
-                    });
+                    return $query->where('block_id', $block->id);
                 }),
             ],
             'floor' => 'required|integer',
@@ -108,9 +106,8 @@ class ApartmentController extends Controller
                 'string',
                 'max:10',
                 Rule::unique('apartments')->where(function ($query) use ($block, $apartment) {
-                    return $query->whereHas('block', function ($q) use ($block) {
-                        $q->where('condominium_id', $block->condominium_id);
-                    })->where('id', '!=', $apartment->id);
+                    return $query->where('block_id', $block->id)
+                                ->where('id', '!=', $apartment->id);
                 }),
             ],
             'floor' => 'integer',

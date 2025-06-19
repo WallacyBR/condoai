@@ -35,7 +35,19 @@ const routes = [
   {
     path: '/units',
     name: 'units',
+    component: () => import('../components/UnitsStructureView.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/units-management',
+    name: 'units-management',
     component: () => import('../components/UnitsView.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/units/:id/edit',
+    name: 'edit-unit',
+    component: () => import('../pages/EditUnitPage.vue'),
     meta: { requiresAuth: true, requiresCondo: true }
   },
   {
@@ -45,9 +57,33 @@ const routes = [
     meta: { requiresAuth: true, requiresCondo: true }
   },
   {
+    path: '/residents/new',
+    name: 'new-resident',
+    component: () => import('../pages/ResidentFormPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/residents/:id/edit',
+    name: 'edit-resident',
+    component: () => import('../pages/ResidentFormPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/units-list',
+    name: 'units-list',
+    component: () => import('../components/UnitsListView.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
     path: '/parking-spots',
-    name: 'parking-spots',
+    name: 'parking-spots.index',
     component: () => import('../components/ParkingSpotsView.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/parking-spots/create',
+    name: 'parking-spots.create',
+    component: () => import('../components/ParkingSpotCreateView.vue'),
     meta: { requiresAuth: true, requiresCondo: true }
   },
   {
@@ -104,7 +140,13 @@ router.beforeEach((to, from, next) => {
   const isAuthenticated = !!localStorage.getItem('token');
   const hasCondo = !!localStorage.getItem('selectedCondominium');
 
-  console.log('Navigation Guard:', { to: to.path, isAuthenticated, hasCondo });
+  console.log('=== Navigation Guard Debug ===');
+  console.log('De:', from.path);
+  console.log('Para:', to.path);
+  console.log('Autenticado:', isAuthenticated);
+  console.log('Tem condomínio:', hasCondo);
+  console.log('Meta da rota:', to.meta);
+  console.log('=============================');
 
   // Se não está autenticado e a rota requer autenticação
   if (to.meta.requiresAuth && !isAuthenticated) {

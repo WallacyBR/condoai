@@ -18,7 +18,7 @@ class BlockController extends Controller
             $query->where('tower_id', $request->tower_id);
         }
 
-        $blocks = $query->orderBy('name')->paginate(10);
+        $blocks = $query->orderByNameSmart()->paginate(10);
         $towers = Tower::whereHas('condominium', function ($query) {
             $query->where('active', true);
         })->pluck('name', 'id');

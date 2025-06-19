@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Apartment;
 use App\Models\ParkingSpot;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -46,6 +47,36 @@ class ParkingSpotController extends Controller
         $spot = ParkingSpot::create($validated);
 
         return response()->json($spot->load(['apartment', 'rentedToApartment']), 201);
+    }
+
+    public function batchStore(Request $request)
+    {
+        $validated = $request->validate([
+            'condominium_id' => 'required|exists:condominiums,id',
+            'spots_per_apartment' => 'required|integer|min:1',
+        ]);
+
+        $apartments = Apartment::where('condominium_id', $validated['condominium_id'])->get();
+        $spots = [];
+
+        foreach ($apartments as $apartment) {
+            for ($i = 1; $i <= $validated['spots_per_apartment']; $i++) {
+                $identifier = "{$apartment->number}-V{$i}";
+
+                // Check for existing spot to avoid duplicates
+                if (ParkingSpot::where('identifier', $identifier)->where('condominium_id', $validated['condominium_id'])->exists()) {
+                    continue;
+                }
+
+                $spots[] = ParkingSpot::create([
+                    'identifier' => $identifier,
+                    'condominium_id' => $validated['condominium_id'],
+                    'apartment_id' => $apartment->id,
+                ]);
+            }
+        }
+
+        return response()->json($spots, 201);
     }
 
     public function show(ParkingSpot $parkingSpot)

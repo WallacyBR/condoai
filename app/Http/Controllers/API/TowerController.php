@@ -17,7 +17,7 @@ class TowerController extends Controller
             $query->where('condominium_id', $request->condominium_id);
         }
 
-        return $query->with(['blocks', 'apartments'])->get();
+        return $query->with(['blocks', 'apartments'])->orderByNameSmart()->get();
     }
 
     public function store(Request $request)

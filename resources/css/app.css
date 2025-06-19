@@ -161,3 +161,6 @@
     @apply bg-background text-foreground font-sans;
   }
 }
+
+/* Importar estilos do glass scrollbar */
+@import './glass-scrollbar.css';

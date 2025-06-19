@@ -41,6 +41,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('common-areas/{common_area}/bookings', [CommonAreaController::class, 'bookings']);
     Route::post('common-areas/{common_area}/bookings', [CommonAreaController::class, 'book']);
 
+    Route::post('parking-spots/batch', [ParkingSpotController::class, 'batchStore']);
     Route::post('parking-spots/{parking_spot}/rent', [ParkingSpotController::class, 'rent']);
     Route::post('packages/{package}/withdraw', [\App\Http\Controllers\API\PackageController::class, 'withdraw']);
 

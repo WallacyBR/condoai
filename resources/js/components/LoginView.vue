@@ -8,6 +8,9 @@
         <p class="mt-2 text-center text-sm text-cyan-300">
           Faça login em sua conta
         </p>
+        <p class="mt-1 text-center text-xs text-gray-400">
+          Para teste: teste@teste.com / 123456
+        </p>
       </div>
       <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
         <div class="space-y-4">
@@ -82,12 +85,14 @@
 
 <script>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import NeonButton from './NeonButton.vue';
 
 export default {
   name: 'LoginView',
   components: { NeonButton },
   setup() {
+    const router = useRouter();
     const form = ref({
       email: '',
       password: '',
@@ -101,6 +106,20 @@ export default {
       console.log('Tentando fazer login com:', form.value);
       loading.value = true;
       error.value = '';
+      
+      // Limpar qualquer seleção anterior de condomínio
+      localStorage.removeItem('selectedCondominium');
+      localStorage.removeItem('selectedCondominiumName');
+      
+      // MODO DE TESTE - remover em produção
+      if (form.value.email === 'teste@teste.com' && form.value.password === '123456') {
+        console.log('Login de teste bem-sucedido');
+        localStorage.setItem('token', 'test-token-123');
+        // Simular usuário sem condomínio para forçar seleção
+        router.push('/condominium-select');
+        loading.value = false;
+        return;
+      }
       
       try {
         const response = await fetch('/api/auth/login', {
@@ -116,19 +135,26 @@ export default {
         if (response.ok) {
           console.log('Login bem-sucedido:', data);
           localStorage.setItem('token', data.authorization.token);
-          if (data.user && data.user.condominium_id) {
-            localStorage.setItem('selectedCondominium', data.user.condominium_id);
-            window.location.href = '/dashboard';
-          } else {
-            window.location.href = '/selecionar-condominio';
-          }
+          
+          // FORÇAR SELEÇÃO DE CONDOMÍNIO - comentar as linhas abaixo para comportamento normal
+          // if (data.user && data.user.condominium_id) {
+          //   localStorage.setItem('selectedCondominium', data.user.condominium_id);
+          //   localStorage.setItem('selectedCondominiumName', data.user.condominium_name || 'Condomínio');
+          //   router.push('/dashboard');
+          // } else {
+          //   router.push('/condominium-select');
+          // }
+          
+          // SEMPRE redirecionar para seleção de condomínio
+          console.log('Redirecionando para seleção de condomínio...');
+          router.push('/condominium-select');
         } else {
           console.error('Erro ao fazer login:', data);
           error.value = data.message || 'Erro ao fazer login';
         }
       } catch (err) {
         console.error('Erro de conexão:', err);
-        error.value = 'Erro de conexão';
+        error.value = 'Erro de conexão - Tente: teste@teste.com / 123456';
       } finally {
         loading.value = false;
       }

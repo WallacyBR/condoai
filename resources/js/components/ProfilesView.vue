@@ -25,7 +25,7 @@ import { onMounted, ref } from 'vue';
 import AuthenticatedLayout from './layouts/AuthenticatedLayout.vue';
 import NeonButton from './NeonButton.vue';
 import ProfileModuleManager from './ProfileModuleManager.vue';
-import axios from 'axios';
+import api from '../utils/api';
 
 const profiles = ref([]);
 const modules = ref([]);
@@ -34,8 +34,8 @@ const loading = ref(false);
 const fetchProfiles = async () => {
   loading.value = true;
   const [pRes, mRes] = await Promise.all([
-    axios.get('/api/profiles', authHeader()),
-    axios.get('/api/modules', authHeader()),
+    api.get('/profiles'),
+    api.get('/modules'),
   ]);
   profiles.value = pRes.data.map(p => ({ ...p, modulesIds: p.modules.map(m => m.id) }));
   modules.value = mRes.data;
@@ -43,10 +43,8 @@ const fetchProfiles = async () => {
 };
 
 const updateModules = async (profile) => {
-  await axios.put(`/api/profiles/${profile.id}`, { modules: profile.modulesIds }, authHeader());
+  await api.put(`/profiles/${profile.id}`, { modules: profile.modulesIds });
 };
-
-const authHeader = () => ({ headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
 
 onMounted(fetchProfiles);
 </script>

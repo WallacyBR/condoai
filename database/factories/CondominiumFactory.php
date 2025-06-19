@@ -26,7 +26,7 @@ class CondominiumFactory extends Factory
             'email' => $this->faker->unique()->safeEmail,
             'responsible' => $this->faker->name,
             'active' => true,
-            'domain' => $this->faker->domainName,
+            'domain' => $this->faker->unique()->domainName,
 
         ];
     }

@@ -21,7 +21,7 @@ class BlockController extends Controller
             $query->where('tower_id', $request->tower_id);
         }
 
-        return $query->with(['apartments'])->get();
+        return $query->with(['tower', 'apartments'])->get();
     }
 
     public function store(Request $request)
@@ -32,7 +32,8 @@ class BlockController extends Controller
                 'string',
                 'max:255',
                 Rule::unique('blocks')->where(function ($query) use ($request) {
-                    return $query->where('condominium_id', $request->condominium_id);
+                    return $query->where('condominium_id', $request->condominium_id)
+                        ->where('tower_id', $request->tower_id);
                 }),
             ],
             'condominium_id' => [
@@ -50,7 +51,8 @@ class BlockController extends Controller
             'active' => 'boolean',
         ]);
 
-        return Block::create($validated);
+        $block = Block::create($validated);
+        return $block->load('tower');
     }
 
     public function show(Block $block)
@@ -64,9 +66,9 @@ class BlockController extends Controller
             'name' => [
                 'string',
                 'max:255',
-                Rule::unique('blocks')->where(function ($query) use ($request, $block) {
-                    return $query->where('condominium_id', $request->condominium_id ?? $block->condominium_id)
-                        ->where('id', '!=', $block->id);
+                Rule::unique('blocks')->ignore($block->id)->where(function ($query) use ($request, $block) {
+                    return $query->where('condominium_id', $request->input('condominium_id', $block->condominium_id))
+                        ->where('tower_id', $request->input('tower_id', $block->tower_id));
                 }),
             ],
             'condominium_id' => [

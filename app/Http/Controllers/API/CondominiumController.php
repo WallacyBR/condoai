@@ -35,7 +35,7 @@ class CondominiumController extends Controller
 
     public function show(Condominium $condominium)
     {
-        return $condominium->load('residents');
+        return $condominium->loadCount(['residents', 'apartments', 'parkingSpots']);
     }
 
     public function update(Request $request, Condominium $condominium)
@@ -64,5 +64,11 @@ class CondominiumController extends Controller
         $condominium->delete();
 
         return response()->json(null, 204);
+    }
+
+    public function stats(Condominium $condominium)
+    {
+        $blocks = $condominium->blocks()->withCount('apartments')->get();
+        return response()->json($blocks);
     }
 }

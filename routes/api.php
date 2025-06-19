@@ -23,6 +23,7 @@ Route::controller(AuthController::class)->group(function () {
 });
 
 Route::middleware('auth:api')->group(function () {
+    Route::get('condominiums/{condominium}/stats', [CondominiumController::class, 'stats']);
     Route::apiResource('condominiums', CondominiumController::class);
     Route::apiResource('residents', ResidentController::class);
     Route::apiResource('towers', TowerController::class);

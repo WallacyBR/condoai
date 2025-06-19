@@ -53,6 +53,11 @@ class Condominium extends Model
         return $this->hasManyThrough(Apartment::class, Block::class);
     }
 
+    public function parkingSpots()
+    {
+        return $this->hasMany(ParkingSpot::class);
+    }
+
     public function identifierExists($type, $identifier)
     {
         switch ($type) {

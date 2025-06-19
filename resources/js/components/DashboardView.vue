@@ -1,61 +1,87 @@
 <template>
   <AuthenticatedLayout page-title="Dashboard">
-    <p v-if="selectedCondoName" class="text-cyan-400 mb-4">Condomínio atual: {{ selectedCondoName }}</p>
+    <div v-if="selectedCondoName" class="flex items-center gap-2 mb-6 text-sm">
+      <svg class="h-4 w-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+      </svg>
+      <span class="text-cyan-400/80">{{ selectedCondoName }}</span>
+      <button @click="changeCondominium" class="ml-2 px-2 py-1 text-xs bg-cyan-600/20 text-cyan-300 rounded hover:bg-cyan-600/40 transition-colors">
+        Trocar
+      </button>
+    </div>
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <div class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl shadow-xl p-8 border-2 border-cyan-500/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-        <h3 class="text-lg font-medium text-cyan-300">Total de Condomínios</h3>
-        <p class="mt-2 text-4xl font-bold text-cyan-400 drop-shadow">{{ totalCondominiums }}</p>
+        <h3 class="text-lg font-medium text-cyan-300">Total de Unidades</h3>
+        <p class="mt-2 text-4xl font-bold text-cyan-400 drop-shadow">{{ condoStats.apartments_count }}</p>
       </div>
       <div class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl shadow-xl p-8 border-2 border-green-500/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-        <h3 class="text-lg font-medium text-green-300">Condomínios Ativos</h3>
-        <p class="mt-2 text-4xl font-bold text-green-400 drop-shadow">{{ activeCondominiums }}</p>
+        <h3 class="text-lg font-medium text-green-300">Total de Moradores</h3>
+        <p class="mt-2 text-4xl font-bold text-green-400 drop-shadow">{{ condoStats.residents_count }}</p>
       </div>
       <div class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl shadow-xl p-8 border-2 border-blue-500/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-        <h3 class="text-lg font-medium text-blue-300">Última Atualização</h3>
-        <p class="mt-2 text-4xl font-bold text-blue-400 drop-shadow">{{ lastUpdate }}</p>
+        <h3 class="text-lg font-medium text-blue-300">Vagas de Garagem</h3>
+        <p class="mt-2 text-4xl font-bold text-blue-400 drop-shadow">{{ condoStats.parking_spots_count }}</p>
       </div>
-    </div>
-
-    <!-- Condominium List -->
-    <div class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl shadow-xl border-2 border-cyan-500/20">
-      <div class="px-8 py-6 border-b border-cyan-500/20">
-        <h2 class="text-xl font-semibold text-cyan-300">Meus Condomínios</h2>
+      <div class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl shadow-xl p-8 border-2 border-red-500/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+        <h3 class="text-lg font-medium text-red-300">Chamados Abertos</h3>
+        <p class="mt-2 text-4xl font-bold text-red-400 drop-shadow">N/A</p>
       </div>
-      <CondominiumList @update-stats="updateStats" />
     </div>
   </AuthenticatedLayout>
 </template>
 
 <script>
 import AuthenticatedLayout from './layouts/AuthenticatedLayout.vue';
-import CondominiumList from './CondominiumList.vue';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import api from '../utils/api';
 
 export default {
   name: 'DashboardView',
   components: { 
     AuthenticatedLayout,
-    CondominiumList 
   },
   setup() {
-    const totalCondominiums = ref(0);
-    const activeCondominiums = ref(0);
-    const lastUpdate = ref('');
+    const router = useRouter();
     const selectedCondoName = ref(localStorage.getItem('selectedCondominiumName'));
+    const condoStats = ref({
+      apartments_count: 0,
+      residents_count: 0,
+      parking_spots_count: 0,
+    });
 
-    const updateStats = (stats) => {
-      totalCondominiums.value = stats.total;
-      activeCondominiums.value = stats.active;
-      lastUpdate.value = new Date().toLocaleDateString('pt-BR');
+    const fetchCondoStats = async () => {
+      const condoId = localStorage.getItem('selectedCondominium');
+      if (condoId) {
+        try {
+          const response = await api.get(`/condominiums/${condoId}`);
+          condoStats.value = response.data;
+        } catch (error) {
+          console.error('Erro ao buscar estatísticas do condomínio:', error);
+        }
+      }
+    };
+
+    onMounted(fetchCondoStats);
+
+    const updateSelectedCondo = () => {
+      selectedCondoName.value = localStorage.getItem('selectedCondominiumName');
+      fetchCondoStats();
+    };
+
+    window.addEventListener('condominiumSelected', updateSelectedCondo);
+
+    const changeCondominium = () => {
+      localStorage.removeItem('selectedCondominium');
+      localStorage.removeItem('selectedCondominiumName');
+      router.push('/condominium-select');
     };
 
     return { 
-      totalCondominiums, 
-      activeCondominiums, 
-      lastUpdate,
       selectedCondoName,
-      updateStats
+      condoStats,
+      changeCondominium
     };
   }
 };

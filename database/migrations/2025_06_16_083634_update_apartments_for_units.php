@@ -16,12 +16,10 @@ return new class extends Migration
         }
 
         Schema::table('apartments', function (Blueprint $table) {
+            $table->dropForeign(['block_id']);
             $table->dropUnique(['block_id', 'number']);
             $table->foreignId('condominium_id')->after('id')->constrained('condominiums')->onDelete('cascade');
             $table->foreignId('tower_id')->nullable()->after('condominium_id')->constrained('towers')->onDelete('cascade');
-            $table->dropForeign(['block_id']);
-            $table->dropColumn('block_id');
-            $table->foreignId('block_id')->nullable()->constrained('blocks')->onDelete('cascade');
             $table->unique(['condominium_id', 'number']);
         });
     }
@@ -39,9 +37,7 @@ return new class extends Migration
             $table->dropUnique(['condominium_id', 'number']);
             $table->dropForeign(['condominium_id']);
             $table->dropForeign(['tower_id']);
-            $table->dropForeign(['block_id']);
-            $table->dropColumn(['condominium_id', 'tower_id', 'block_id']);
-            $table->foreignId('block_id')->constrained('blocks')->onDelete('cascade');
+            $table->dropColumn(['condominium_id', 'tower_id']);
             $table->unique(['block_id', 'number']);
         });
     }

@@ -47,4 +47,16 @@ class ResidentApiTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonFragment(['name' => 'Alterado']);
     }
+
+    public function test_authenticated_user_can_delete_resident(): void
+    {
+        $token = $this->authenticate();
+        $resident = Resident::factory()->create();
+
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->deleteJson('/api/residents/'.$resident->id);
+
+        $response->assertStatus(204);
+        $this->assertSoftDeleted('residents', ['id' => $resident->id]);
+    }
 }

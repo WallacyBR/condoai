@@ -576,9 +576,22 @@ export default {
       router.push(`/residents/${resident.id}/edit`);
     };
 
-    const deleteResident = (resident) => {
-      // Implementar lógica para excluir morador
-      console.log('Excluir morador:', resident);
+    const deleteResident = async (resident) => {
+      if (!confirm(`Excluir ${resident.name}?`)) return;
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`/api/residents/${resident.id}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.ok) {
+          residents.value = residents.value.filter(r => r.id !== resident.id);
+        } else {
+          console.error('Erro ao excluir morador');
+        }
+      } catch (e) {
+        console.error('Erro ao excluir morador:', e);
+      }
     };
 
     // Carregar dados ao montar o componente

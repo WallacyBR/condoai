@@ -1,5 +1,8 @@
-import PetsView from '../js/components/PetsView.vue';
+import fs from 'fs';
+
+const fileUrl = new URL('../js/components/PetsView.vue', import.meta.url);
 
 test('componente existe', () => {
-  expect(PetsView).toBeTruthy();
+  const content = fs.readFileSync(fileUrl, 'utf8');
+  expect(content).toMatch('<template>');
 });

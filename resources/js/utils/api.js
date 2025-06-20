@@ -27,11 +27,14 @@ export default api;
 
 export async function handleApiError(error) {
     if (error.status === 401 || error?.response?.status === 401) {
+        console.log('Erro 401 detectado, tentando refresh do token...');
         const refreshed = await auth.refreshToken();
         if (refreshed) {
+            console.log('Token refreshado, retentando requisição...');
             return true;
         }
         
+        console.log('Falha no refresh, fazendo logout...');
         await auth.logout();
         return false;
     }
@@ -61,9 +64,36 @@ export async function apiRequest(url, options = {}) {
 
         if (!response.ok) {
             if (response.status === 401) {
+                console.log('Erro 401 na requisição, tentando refresh...');
                 const refreshed = await handleApiError({ status: 401 });
                 if (refreshed) {
-                    return apiRequest(url, options);
+                    // Retentar a requisição apenas uma vez após refresh
+                    console.log('Retentando requisição após refresh...');
+                    const newToken = auth.getToken();
+                    if (newToken) {
+                        defaultHeaders['Authorization'] = `Bearer ${newToken}`;
+                    }
+                    
+                    const retryResponse = await fetch(url, {
+                        ...options,
+                        headers: {
+                            ...defaultHeaders,
+                            ...(options.headers || {})
+                        }
+                    });
+                    
+                    if (!retryResponse.ok) {
+                        let errorMessage;
+                        try {
+                            const errorData = await retryResponse.json();
+                            errorMessage = errorData.message || 'Erro na requisição';
+                        } catch {
+                            errorMessage = 'Erro na requisição';
+                        }
+                        throw new Error(errorMessage);
+                    }
+                    
+                    return await retryResponse.json();
                 }
                 return null;
             }

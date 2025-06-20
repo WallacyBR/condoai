@@ -6,6 +6,7 @@ class AuthService {
         this.token = localStorage.getItem('token');
         this.refreshTimeout = null;
         this.tokenExpirationTime = null;
+        this.isRefreshing = false; // Flag para evitar múltiplos refreshes simultâneos
         
         if (this.token) {
             this.setupTokenRefresh();
@@ -21,6 +22,7 @@ class AuthService {
             }).join(''));
             return JSON.parse(jsonPayload);
         } catch (e) {
+            console.error('Erro ao decodificar token:', e);
             return null;
         }
     }
@@ -32,17 +34,30 @@ class AuthService {
 
         const decoded = this.decodeToken(this.token);
         if (!decoded || !decoded.exp) {
+            console.warn('Token inválido ou sem expiração, removendo...');
+            this.logout();
             return;
         }
 
         this.tokenExpirationTime = decoded.exp * 1000;
         const now = Date.now();
         const timeUntilExpiry = this.tokenExpirationTime - now;
+        
+        // Se o token já expirou, fazer refresh imediatamente
+        if (timeUntilExpiry <= 0) {
+            console.log('Token expirado, fazendo refresh imediato');
+            this.refreshToken();
+            return;
+        }
+        
+        // Refresh 5 minutos antes da expiração
         const refreshTime = timeUntilExpiry - (5 * 60 * 1000);
         
         if (refreshTime > 0) {
+            console.log(`Agendando refresh do token em ${Math.round(refreshTime / 1000 / 60)} minutos`);
             this.refreshTimeout = setTimeout(() => this.refreshToken(), refreshTime);
         } else {
+            console.log('Token expira em menos de 5 minutos, fazendo refresh imediato');
             this.refreshToken();
         }
     }
@@ -67,6 +82,15 @@ class AuthService {
     }
 
     async refreshToken() {
+        // Evitar múltiplos refreshes simultâneos
+        if (this.isRefreshing) {
+            console.log('Refresh já em andamento, aguardando...');
+            return false;
+        }
+
+        this.isRefreshing = true;
+        console.log('Iniciando refresh do token...');
+
         try {
             const response = await apiRequest('/api/auth/refresh', {
                 method: 'POST'
@@ -76,28 +100,35 @@ class AuthService {
                 this.token = response.authorization.token;
                 localStorage.setItem('token', this.token);
                 this.setupTokenRefresh();
+                console.log('Token refreshado com sucesso');
                 return true;
             }
+            console.warn('Resposta inválida no refresh do token');
             return false;
         } catch (error) {
+            console.error('Erro no refresh do token:', error);
             this.logout();
             return false;
+        } finally {
+            this.isRefreshing = false;
         }
     }
 
     async logout() {
+        console.log('Fazendo logout...');
         try {
             await apiRequest('/api/auth/logout', {
                 method: 'POST'
             });
         } catch (error) {
-            // Ignora erros no logout
+            console.error('Erro no logout:', error);
         } finally {
             if (this.refreshTimeout) {
                 clearTimeout(this.refreshTimeout);
             }
             this.token = null;
             this.tokenExpirationTime = null;
+            this.isRefreshing = false;
             localStorage.removeItem('token');
             router.push({ name: 'login' });
         }

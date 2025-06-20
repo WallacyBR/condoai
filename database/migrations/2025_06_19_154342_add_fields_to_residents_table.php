@@ -16,8 +16,9 @@ return new class extends Migration
             $table->string('rg')->nullable()->after('name');
             $table->string('cpf')->nullable()->after('rg');
             
-            // Contato
-            $table->string('whatsapp')->nullable()->after('phone');
+            // Contato - usar cell_phone se existir, senão phone
+            $afterPhoneColumn = Schema::hasColumn('residents', 'cell_phone') ? 'cell_phone' : 'phone';
+            $table->string('whatsapp')->nullable()->after($afterPhoneColumn);
             
             // Endereço para boletos
             $table->enum('billing_address_type', ['condominium', 'custom'])->default('condominium')->after('whatsapp');

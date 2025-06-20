@@ -120,7 +120,7 @@ class CustomCondominiumResidentsSeeder extends Seeder
         $owner1 = Resident::create([
             'name' => 'João Proprietário',
             'email' => 'joao@completo.com',
-            'phone' => '(11) 90000-0001',
+            'cell_phone' => '(11) 90000-0001',
             'classification' => ResidentClassification::PROPRIETARIO,
             'active' => true,
             'condominium_id' => $condo1->id,
@@ -128,7 +128,7 @@ class CustomCondominiumResidentsSeeder extends Seeder
         $tenant1 = Resident::create([
             'name' => 'Maria Inquilina',
             'email' => 'maria@completo.com',
-            'phone' => '(11) 90000-0002',
+            'cell_phone' => '(11) 90000-0002',
             'classification' => ResidentClassification::INQUILINO,
             'active' => true,
             'condominium_id' => $condo1->id,
@@ -136,7 +136,7 @@ class CustomCondominiumResidentsSeeder extends Seeder
         $resident1 = Resident::create([
             'name' => 'Carlos Morador',
             'email' => 'carlos@completo.com',
-            'phone' => '(11) 90000-0003',
+            'cell_phone' => '(11) 90000-0003',
             'classification' => ResidentClassification::MORADOR,
             'active' => true,
             'condominium_id' => $condo1->id,
@@ -150,7 +150,7 @@ class CustomCondominiumResidentsSeeder extends Seeder
         $owner2 = Resident::create([
             'name' => 'Ana Proprietária',
             'email' => 'ana@simples.com',
-            'phone' => '(21) 90000-0004',
+            'cell_phone' => '(21) 90000-0004',
             'classification' => ResidentClassification::PROPRIETARIO,
             'active' => true,
             'condominium_id' => $condo2->id,
@@ -158,7 +158,7 @@ class CustomCondominiumResidentsSeeder extends Seeder
         $tenant2 = Resident::create([
             'name' => 'Pedro Inquilino',
             'email' => 'pedro@simples.com',
-            'phone' => '(21) 90000-0005',
+            'cell_phone' => '(21) 90000-0005',
             'classification' => ResidentClassification::INQUILINO,
             'active' => true,
             'condominium_id' => $condo2->id,
@@ -166,7 +166,7 @@ class CustomCondominiumResidentsSeeder extends Seeder
         $resident2 = Resident::create([
             'name' => 'Lucia Moradora',
             'email' => 'lucia@simples.com',
-            'phone' => '(21) 90000-0006',
+            'cell_phone' => '(21) 90000-0006',
             'classification' => ResidentClassification::MORADOR,
             'active' => true,
             'condominium_id' => $condo2->id,

@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\ResidentClassification;
+use App\Enums\PersonType;
 use App\Models\Condominium;
 use App\Models\Resident;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -20,8 +21,16 @@ class ResidentFactory extends Factory
             'name' => $this->faker->name,
             'rg' => $this->faker->numerify('#########'),
             'cpf' => $this->faker->numerify('###########'),
-            'phone' => $this->faker->phoneNumber,
+            'cell_phone' => $this->faker->phoneNumber,
+            'commercial_phone' => $this->faker->phoneNumber,
             'whatsapp' => $this->faker->phoneNumber,
+            'photo' => null,
+            'person_type' => PersonType::FISICA,
+            'notes' => $this->faker->sentence,
+            'is_porter' => false,
+            'is_janitor' => false,
+            'is_cleaning' => false,
+            'apartment_id' => null,
             'billing_address_type' => 'condominium',
             'cep' => $this->faker->postcode,
             'address' => $this->faker->streetAddress,

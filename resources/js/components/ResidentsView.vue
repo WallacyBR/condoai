@@ -242,7 +242,7 @@
               </svg>
               <span class="text-sm font-medium text-green-300">Contato</span>
             </div>
-            <p class="text-white">{{ resident.phone }}</p>
+            <p class="text-white">{{ resident.cell_phone }}</p>
           </div>
 
           <!-- Ações -->
@@ -415,7 +415,7 @@ export default {
               id: 1,
               name: 'João Silva',
               email: 'joao@email.com',
-              phone: '(11) 99999-9999',
+              cell_phone: '(11) 99999-9999',
               classification: 'proprietario',
               active: true,
               condominium_id: selectedCondominiumId.value || 1,
@@ -425,7 +425,7 @@ export default {
               id: 2,
               name: 'Maria Santos',
               email: 'maria@email.com',
-              phone: '(11) 88888-8888',
+              cell_phone: '(11) 88888-8888',
               classification: 'morador',
               active: true,
               condominium_id: selectedCondominiumId.value || 1,
@@ -435,7 +435,7 @@ export default {
               id: 3,
               name: 'Pedro Costa',
               email: 'pedro@email.com',
-              phone: '(11) 77777-7777',
+              cell_phone: '(11) 77777-7777',
               classification: 'inquilino',
               active: false,
               condominium_id: selectedCondominiumId.value || 1,
@@ -453,7 +453,7 @@ export default {
             id: 1,
             name: 'João Silva',
             email: 'joao@email.com',
-            phone: '(11) 99999-9999',
+            cell_phone: '(11) 99999-9999',
             classification: 'proprietario',
             active: true,
             condominium_id: selectedCondominiumId.value || 1,
@@ -463,7 +463,7 @@ export default {
             id: 2,
             name: 'Maria Santos',
             email: 'maria@email.com',
-            phone: '(11) 88888-8888',
+            cell_phone: '(11) 88888-8888',
             classification: 'morador',
             active: true,
             condominium_id: selectedCondominiumId.value || 1,
@@ -473,7 +473,7 @@ export default {
             id: 3,
             name: 'Pedro Costa',
             email: 'pedro@email.com',
-            phone: '(11) 77777-7777',
+            cell_phone: '(11) 77777-7777',
             classification: 'inquilino',
             active: false,
             condominium_id: selectedCondominiumId.value || 1,

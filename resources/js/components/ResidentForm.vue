@@ -37,19 +37,127 @@
         <p v-if="errors.email" class="mt-1 text-sm text-red-400">{{ errors.email }}</p>
       </div>
 
-      <!-- Telefone -->
+
+      <!-- Tipo de Pessoa -->
       <div>
-        <label for="phone" class="block text-sm font-medium text-gray-300 mb-2">
-          Telefone
+        <label for="person_type" class="block text-sm font-medium text-gray-300 mb-2">
+          Tipo de Pessoa *
+        </label>
+        <select
+          id="person_type"
+          v-model="form.person_type"
+          required
+          class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+        >
+          <option value="fisica">Física</option>
+          <option value="juridica">Jurídica</option>
+        </select>
+        <p v-if="errors.person_type" class="mt-1 text-sm text-red-400">{{ errors.person_type }}</p>
+      </div>
+
+      <!-- CPF -->
+      <div>
+        <label for="cpf" class="block text-sm font-medium text-gray-300 mb-2">
+          CPF
         </label>
         <input
-          id="phone"
-          v-model="form.phone"
+          id="cpf"
+          v-model="form.cpf"
+          type="text"
+          class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+          placeholder="000.000.000-00"
+        />
+        <p v-if="errors.cpf" class="mt-1 text-sm text-red-400">{{ errors.cpf }}</p>
+      </div>
+
+      <!-- Foto -->
+      <div>
+        <label for="photo" class="block text-sm font-medium text-gray-300 mb-2">Foto</label>
+        <input id="photo" type="file" @change="handlePhoto" class="w-full text-gray-300" />
+        <p v-if="errors.photo" class="mt-1 text-sm text-red-400">{{ errors.photo }}</p>
+      </div>
+
+      <!-- Telefone Celular -->
+      <div>
+        <label for="cell_phone" class="block text-sm font-medium text-gray-300 mb-2">
+          Telefone Celular
+        </label>
+        <input
+          id="cell_phone"
+          v-model="form.cell_phone"
           type="tel"
           class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
           placeholder="(11) 99999-9999"
         />
-        <p v-if="errors.phone" class="mt-1 text-sm text-red-400">{{ errors.phone }}</p>
+        <p v-if="errors.cell_phone" class="mt-1 text-sm text-red-400">{{ errors.cell_phone }}</p>
+      </div>
+
+      <!-- Telefone Comercial -->
+      <div>
+        <label for="commercial_phone" class="block text-sm font-medium text-gray-300 mb-2">
+          Telefone Comercial
+        </label>
+        <input
+          id="commercial_phone"
+          v-model="form.commercial_phone"
+          type="tel"
+          class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+          placeholder="(11) 3444-5555"
+        />
+        <p v-if="errors.commercial_phone" class="mt-1 text-sm text-red-400">{{ errors.commercial_phone }}</p>
+      </div>
+
+      <!-- Whatsapp -->
+      <div>
+        <label for="whatsapp" class="block text-sm font-medium text-gray-300 mb-2">Whatsapp</label>
+        <input
+          id="whatsapp"
+          v-model="form.whatsapp"
+          type="tel"
+          class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+          placeholder="(11) 99999-9999"
+        />
+        <p v-if="errors.whatsapp" class="mt-1 text-sm text-red-400">{{ errors.whatsapp }}</p>
+      </div>
+
+      <!-- Observações -->
+      <div>
+        <label for="notes" class="block text-sm font-medium text-gray-300 mb-2">Observações</label>
+        <textarea
+          id="notes"
+          v-model="form.notes"
+          rows="3"
+          class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+        ></textarea>
+        <p v-if="errors.notes" class="mt-1 text-sm text-red-400">{{ errors.notes }}</p>
+      </div>
+
+      <!-- Funções -->
+      <div class="flex space-x-4">
+        <label class="inline-flex items-center text-gray-300">
+          <input type="checkbox" v-model="form.is_porter" class="h-4 w-4 text-indigo-600 rounded bg-gray-800 border-gray-600" />
+          <span class="ml-2">Porteiro</span>
+        </label>
+        <label class="inline-flex items-center text-gray-300">
+          <input type="checkbox" v-model="form.is_janitor" class="h-4 w-4 text-indigo-600 rounded bg-gray-800 border-gray-600" />
+          <span class="ml-2">Zelador</span>
+        </label>
+        <label class="inline-flex items-center text-gray-300">
+          <input type="checkbox" v-model="form.is_cleaning" class="h-4 w-4 text-indigo-600 rounded bg-gray-800 border-gray-600" />
+          <span class="ml-2">Limpeza</span>
+        </label>
+      </div>
+
+      <!-- Unidade -->
+      <div>
+        <label for="apartment_id" class="block text-sm font-medium text-gray-300 mb-2">Unidade</label>
+        <input
+          id="apartment_id"
+          v-model="form.apartment_id"
+          type="number"
+          class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+        />
+        <p v-if="errors.apartment_id" class="mt-1 text-sm text-red-400">{{ errors.apartment_id }}</p>
       </div>
 
       <!-- Classificação -->
@@ -159,7 +267,17 @@ export default {
     const form = reactive({
       name: '',
       email: '',
-      phone: '',
+      person_type: 'fisica',
+      cpf: '',
+      photo: '',
+      cell_phone: '',
+      commercial_phone: '',
+      whatsapp: '',
+      notes: '',
+      is_porter: false,
+      is_janitor: false,
+      is_cleaning: false,
+      apartment_id: '',
       classification: '',
       active: true,
       condominium_id: ''
@@ -172,12 +290,32 @@ export default {
       if (newResident) {
         form.name = newResident.name || '';
         form.email = newResident.email || '';
-        form.phone = newResident.phone || '';
+        form.person_type = newResident.person_type || 'fisica';
+        form.cpf = newResident.cpf || '';
+        form.photo = newResident.photo || '';
+        form.cell_phone = newResident.cell_phone || '';
+        form.commercial_phone = newResident.commercial_phone || '';
+        form.whatsapp = newResident.whatsapp || '';
+        form.notes = newResident.notes || '';
+        form.is_porter = newResident.is_porter || false;
+        form.is_janitor = newResident.is_janitor || false;
+        form.is_cleaning = newResident.is_cleaning || false;
+        form.apartment_id = newResident.apartment_id || '';
         form.classification = newResident.classification || '';
         form.active = newResident.active !== undefined ? newResident.active : true;
         form.condominium_id = newResident.condominium_id || '';
       }
     }, { immediate: true });
+
+    const handlePhoto = (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        form.photo = reader.result;
+      };
+      reader.readAsDataURL(file);
+    };
 
     const handleSubmit = async () => {
       loading.value = true;
@@ -226,7 +364,8 @@ export default {
       loading,
       errors,
       isEditing,
-      handleSubmit
+      handleSubmit,
+      handlePhoto
     };
   }
 };

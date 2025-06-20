@@ -37,9 +37,17 @@ class ResidentController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:20',
+            'cell_phone' => 'nullable|string|max:20',
+            'commercial_phone' => 'nullable|string|max:20',
             'email' => 'required|email|unique:residents',
+            'person_type' => ['required', Rule::in(['fisica','juridica'])],
             'classification' => ['required', Rule::in(ResidentClassification::cases())],
+            'photo' => 'nullable|string',
+            'notes' => 'nullable|string',
+            'is_porter' => 'boolean',
+            'is_janitor' => 'boolean',
+            'is_cleaning' => 'boolean',
+            'apartment_id' => ['nullable', Rule::exists('apartments','id')],
             'condominium_id' => [
                 'required',
                 Rule::exists('condominiums', 'id')->where(fn ($q) => $q->where('active', true)),
@@ -73,9 +81,17 @@ class ResidentController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:20',
+            'cell_phone' => 'nullable|string|max:20',
+            'commercial_phone' => 'nullable|string|max:20',
             'email' => ['required', 'email', Rule::unique('residents')->ignore($resident->id)],
+            'person_type' => ['required', Rule::in(['fisica','juridica'])],
             'classification' => ['required', Rule::in(ResidentClassification::cases())],
+            'photo' => 'nullable|string',
+            'notes' => 'nullable|string',
+            'is_porter' => 'boolean',
+            'is_janitor' => 'boolean',
+            'is_cleaning' => 'boolean',
+            'apartment_id' => ['nullable', Rule::exists('apartments','id')],
             'condominium_id' => [
                 'required',
                 Rule::exists('condominiums', 'id')->where(fn ($q) => $q->where('active', true)),

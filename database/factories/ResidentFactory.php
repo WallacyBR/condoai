@@ -18,7 +18,16 @@ class ResidentFactory extends Factory
     {
         return [
             'name' => $this->faker->name,
+            'rg' => $this->faker->numerify('#########'),
+            'cpf' => $this->faker->numerify('###########'),
             'phone' => $this->faker->phoneNumber,
+            'whatsapp' => $this->faker->phoneNumber,
+            'billing_address_type' => 'condominium',
+            'cep' => $this->faker->postcode,
+            'address' => $this->faker->streetAddress,
+            'neighborhood' => $this->faker->citySuffix,
+            'city' => $this->faker->city,
+            'state' => $this->faker->stateAbbr,
             'email' => $this->faker->unique()->safeEmail,
             'classification' => $this->faker->randomElement(ResidentClassification::cases()),
             'active' => $this->faker->boolean(90),

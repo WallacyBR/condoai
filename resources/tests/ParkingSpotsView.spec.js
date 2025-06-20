@@ -1,5 +1,8 @@
-import ParkingSpotsView from '../js/components/ParkingSpotsView.vue';
+import fs from 'fs';
+
+const fileUrl = new URL('../js/components/ParkingSpotsView.vue', import.meta.url);
 
 test('componente existe', () => {
-  expect(ParkingSpotsView).toBeTruthy();
+  const content = fs.readFileSync(fileUrl, 'utf8');
+  expect(content).toMatch('<template>');
 });

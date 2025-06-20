@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Apartment;
+use App\Models\User;
 
 class Package extends Model
 {
@@ -13,6 +14,11 @@ class Package extends Model
     protected $fillable = [
         'apartment_id',
         'photo',
+        'pickup_location',
+        'observation',
+        'user_id',
+        'signature',
+        'document_photo',
         'code',
         'retrieved_at',
     ];
@@ -33,5 +39,10 @@ class Package extends Model
     public function apartment()
     {
         return $this->belongsTo(Apartment::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

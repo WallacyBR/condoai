@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ResidentClassification;
+use App\Enums\PersonType;
 use App\Models\Scopes\CondominiumScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,8 +22,16 @@ class Resident extends Model
         'name',
         'rg',
         'cpf',
-        'phone',
+        'cell_phone',
+        'commercial_phone',
         'whatsapp',
+        'photo',
+        'person_type',
+        'notes',
+        'is_porter',
+        'is_janitor',
+        'is_cleaning',
+        'apartment_id',
         'email',
         'billing_address_type',
         'cep',
@@ -38,6 +47,10 @@ class Resident extends Model
     protected $casts = [
         'active' => 'boolean',
         'classification' => ResidentClassification::class,
+        'person_type' => PersonType::class,
+        'is_porter' => 'boolean',
+        'is_janitor' => 'boolean',
+        'is_cleaning' => 'boolean',
     ];
 
     public function condominium()
@@ -53,6 +66,11 @@ class Resident extends Model
     public function rentedApartments()
     {
         return $this->hasMany(Apartment::class, 'tenant_id');
+    }
+
+    public function apartment()
+    {
+        return $this->belongsTo(Apartment::class);
     }
 
     public function apartments()
@@ -91,5 +109,10 @@ class Resident extends Model
     public function getClassificationLabel(): string
     {
         return $this->classification->label();
+    }
+
+    public function getPersonTypeLabel(): string
+    {
+        return $this->person_type->label();
     }
 }

@@ -49,6 +49,33 @@ class PackageApiTest extends TestCase
             ]);
     }
 
+    public function test_create_package_with_photo_and_observation(): void
+    {
+        if (config('database.default') === 'sqlite') {
+            $this->markTestSkipped('SQLite n\xc3\xa3o suporta altera\xc3\xa7\xc3\xa3o de colunas');
+        }
+        $token = $this->authenticate();
+        $condo = Condominium::factory()->create();
+        $apartment = Apartment::factory()->create(['condominium_id' => $condo->id]);
+
+        $data = [
+            'apartment_id' => $apartment->id,
+            'photo' => 'foto.png',
+            'pickup_location' => 'Portaria 1',
+            'observation' => 'Deixar com porteiro',
+        ];
+
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->postJson('/api/packages', $data);
+
+        $response->assertStatus(201)
+            ->assertJsonFragment([
+                'photo' => 'foto.png',
+                'pickup_location' => 'Portaria 1',
+                'observation' => 'Deixar com porteiro',
+            ]);
+    }
+
     public function test_withdraw_package(): void
     {
         if (config('database.default') === 'sqlite') {
@@ -87,6 +114,28 @@ class PackageApiTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonFragment(['pickup_location' => 'Portaria 2']);
+    }
+
+    public function test_edit_package_fields(): void
+    {
+        if (config('database.default') === 'sqlite') {
+            $this->markTestSkipped('SQLite n\xc3\xa3o suporta altera\xc3\xa7\xc3\xa3o de colunas');
+        }
+        $token = $this->authenticate();
+        $package = Package::factory()->create([
+            'pickup_location' => 'Portaria 1',
+            'observation' => 'Teste',
+        ]);
+
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->putJson('/api/packages/'.$package->id, [
+                'pickup_location' => 'Portaria 3',
+                'observation' => 'Atualizado',
+            ]);
+
+        $response->assertStatus(200)
+            ->assertJsonFragment(['pickup_location' => 'Portaria 3'])
+            ->assertJsonFragment(['observation' => 'Atualizado']);
     }
 
     public function test_delete_package(): void
@@ -132,5 +181,51 @@ class PackageApiTest extends TestCase
         $respSearch->assertStatus(200)
             ->assertJsonFragment(['id' => $pending->id])
             ->assertJsonMissing(['id' => $retrieved->id]);
+    }
+
+    public function test_filter_retrieved_packages(): void
+    {
+        if (config('database.default') === 'sqlite') {
+            $this->markTestSkipped('SQLite n\xc3\xa3o suporta altera\xc3\xa7\xc3\xa3o de colunas');
+        }
+        $token = $this->authenticate();
+        $condo = Condominium::factory()->create();
+        $apartment = Apartment::factory()->create(['condominium_id' => $condo->id]);
+
+        $retrieved = Package::factory()->create([
+            'apartment_id' => $apartment->id,
+            'retrieved_at' => now(),
+        ]);
+        $pending = Package::factory()->create(['apartment_id' => $apartment->id]);
+
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->getJson('/api/packages?condominium_id='.$condo->id.'&status=retrieved');
+
+        $response->assertStatus(200)
+            ->assertJsonFragment(['id' => $retrieved->id])
+            ->assertJsonMissing(['id' => $pending->id]);
+    }
+
+    public function test_withdraw_package_with_document(): void
+    {
+        if (config('database.default') === 'sqlite') {
+            $this->markTestSkipped('SQLite n\xc3\xa3o suporta altera\xc3\xa7\xc3\xa3o de colunas');
+        }
+        $token = $this->authenticate();
+        $condo = Condominium::factory()->create();
+        $apartment = Apartment::factory()->create(['condominium_id' => $condo->id]);
+        $package = Package::factory()->create(['apartment_id' => $apartment->id]);
+
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->postJson('/api/packages/'.$package->id.'/withdraw', [
+                'code' => $package->code,
+                'document_photo' => 'documento.png',
+            ]);
+
+        $response->assertStatus(200)
+            ->assertJsonFragment([
+                'retrieved_at' => $package->fresh()->retrieved_at->toJSON(),
+                'document_photo' => 'documento.png',
+            ]);
     }
 }

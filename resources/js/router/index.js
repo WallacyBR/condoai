@@ -105,6 +105,24 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/packages/new',
+    name: 'packages.new',
+    component: () => import('../pages/PackageFormPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/packages/:id/edit',
+    name: 'packages.edit',
+    component: () => import('../pages/PackageFormPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/packages/deliver',
+    name: 'packages.deliver',
+    component: () => import('../pages/PackageDeliveryPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
     path: '/common-areas',
     name: 'common-areas',
     component: () => import('../components/CommonAreasView.vue'),

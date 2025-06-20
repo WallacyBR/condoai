@@ -1,113 +1,109 @@
 <template>
   <AuthenticatedLayout page-title="Encomendas">
-    <div class="space-y-8">
-      <form @submit.prevent="createPackage" class="space-x-2 mb-4 flex flex-wrap">
-        <select v-model="newPackage.apartment_id" class="border rounded px-2">
-          <option :value="null">Unidade</option>
-          <option v-for="a in apartments" :key="a.id" :value="a.id">{{ formatApartmentDescription(a) }}</option>
+    <div class="space-y-4">
+      <div class="flex flex-wrap gap-2 mb-4">
+        <input v-model="filters.unit" class="border rounded px-2" placeholder="Unidade" />
+        <input type="date" v-model="filters.date" class="border rounded px-2" />
+        <input v-model="filters.pickup_location" class="border rounded px-2" placeholder="Local de retirada" />
+        <input v-model="filters.observation" class="border rounded px-2" placeholder="Observa\u00e7\u00e3o" />
+        <select v-model="filters.status" class="border rounded px-2">
+          <option value="">Todos</option>
+          <option value="pending">Pendente</option>
+          <option value="retrieved">Retirada</option>
         </select>
-        <input v-model="newPackage.photo" class="border rounded px-2" placeholder="URL da foto" />
-        <button type="submit" class="px-3 py-1 bg-cyan-600 text-white rounded">Registrar</button>
-      </form>
-      <ul class="list-disc ml-5 text-cyan-100">
-        <li v-for="p in packages" :key="p.id" class="space-x-2">
-          <span>{{ formatApartmentDescription(p.apartment) }}</span>
-          <span v-if="p.retrieved_at" class="text-green-400">Retirada</span>
-          <button v-else class="px-2 py-1 bg-green-600 rounded" @click="withdraw(p)">Retirar</button>
-        </li>
-      </ul>
+        <button @click="loadPackages" class="px-3 py-1 bg-cyan-600 text-white rounded">Filtrar</button>
+        <router-link to="/packages/new" class="px-3 py-1 bg-green-600 text-white rounded">Novo</router-link>
+      </div>
+      <table class="min-w-full text-left text-sm">
+        <thead>
+          <tr>
+            <th>Unidade</th>
+            <th>Data</th>
+            <th>Local</th>
+            <th>Observa\u00e7\u00e3o</th>
+            <th>Status</th>
+            <th>A\u00e7\u00f5es</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="pkg in packages" :key="pkg.id" class="border-t">
+            <td>{{ formatApartmentDescription(pkg.apartment) }}</td>
+            <td>{{ pkg.created_at?.slice(0,10) }}</td>
+            <td>{{ pkg.pickup_location }}</td>
+            <td>{{ pkg.observation }}</td>
+            <td>
+              <span v-if="pkg.retrieved_at" class="text-green-500">Retirada</span>
+              <span v-else class="text-yellow-500">Pendente</span>
+            </td>
+            <td class="space-x-1">
+              <button @click="openInfo(pkg)" class="px-2 py-1 bg-blue-500 text-white rounded">Info</button>
+              <router-link :to="`/packages/${pkg.id}/edit`" class="px-2 py-1 bg-indigo-500 text-white rounded">Editar</router-link>
+              <button @click="remove(pkg)" class="px-2 py-1 bg-red-500 text-white rounded">Excluir</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+    <PackageInfoModal v-if="showInfo" :pkg="selected" @close="showInfo = false" />
   </AuthenticatedLayout>
 </template>
 
 <script>
 import { ref, onMounted } from 'vue';
 import AuthenticatedLayout from './layouts/AuthenticatedLayout.vue';
-import { formatApartmentDescription } from '../utils/formatters.js';
+import { apiRequest } from '../utils/api';
+import { formatApartmentDescription } from '../utils/formatters';
+import PackageInfoModal from './PackageInfoModal.vue';
 
 export default {
   name: 'PackagesView',
-  components: { AuthenticatedLayout },
+  components: { AuthenticatedLayout, PackageInfoModal },
   setup() {
     const packages = ref([]);
-    const apartments = ref([]);
-    const newPackage = ref({
-      apartment_id: null,
-      photo: ''
+    const filters = ref({
+      unit: '',
+      date: '',
+      pickup_location: '',
+      observation: '',
+      status: ''
     });
+    const selected = ref(null);
+    const showInfo = ref(false);
 
-    const loadData = async () => {
-      const token = localStorage.getItem('token');
+    const buildUrl = () => {
+      let url = '/api/packages';
+      const params = [];
       const condo = localStorage.getItem('selectedCondominium');
-      const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
-
-      try {
-        const [aptsRes, packagesRes] = await Promise.all([
-          fetch(`/api/apartments?condominium_id=${condo}`, { headers }),
-          fetch(`/api/packages?condominium_id=${condo}`, { headers })
-        ]);
-
-        if (aptsRes.ok) apartments.value = await aptsRes.json();
-        if (packagesRes.ok) packages.value = await packagesRes.json();
-      } catch (e) {
-        console.error('Erro ao carregar dados:', e);
-      }
+      if (condo) params.push('condominium_id=' + condo);
+      if (filters.value.unit) params.push('unit=' + filters.value.unit);
+      if (filters.value.date) params.push('date=' + filters.value.date);
+      if (filters.value.pickup_location) params.push('pickup_location=' + filters.value.pickup_location);
+      if (filters.value.observation) params.push('observation=' + filters.value.observation);
+      if (filters.value.status) params.push('status=' + filters.value.status);
+      if (params.length) url += '?' + params.join('&');
+      return url;
     };
 
-    const createPackage = async () => {
-      const token = localStorage.getItem('token');
-      const condo = localStorage.getItem('selectedCondominium');
-      const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
-
-      try {
-        const resp = await fetch('/api/packages', {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({ ...newPackage.value, condominium_id: condo })
-        });
-
-        if (resp.ok) {
-          const pkg = await resp.json();
-          packages.value.push(pkg);
-          newPackage.value = { apartment_id: null, photo: '' };
-        }
-      } catch (e) {
-        console.error('Erro ao criar encomenda:', e);
-      }
+    const loadPackages = async () => {
+      const data = await apiRequest(buildUrl());
+      if (data) packages.value = data;
     };
 
-    const withdraw = async (pkg) => {
-      const token = localStorage.getItem('token');
-      const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
-
-      try {
-        const resp = await fetch(`/api/packages/${pkg.id}/withdraw`, {
-          method: 'PUT',
-          headers
-        });
-
-        if (resp.ok) {
-          const updated = await resp.json();
-          const index = packages.value.findIndex(p => p.id === pkg.id);
-          if (index !== -1) {
-            packages.value[index] = updated;
-          }
-        }
-      } catch (e) {
-        console.error('Erro ao retirar encomenda:', e);
-      }
+    const remove = async (pkg) => {
+      if (!confirm('Confirmar exclus\u00e7\u00e3o?')) return;
+      const resp = await apiRequest(`/api/packages/${pkg.id}`, { method: 'DELETE' });
+      if (resp === null) return;
+      packages.value = packages.value.filter(p => p.id !== pkg.id);
     };
 
-    onMounted(loadData);
-
-    return {
-      packages,
-      apartments,
-      newPackage,
-      createPackage,
-      withdraw,
-      formatApartmentDescription
+    const openInfo = (pkg) => {
+      selected.value = pkg;
+      showInfo.value = true;
     };
+
+    onMounted(loadPackages);
+
+    return { packages, filters, loadPackages, remove, openInfo, selected, showInfo, formatApartmentDescription };
   }
 };
 </script>

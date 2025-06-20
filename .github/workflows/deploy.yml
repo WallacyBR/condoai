@@ -32,19 +32,20 @@ jobs:
 
             git pull origin master
 
-            # Permissões adequadas para Laravel (NGINX/PHP-FPM usa www-data)
-            sudo chown -R www-data:www-data storage bootstrap/cache
-            sudo chmod -R 775 storage bootstrap/cache
-
-            # Inclui logs e sessões explicitamente
-            sudo chown -R www-data:www-data storage/logs storage/framework/sessions
-            sudo chmod -R 775 storage/logs storage/framework/sessions
-
             composer install --no-dev --optimize-autoloader
             php artisan migrate --force
 
             yarn install
             chmod +x node_modules/.bin/vite
+            chmod +x node_modules/@esbuild/linux-x64/bin/esbuild
             yarn build
 
             php artisan config:cache
+
+            # Permissões adequadas para Laravel (NGINX/PHP-FPM usa www-data)
+            sudo chown -R ubuntu:www-data storage bootstrap/cache
+            sudo chmod -R 775 storage bootstrap/cache
+
+            # Inclui logs e sessões explicitamente
+            sudo chown -R ubuntu:www-data storage/logs storage/framework/sessions
+            sudo chmod -R 775 storage/logs storage/framework/sessions

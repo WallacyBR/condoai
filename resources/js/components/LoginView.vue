@@ -29,30 +29,58 @@
           </div>
           <div class="relative">
             <label for="password" class="text-sm font-medium text-cyan-300 mb-1 block">Senha</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autocomplete="current-password"
-              required
-              v-model="credentials.password"
-              class="appearance-none rounded-2xl relative block w-full px-4 py-3 bg-gray-800 border-2 border-cyan-500/20 placeholder-gray-400 text-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all duration-300 ease-in-out hover:border-cyan-500/40 hover:shadow-[0_0_15px_rgba(6,182,212,0.3)]"
-              placeholder="Sua senha"
-            />
+            <div class="relative">
+              <input
+                id="password"
+                name="password"
+                :type="showPassword ? 'text' : 'password'"
+                autocomplete="current-password"
+                required
+                v-model="credentials.password"
+                class="appearance-none rounded-2xl relative block w-full px-4 py-3 pr-12 bg-gray-800 border-2 border-cyan-500/20 placeholder-gray-400 text-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all duration-300 ease-in-out hover:border-cyan-500/40 hover:shadow-[0_0_15px_rgba(6,182,212,0.3)]"
+                placeholder="Sua senha"
+              />
+              <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                <button
+                  type="button"
+                  @mousedown="showPassword = true"
+                  @mouseup="showPassword = false"
+                  @mouseleave="showPassword = false"
+                  @touchstart="showPassword = true"
+                  @touchend="showPassword = false"
+                  class="p-1 text-gray-400 hover:text-cyan-400 focus:outline-none"
+                  title="Segure para mostrar senha"
+                >
+                  <svg v-if="showPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <path d="M10.585 10.587a2 2 0 0 0 2.829 2.828"></path>
+                    <path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87"></path>
+                    <path d="M3 3l18 18"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
         <div class="flex items-center justify-between">
           <div class="flex items-center">
-            <input
-              id="remember-me"
-              name="remember-me"
-              type="checkbox"
-              v-model="form.remember"
-              class="h-4 w-4 text-cyan-500 focus:ring-cyan-500 border-gray-600 rounded bg-gray-800"
-            />
-            <label for="remember-me" class="ml-2 block text-sm text-cyan-300">
-              Lembrar-me
+            <label for="remember-me" class="flex items-center cursor-pointer select-none">
+              <input
+                id="remember-me"
+                name="remember-me"
+                type="checkbox"
+                v-model="form.remember"
+                class="peer appearance-none h-5 w-5 border-2 border-cyan-500/40 rounded-md bg-gray-800 checked:bg-cyan-500 checked:border-cyan-400 transition-all duration-200 focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 relative"
+              />
+              <span class="ml-2 text-sm text-cyan-300 transition-colors duration-200 peer-checked:text-cyan-100 font-medium">
+                Lembrar-me
+              </span>
+              <svg v-if="form.remember" class="absolute ml-1.5 w-3 h-3 text-white pointer-events-none" style="left: 6px; top: 6px;" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
             </label>
           </div>
 
@@ -84,10 +112,38 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, onMounted, nextTick, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import NeonButton from './NeonButton.vue';
 import auth from '../services/auth';
+
+// Funções utilitárias DRY para localStorage
+function saveRememberedEmail(email) {
+  localStorage.setItem('rememberedEmail', email);
+}
+function removeRememberedEmail() {
+  localStorage.removeItem('rememberedEmail');
+}
+function getRememberedEmail() {
+  return localStorage.getItem('rememberedEmail') || '';
+}
+function saveRememberedPassword(password) {
+  localStorage.setItem('rememberedPassword', password);
+}
+function removeRememberedPassword() {
+  localStorage.removeItem('rememberedPassword');
+}
+function getRememberedPassword() {
+  return localStorage.getItem('rememberedPassword') || '';
+}
+function saveRememberedCredentials(email, password) {
+  saveRememberedEmail(email);
+  saveRememberedPassword(password);
+}
+function removeRememberedCredentials() {
+  removeRememberedEmail();
+  removeRememberedPassword();
+}
 
 export default {
   name: 'LoginView',
@@ -103,6 +159,53 @@ export default {
     });
     const error = ref('');
     const loading = ref(false);
+    const showPassword = ref(false);
+
+    // Watcher para debugar mudanças no checkbox
+    watch(() => form.value.remember, (newValue) => {
+      console.log('Checkbox mudou para:', newValue); // Debug
+      // Salva ou remove email imediatamente quando o checkbox muda
+      if (newValue && credentials.value.email.trim() !== '' && credentials.value.password.trim() !== '') {
+        saveRememberedCredentials(credentials.value.email, credentials.value.password);
+        console.log('Credenciais salvas imediatamente');
+      } else {
+        removeRememberedCredentials();
+        console.log('Credenciais removidas imediatamente');
+      }
+    });
+
+    // Watcher para o campo email - salva automaticamente se checkbox estiver marcado
+    watch(() => credentials.value.email, (newEmail) => {
+      if (form.value.remember && newEmail.trim() !== '' && credentials.value.password.trim() !== '') {
+        saveRememberedCredentials(newEmail, credentials.value.password);
+        console.log('Credenciais atualizadas automaticamente');
+      }
+    });
+
+    // Watcher para o campo senha - salva automaticamente se checkbox estiver marcado
+    watch(() => credentials.value.password, (newPassword) => {
+      if (form.value.remember && credentials.value.email.trim() !== '' && newPassword.trim() !== '') {
+        saveRememberedCredentials(credentials.value.email, newPassword);
+        console.log('Credenciais atualizadas automaticamente');
+      }
+    });
+
+    // Ao montar, verifica se há email salvo
+    onMounted(async () => {
+      const remembered = getRememberedEmail();
+      const rememberedPassword = getRememberedPassword();
+      console.log('Email lembrado:', remembered); // Debug
+      console.log('Senha lembrada:', rememberedPassword ? '***' : ''); // Debug
+      if (remembered && remembered.trim() !== '' && rememberedPassword && rememberedPassword.trim() !== '') {
+        credentials.value.email = remembered;
+        credentials.value.password = rememberedPassword;
+        form.value.remember = true;
+        await nextTick(); // Garante que a atualização seja processada
+        console.log('Email carregado:', credentials.value.email); // Debug
+        console.log('Senha carregada:', credentials.value.password ? '***' : ''); // Debug
+        console.log('Checkbox marcado:', form.value.remember); // Debug
+      }
+    });
 
     const login = async () => {
       loading.value = true;
@@ -132,6 +235,7 @@ export default {
       form,
       error,
       loading,
+      showPassword,
       login
     };
   }

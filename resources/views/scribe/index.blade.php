@@ -194,8 +194,17 @@
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-POSTapi-packages">
                                 <a href="#endpoints-POSTapi-packages">POST api/packages</a>
                             </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-PUTapi-packages--id-">
+                                <a href="#endpoints-PUTapi-packages--id-">PUT api/packages/{id}</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-DELETEapi-packages--id-">
+                                <a href="#endpoints-DELETEapi-packages--id-">DELETE api/packages/{id}</a>
+                            </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-POSTapi-common-areas--common_area_id--bookings">
                                 <a href="#endpoints-POSTapi-common-areas--common_area_id--bookings">POST api/common-areas/{common_area_id}/bookings</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-POSTapi-parking-spots-batch">
+                                <a href="#endpoints-POSTapi-parking-spots-batch">POST api/parking-spots/batch</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-POSTapi-parking-spots--parking_spot_id--rent">
                                 <a href="#endpoints-POSTapi-parking-spots--parking_spot_id--rent">POST api/parking-spots/{parking_spot_id}/rent</a>
@@ -220,7 +229,7 @@
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: June 16, 2025</li>
+        <li>Last updated: June 20, 2025</li>
     </ul>
 </div>
 
@@ -1448,9 +1457,26 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"name\": \"b\",
-    \"phone\": \"ngzmiyvdljnikhwa\",
-    \"email\": \"breitenberg.gilbert@example.com\",
-    \"active\": true,
+    \"rg\": \"n\",
+    \"cpf\": \"gzmiyvdljnikhway\",
+    \"cell_phone\": \"kcmyuwpwlvqwrsit\",
+    \"commercial_phone\": \"cpscqldzsnrwtujw\",
+    \"whatsapp\": \"vlxjklqppwqbewtn\",
+    \"email\": \"colt.balistreri@example.net\",
+    \"person_type\": \"architecto\",
+    \"photo\": \"architecto\",
+    \"notes\": \"architecto\",
+    \"is_porter\": false,
+    \"is_janitor\": true,
+    \"is_cleaning\": false,
+    \"billing_address_type\": \"condominium\",
+    \"cep\": \"iyvdljnikhwaykcm\",
+    \"address\": \"y\",
+    \"neighborhood\": \"u\",
+    \"city\": \"w\",
+    \"state\": \"pw\",
+    \"classification\": \"architecto\",
+    \"active\": false,
     \"condominium_id\": 16
 }"
 </code></pre></div>
@@ -1468,9 +1494,26 @@ const headers = {
 
 let body = {
     "name": "b",
-    "phone": "ngzmiyvdljnikhwa",
-    "email": "breitenberg.gilbert@example.com",
-    "active": true,
+    "rg": "n",
+    "cpf": "gzmiyvdljnikhway",
+    "cell_phone": "kcmyuwpwlvqwrsit",
+    "commercial_phone": "cpscqldzsnrwtujw",
+    "whatsapp": "vlxjklqppwqbewtn",
+    "email": "colt.balistreri@example.net",
+    "person_type": "architecto",
+    "photo": "architecto",
+    "notes": "architecto",
+    "is_porter": false,
+    "is_janitor": true,
+    "is_cleaning": false,
+    "billing_address_type": "condominium",
+    "cep": "iyvdljnikhwaykcm",
+    "address": "y",
+    "neighborhood": "u",
+    "city": "w",
+    "state": "pw",
+    "classification": "architecto",
+    "active": false,
     "condominium_id": 16
 };
 
@@ -1566,15 +1609,59 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>Must not be greater than 255 characters. Example: <code>b</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>phone</code></b>&nbsp;&nbsp;
+            <b style="line-height: 2;"><code>rg</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
-                              name="phone"                data-endpoint="POSTapi-residents"
-               value="ngzmiyvdljnikhwa"
+                              name="rg"                data-endpoint="POSTapi-residents"
+               value="n"
                data-component="body">
     <br>
-<p>Must not be greater than 20 characters. Example: <code>ngzmiyvdljnikhwa</code></p>
+<p>Must not be greater than 30 characters. Example: <code>n</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>cpf</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="cpf"                data-endpoint="POSTapi-residents"
+               value="gzmiyvdljnikhway"
+               data-component="body">
+    <br>
+<p>Must not be greater than 20 characters. Example: <code>gzmiyvdljnikhway</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>cell_phone</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="cell_phone"                data-endpoint="POSTapi-residents"
+               value="kcmyuwpwlvqwrsit"
+               data-component="body">
+    <br>
+<p>Must not be greater than 20 characters. Example: <code>kcmyuwpwlvqwrsit</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>commercial_phone</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="commercial_phone"                data-endpoint="POSTapi-residents"
+               value="cpscqldzsnrwtujw"
+               data-component="body">
+    <br>
+<p>Must not be greater than 20 characters. Example: <code>cpscqldzsnrwtujw</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>whatsapp</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="whatsapp"                data-endpoint="POSTapi-residents"
+               value="vlxjklqppwqbewtn"
+               data-component="body">
+    <br>
+<p>Must not be greater than 20 characters. Example: <code>vlxjklqppwqbewtn</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>email</code></b>&nbsp;&nbsp;
@@ -1582,10 +1669,196 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="email"                data-endpoint="POSTapi-residents"
-               value="breitenberg.gilbert@example.com"
+               value="colt.balistreri@example.net"
                data-component="body">
     <br>
-<p>Must be a valid email address. Example: <code>breitenberg.gilbert@example.com</code></p>
+<p>Must be a valid email address. Example: <code>colt.balistreri@example.net</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>person_type</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="person_type"                data-endpoint="POSTapi-residents"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>photo</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="photo"                data-endpoint="POSTapi-residents"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>notes</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="notes"                data-endpoint="POSTapi-residents"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>is_porter</code></b>&nbsp;&nbsp;
+<small>boolean</small>&nbsp;
+<i>optional</i> &nbsp;
+                <label data-endpoint="POSTapi-residents" style="display: none">
+            <input type="radio" name="is_porter"
+                   value="true"
+                   data-endpoint="POSTapi-residents"
+                   data-component="body"             >
+            <code>true</code>
+        </label>
+        <label data-endpoint="POSTapi-residents" style="display: none">
+            <input type="radio" name="is_porter"
+                   value="false"
+                   data-endpoint="POSTapi-residents"
+                   data-component="body"             >
+            <code>false</code>
+        </label>
+    <br>
+<p>Example: <code>false</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>is_janitor</code></b>&nbsp;&nbsp;
+<small>boolean</small>&nbsp;
+<i>optional</i> &nbsp;
+                <label data-endpoint="POSTapi-residents" style="display: none">
+            <input type="radio" name="is_janitor"
+                   value="true"
+                   data-endpoint="POSTapi-residents"
+                   data-component="body"             >
+            <code>true</code>
+        </label>
+        <label data-endpoint="POSTapi-residents" style="display: none">
+            <input type="radio" name="is_janitor"
+                   value="false"
+                   data-endpoint="POSTapi-residents"
+                   data-component="body"             >
+            <code>false</code>
+        </label>
+    <br>
+<p>Example: <code>true</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>is_cleaning</code></b>&nbsp;&nbsp;
+<small>boolean</small>&nbsp;
+<i>optional</i> &nbsp;
+                <label data-endpoint="POSTapi-residents" style="display: none">
+            <input type="radio" name="is_cleaning"
+                   value="true"
+                   data-endpoint="POSTapi-residents"
+                   data-component="body"             >
+            <code>true</code>
+        </label>
+        <label data-endpoint="POSTapi-residents" style="display: none">
+            <input type="radio" name="is_cleaning"
+                   value="false"
+                   data-endpoint="POSTapi-residents"
+                   data-component="body"             >
+            <code>false</code>
+        </label>
+    <br>
+<p>Example: <code>false</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>apartment_id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="apartment_id"                data-endpoint="POSTapi-residents"
+               value=""
+               data-component="body">
+    <br>
+
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>billing_address_type</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="billing_address_type"                data-endpoint="POSTapi-residents"
+               value="condominium"
+               data-component="body">
+    <br>
+<p>Example: <code>condominium</code></p>
+Must be one of:
+<ul style="list-style-type: square;"><li><code>condominium</code></li> <li><code>custom</code></li></ul>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>cep</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="cep"                data-endpoint="POSTapi-residents"
+               value="iyvdljnikhwaykcm"
+               data-component="body">
+    <br>
+<p>Must not be greater than 20 characters. Example: <code>iyvdljnikhwaykcm</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>address</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="address"                data-endpoint="POSTapi-residents"
+               value="y"
+               data-component="body">
+    <br>
+<p>Must not be greater than 255 characters. Example: <code>y</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>neighborhood</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="neighborhood"                data-endpoint="POSTapi-residents"
+               value="u"
+               data-component="body">
+    <br>
+<p>Must not be greater than 100 characters. Example: <code>u</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>city</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="city"                data-endpoint="POSTapi-residents"
+               value="w"
+               data-component="body">
+    <br>
+<p>Must not be greater than 100 characters. Example: <code>w</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>state</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="state"                data-endpoint="POSTapi-residents"
+               value="pw"
+               data-component="body">
+    <br>
+<p>Must not be greater than 2 characters. Example: <code>pw</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>classification</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="classification"                data-endpoint="POSTapi-residents"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>active</code></b>&nbsp;&nbsp;
@@ -1606,7 +1879,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>condominium_id</code></b>&nbsp;&nbsp;
@@ -1639,9 +1912,24 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"name\": \"b\",
-    \"phone\": \"ngzmiyvdljnikhwa\",
-    \"email\": \"breitenberg.gilbert@example.com\",
-    \"active\": true,
+    \"rg\": \"n\",
+    \"cpf\": \"gzmiyvdljnikhway\",
+    \"cell_phone\": \"kcmyuwpwlvqwrsit\",
+    \"commercial_phone\": \"cpscqldzsnrwtujw\",
+    \"whatsapp\": \"vlxjklqppwqbewtn\",
+    \"email\": \"colt.balistreri@example.net\",
+    \"photo\": \"architecto\",
+    \"notes\": \"architecto\",
+    \"is_porter\": false,
+    \"is_janitor\": true,
+    \"is_cleaning\": false,
+    \"billing_address_type\": \"condominium\",
+    \"cep\": \"iyvdljnikhwaykcm\",
+    \"address\": \"y\",
+    \"neighborhood\": \"u\",
+    \"city\": \"w\",
+    \"state\": \"pw\",
+    \"active\": false,
     \"condominium_id\": 16
 }"
 </code></pre></div>
@@ -1659,9 +1947,24 @@ const headers = {
 
 let body = {
     "name": "b",
-    "phone": "ngzmiyvdljnikhwa",
-    "email": "breitenberg.gilbert@example.com",
-    "active": true,
+    "rg": "n",
+    "cpf": "gzmiyvdljnikhway",
+    "cell_phone": "kcmyuwpwlvqwrsit",
+    "commercial_phone": "cpscqldzsnrwtujw",
+    "whatsapp": "vlxjklqppwqbewtn",
+    "email": "colt.balistreri@example.net",
+    "photo": "architecto",
+    "notes": "architecto",
+    "is_porter": false,
+    "is_janitor": true,
+    "is_cleaning": false,
+    "billing_address_type": "condominium",
+    "cep": "iyvdljnikhwaykcm",
+    "address": "y",
+    "neighborhood": "u",
+    "city": "w",
+    "state": "pw",
+    "active": false,
     "condominium_id": 16
 };
 
@@ -1773,15 +2076,59 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>Must not be greater than 255 characters. Example: <code>b</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>phone</code></b>&nbsp;&nbsp;
+            <b style="line-height: 2;"><code>rg</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
-                              name="phone"                data-endpoint="PUTapi-residents--id-"
-               value="ngzmiyvdljnikhwa"
+                              name="rg"                data-endpoint="PUTapi-residents--id-"
+               value="n"
                data-component="body">
     <br>
-<p>Must not be greater than 20 characters. Example: <code>ngzmiyvdljnikhwa</code></p>
+<p>Must not be greater than 30 characters. Example: <code>n</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>cpf</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="cpf"                data-endpoint="PUTapi-residents--id-"
+               value="gzmiyvdljnikhway"
+               data-component="body">
+    <br>
+<p>Must not be greater than 20 characters. Example: <code>gzmiyvdljnikhway</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>cell_phone</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="cell_phone"                data-endpoint="PUTapi-residents--id-"
+               value="kcmyuwpwlvqwrsit"
+               data-component="body">
+    <br>
+<p>Must not be greater than 20 characters. Example: <code>kcmyuwpwlvqwrsit</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>commercial_phone</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="commercial_phone"                data-endpoint="PUTapi-residents--id-"
+               value="cpscqldzsnrwtujw"
+               data-component="body">
+    <br>
+<p>Must not be greater than 20 characters. Example: <code>cpscqldzsnrwtujw</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>whatsapp</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="whatsapp"                data-endpoint="PUTapi-residents--id-"
+               value="vlxjklqppwqbewtn"
+               data-component="body">
+    <br>
+<p>Must not be greater than 20 characters. Example: <code>vlxjklqppwqbewtn</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>email</code></b>&nbsp;&nbsp;
@@ -1789,10 +2136,196 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="email"                data-endpoint="PUTapi-residents--id-"
-               value="breitenberg.gilbert@example.com"
+               value="colt.balistreri@example.net"
                data-component="body">
     <br>
-<p>Must be a valid email address. Example: <code>breitenberg.gilbert@example.com</code></p>
+<p>Must be a valid email address. Example: <code>colt.balistreri@example.net</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>person_type</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="person_type"                data-endpoint="PUTapi-residents--id-"
+               value=""
+               data-component="body">
+    <br>
+
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>photo</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="photo"                data-endpoint="PUTapi-residents--id-"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>notes</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="notes"                data-endpoint="PUTapi-residents--id-"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>is_porter</code></b>&nbsp;&nbsp;
+<small>boolean</small>&nbsp;
+<i>optional</i> &nbsp;
+                <label data-endpoint="PUTapi-residents--id-" style="display: none">
+            <input type="radio" name="is_porter"
+                   value="true"
+                   data-endpoint="PUTapi-residents--id-"
+                   data-component="body"             >
+            <code>true</code>
+        </label>
+        <label data-endpoint="PUTapi-residents--id-" style="display: none">
+            <input type="radio" name="is_porter"
+                   value="false"
+                   data-endpoint="PUTapi-residents--id-"
+                   data-component="body"             >
+            <code>false</code>
+        </label>
+    <br>
+<p>Example: <code>false</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>is_janitor</code></b>&nbsp;&nbsp;
+<small>boolean</small>&nbsp;
+<i>optional</i> &nbsp;
+                <label data-endpoint="PUTapi-residents--id-" style="display: none">
+            <input type="radio" name="is_janitor"
+                   value="true"
+                   data-endpoint="PUTapi-residents--id-"
+                   data-component="body"             >
+            <code>true</code>
+        </label>
+        <label data-endpoint="PUTapi-residents--id-" style="display: none">
+            <input type="radio" name="is_janitor"
+                   value="false"
+                   data-endpoint="PUTapi-residents--id-"
+                   data-component="body"             >
+            <code>false</code>
+        </label>
+    <br>
+<p>Example: <code>true</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>is_cleaning</code></b>&nbsp;&nbsp;
+<small>boolean</small>&nbsp;
+<i>optional</i> &nbsp;
+                <label data-endpoint="PUTapi-residents--id-" style="display: none">
+            <input type="radio" name="is_cleaning"
+                   value="true"
+                   data-endpoint="PUTapi-residents--id-"
+                   data-component="body"             >
+            <code>true</code>
+        </label>
+        <label data-endpoint="PUTapi-residents--id-" style="display: none">
+            <input type="radio" name="is_cleaning"
+                   value="false"
+                   data-endpoint="PUTapi-residents--id-"
+                   data-component="body"             >
+            <code>false</code>
+        </label>
+    <br>
+<p>Example: <code>false</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>apartment_id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="apartment_id"                data-endpoint="PUTapi-residents--id-"
+               value=""
+               data-component="body">
+    <br>
+
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>billing_address_type</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="billing_address_type"                data-endpoint="PUTapi-residents--id-"
+               value="condominium"
+               data-component="body">
+    <br>
+<p>Example: <code>condominium</code></p>
+Must be one of:
+<ul style="list-style-type: square;"><li><code>condominium</code></li> <li><code>custom</code></li></ul>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>cep</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="cep"                data-endpoint="PUTapi-residents--id-"
+               value="iyvdljnikhwaykcm"
+               data-component="body">
+    <br>
+<p>Must not be greater than 20 characters. Example: <code>iyvdljnikhwaykcm</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>address</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="address"                data-endpoint="PUTapi-residents--id-"
+               value="y"
+               data-component="body">
+    <br>
+<p>Must not be greater than 255 characters. Example: <code>y</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>neighborhood</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="neighborhood"                data-endpoint="PUTapi-residents--id-"
+               value="u"
+               data-component="body">
+    <br>
+<p>Must not be greater than 100 characters. Example: <code>u</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>city</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="city"                data-endpoint="PUTapi-residents--id-"
+               value="w"
+               data-component="body">
+    <br>
+<p>Must not be greater than 100 characters. Example: <code>w</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>state</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="state"                data-endpoint="PUTapi-residents--id-"
+               value="pw"
+               data-component="body">
+    <br>
+<p>Must not be greater than 2 characters. Example: <code>pw</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>classification</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="classification"                data-endpoint="PUTapi-residents--id-"
+               value=""
+               data-component="body">
+    <br>
+
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>active</code></b>&nbsp;&nbsp;
@@ -1813,7 +2346,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>condominium_id</code></b>&nbsp;&nbsp;
@@ -6754,7 +7287,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"apartment_id\": \"architecto\",
-    \"photo\": \"architecto\"
+    \"photo\": \"architecto\",
+    \"pickup_location\": \"architecto\",
+    \"observation\": \"architecto\"
 }"
 </code></pre></div>
 
@@ -6771,7 +7306,9 @@ const headers = {
 
 let body = {
     "apartment_id": "architecto",
-    "photo": "architecto"
+    "photo": "architecto",
+    "pickup_location": "architecto",
+    "observation": "architecto"
 };
 
 fetch(url, {
@@ -6876,7 +7413,331 @@ You can check the Dev Tools console for debugging information.</code></pre>
     <br>
 <p>Example: <code>architecto</code></p>
         </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>pickup_location</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="pickup_location"                data-endpoint="POSTapi-packages"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>observation</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="observation"                data-endpoint="POSTapi-packages"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+        </div>
         </form>
+
+                    <h2 id="endpoints-PUTapi-packages--id-">PUT api/packages/{id}</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-PUTapi-packages--id-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request PUT \
+    "http://localhost/api/packages/16" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"photo\": \"architecto\",
+    \"pickup_location\": \"architecto\",
+    \"observation\": \"architecto\"
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/packages/16"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "photo": "architecto",
+    "pickup_location": "architecto",
+    "observation": "architecto"
+};
+
+fetch(url, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-PUTapi-packages--id-">
+</span>
+<span id="execution-results-PUTapi-packages--id-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-PUTapi-packages--id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-PUTapi-packages--id-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-PUTapi-packages--id-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-PUTapi-packages--id-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-PUTapi-packages--id-" data-method="PUT"
+      data-path="api/packages/{id}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('PUTapi-packages--id-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-PUTapi-packages--id-"
+                    onclick="tryItOut('PUTapi-packages--id-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-PUTapi-packages--id-"
+                    onclick="cancelTryOut('PUTapi-packages--id-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-PUTapi-packages--id-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-darkblue">PUT</small>
+            <b><code>api/packages/{id}</code></b>
+        </p>
+            <p>
+            <small class="badge badge-purple">PATCH</small>
+            <b><code>api/packages/{id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="PUTapi-packages--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="PUTapi-packages--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="id"                data-endpoint="PUTapi-packages--id-"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the package. Example: <code>16</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>apartment_id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="apartment_id"                data-endpoint="PUTapi-packages--id-"
+               value=""
+               data-component="body">
+    <br>
+
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>photo</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="photo"                data-endpoint="PUTapi-packages--id-"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>pickup_location</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="pickup_location"                data-endpoint="PUTapi-packages--id-"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>observation</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="observation"                data-endpoint="PUTapi-packages--id-"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+        </div>
+        </form>
+
+                    <h2 id="endpoints-DELETEapi-packages--id-">DELETE api/packages/{id}</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-DELETEapi-packages--id-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request DELETE \
+    "http://localhost/api/packages/16" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/packages/16"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "DELETE",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-DELETEapi-packages--id-">
+</span>
+<span id="execution-results-DELETEapi-packages--id-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-DELETEapi-packages--id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-DELETEapi-packages--id-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-DELETEapi-packages--id-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-DELETEapi-packages--id-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-DELETEapi-packages--id-" data-method="DELETE"
+      data-path="api/packages/{id}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('DELETEapi-packages--id-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-DELETEapi-packages--id-"
+                    onclick="tryItOut('DELETEapi-packages--id-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-DELETEapi-packages--id-"
+                    onclick="cancelTryOut('DELETEapi-packages--id-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-DELETEapi-packages--id-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-red">DELETE</small>
+            <b><code>api/packages/{id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="DELETEapi-packages--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="DELETEapi-packages--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="id"                data-endpoint="DELETEapi-packages--id-"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the package. Example: <code>16</code></p>
+            </div>
+                    </form>
 
                     <h2 id="endpoints-POSTapi-common-areas--common_area_id--bookings">POST api/common-areas/{common_area_id}/bookings</h2>
 
@@ -6896,8 +7757,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"apartment_id\": \"architecto\",
-    \"start_time\": \"2025-06-16T13:42:36\",
-    \"end_time\": \"2051-07-10\"
+    \"start_time\": \"2025-06-20T15:39:47\",
+    \"end_time\": \"2051-07-14\"
 }"
 </code></pre></div>
 
@@ -6914,8 +7775,8 @@ const headers = {
 
 let body = {
     "apartment_id": "architecto",
-    "start_time": "2025-06-16T13:42:36",
-    "end_time": "2051-07-10"
+    "start_time": "2025-06-20T15:39:47",
+    "end_time": "2051-07-14"
 };
 
 fetch(url, {
@@ -7027,10 +7888,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_time"                data-endpoint="POSTapi-common-areas--common_area_id--bookings"
-               value="2025-06-16T13:42:36"
+               value="2025-06-20T15:39:47"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2025-06-16T13:42:36</code></p>
+<p>Must be a valid date. Example: <code>2025-06-20T15:39:47</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_time</code></b>&nbsp;&nbsp;
@@ -7038,10 +7899,152 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_time"                data-endpoint="POSTapi-common-areas--common_area_id--bookings"
-               value="2051-07-10"
+               value="2051-07-14"
                data-component="body">
     <br>
-<p>Must be a valid date. Must be a date after <code>start_time</code>. Example: <code>2051-07-10</code></p>
+<p>Must be a valid date. Must be a date after <code>start_time</code>. Example: <code>2051-07-14</code></p>
+        </div>
+        </form>
+
+                    <h2 id="endpoints-POSTapi-parking-spots-batch">POST api/parking-spots/batch</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-POSTapi-parking-spots-batch">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost/api/parking-spots/batch" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"condominium_id\": \"architecto\",
+    \"spots_per_apartment\": 22
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/parking-spots/batch"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "condominium_id": "architecto",
+    "spots_per_apartment": 22
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-parking-spots-batch">
+</span>
+<span id="execution-results-POSTapi-parking-spots-batch" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-parking-spots-batch"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-parking-spots-batch"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-parking-spots-batch" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-parking-spots-batch">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-parking-spots-batch" data-method="POST"
+      data-path="api/parking-spots/batch"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-parking-spots-batch', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-parking-spots-batch"
+                    onclick="tryItOut('POSTapi-parking-spots-batch');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-parking-spots-batch"
+                    onclick="cancelTryOut('POSTapi-parking-spots-batch');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-parking-spots-batch"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/parking-spots/batch</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-parking-spots-batch"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-parking-spots-batch"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>condominium_id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="condominium_id"                data-endpoint="POSTapi-parking-spots-batch"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>The <code>id</code> of an existing record in the condominiums table. Example: <code>architecto</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>spots_per_apartment</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="spots_per_apartment"                data-endpoint="POSTapi-parking-spots-batch"
+               value="22"
+               data-component="body">
+    <br>
+<p>Must be at least 1. Example: <code>22</code></p>
         </div>
         </form>
 
@@ -7195,7 +8198,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"code\": \"architecto\"
+    \"code\": \"architecto\",
+    \"signature\": \"architecto\",
+    \"document_photo\": \"architecto\"
 }"
 </code></pre></div>
 
@@ -7211,7 +8216,9 @@ const headers = {
 };
 
 let body = {
-    "code": "architecto"
+    "code": "architecto",
+    "signature": "architecto",
+    "document_photo": "architecto"
 };
 
 fetch(url, {
@@ -7312,6 +8319,28 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="code"                data-endpoint="POSTapi-packages--package_id--withdraw"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>signature</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="signature"                data-endpoint="POSTapi-packages--package_id--withdraw"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>document_photo</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="document_photo"                data-endpoint="POSTapi-packages--package_id--withdraw"
                value="architecto"
                data-component="body">
     <br>

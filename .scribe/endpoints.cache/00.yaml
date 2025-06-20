@@ -564,11 +564,51 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         custom: []
-      phone:
-        name: phone
+      rg:
+        name: rg
+        description: 'Must not be greater than 30 characters.'
+        required: false
+        example: 'n'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      cpf:
+        name: cpf
+        description: 'Must not be greater than 20 characters.'
+        required: true
+        example: gzmiyvdljnikhway
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      cell_phone:
+        name: cell_phone
         description: 'Must not be greater than 20 characters.'
         required: false
-        example: ngzmiyvdljnikhwa
+        example: kcmyuwpwlvqwrsit
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      commercial_phone:
+        name: commercial_phone
+        description: 'Must not be greater than 20 characters.'
+        required: false
+        example: cpscqldzsnrwtujw
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      whatsapp:
+        name: whatsapp
+        description: 'Must not be greater than 20 characters.'
+        required: false
+        example: vlxjklqppwqbewtn
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -578,7 +618,149 @@ endpoints:
         name: email
         description: 'Must be a valid email address.'
         required: true
-        example: breitenberg.gilbert@example.com
+        example: colt.balistreri@example.net
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      person_type:
+        name: person_type
+        description: ''
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      photo:
+        name: photo
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      notes:
+        name: notes
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      is_porter:
+        name: is_porter
+        description: ''
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      is_janitor:
+        name: is_janitor
+        description: ''
+        required: false
+        example: true
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      is_cleaning:
+        name: is_cleaning
+        description: ''
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      apartment_id:
+        name: apartment_id
+        description: ''
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      billing_address_type:
+        name: billing_address_type
+        description: ''
+        required: true
+        example: condominium
+        type: string
+        enumValues:
+          - condominium
+          - custom
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      cep:
+        name: cep
+        description: 'Must not be greater than 20 characters.'
+        required: false
+        example: iyvdljnikhwaykcm
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      address:
+        name: address
+        description: 'Must not be greater than 255 characters.'
+        required: false
+        example: 'y'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      neighborhood:
+        name: neighborhood
+        description: 'Must not be greater than 100 characters.'
+        required: false
+        example: u
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      city:
+        name: city
+        description: 'Must not be greater than 100 characters.'
+        required: false
+        example: w
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      state:
+        name: state
+        description: 'Must not be greater than 2 characters.'
+        required: false
+        example: pw
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      classification:
+        name: classification
+        description: ''
+        required: true
+        example: architecto
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -588,7 +770,7 @@ endpoints:
         name: active
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -606,9 +788,26 @@ endpoints:
         custom: []
     cleanBodyParameters:
       name: b
-      phone: ngzmiyvdljnikhwa
-      email: breitenberg.gilbert@example.com
-      active: true
+      rg: 'n'
+      cpf: gzmiyvdljnikhway
+      cell_phone: kcmyuwpwlvqwrsit
+      commercial_phone: cpscqldzsnrwtujw
+      whatsapp: vlxjklqppwqbewtn
+      email: colt.balistreri@example.net
+      person_type: architecto
+      photo: architecto
+      notes: architecto
+      is_porter: false
+      is_janitor: true
+      is_cleaning: false
+      billing_address_type: condominium
+      cep: iyvdljnikhwaykcm
+      address: 'y'
+      neighborhood: u
+      city: w
+      state: pw
+      classification: architecto
+      active: false
       condominium_id: 16
     fileParameters: []
     responses: []
@@ -661,11 +860,51 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         custom: []
-      phone:
-        name: phone
+      rg:
+        name: rg
+        description: 'Must not be greater than 30 characters.'
+        required: false
+        example: 'n'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      cpf:
+        name: cpf
         description: 'Must not be greater than 20 characters.'
         required: false
-        example: ngzmiyvdljnikhwa
+        example: gzmiyvdljnikhway
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      cell_phone:
+        name: cell_phone
+        description: 'Must not be greater than 20 characters.'
+        required: false
+        example: kcmyuwpwlvqwrsit
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      commercial_phone:
+        name: commercial_phone
+        description: 'Must not be greater than 20 characters.'
+        required: false
+        example: cpscqldzsnrwtujw
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      whatsapp:
+        name: whatsapp
+        description: 'Must not be greater than 20 characters.'
+        required: false
+        example: vlxjklqppwqbewtn
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -675,7 +914,149 @@ endpoints:
         name: email
         description: 'Must be a valid email address.'
         required: false
-        example: breitenberg.gilbert@example.com
+        example: colt.balistreri@example.net
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      person_type:
+        name: person_type
+        description: ''
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      photo:
+        name: photo
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      notes:
+        name: notes
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      is_porter:
+        name: is_porter
+        description: ''
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      is_janitor:
+        name: is_janitor
+        description: ''
+        required: false
+        example: true
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      is_cleaning:
+        name: is_cleaning
+        description: ''
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      apartment_id:
+        name: apartment_id
+        description: ''
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      billing_address_type:
+        name: billing_address_type
+        description: ''
+        required: false
+        example: condominium
+        type: string
+        enumValues:
+          - condominium
+          - custom
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      cep:
+        name: cep
+        description: 'Must not be greater than 20 characters.'
+        required: false
+        example: iyvdljnikhwaykcm
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      address:
+        name: address
+        description: 'Must not be greater than 255 characters.'
+        required: false
+        example: 'y'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      neighborhood:
+        name: neighborhood
+        description: 'Must not be greater than 100 characters.'
+        required: false
+        example: u
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      city:
+        name: city
+        description: 'Must not be greater than 100 characters.'
+        required: false
+        example: w
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      state:
+        name: state
+        description: 'Must not be greater than 2 characters.'
+        required: false
+        example: pw
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      classification:
+        name: classification
+        description: ''
+        required: false
+        example: null
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -685,7 +1066,7 @@ endpoints:
         name: active
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -703,9 +1084,24 @@ endpoints:
         custom: []
     cleanBodyParameters:
       name: b
-      phone: ngzmiyvdljnikhwa
-      email: breitenberg.gilbert@example.com
-      active: true
+      rg: 'n'
+      cpf: gzmiyvdljnikhway
+      cell_phone: kcmyuwpwlvqwrsit
+      commercial_phone: cpscqldzsnrwtujw
+      whatsapp: vlxjklqppwqbewtn
+      email: colt.balistreri@example.net
+      photo: architecto
+      notes: architecto
+      is_porter: false
+      is_janitor: true
+      is_cleaning: false
+      billing_address_type: condominium
+      cep: iyvdljnikhwaykcm
+      address: 'y'
+      neighborhood: u
+      city: w
+      state: pw
+      active: false
       condominium_id: 16
     fileParameters: []
     responses: []
@@ -2827,9 +3223,157 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         custom: []
+      pickup_location:
+        name: pickup_location
+        description: ''
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      observation:
+        name: observation
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
     cleanBodyParameters:
       apartment_id: architecto
       photo: architecto
+      pickup_location: architecto
+      observation: architecto
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'api/packages/{id}'
+    metadata:
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        name: id
+        description: 'The ID of the package.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      apartment_id:
+        name: apartment_id
+        description: ''
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      photo:
+        name: photo
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      pickup_location:
+        name: pickup_location
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      observation:
+        name: observation
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+    cleanBodyParameters:
+      photo: architecto
+      pickup_location: architecto
+      observation: architecto
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - DELETE
+    uri: 'api/packages/{id}'
+    metadata:
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        name: id
+        description: 'The ID of the package.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
     fileParameters: []
     responses: []
     responseFields: []
@@ -2884,7 +3428,7 @@ endpoints:
         name: start_time
         description: 'Must be a valid date.'
         required: true
-        example: '2025-06-16T13:42:36'
+        example: '2025-06-20T15:39:47'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2894,7 +3438,7 @@ endpoints:
         name: end_time
         description: 'Must be a valid date. Must be a date after <code>start_time</code>.'
         required: true
-        example: '2051-07-10'
+        example: '2051-07-14'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2902,8 +3446,60 @@ endpoints:
         custom: []
     cleanBodyParameters:
       apartment_id: architecto
-      start_time: '2025-06-16T13:42:36'
-      end_time: '2051-07-10'
+      start_time: '2025-06-20T15:39:47'
+      end_time: '2051-07-14'
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - POST
+    uri: api/parking-spots/batch
+    metadata:
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      condominium_id:
+        name: condominium_id
+        description: 'The <code>id</code> of an existing record in the condominiums table.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      spots_per_apartment:
+        name: spots_per_apartment
+        description: 'Must be at least 1.'
+        required: true
+        example: 22
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanBodyParameters:
+      condominium_id: architecto
+      spots_per_apartment: 22
     fileParameters: []
     responses: []
     responseFields: []
@@ -3005,8 +3601,30 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         custom: []
+      signature:
+        name: signature
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      document_photo:
+        name: document_photo
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
     cleanBodyParameters:
       code: architecto
+      signature: architecto
+      document_photo: architecto
     fileParameters: []
     responses: []
     responseFields: []

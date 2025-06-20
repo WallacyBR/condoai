@@ -2,9 +2,14 @@
   <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl shadow-2xl overflow-hidden p-8 border-2 border-cyan-500/20">
       <div class="text-center">
-        <h2 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-pink-400">
-          CondoAI
-        </h2>
+        <div class="flex justify-center mb-4">
+          <img 
+            :src="logoImage" 
+            alt="CondoAI Logo" 
+            class="h-20 w-auto object-contain"
+            @error="handleImageError"
+          />
+        </div>
         <p class="mt-2 text-center text-sm text-cyan-300">
           Faça login em sua conta
         </p>
@@ -116,6 +121,7 @@ import { ref, onMounted, nextTick, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import NeonButton from './NeonButton.vue';
 import auth from '../services/auth';
+import logoImage from '../../images/condo_ai_horizontal.png';
 
 // Funções utilitárias DRY para localStorage
 function saveRememberedEmail(email) {
@@ -230,13 +236,19 @@ export default {
       }
     };
 
+    const handleImageError = () => {
+      console.error('Erro ao carregar a imagem do logo');
+    };
+
     return {
       credentials,
       form,
       error,
       loading,
       showPassword,
-      login
+      login,
+      handleImageError,
+      logoImage
     };
   }
 };

@@ -16,6 +16,7 @@ class ModuleSeeder extends Seeder
             ['name' => 'Condomínios', 'description' => 'Gestão de condomínios'],
             ['name' => 'Moradores', 'description' => 'Cadastro de moradores'],
             ['name' => 'Unidades', 'description' => 'Torres, blocos e apartamentos'],
+            ['name' => 'Correspondências', 'description' => 'Gestão de encomendas e correspondências'],
             ['name' => 'Relatórios', 'description' => 'Geração de relatórios'],
             ['name' => 'Configurações', 'description' => 'Ajustes do sistema'],
         ];

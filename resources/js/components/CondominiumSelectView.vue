@@ -4,9 +4,14 @@
       <!-- Header -->
       <div class="text-center mb-12">
         <div class="mb-6">
-          <h1 class="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-pink-500 mb-4 tracking-tight">
-            CondoAI
-          </h1>
+          <div class="flex justify-center mb-4">
+            <img 
+              :src="logoImage" 
+              alt="CondoAI Logo" 
+              class="h-24 w-auto object-contain"
+              @error="handleImageError"
+            />
+          </div>
           <div class="w-24 h-1 bg-gradient-to-r from-cyan-400 to-pink-500 mx-auto rounded-full"></div>
         </div>
         
@@ -53,6 +58,7 @@
 import CondominiumList from './CondominiumList.vue';
 import { useRouter } from 'vue-router';
 import { ref, onMounted } from 'vue';
+import logoImage from '../../images/condo_ai_horizontal.png';
 
 export default {
   name: 'CondominiumSelectView',
@@ -72,8 +78,14 @@ export default {
       router.push('/dashboard');
     };
 
+    const handleImageError = () => {
+      console.error('Erro ao carregar a imagem do logo');
+    };
+
     return { 
-      selectCondominium
+      selectCondominium,
+      handleImageError,
+      logoImage
     };
   }
 };

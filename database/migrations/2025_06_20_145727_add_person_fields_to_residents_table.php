@@ -12,13 +12,28 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('residents', function (Blueprint $table) {
-            if (Schema::hasColumn('residents', 'phone')) {
+            // Primeiro, renomear a coluna phone para cell_phone
+            if (Schema::hasColumn('residents', 'phone') && !Schema::hasColumn('residents', 'cell_phone')) {
                 $table->renameColumn('phone', 'cell_phone');
             }
+        });
 
-            $table->enum('person_type', ['fisica', 'juridica'])->default('fisica')->after('cpf');
-            $table->string('commercial_phone')->nullable()->after('cell_phone');
-            $table->string('photo')->nullable()->after('state');
+        // Depois, adicionar as novas colunas em uma segunda operação
+        Schema::table('residents', function (Blueprint $table) {
+            // Verificar se a coluna cpf existe para usar como referência
+            if (Schema::hasColumn('residents', 'cpf')) {
+                $table->enum('person_type', ['fisica', 'juridica'])->default('fisica')->after('cpf');
+            } else {
+                $table->enum('person_type', ['fisica', 'juridica'])->default('fisica')->after('email');
+            }
+            
+            // Usar phone ou cell_phone dependendo do que existe
+            $afterColumn = Schema::hasColumn('residents', 'cell_phone') ? 'cell_phone' : 'phone';
+            $table->string('commercial_phone')->nullable()->after($afterColumn);
+            
+            // Verificar se state existe, senão usar email como referência
+            $afterStateColumn = Schema::hasColumn('residents', 'state') ? 'state' : 'email';
+            $table->string('photo')->nullable()->after($afterStateColumn);
             $table->text('notes')->nullable()->after('photo');
             $table->boolean('is_porter')->default(false)->after('notes');
             $table->boolean('is_janitor')->default(false)->after('is_porter');

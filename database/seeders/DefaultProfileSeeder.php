@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Profile;
+use App\Models\Module;
 use Illuminate\Database\Seeder;
 
 class DefaultProfileSeeder extends Seeder
@@ -18,6 +19,14 @@ class DefaultProfileSeeder extends Seeder
 
         foreach ($profiles as $profile) {
             Profile::firstOrCreate(['name' => $profile['name']], $profile);
+        }
+
+        // Associar todos os módulos ao perfil SysOp
+        $sysOpProfile = Profile::where('name', 'SysOp')->first();
+        $allModules = Module::all();
+        
+        if ($sysOpProfile && $allModules->count() > 0) {
+            $sysOpProfile->modules()->sync($allModules->pluck('id'));
         }
     }
 }

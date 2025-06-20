@@ -7,10 +7,14 @@
     >
       <!-- Logo -->
       <div class="h-16 flex flex-col items-center justify-center border-b border-cyan-500/20 bg-gradient-to-r from-gray-900/80 to-gray-800/80 rounded-tr-3xl">
-        <h1 class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-pink-500 tracking-wide"
-            :class="{ 'hidden': isCollapsed }">
-          CondoAI
-        </h1>
+        <div v-if="!isCollapsed" class="flex items-center justify-center">
+          <img 
+            :src="logoImage" 
+            alt="CondoAI Logo" 
+            class="h-8 w-8 object-contain"
+            @error="handleImageError"
+          />
+        </div>
         <span v-if="isCollapsed" class="text-xl font-bold text-cyan-400">C</span>
         <div v-if="selectedCondoName && !isCollapsed" class="mt-1 flex items-center gap-1.5">
           <div class="h-1 w-1 rounded-full bg-cyan-400/60"></div>
@@ -99,6 +103,7 @@
 <script>
 import { ref, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import logoImage from '../../../images/condo_ai_quadrado.png';
 
 export default {
   name: 'AuthenticatedLayout',
@@ -154,6 +159,14 @@ export default {
               </svg>`
       },
       {
+        name: 'Correspondências',
+        path: '/packages',
+        icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>`
+      },
+      {
         name: 'Vagas',
         path: '/parking-spots',
         icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -202,6 +215,12 @@ export default {
     const userName = computed(() => 'Usuário Exemplo');
     const userInitials = computed(() => 'UE');
 
+    const handleImageError = (event) => {
+      console.error('Erro ao carregar imagem:', event.target.src);
+      // Fallback para texto se a imagem falhar
+      event.target.style.display = 'none';
+    };
+
     return {
       isSidebarOpen,
       isCollapsed,
@@ -212,7 +231,9 @@ export default {
       isCurrentRoute,
       logout,
       userName,
-      userInitials
+      userInitials,
+      handleImageError,
+      logoImage
     };
   }
 };

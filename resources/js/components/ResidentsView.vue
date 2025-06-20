@@ -253,13 +253,80 @@
               </svg>
               Editar
             </NeonButton>
-            <NeonButton @click="deleteResident(resident)" size="sm" class="flex-1 bg-red-600/40 hover:bg-red-600/60">
+            <NeonButton @click="showDeleteConfirmation(resident)" size="sm" class="flex-1 bg-red-600/40 hover:bg-red-600/60">
               <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
               Excluir
             </NeonButton>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Confirmação de Exclusão -->
+    <div v-if="deleteConfirmation.show" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" @click="closeDeleteConfirmation">
+      <div class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl shadow-2xl p-6 border-2 border-red-500/30 max-w-md w-full mx-4" @click.stop>
+        <div class="flex items-center mb-4">
+          <div class="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center mr-4">
+            <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-white">Confirmar Exclusão</h3>
+            <p class="text-sm text-gray-400">Esta ação não pode ser desfeita</p>
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <p class="text-gray-300 mb-2">
+            Tem certeza que deseja excluir este morador?
+          </p>
+          
+          <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-3">
+            <p class="text-red-300 text-sm font-medium">
+              {{ deleteConfirmation.itemName }}
+            </p>
+            <!-- Informações adicionais do morador -->
+            <div v-if="deleteConfirmation.item" class="mt-2 pt-2 border-t border-red-500/20">
+              <div class="space-y-1 text-xs text-gray-400">
+                <div>
+                  <span class="text-gray-500">Email:</span>
+                  <span class="text-gray-300 ml-1">{{ deleteConfirmation.item.email }}</span>
+                </div>
+                <div>
+                  <span class="text-gray-500">Telefone:</span>
+                  <span class="text-gray-300 ml-1">{{ deleteConfirmation.item.cell_phone }}</span>
+                </div>
+                <div>
+                  <span class="text-gray-500">Classificação:</span>
+                  <span class="text-gray-300 ml-1">{{ getClassificationLabel(deleteConfirmation.item.classification) }}</span>
+                </div>
+                <div>
+                  <span class="text-gray-500">Status:</span>
+                  <span class="text-gray-300 ml-1">{{ deleteConfirmation.item.active ? 'Ativo' : 'Inativo' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex gap-3">
+          <button 
+            @click="closeDeleteConfirmation"
+            class="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+          >
+            Cancelar
+          </button>
+          <button 
+            @click="confirmDelete"
+            :disabled="deleteConfirmation.loading"
+            class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-red-800 disabled:cursor-not-allowed text-white rounded-lg transition-colors flex items-center justify-center"
+          >
+            <span v-if="!deleteConfirmation.loading">Excluir</span>
+            <div v-else class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          </button>
         </div>
       </div>
     </div>
@@ -284,6 +351,14 @@ export default {
     const search = ref('');
     const filter = ref('all');
     const classificationFilter = ref('all');
+
+    // Estado para modal de confirmação de exclusão
+    const deleteConfirmation = ref({
+      show: false,
+      item: null,
+      itemName: '',
+      loading: false
+    });
 
     // Variáveis para gerenciar filtro por condomínio
     const selectedCondominiumId = ref(localStorage.getItem('selectedCondominium'));
@@ -577,20 +652,50 @@ export default {
     };
 
     const deleteResident = async (resident) => {
-      if (!confirm(`Excluir ${resident.name}?`)) return;
+      // Configurar modal de confirmação
+      deleteConfirmation.value = {
+        show: true,
+        item: resident,
+        itemName: `Morador: ${resident.name}`,
+        loading: false
+      };
+    };
+
+    // Funções do modal de confirmação
+    const showDeleteConfirmation = (resident) => {
+      deleteConfirmation.value = {
+        show: true,
+        item: resident,
+        itemName: `Morador: ${resident.name}`,
+        loading: false
+      };
+    };
+
+    const closeDeleteConfirmation = () => {
+      deleteConfirmation.value.show = false;
+      deleteConfirmation.value.loading = false;
+    };
+
+    const confirmDelete = async () => {
+      const { item } = deleteConfirmation.value;
+      deleteConfirmation.value.loading = true;
+
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`/api/residents/${resident.id}`, {
+        const response = await fetch(`/api/residents/${item.id}`, {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` }
         });
         if (response.ok) {
-          residents.value = residents.value.filter(r => r.id !== resident.id);
+          residents.value = residents.value.filter(r => r.id !== item.id);
+          closeDeleteConfirmation();
         } else {
           console.error('Erro ao excluir morador');
+          deleteConfirmation.value.loading = false;
         }
       } catch (e) {
         console.error('Erro ao excluir morador:', e);
+        deleteConfirmation.value.loading = false;
       }
     };
 
@@ -632,7 +737,11 @@ export default {
       getClassificationLabel,
       getClassificationBadgeClass,
       selectedCondominiumName,
-      stats
+      stats,
+      deleteConfirmation,
+      showDeleteConfirmation,
+      closeDeleteConfirmation,
+      confirmDelete
     };
   }
 };

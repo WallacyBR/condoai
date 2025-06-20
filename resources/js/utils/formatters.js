@@ -10,19 +10,21 @@
 export const formatApartmentDescription = (apartment) => {
   if (!apartment) return '';
   
-  let description = `Unidade ${apartment.number}`;
+  const descriptionParts = [];
   
-  // Adiciona torre se existir
-  if (apartment.tower) {
-    description += ` - Torre ${apartment.tower.name}`;
+  if (apartment.number) {
+    descriptionParts.push(`Unidade ${apartment.number}`);
   }
   
-  // Adiciona bloco se existir
-  if (apartment.block) {
-    description += ` - Bloco ${apartment.block.name}`;
+  if (apartment.tower && apartment.tower.name) {
+    descriptionParts.push(apartment.tower.name);
   }
   
-  return description;
+  if (apartment.block && apartment.block.name) {
+    descriptionParts.push(apartment.block.name);
+  }
+  
+  return descriptionParts.join(' - ');
 };
 
 /**
@@ -45,12 +47,12 @@ export const formatApartmentLocation = (apartment) => {
   
   const parts = [];
   
-  if (apartment.tower) {
-    parts.push(`Torre ${apartment.tower.name}`);
+  if (apartment.tower && apartment.tower.name) {
+    parts.push(apartment.tower.name);
   }
   
-  if (apartment.block) {
-    parts.push(`Bloco ${apartment.block.name}`);
+  if (apartment.block && apartment.block.name) {
+    parts.push(apartment.block.name);
   }
   
   return parts.length > 0 ? parts.join(' - ') : '';

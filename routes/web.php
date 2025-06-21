@@ -4,6 +4,11 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
 
+// Rota para página offline
+Route::get('/offline', function () {
+    return view('offline');
+})->name('offline');
+
 // Rota principal - exibe apenas o LoginView (excluindo rotas da API)
 Route::get('/{any}', function () {
     return view('app');

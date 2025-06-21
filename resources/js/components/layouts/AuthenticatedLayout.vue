@@ -2,12 +2,18 @@
   <div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
     <!-- Sidebar -->
     <aside 
-      class="fixed top-0 left-0 h-screen bg-gradient-to-b from-gray-900 to-gray-800 shadow-2xl transform transition-all duration-300 ease-in-out z-30 rounded-r-3xl backdrop-blur-xl border-r-2 border-cyan-500/30"
-      :class="{ '-translate-x-full': !isSidebarOpen, 'translate-x-0': isSidebarOpen, 'w-64': !isCollapsed, 'w-20': isCollapsed }"
+      class="fixed top-0 left-0 h-screen bg-gradient-to-b from-gray-900 to-gray-800 shadow-2xl transform transition-all duration-300 ease-in-out z-40 rounded-r-3xl backdrop-blur-xl border-r-2 border-cyan-500/30"
+      :class="{ 
+        '-translate-x-full': !isSidebarOpen, 
+        'translate-x-0': isSidebarOpen, 
+        'w-64': !isCollapsed && isSidebarOpen, 
+        'w-20': isCollapsed && isSidebarOpen,
+        'w-0': !isSidebarOpen
+      }"
     >
       <!-- Logo -->
       <div class="h-16 flex flex-col items-center justify-center border-b border-cyan-500/20 bg-gradient-to-r from-gray-900/80 to-gray-800/80 rounded-tr-3xl">
-        <div v-if="!isCollapsed" class="flex items-center justify-center">
+        <div v-if="!isCollapsed && isSidebarOpen" class="flex items-center justify-center">
           <img 
             :src="logoImage" 
             alt="CondoAI Logo" 
@@ -15,15 +21,22 @@
             @error="handleImageError"
           />
         </div>
-        <span v-if="isCollapsed" class="text-xl font-bold text-cyan-400">C</span>
-        <div v-if="selectedCondoName && !isCollapsed" class="mt-1 flex items-center gap-1.5">
+        <div v-if="isCollapsed && isSidebarOpen" class="flex items-center justify-center">
+          <img 
+            :src="logoImage" 
+            alt="CondoAI Logo" 
+            class="h-8 w-8 object-contain"
+            @error="handleImageError"
+          />
+        </div>
+        <div v-if="selectedCondoName && !isCollapsed && isSidebarOpen" class="mt-1 flex items-center gap-1.5">
           <div class="h-1 w-1 rounded-full bg-cyan-400/60"></div>
           <span class="text-xs text-cyan-400/80 truncate max-w-[180px]">{{ selectedCondoName }}</span>
         </div>
       </div>
 
       <!-- Menu -->
-      <nav class="mt-8">
+      <nav class="mt-8" v-if="isSidebarOpen">
         <div class="px-2 space-y-3">
           <router-link 
             v-for="item in menuItems" 
@@ -35,8 +48,16 @@
               'justify-center': isCollapsed
             }"
           >
-            <span v-html="item.icon" class="h-5 w-5" :class="{ 'mr-3': !isCollapsed }"></span>
-            <span :class="{ 'hidden': isCollapsed }">{{ item.name }}</span>
+            <span v-html="item.icon" class="h-5 w-5 transition-all duration-250" :class="{ 'mr-3': isFullyExpanded }"></span>
+            <span 
+              class="transition-all duration-250 overflow-hidden whitespace-nowrap"
+              :class="{ 
+                'w-0 opacity-0': !isFullyExpanded,
+                'w-auto opacity-100': isFullyExpanded
+              }"
+            >
+              {{ item.name }}
+            </span>
             <span v-if="isCollapsed" class="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-cyan-400 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-lg">
               {{ item.name }}
             </span>
@@ -45,7 +66,7 @@
       </nav>
 
       <!-- User Info -->
-      <div class="absolute bottom-0 w-full p-4 border-t border-cyan-500/20 bg-gradient-to-r from-gray-900/80 to-gray-800/80 rounded-br-3xl">
+      <div class="absolute bottom-0 w-full p-4 border-t border-cyan-500/20 bg-gradient-to-r from-gray-900/80 to-gray-800/80 rounded-br-3xl" v-if="isSidebarOpen">
         <div class="flex items-center gap-3" :class="{ 'justify-center': isCollapsed }">
           <div class="flex-shrink-0">
             <div class="h-12 w-12 rounded-full bg-gradient-to-r from-cyan-500 to-pink-500 p-1 shadow-xl">
@@ -54,7 +75,13 @@
               </div>
             </div>
           </div>
-          <div class="ml-2" :class="{ 'hidden': isCollapsed }">
+          <div 
+            class="transition-all duration-250 overflow-hidden"
+            :class="{ 
+              'w-0 opacity-0': !isFullyExpanded,
+              'w-auto opacity-100 ml-2': isFullyExpanded
+            }"
+          >
             <p class="text-base font-medium text-gray-300">{{ userName }}</p>
             <button @click="logout" class="text-sm text-gray-400 hover:text-cyan-400 transition-colors duration-200 rounded-full px-3 py-1 mt-1 bg-gray-900/60 hover:bg-cyan-500/20 shadow">
               Sair
@@ -63,12 +90,13 @@
         </div>
       </div>
 
-      <!-- Collapse Button -->
+      <!-- Collapse Button - Apenas em desktop -->
       <button 
+        v-if="isSidebarOpen && isDesktop"
         @click="toggleCollapse"
-        class="absolute -right-4 top-20 bg-gradient-to-r from-cyan-500 to-pink-500 p-2 rounded-full shadow-xl hover:shadow-cyan-500/25 transition-all duration-200 border-4 border-gray-900"
+        class="absolute -right-6 top-20 p-3 rounded-full bg-gray-800/60 hover:bg-gray-700/80 transition-all duration-200 border border-cyan-500/30 hover:border-cyan-400/50 backdrop-blur-sm shadow-lg hover:shadow-cyan-500/20 group"
       >
-        <svg class="h-4 w-4 text-white transform transition-transform duration-200" 
+        <svg class="h-5 w-5 text-cyan-400 group-hover:text-cyan-300 transform transition-all duration-200" 
              :class="{ 'rotate-180': isCollapsed }"
              fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -78,32 +106,50 @@
 
     <!-- Overlay -->
     <div
-      v-if="isSidebarOpen"
+      v-if="isSidebarOpen && !isDesktop"
       @click="toggleSidebar"
-      class="fixed inset-0 bg-black/50 z-20 lg:hidden"
+      class="fixed inset-0 bg-black/50 z-30"
     ></div>
 
     <!-- Mobile Top Bar -->
     <header
       id="mobile-top-bar"
-      class="lg:hidden fixed top-0 left-0 right-0 h-16 flex items-center justify-between bg-gradient-to-r from-gray-900 to-gray-800 px-4 shadow z-30"
+      class="lg:hidden fixed top-0 left-0 right-0 h-16 flex items-center justify-between bg-gradient-to-r from-gray-900/95 to-gray-800/95 backdrop-blur-xl px-4 shadow-lg z-20 border-b border-cyan-500/20"
     >
-      <h1 class="text-cyan-400 font-semibold">{{ pageTitle }}</h1>
+      <h1 class="text-cyan-400 font-semibold text-lg">{{ pageTitle }}</h1>
       <button
         @click="toggleSidebar"
-        class="p-2 rounded-lg bg-gradient-to-r from-cyan-500 to-pink-500"
+        class="relative p-2.5 rounded-xl bg-gray-800/60 hover:bg-gray-700/80 transition-all duration-200 border border-cyan-500/30 hover:border-cyan-400/50 backdrop-blur-sm group"
       >
-        <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
+        <div class="flex flex-col items-center justify-center w-6 h-6 space-y-1">
+          <span 
+            class="block w-5 h-0.5 bg-cyan-400 transition-all duration-200 group-hover:bg-cyan-300"
+            :class="{ 'rotate-45 translate-y-1.5': isSidebarOpen }"
+          ></span>
+          <span 
+            class="block w-5 h-0.5 bg-cyan-400 transition-all duration-200 group-hover:bg-cyan-300"
+            :class="{ 'opacity-0': isSidebarOpen }"
+          ></span>
+          <span 
+            class="block w-5 h-0.5 bg-cyan-400 transition-all duration-200 group-hover:bg-cyan-300"
+            :class="{ '-rotate-45 -translate-y-1.5': isSidebarOpen }"
+          ></span>
+        </div>
       </button>
     </header>
 
     <!-- Main Content -->
-    <main class="lg:ml-64 min-h-screen transition-all duration-300 pt-16 lg:pt-0" :class="{ 'lg:ml-20': isCollapsed }">
+    <main 
+      class="min-h-screen transition-all duration-300 pt-16 lg:pt-0" 
+      :class="{ 
+        'lg:ml-64': isSidebarOpen && !isCollapsed && isDesktop,
+        'lg:ml-20': isSidebarOpen && isCollapsed && isDesktop,
+        'lg:ml-0': !isSidebarOpen || !isDesktop
+      }"
+    >
       <!-- Header -->
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h2 class="text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-pink-500 mb-6">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 lg:py-8">
+        <h2 class="hidden lg:block text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-pink-500 mb-6">
           {{ pageTitle }}
         </h2>
         <slot></slot>
@@ -126,6 +172,8 @@ export default {
     const route = useRoute();
     const isSidebarOpen = ref(window.innerWidth >= 1024);
     const isCollapsed = ref(false);
+    const isDesktop = ref(window.innerWidth >= 1024);
+    const isFullyExpanded = ref(false);
 
     const selectedCondoId = ref(localStorage.getItem('selectedCondominium'));
     const selectedCondoName = ref(localStorage.getItem('selectedCondominiumName'));
@@ -142,15 +190,32 @@ export default {
     window.addEventListener('condominiumSelected', updateSelected);
 
     const handleResize = () => {
-      if (window.innerWidth >= 1024) {
+      const isLargeScreen = window.innerWidth >= 1024;
+      isDesktop.value = isLargeScreen;
+      
+      if (isLargeScreen) {
         isSidebarOpen.value = true;
+        // Se não estiver colapsado, definir como totalmente expandido após a animação
+        if (!isCollapsed.value) {
+          setTimeout(() => {
+            isFullyExpanded.value = true;
+          }, 200);
+        }
       } else {
         isSidebarOpen.value = false;
+        isCollapsed.value = false; // Reset collapse em mobile
+        isFullyExpanded.value = false;
       }
     };
 
     window.addEventListener('resize', handleResize);
-    onMounted(handleResize);
+    onMounted(() => {
+      handleResize();
+      // Inicializar isFullyExpanded baseado no estado inicial
+      if (isSidebarOpen.value && !isCollapsed.value) {
+        isFullyExpanded.value = true;
+      }
+    });
     onBeforeUnmount(() => {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('storage', updateSelected);
@@ -228,8 +293,38 @@ export default {
       return [...baseItems, ...condoItems];
     });
 
-    const toggleSidebar = () => { isSidebarOpen.value = !isSidebarOpen.value; };
-    const toggleCollapse = () => { isCollapsed.value = !isCollapsed.value; };
+    const toggleSidebar = () => { 
+      isSidebarOpen.value = !isSidebarOpen.value; 
+      // Em mobile, sempre expandir quando abrir
+      if (isSidebarOpen.value && !isDesktop.value) {
+        isCollapsed.value = false;
+      }
+      
+      // Controlar quando o menu está totalmente expandido
+      if (isSidebarOpen.value && !isCollapsed.value) {
+        // Delay para mostrar o texto apenas após a animação terminar
+        setTimeout(() => {
+          isFullyExpanded.value = true;
+        }, 200); // Reduzido para resposta mais rápida
+      } else {
+        isFullyExpanded.value = false;
+      }
+    };
+    
+    const toggleCollapse = () => { 
+      isCollapsed.value = !isCollapsed.value; 
+      
+      // Controlar quando o menu está totalmente expandido
+      if (!isCollapsed.value) {
+        // Delay para mostrar o texto apenas após a animação terminar
+        setTimeout(() => {
+          isFullyExpanded.value = true;
+        }, 200); // Reduzido para resposta mais rápida
+      } else {
+        isFullyExpanded.value = false;
+      }
+    };
+
     const isCurrentRoute = (path) => route.path === path;
 
     const logout = () => {
@@ -253,6 +348,8 @@ export default {
     return {
       isSidebarOpen,
       isCollapsed,
+      isDesktop,
+      isFullyExpanded,
       menuItems,
       selectedCondoName,
       toggleSidebar,

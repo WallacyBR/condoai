@@ -152,6 +152,9 @@
           </div>
         </div>
       </div>
+
+      <!-- PWA Settings -->
+      <PWASettings />
     </div>
   </AuthenticatedLayout>
 </template>
@@ -159,10 +162,14 @@
 <script>
 import { ref, reactive, computed } from 'vue';
 import AuthenticatedLayout from './layouts/AuthenticatedLayout.vue';
+import PWASettings from './PWASettings.vue';
 
 export default {
   name: 'SettingsView',
-  components: { AuthenticatedLayout },
+  components: { 
+    AuthenticatedLayout,
+    PWASettings
+  },
   setup() {
     const profile = reactive({
       name: 'Usuário Exemplo',

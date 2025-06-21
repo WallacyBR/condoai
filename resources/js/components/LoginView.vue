@@ -85,7 +85,6 @@
               <span class="ml-2 text-sm text-cyan-300 transition-colors duration-200 peer-checked:text-cyan-100 font-medium">
                 Lembrar-me
               </span>
-              <svg v-if="form.remember" class="absolute ml-1.5 w-3 h-3 text-white pointer-events-none" style="left: 6px; top: 6px;" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
             </label>
           </div>
 

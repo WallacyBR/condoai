@@ -14,9 +14,16 @@ use App\Http\Controllers\API\ResidentController;
 use App\Http\Controllers\API\TowerController;
 use App\Http\Controllers\API\UserController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
-// Rota de health check (não requer autenticação)
-Route::get('health', [HealthController::class, 'check']);
+// Health check endpoint
+Route::get('/health', function () {
+    return response()->json([
+        'status' => 'ok',
+        'timestamp' => now()->toISOString(),
+        'version' => '1.0.0'
+    ]);
+});
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('auth/login', 'login');

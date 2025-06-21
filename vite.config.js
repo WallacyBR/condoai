@@ -12,9 +12,12 @@ export default defineConfig({
         vue(),
         VitePWA({
             registerType: 'autoUpdate',
+            injectRegister: 'auto',
             workbox: {
                 globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,gif,woff,woff2,ttf,eot}'],
                 maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
+                navigateFallback: '/',
+                navigateFallbackAllowlist: [/^(?!\/__).*/],
                 runtimeCaching: [
                     {
                         urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -36,6 +39,18 @@ export default defineConfig({
                                 maxEntries: 10,
                                 maxAgeSeconds: 60 * 60 * 24 * 365
                             }
+                        }
+                    },
+                    {
+                        urlPattern: /^https:\/\/.*\/api\/.*/i,
+                        handler: 'NetworkFirst',
+                        options: {
+                            cacheName: 'api-cache',
+                            expiration: {
+                                maxEntries: 50,
+                                maxAgeSeconds: 60 * 60 * 24 // 24 horas
+                            },
+                            networkTimeoutSeconds: 10
                         }
                     }
                 ]

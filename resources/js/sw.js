@@ -49,12 +49,17 @@ self.addEventListener('fetch', (event) => {
     const { request } = event;
     const url = new URL(request.url);
 
+    // Ignorar requisições para o próprio Service Worker
+    if (request.url.includes('sw.js') || request.url.includes('workbox')) {
+        return;
+    }
+
     // Estratégia para requisições da API
     if (url.pathname.startsWith('/api/')) {
         event.respondWith(
             fetch(request)
                 .then((response) => {
-                    // Cache da resposta da API
+                    // Cache da resposta da API apenas se for bem-sucedida
                     if (response.status === 200) {
                         const responseClone = response.clone();
                         caches.open(DYNAMIC_CACHE).then((cache) => {
@@ -86,6 +91,10 @@ self.addEventListener('fetch', (event) => {
                                 cache.put(request, responseClone);
                             });
                             return fetchResponse;
+                        })
+                        .catch(() => {
+                            // Retorna uma resposta vazia para assets que falharam
+                            return new Response('', { status: 404 });
                         });
                 })
         );
@@ -97,14 +106,24 @@ self.addEventListener('fetch', (event) => {
         event.respondWith(
             fetch(request)
                 .then((response) => {
-                    const responseClone = response.clone();
-                    caches.open(DYNAMIC_CACHE).then((cache) => {
-                        cache.put(request, responseClone);
-                    });
+                    // Só cacheia respostas bem-sucedidas
+                    if (response.status === 200) {
+                        const responseClone = response.clone();
+                        caches.open(DYNAMIC_CACHE).then((cache) => {
+                            cache.put(request, responseClone);
+                        });
+                    }
                     return response;
                 })
                 .catch(() => {
-                    return caches.match('/offline');
+                    // Fallback para página offline
+                    return caches.match('/offline')
+                        .then((offlineResponse) => {
+                            return offlineResponse || new Response('Página offline', {
+                                status: 503,
+                                headers: { 'Content-Type': 'text/html' }
+                            });
+                        });
                 })
         );
         return;
@@ -114,10 +133,13 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
         fetch(request)
             .then((response) => {
-                const responseClone = response.clone();
-                caches.open(DYNAMIC_CACHE).then((cache) => {
-                    cache.put(request, responseClone);
-                });
+                // Só cacheia respostas bem-sucedidas
+                if (response.status === 200) {
+                    const responseClone = response.clone();
+                    caches.open(DYNAMIC_CACHE).then((cache) => {
+                        cache.put(request, responseClone);
+                    });
+                }
                 return response;
             })
             .catch(() => {

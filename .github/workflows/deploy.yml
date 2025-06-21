@@ -66,9 +66,9 @@ jobs:
             sudo chown -R ubuntu:www-data storage bootstrap/cache
             sudo chmod -R 775 storage bootstrap/cache
             
-            # Permissões específicas para logs e sessões
-            sudo chown -R ubuntu:www-data storage/logs storage/framework/sessions storage/framework/cache
-            sudo chmod -R 775 storage/logs storage/framework/sessions storage/framework/cache
+            # Permissões específicas para logs, sessões e views compiladas
+            sudo chown -R ubuntu:www-data storage/logs storage/framework/sessions storage/framework/cache storage/framework/views
+            sudo chmod -R 775 storage/logs storage/framework/sessions storage/framework/cache storage/framework/views
             
             # Garante que o diretório de uploads existe e tem permissões corretas
             sudo mkdir -p storage/app/public

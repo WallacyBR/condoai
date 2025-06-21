@@ -6,5 +6,8 @@ export default {
   },
   moduleFileExtensions: ['js', 'vue'],
   testPathIgnorePatterns: ['/vendor/'],
-  transformIgnorePatterns: []
+  transformIgnorePatterns: [],
+  moduleNameMapper: {
+    '\\.(jpg|jpeg|png|svg)$': '<rootDir>/resources/tests/__mocks__/fileMock.cjs'
+  }
 };

@@ -3205,7 +3205,7 @@ endpoints:
     bodyParameters:
       apartment_id:
         name: apartment_id
-        description: ''
+        description: 'The <code>id</code> of an existing record in the apartments table.'
         required: true
         example: architecto
         type: string
@@ -3225,9 +3225,9 @@ endpoints:
         custom: []
       pickup_location:
         name: pickup_location
-        description: ''
+        description: 'Must not be greater than 255 characters.'
         required: true
-        example: architecto
+        example: 'n'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3246,7 +3246,7 @@ endpoints:
     cleanBodyParameters:
       apartment_id: architecto
       photo: architecto
-      pickup_location: architecto
+      pickup_location: 'n'
       observation: architecto
     fileParameters: []
     responses: []
@@ -3293,8 +3293,8 @@ endpoints:
         name: apartment_id
         description: ''
         required: false
-        example: null
-        type: string
+        example: 16
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
@@ -3311,9 +3311,9 @@ endpoints:
         custom: []
       pickup_location:
         name: pickup_location
-        description: ''
+        description: 'Must not be greater than 255 characters.'
         required: false
-        example: architecto
+        example: 'n'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3330,8 +3330,9 @@ endpoints:
         nullable: true
         custom: []
     cleanBodyParameters:
+      apartment_id: 16
       photo: architecto
-      pickup_location: architecto
+      pickup_location: 'n'
       observation: architecto
     fileParameters: []
     responses: []
@@ -3428,7 +3429,7 @@ endpoints:
         name: start_time
         description: 'Must be a valid date.'
         required: true
-        example: '2025-06-20T15:39:47'
+        example: '2025-06-21T09:35:13'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3438,7 +3439,7 @@ endpoints:
         name: end_time
         description: 'Must be a valid date. Must be a date after <code>start_time</code>.'
         required: true
-        example: '2051-07-14'
+        example: '2051-07-15'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3446,8 +3447,8 @@ endpoints:
         custom: []
     cleanBodyParameters:
       apartment_id: architecto
-      start_time: '2025-06-20T15:39:47'
-      end_time: '2051-07-14'
+      start_time: '2025-06-21T09:35:13'
+      end_time: '2051-07-15'
     fileParameters: []
     responses: []
     responseFields: []

@@ -229,7 +229,7 @@
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: June 20, 2025</li>
+        <li>Last updated: June 21, 2025</li>
     </ul>
 </div>
 
@@ -7288,7 +7288,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"apartment_id\": \"architecto\",
     \"photo\": \"architecto\",
-    \"pickup_location\": \"architecto\",
+    \"pickup_location\": \"n\",
     \"observation\": \"architecto\"
 }"
 </code></pre></div>
@@ -7307,7 +7307,7 @@ const headers = {
 let body = {
     "apartment_id": "architecto",
     "photo": "architecto",
-    "pickup_location": "architecto",
+    "pickup_location": "n",
     "observation": "architecto"
 };
 
@@ -7400,7 +7400,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value="architecto"
                data-component="body">
     <br>
-<p>Example: <code>architecto</code></p>
+<p>The <code>id</code> of an existing record in the apartments table. Example: <code>architecto</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>photo</code></b>&nbsp;&nbsp;
@@ -7419,10 +7419,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="pickup_location"                data-endpoint="POSTapi-packages"
-               value="architecto"
+               value="n"
                data-component="body">
     <br>
-<p>Example: <code>architecto</code></p>
+<p>Must not be greater than 255 characters. Example: <code>n</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>observation</code></b>&nbsp;&nbsp;
@@ -7454,8 +7454,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
+    \"apartment_id\": 16,
     \"photo\": \"architecto\",
-    \"pickup_location\": \"architecto\",
+    \"pickup_location\": \"n\",
     \"observation\": \"architecto\"
 }"
 </code></pre></div>
@@ -7472,8 +7473,9 @@ const headers = {
 };
 
 let body = {
+    "apartment_id": 16,
     "photo": "architecto",
-    "pickup_location": "architecto",
+    "pickup_location": "n",
     "observation": "architecto"
 };
 
@@ -7575,14 +7577,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>apartment_id</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
+<small>integer</small>&nbsp;
 <i>optional</i> &nbsp;
-                <input type="text" style="display: none"
-                              name="apartment_id"                data-endpoint="PUTapi-packages--id-"
-               value=""
+                <input type="number" style="display: none"
+               step="any"               name="apartment_id"                data-endpoint="PUTapi-packages--id-"
+               value="16"
                data-component="body">
     <br>
-
+<p>Example: <code>16</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>photo</code></b>&nbsp;&nbsp;
@@ -7601,10 +7603,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="pickup_location"                data-endpoint="PUTapi-packages--id-"
-               value="architecto"
+               value="n"
                data-component="body">
     <br>
-<p>Example: <code>architecto</code></p>
+<p>Must not be greater than 255 characters. Example: <code>n</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>observation</code></b>&nbsp;&nbsp;
@@ -7757,8 +7759,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"apartment_id\": \"architecto\",
-    \"start_time\": \"2025-06-20T15:39:47\",
-    \"end_time\": \"2051-07-14\"
+    \"start_time\": \"2025-06-21T09:35:13\",
+    \"end_time\": \"2051-07-15\"
 }"
 </code></pre></div>
 
@@ -7775,8 +7777,8 @@ const headers = {
 
 let body = {
     "apartment_id": "architecto",
-    "start_time": "2025-06-20T15:39:47",
-    "end_time": "2051-07-14"
+    "start_time": "2025-06-21T09:35:13",
+    "end_time": "2051-07-15"
 };
 
 fetch(url, {
@@ -7888,10 +7890,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_time"                data-endpoint="POSTapi-common-areas--common_area_id--bookings"
-               value="2025-06-20T15:39:47"
+               value="2025-06-21T09:35:13"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2025-06-20T15:39:47</code></p>
+<p>Must be a valid date. Example: <code>2025-06-21T09:35:13</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_time</code></b>&nbsp;&nbsp;
@@ -7899,10 +7901,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_time"                data-endpoint="POSTapi-common-areas--common_area_id--bookings"
-               value="2051-07-14"
+               value="2051-07-15"
                data-component="body">
     <br>
-<p>Must be a valid date. Must be a date after <code>start_time</code>. Example: <code>2051-07-14</code></p>
+<p>Must be a valid date. Must be a date after <code>start_time</code>. Example: <code>2051-07-15</code></p>
         </div>
         </form>
 

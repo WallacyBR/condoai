@@ -76,18 +76,31 @@
       </button>
     </aside>
 
-    <!-- Mobile Sidebar Toggle -->
-    <button 
+    <!-- Overlay -->
+    <div
+      v-if="isSidebarOpen"
       @click="toggleSidebar"
-      class="fixed top-4 left-4 z-50 p-2 rounded-lg bg-gradient-to-r from-cyan-500 to-pink-500 shadow-lg lg:hidden"
+      class="fixed inset-0 bg-black/50 z-20 lg:hidden"
+    ></div>
+
+    <!-- Mobile Top Bar -->
+    <header
+      id="mobile-top-bar"
+      class="lg:hidden fixed top-0 left-0 right-0 h-16 flex items-center justify-between bg-gradient-to-r from-gray-900 to-gray-800 px-4 shadow z-30"
     >
-      <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-      </svg>
-    </button>
+      <h1 class="text-cyan-400 font-semibold">{{ pageTitle }}</h1>
+      <button
+        @click="toggleSidebar"
+        class="p-2 rounded-lg bg-gradient-to-r from-cyan-500 to-pink-500"
+      >
+        <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </header>
 
     <!-- Main Content -->
-    <main class="lg:ml-64 min-h-screen transition-all duration-300" :class="{ 'lg:ml-20': isCollapsed }">
+    <main class="lg:ml-64 min-h-screen transition-all duration-300 pt-16 lg:pt-0" :class="{ 'lg:ml-20': isCollapsed }">
       <!-- Header -->
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h2 class="text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-pink-500 mb-6">

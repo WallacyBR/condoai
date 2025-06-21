@@ -13,10 +13,14 @@ export default defineConfig({
         VitePWA({
             registerType: 'autoUpdate',
             injectRegister: 'auto',
+            strategies: 'generateSW',
             workbox: {
                 globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,gif,woff,woff2,ttf,eot}'],
                 maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
-                navigateFallback: '/',
+                cleanupOutdatedCaches: true,
+                skipWaiting: true,
+                clientsClaim: true,
+                navigateFallback: '/offline',
                 navigateFallbackAllowlist: [/^(?!\/__).*/],
                 runtimeCaching: [
                     {
@@ -51,6 +55,18 @@ export default defineConfig({
                                 maxAgeSeconds: 60 * 60 * 24 // 24 horas
                             },
                             networkTimeoutSeconds: 10
+                        }
+                    },
+                    {
+                        urlPattern: /^https:\/\/.*\/.*/i,
+                        handler: 'NetworkFirst',
+                        options: {
+                            cacheName: 'pages-cache',
+                            expiration: {
+                                maxEntries: 100,
+                                maxAgeSeconds: 60 * 60 * 24 * 7 // 7 dias
+                            },
+                            networkTimeoutSeconds: 5
                         }
                     }
                 ]

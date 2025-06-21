@@ -9,7 +9,7 @@ export function usePWA() {
     const offlineReady = ref(false);
     const swRegistration = ref(null);
 
-    // Registrar Service Worker
+    // Registrar Service Worker usando VitePWA
     const registerServiceWorker = () => {
         if ('serviceWorker' in navigator) {
             try {
@@ -198,25 +198,18 @@ export function usePWA() {
         window.addEventListener('online', handleOnline);
         window.addEventListener('offline', handleOffline);
 
-        // Event listener para instalação
+        // Event listener para instalação do PWA
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             window.deferredPrompt = e;
-            console.log('Prompt de instalação disponível');
+            console.log('Prompt de instalação do PWA disponível');
         });
 
-        // Event listener para app instalado
+        // Event listener para quando o PWA é instalado
         window.addEventListener('appinstalled', () => {
             isInstalled.value = true;
-            console.log('PWA instalado');
+            console.log('PWA instalado com sucesso');
         });
-
-        // Event listener para mudanças no Service Worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.addEventListener('message', (event) => {
-                console.log('Mensagem do Service Worker:', event.data);
-            });
-        }
     };
 
     // Cleanup
@@ -225,6 +218,7 @@ export function usePWA() {
         window.removeEventListener('offline', handleOffline);
     };
 
+    // Lifecycle hooks
     onMounted(() => {
         initPWA();
     });
@@ -239,6 +233,9 @@ export function usePWA() {
         needRefresh,
         offlineReady,
         swRegistration,
+        updateSW,
+        registerServiceWorker,
+        checkInstallation,
         requestNotificationPermission,
         sendNotification,
         installPWA,

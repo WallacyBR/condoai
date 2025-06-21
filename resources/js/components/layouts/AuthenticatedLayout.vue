@@ -114,7 +114,7 @@
 
 
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import logoImage from '../../../images/condo_ai_quadrado.png';
 
@@ -124,7 +124,7 @@ export default {
   setup() {
     const router = useRouter();
     const route = useRoute();
-    const isSidebarOpen = ref(false);
+    const isSidebarOpen = ref(window.innerWidth >= 1024);
     const isCollapsed = ref(false);
 
     const selectedCondoId = ref(localStorage.getItem('selectedCondominium'));
@@ -140,6 +140,22 @@ export default {
     
     // Também escutar mudanças customizadas
     window.addEventListener('condominiumSelected', updateSelected);
+
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        isSidebarOpen.value = true;
+      } else {
+        isSidebarOpen.value = false;
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    onMounted(handleResize);
+    onBeforeUnmount(() => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('storage', updateSelected);
+      window.removeEventListener('condominiumSelected', updateSelected);
+    });
 
     const baseItems = [
       {

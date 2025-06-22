@@ -15,10 +15,10 @@
     <meta name="msapplication-TileColor" content="#1e293b">
     <meta name="msapplication-tap-highlight" content="no">
     
-    <!-- PWA Icons -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/condo_ai_quadrado.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/condo_ai_quadrado.png">
+    <link rel="apple-touch-icon" href="/images/condo_ai_quadrado.png">
     <link rel="mask-icon" href="/masked-icon.svg" color="#1e293b">
     
     <!-- PWA Manifest -->

@@ -3,29 +3,33 @@
  */
 
 /**
- * Formata a descrição completa de uma unidade incluindo torre, bloco e número
- * @param {Object} apartment - Objeto da unidade com relacionamentos tower e block
+ * Formata a descrição de uma unidade/apartamento
+ * @param {Object} apartment - Objeto do apartamento
  * @returns {string} Descrição formatada da unidade
  */
-export const formatApartmentDescription = (apartment) => {
+export function formatApartmentDescription(apartment) {
   if (!apartment) return '';
   
-  const descriptionParts = [];
+  const parts = [];
   
   if (apartment.number) {
-    descriptionParts.push(`Unidade ${apartment.number}`);
+    parts.push(`Unidade ${apartment.number}`);
   }
   
-  if (apartment.tower && apartment.tower.name) {
-    descriptionParts.push(apartment.tower.name);
+  if (apartment.floor) {
+    parts.push(`${apartment.floor}º andar`);
   }
   
-  if (apartment.block && apartment.block.name) {
-    descriptionParts.push(apartment.block.name);
+  if (apartment.block?.name) {
+    parts.push(`Bloco ${apartment.block.name}`);
   }
   
-  return descriptionParts.join(' - ');
-};
+  if (apartment.tower?.name) {
+    parts.push(`Torre ${apartment.tower.name}`);
+  }
+  
+  return parts.length > 0 ? parts.join(' - ') : `Unidade ${apartment.id}`;
+}
 
 /**
  * Formata a descrição resumida de uma unidade (apenas número)

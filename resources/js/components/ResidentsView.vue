@@ -12,6 +12,29 @@
         <p class="text-yellow-200 text-sm mt-1">Selecione um condomínio para visualizar os moradores.</p>
       </div>
 
+      <!-- Aviso quando filtrando por unidade específica -->
+      <div v-if="filteredByApartment && selectedCondominiumName" class="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <svg class="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+            <span class="text-blue-300 font-medium">Filtrando por unidade específica</span>
+          </div>
+          <NeonButton @click="clearApartmentFilter" size="sm" class="bg-gray-600/40 hover:bg-gray-600/60">
+            <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            Ver Todos
+          </NeonButton>
+        </div>
+        <p class="text-blue-200 text-sm mt-1">
+          Mostrando apenas moradores da Unidade {{ filteredByApartment.number }}
+          {{ filteredByApartment.block ? `- ${filteredByApartment.block}` : '' }}
+          {{ filteredByApartment.tower ? `- ${filteredByApartment.tower}` : '' }}
+        </p>
+      </div>
+
       <!-- Cards de Resumo -->
       <div v-if="selectedCondominiumName && !loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <!-- Total de Proprietários -->
@@ -192,14 +215,6 @@
         <p class="mt-1 text-sm text-gray-500">
           {{ search ? 'Tente ajustar sua busca' : 'Comece adicionando um novo morador' }}
         </p>
-        <div class="mt-6">
-          <NeonButton @click="openNewResidentPage" size="md">
-            <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-            Novo Morador
-          </NeonButton>
-        </div>
       </div>
 
       <!-- Residents Cards Grid -->
@@ -212,10 +227,13 @@
           <!-- Header com Avatar e Status -->
           <div class="flex items-center justify-between mb-4">
             <div class="flex items-center space-x-3">
-              <div class="h-12 w-12 rounded-full bg-indigo-100 flex items-center justify-center border-2 border-indigo-500/30">
-                <span class="text-indigo-600 font-bold text-lg">
-                  {{ resident.name.split(' ').map(n => n[0]).join('').toUpperCase() }}
-                </span>
+              <div class="h-12 w-12 rounded-full border-2 border-indigo-500/30 overflow-hidden">
+                <ResidentPhoto 
+                  :photo="resident.photo"
+                  :name="resident.name"
+                  :active="resident.active"
+                  :show-status="true"
+                />
               </div>
               <div>
                 <h3 class="text-lg font-semibold text-white">{{ resident.name }}</h3>
@@ -338,10 +356,11 @@ import { ref, computed, watch, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import AuthenticatedLayout from './layouts/AuthenticatedLayout.vue';
 import NeonButton from './NeonButton.vue';
+import ResidentPhoto from './ResidentPhoto.vue';
 
 export default {
   name: 'ResidentsView',
-  components: { AuthenticatedLayout, NeonButton },
+  components: { AuthenticatedLayout, NeonButton, ResidentPhoto },
   setup() {
     const router = useRouter();
     const residents = ref([]);
@@ -363,6 +382,9 @@ export default {
     // Variáveis para gerenciar filtro por condomínio
     const selectedCondominiumId = ref(localStorage.getItem('selectedCondominium'));
     const selectedCondominiumName = ref(localStorage.getItem('selectedCondominiumName'));
+    
+    // Variável para rastrear filtro por unidade
+    const filteredByApartment = ref(null);
 
     // Função para atualizar as informações do condomínio selecionado
     const updateSelectedCondominium = () => {
@@ -372,11 +394,21 @@ export default {
 
     // Função para construir URL com filtro por condomínio
     const buildUrlWithCondominiumFilter = (baseUrl) => {
+      const urlParams = new URLSearchParams();
+      
       if (selectedCondominiumId.value) {
-        const separator = baseUrl.includes('?') ? '&' : '?';
-        return `${baseUrl}${separator}condominium_id=${selectedCondominiumId.value}`;
+        urlParams.append('condominium_id', selectedCondominiumId.value);
       }
-      return baseUrl;
+      
+      // Verificar se há parâmetro apartment_id na URL atual
+      const currentUrl = new URL(window.location.href);
+      const apartmentId = currentUrl.searchParams.get('apartment_id');
+      if (apartmentId) {
+        urlParams.append('apartment_id', apartmentId);
+      }
+      
+      const queryString = urlParams.toString();
+      return queryString ? `${baseUrl}?${queryString}` : baseUrl;
     };
 
     // Computed para calcular estatísticas
@@ -416,6 +448,10 @@ export default {
       classificationFilter.value = 'all';
     };
 
+    const clearApartmentFilter = () => {
+      router.push('/residents');
+    };
+
     const isFilterActive = computed(() => {
       return search.value || filter.value !== 'all' || classificationFilter.value !== 'all';
     });
@@ -441,6 +477,36 @@ export default {
     const loadData = async () => {
       try {
         const token = localStorage.getItem('token');
+        
+        // Detectar filtro por unidade específica
+        const currentUrl = new URL(window.location.href);
+        const apartmentId = currentUrl.searchParams.get('apartment_id');
+        
+        if (apartmentId) {
+          // Buscar informações da unidade
+          try {
+            const apartmentResponse = await fetch(`/api/apartments/${apartmentId}`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              }
+            });
+            
+            if (apartmentResponse.ok) {
+              const apartmentData = await apartmentResponse.json();
+              filteredByApartment.value = {
+                id: apartmentData.id,
+                number: apartmentData.number,
+                block: apartmentData.block?.name || '',
+                tower: apartmentData.tower?.name || ''
+              };
+            }
+          } catch (e) {
+            console.error('Erro ao carregar dados da unidade:', e);
+          }
+        } else {
+          filteredByApartment.value = null;
+        }
         
         // Usar o composable para construir a URL com filtro
         const url = buildUrlWithCondominiumFilter('/api/residents');
@@ -733,10 +799,12 @@ export default {
       editResident,
       deleteResident,
       clearFilters,
+      clearApartmentFilter,
       isFilterActive,
       getClassificationLabel,
       getClassificationBadgeClass,
       selectedCondominiumName,
+      filteredByApartment,
       stats,
       deleteConfirmation,
       showDeleteConfirmation,

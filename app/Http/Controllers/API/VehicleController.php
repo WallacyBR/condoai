@@ -13,6 +13,12 @@ class VehicleController extends Controller
     {
         $query = Vehicle::query();
 
+        if ($request->has('condominium_id')) {
+            $query->whereHas('apartment', function ($q) use ($request) {
+                $q->where('condominium_id', $request->condominium_id);
+            });
+        }
+
         if ($request->has('apartment_id')) {
             $query->where('apartment_id', $request->apartment_id);
         }

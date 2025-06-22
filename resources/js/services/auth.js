@@ -7,6 +7,7 @@ class AuthService {
         this.refreshTimeout = null;
         this.tokenExpirationTime = null;
         this.isRefreshing = false; // Flag para evitar múltiplos refreshes simultâneos
+        this.refreshPromise = null; // Promise para sincronizar múltiplas tentativas de refresh
         
         if (this.token) {
             this.setupTokenRefresh();
@@ -82,6 +83,12 @@ class AuthService {
     }
 
     async refreshToken() {
+        // Se já há um refresh em andamento, aguardar o resultado
+        if (this.refreshPromise) {
+            console.log('Refresh já em andamento, aguardando resultado...');
+            return await this.refreshPromise;
+        }
+
         // Evitar múltiplos refreshes simultâneos
         if (this.isRefreshing) {
             console.log('Refresh já em andamento, aguardando...');
@@ -91,6 +98,17 @@ class AuthService {
         this.isRefreshing = true;
         console.log('Iniciando refresh do token...');
 
+        // Criar promise para sincronizar múltiplas tentativas
+        this.refreshPromise = this._performRefresh();
+        
+        try {
+            return await this.refreshPromise;
+        } finally {
+            this.refreshPromise = null;
+        }
+    }
+
+    async _performRefresh() {
         try {
             const response = await apiRequest('/api/auth/refresh', {
                 method: 'POST'
@@ -104,34 +122,51 @@ class AuthService {
                 return true;
             }
             console.warn('Resposta inválida no refresh do token');
+            this._handleAuthFailure();
             return false;
         } catch (error) {
             console.error('Erro no refresh do token:', error);
-            this.logout();
+            this._handleAuthFailure();
             return false;
         } finally {
             this.isRefreshing = false;
         }
     }
 
+    _handleAuthFailure() {
+        console.log('Falha na autenticação, limpando estado...');
+        if (this.refreshTimeout) {
+            clearTimeout(this.refreshTimeout);
+        }
+        this.token = null;
+        this.tokenExpirationTime = null;
+        this.isRefreshing = false;
+        this.refreshPromise = null;
+        localStorage.removeItem('token');
+        router.push({ name: 'login' });
+    }
+
     async logout() {
         console.log('Fazendo logout...');
-        try {
-            await apiRequest('/api/auth/logout', {
-                method: 'POST'
-            });
-        } catch (error) {
-            console.error('Erro no logout:', error);
-        } finally {
-            if (this.refreshTimeout) {
-                clearTimeout(this.refreshTimeout);
+        
+        // Verificar se deve fazer chamada para API
+        const shouldCallLogoutApi = this.token && this.isAuthenticated();
+        
+        if (shouldCallLogoutApi) {
+            try {
+                await apiRequest('/api/auth/logout', {
+                    method: 'POST'
+                });
+                console.log('Logout na API realizado com sucesso');
+            } catch (error) {
+                console.error('Erro no logout (ignorado, continuando com logout local):', error);
             }
-            this.token = null;
-            this.tokenExpirationTime = null;
-            this.isRefreshing = false;
-            localStorage.removeItem('token');
-            router.push({ name: 'login' });
+        } else {
+            console.log('Token inválido/expirado, fazendo apenas logout local');
         }
+        
+        // Usar método centralizado para limpeza
+        this._handleAuthFailure();
     }
 
     isAuthenticated() {

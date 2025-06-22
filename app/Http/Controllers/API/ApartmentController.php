@@ -25,7 +25,15 @@ class ApartmentController extends Controller
             $query->where('condominium_id', $request->condominium_id);
         }
 
-        return $query->with(['owner', 'tenant', 'residents', 'block', 'tower'])->orderByFieldSmart('number')->get();
+        $apartments = $query->with(['owner', 'tenant', 'residents', 'block', 'tower'])->orderByFieldSmart('number')->get();
+        
+        // Adicionar propriedade 'resident' para compatibilidade com o frontend
+        $apartments->each(function ($apartment) {
+            // Prioriza proprietário, senão usa inquilino
+            $apartment->resident = $apartment->owner ?: $apartment->tenant;
+        });
+
+        return $apartments;
     }
 
     public function store(Request $request)
@@ -88,7 +96,9 @@ class ApartmentController extends Controller
                 $apartment->residents()->attach($validated['tenant_id'], ['type' => 'tenant']);
             }
 
-            return $apartment->load(['owner', 'tenant', 'residents', 'block', 'tower']);
+            $apartment->load(['owner', 'tenant', 'residents', 'block', 'tower']);
+            $apartment->resident = $apartment->owner ?: $apartment->tenant;
+            return $apartment;
         } catch (\Illuminate\Database\QueryException $e) {
             // Capturar erro de constraint violation
             if ($e->getCode() == 23000 && strpos($e->getMessage(), 'apartments_condominium_id_number_unique') !== false) {
@@ -126,7 +136,9 @@ class ApartmentController extends Controller
 
     public function show(Apartment $apartment)
     {
-        return $apartment->load(['block', 'tower', 'owner', 'tenant', 'residents']);
+        $apartment->load(['block', 'tower', 'owner', 'tenant', 'residents']);
+        $apartment->resident = $apartment->owner ?: $apartment->tenant;
+        return $apartment;
     }
 
     public function update(Request $request, Apartment $apartment)
@@ -197,7 +209,9 @@ class ApartmentController extends Controller
 
         try {
             $apartment->update($validated);
-            return $apartment->load(['owner', 'tenant', 'residents', 'block', 'tower']);
+            $apartment->load(['owner', 'tenant', 'residents', 'block', 'tower']);
+            $apartment->resident = $apartment->owner ?: $apartment->tenant;
+            return $apartment;
         } catch (\Illuminate\Database\QueryException $e) {
             // Capturar erro de constraint violation
             if ($e->getCode() == 23000 && strpos($e->getMessage(), 'apartments_condominium_id_number_unique') !== false) {

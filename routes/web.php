@@ -9,6 +9,11 @@ Route::get('/offline', function () {
     return view('offline');
 })->name('offline');
 
+// Rota temporária para testar câmera
+Route::get('/camera-test', function () {
+    return view('camera-test');
+})->name('camera-test');
+
 // Rota principal - exibe apenas o LoginView (excluindo rotas da API)
 Route::get('/{any}', function () {
     return view('app');

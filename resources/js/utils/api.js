@@ -25,18 +25,33 @@ api.interceptors.request.use(config => {
 
 export default api;
 
+// Variável global para controlar se já estamos processando um erro 401
+let isHandling401 = false;
+
 export async function handleApiError(error) {
     if (error.status === 401 || error?.response?.status === 401) {
-        console.log('Erro 401 detectado, tentando refresh do token...');
-        const refreshed = await auth.refreshToken();
-        if (refreshed) {
-            console.log('Token refreshado, retentando requisição...');
-            return true;
+        // Se já estamos tratando um erro 401, evitar loop
+        if (isHandling401) {
+            console.log('Já está tratando erro 401, evitando loop...');
+            return false;
         }
         
-        console.log('Falha no refresh, fazendo logout...');
-        await auth.logout();
-        return false;
+        isHandling401 = true;
+        console.log('Erro 401 detectado, tentando refresh do token...');
+        
+        try {
+            const refreshed = await auth.refreshToken();
+            if (refreshed) {
+                console.log('Token refreshado, retentando requisição...');
+                return true;
+            }
+            
+            console.log('Falha no refresh, fazendo logout...');
+            await auth.logout();
+            return false;
+        } finally {
+            isHandling401 = false;
+        }
     }
     throw error;
 }

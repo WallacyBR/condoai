@@ -5,6 +5,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\BlockController;
 use App\Http\Controllers\API\CondominiumController;
 use App\Http\Controllers\API\HealthController;
+use App\Http\Controllers\API\ImageUploadController;
 use App\Http\Controllers\API\ModuleController;
 use App\Http\Controllers\API\ParkingSpotController;
 use App\Http\Controllers\API\VehicleController;
@@ -22,6 +23,15 @@ Route::get('/health', function () {
         'status' => 'ok',
         'timestamp' => now()->toISOString(),
         'version' => '1.0.0'
+    ]);
+});
+
+// Rota de teste temporária para upload sem autenticação
+Route::post('test-upload', function (Request $request) {
+    return response()->json([
+        'success' => true,
+        'message' => 'Rota de teste funcionando',
+        'data' => $request->all()
     ]);
 });
 
@@ -51,6 +61,8 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('common-areas/{common_area}/bookings', [CommonAreaController::class, 'bookings']);
     Route::post('common-areas/{common_area}/bookings', [CommonAreaController::class, 'book']);
+    Route::patch('common-areas/{common_area}/bookings/{booking}/cancel', [CommonAreaController::class, 'cancelBooking']);
+    Route::get('common-areas/{common_area}/available-slots', [CommonAreaController::class, 'getAvailableSlots']);
 
     Route::post('parking-spots/batch', [ParkingSpotController::class, 'batchStore']);
     Route::post('parking-spots/{parking_spot}/rent', [ParkingSpotController::class, 'rent']);
@@ -59,4 +71,8 @@ Route::middleware('auth:api')->group(function () {
     // Rotas adicionais para gerenciar moradores de apartamentos
     Route::post('apartments/{apartment}/residents', [ApartmentController::class, 'addResident']);
     Route::delete('apartments/{apartment}/residents', [ApartmentController::class, 'removeResident']);
+
+    // Rotas para upload de imagens
+    Route::post('images/upload', [ImageUploadController::class, 'upload']);
+    Route::delete('images/delete', [ImageUploadController::class, 'delete']);
 });

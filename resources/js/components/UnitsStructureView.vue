@@ -1,270 +1,286 @@
 <template>
-  <AuthenticatedLayout page-title="Unidades">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <!-- Card de Torres -->
-      <section class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl shadow-xl p-6 border-2 border-cyan-500/20">
-        <h3 class="text-lg font-medium text-cyan-300 mb-4">Torres</h3>
-        <form @submit.prevent="createTower" class="space-y-4 mb-6">
-          <input v-model="newTower.name" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-colors" placeholder="Nome da torre" />
-          <NeonButton type="submit" size="md" :loading="loadingTower" class="w-full">Salvar Torre</NeonButton>
-        </form>
-
-        <!-- Seção de Inserção em Lote - Torres -->
-        <div class="border-t border-gray-700 pt-6 mb-6">
-          <h4 class="text-sm font-medium text-cyan-300 mb-3">Inserção em Lote</h4>
-          <div class="space-y-3">
-            <input 
-              v-model="batchTower.range" 
-              class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-colors" 
-              placeholder="Ex: A a D ou 1 a 5" 
-            />
-            <div class="flex gap-2">
-              <NeonButton @click="generateTowerBatch" size="sm" class="flex-1">Gerar Lista</NeonButton>
-              <NeonButton 
-                v-if="batchTower.preview.length > 0" 
-                @click="confirmTowerBatch" 
-                size="sm" 
-                :loading="loadingTowerBatch" 
-                class="flex-1"
-              >
-                Confirmar ({{ batchTower.preview.length }})
-              </NeonButton>
-            </div>
-            <div v-if="batchTower.preview.length > 0" class="bg-gray-800/50 rounded-lg p-3 max-h-24 overflow-y-auto">
-              <div class="text-xs text-cyan-200">Preview:</div>
-              <div class="text-xs text-gray-300">{{ batchTower.preview.join(', ') }}</div>
-            </div>
-          </div>
+  <AuthenticatedLayout page-title="Estrutura de Unidades">
+    <div class="space-y-6">
+      <!-- Header com Botão Voltar -->
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-white">Estrutura de Unidades</h1>
+          <p class="text-gray-400 mt-1">Gerencie torres, blocos e unidades do condomínio</p>
         </div>
+        <NeonButton @click="goBack" variant="secondary" size="md">
+          <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Voltar
+        </NeonButton>
+      </div>
 
-        <GlassScrollContainer color="cyan" show-fade animate-items max-height="240px">
-          <ul class="space-y-2 text-cyan-100">
-            <li v-for="t in towers" :key="t.id" class="bg-gray-800/50 p-3 rounded-lg flex justify-between items-center">
-              <span>{{ t.name }}</span>
-              <button 
-                @click="showRemoveConfirmation('tower', t)" 
-                :disabled="hasApartmentsInTower(t.id)"
-                :class="[
-                  'text-xs px-2 py-1 rounded transition-colors',
-                  hasApartmentsInTower(t.id) 
-                    ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
-                    : 'bg-red-600 hover:bg-red-700 text-white'
-                ]"
-                :title="hasApartmentsInTower(t.id) ? 'Não é possível remover torre com apartamentos' : 'Remover torre'"
-              >
-                {{ hasApartmentsInTower(t.id) ? 'Bloqueado' : 'Remover' }}
-              </button>
-            </li>
-          </ul>
-        </GlassScrollContainer>
-      </section>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Card de Torres -->
+        <section class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl shadow-xl p-6 border-2 border-cyan-500/20">
+          <h3 class="text-lg font-medium text-cyan-300 mb-4">Torres</h3>
+          <form @submit.prevent="createTower" class="space-y-4 mb-6">
+            <input v-model="newTower.name" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-colors" placeholder="Nome da torre" />
+            <NeonButton type="submit" size="md" :loading="loadingTower" class="w-full">Salvar Torre</NeonButton>
+          </form>
 
-      <!-- Card de Blocos -->
-      <section class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl shadow-xl p-6 border-2 border-green-500/20">
-        <h3 class="text-lg font-medium text-green-300 mb-4">Blocos</h3>
-        <form @submit.prevent="createBlock" class="space-y-4 mb-6">
-          <input v-model="newBlock.name" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors" placeholder="Nome do bloco" />
-          <select v-model="newBlock.tower_id" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors">
-            <option :value="null">Sem torre</option>
-            <option v-for="t in towers" :value="t.id" :key="t.id">{{ t.name }}</option>
-          </select>
-          <NeonButton type="submit" size="md" :loading="loadingBlock" class="w-full">Salvar Bloco</NeonButton>
-        </form>
-
-        <!-- Seção de Inserção em Lote - Blocos -->
-        <div class="border-t border-gray-700 pt-6 mb-6">
-          <h4 class="text-sm font-medium text-green-300 mb-3">Inserção em Lote</h4>
-          <div class="space-y-3">
-            <input 
-              v-model="batchBlock.range" 
-              class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors" 
-              placeholder="Ex: 1 a 5 ou A a J" 
-            />
-            <select v-model="batchBlock.tower_id" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors">
-              <option :value="null">Sem torre</option>
-              <option v-for="t in towers" :value="t.id" :key="t.id">{{ t.name }}</option>
-            </select>
-            <div class="flex gap-2">
-              <NeonButton @click="generateBlockBatch" size="sm" class="flex-1">Gerar Lista</NeonButton>
-              <NeonButton 
-                v-if="batchBlock.preview.length > 0" 
-                @click="confirmBlockBatch" 
-                size="sm" 
-                :loading="loadingBlockBatch" 
-                class="flex-1"
-              >
-                Confirmar ({{ batchBlock.preview.length }})
-              </NeonButton>
-            </div>
-            <div v-if="batchBlock.preview.length > 0" class="bg-gray-800/50 rounded-lg p-3 max-h-24 overflow-y-auto">
-              <div class="text-xs text-green-200">Preview:</div>
-              <div class="text-xs text-gray-300">{{ batchBlock.preview.join(', ') }}</div>
-            </div>
-          </div>
-        </div>
-
-        <GlassScrollContainer color="green" show-fade animate-items max-height="240px">
-          <ul class="space-y-2 text-green-100">
-            <li v-for="b in blocksSorted" :key="b.id" class="bg-gray-800/50 p-3 rounded-lg flex justify-between items-center">
-              <div>
-                <span>{{ b.name }}</span>
-                <span class="text-xs text-gray-400 block">{{ b.tower ? b.tower.name : 'Sem torre' }}</span>
+          <!-- Seção de Inserção em Lote - Torres -->
+          <div class="border-t border-gray-700 pt-6 mb-6">
+            <h4 class="text-sm font-medium text-cyan-300 mb-3">Inserção em Lote</h4>
+            <div class="space-y-3">
+              <input 
+                v-model="batchTower.range" 
+                class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-colors" 
+                placeholder="Ex: A a D ou 1 a 5" 
+              />
+              <div class="flex gap-2">
+                <NeonButton @click="generateTowerBatch" size="sm" class="flex-1">Gerar Lista</NeonButton>
+                <NeonButton 
+                  v-if="batchTower.preview.length > 0" 
+                  @click="confirmTowerBatch" 
+                  size="sm" 
+                  :loading="loadingTowerBatch" 
+                  class="flex-1"
+                >
+                  Confirmar ({{ batchTower.preview.length }})
+                </NeonButton>
               </div>
-              <button 
-                @click="showRemoveConfirmation('block', b)" 
-                :disabled="hasApartmentsInBlock(b.id)"
-                :class="[
-                  'text-xs px-2 py-1 rounded transition-colors',
-                  hasApartmentsInBlock(b.id) 
-                    ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
-                    : 'bg-red-600 hover:bg-red-700 text-white'
-                ]"
-                :title="hasApartmentsInBlock(b.id) ? 'Não é possível remover bloco com apartamentos' : 'Remover bloco'"
-              >
-                {{ hasApartmentsInBlock(b.id) ? 'Bloqueado' : 'Remover' }}
-              </button>
-            </li>
-          </ul>
-        </GlassScrollContainer>
-      </section>
-
-      <!-- Card de Apartamentos -->
-      <section class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl shadow-xl p-6 border-2 border-blue-500/20">
-        <h3 class="text-lg font-medium text-blue-300 mb-4">Apartamentos/Casas</h3>
-        <form @submit.prevent="createApartment" class="space-y-4 mb-6">
-          <div class="grid grid-cols-2 gap-4">
-            <input v-model="newApartment.number" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" placeholder="Número" />
-            <input v-model.number="newApartment.floor" type="number" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" placeholder="Andar" />
+              <div v-if="batchTower.preview.length > 0" class="bg-gray-800/50 rounded-lg p-3 max-h-24 overflow-y-auto">
+                <div class="text-xs text-cyan-200">Preview:</div>
+                <div class="text-xs text-gray-300">{{ batchTower.preview.join(', ') }}</div>
+              </div>
+            </div>
           </div>
-          <select v-model="newApartment.tower_id" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
-              <option :value="null">Sem torre</option>
-              <option v-for="t in towers" :value="t.id" :key="t.id">{{ t.name }}</option>
-          </select>
-          <select v-model="newApartment.block_id" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
-              <option :value="null">Sem bloco</option>
-              <option v-for="b in blocks" :value="b.id" :key="b.id">{{ b.name }}</option>
-          </select>
-          <NeonButton type="submit" size="md" :loading="loadingApartment" class="w-full">Salvar Unidade</NeonButton>
-        </form>
 
-        <!-- Seção de Inserção em Lote - Apartamentos -->
-        <div class="border-t border-gray-700 pt-6 mb-6">
-          <h4 class="text-sm font-medium text-blue-300 mb-3">Inserção em Lote</h4>
-          <div class="space-y-3">
-            <input 
-              v-model="batchApartment.range" 
-              class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" 
-              placeholder="Ex: 101 a 108, 201 a 208" 
-            />
-            <select v-model="batchApartment.tower_id" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+          <GlassScrollContainer color="cyan" animate-items max-height="240px">
+            <ul class="space-y-2 text-cyan-100">
+              <li v-for="t in towers" :key="t.id" class="bg-gray-800/50 p-3 rounded-lg flex justify-between items-center">
+                <span>{{ t.name }}</span>
+                <button 
+                  @click="showRemoveConfirmation('tower', t)" 
+                  :disabled="hasApartmentsInTower(t.id)"
+                  :class="[
+                    'text-xs px-2 py-1 rounded transition-colors',
+                    hasApartmentsInTower(t.id) 
+                      ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
+                      : 'bg-red-600 hover:bg-red-700 text-white'
+                  ]"
+                  :title="hasApartmentsInTower(t.id) ? 'Não é possível remover torre com apartamentos' : 'Remover torre'"
+                >
+                  {{ hasApartmentsInTower(t.id) ? 'Bloqueado' : 'Remover' }}
+                </button>
+              </li>
+            </ul>
+          </GlassScrollContainer>
+        </section>
+
+        <!-- Card de Blocos -->
+        <section class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl shadow-xl p-6 border-2 border-green-500/20">
+          <h3 class="text-lg font-medium text-green-300 mb-4">Blocos</h3>
+          <form @submit.prevent="createBlock" class="space-y-4 mb-6">
+            <input v-model="newBlock.name" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors" placeholder="Nome do bloco" />
+            <select v-model="newBlock.tower_id" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors">
               <option :value="null">Sem torre</option>
               <option v-for="t in towers" :value="t.id" :key="t.id">{{ t.name }}</option>
             </select>
-            <select v-model="batchApartment.block_id" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
-              <option :value="null">Sem bloco</option>
-              <option v-for="b in blocks" :value="b.id" :key="b.id">{{ b.name }}</option>
-            </select>
-            <div class="flex gap-2">
-              <NeonButton @click="generateApartmentBatch" size="sm" class="flex-1">Gerar Lista</NeonButton>
-              <NeonButton 
-                v-if="batchApartment.preview.length > 0" 
-                @click="confirmApartmentBatch" 
-                size="sm" 
-                :loading="loadingApartmentBatch" 
-                class="flex-1"
-              >
-                Confirmar ({{ batchApartment.preview.length }})
-              </NeonButton>
-            </div>
-            <div v-if="batchApartment.preview.length > 0" class="bg-gray-800/50 rounded-lg p-3 max-h-24 overflow-y-auto">
-              <div class="text-xs text-blue-200">Preview:</div>
-              <div class="text-xs text-gray-300">{{ batchApartment.preview.join(', ') }}</div>
+            <NeonButton type="submit" size="md" :loading="loadingBlock" class="w-full">Salvar Bloco</NeonButton>
+          </form>
+
+          <!-- Seção de Inserção em Lote - Blocos -->
+          <div class="border-t border-gray-700 pt-6 mb-6">
+            <h4 class="text-sm font-medium text-green-300 mb-3">Inserção em Lote</h4>
+            <div class="space-y-3">
+              <input 
+                v-model="batchBlock.range" 
+                class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors" 
+                placeholder="Ex: 1 a 5 ou A a J" 
+              />
+              <select v-model="batchBlock.tower_id" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors">
+                <option :value="null">Sem torre</option>
+                <option v-for="t in towers" :value="t.id" :key="t.id">{{ t.name }}</option>
+              </select>
+              <div class="flex gap-2">
+                <NeonButton @click="generateBlockBatch" size="sm" class="flex-1">Gerar Lista</NeonButton>
+                <NeonButton 
+                  v-if="batchBlock.preview.length > 0" 
+                  @click="confirmBlockBatch" 
+                  size="sm" 
+                  :loading="loadingBlockBatch" 
+                  class="flex-1"
+                >
+                  Confirmar ({{ batchBlock.preview.length }})
+                </NeonButton>
+              </div>
+              <div v-if="batchBlock.preview.length > 0" class="bg-gray-800/50 rounded-lg p-3 max-h-24 overflow-y-auto">
+                <div class="text-xs text-green-200">Preview:</div>
+                <div class="text-xs text-gray-300">{{ batchBlock.preview.join(', ') }}</div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <GlassScrollContainer color="blue" show-fade animate-items max-height="240px">
-          <ul class="space-y-2 text-blue-100">
-            <li v-for="a in apartmentsSorted" :key="a.id" class="bg-gray-800/50 p-3 rounded-lg flex justify-between items-center">
-              <div>
-                <div class="font-semibold">Unidade {{ a.number }}</div>
-                <div class="text-sm text-gray-400">
-                  Andar {{ a.floor }}
-                  <span v-if="a.tower"> - T: {{ a.tower.name }}</span>
-                  <span v-if="a.block"> - B: {{ a.block.name }}</span>
+          <GlassScrollContainer color="green" animate-items max-height="240px">
+            <ul class="space-y-2 text-green-100">
+              <li v-for="b in blocksSorted" :key="b.id" class="bg-gray-800/50 p-3 rounded-lg flex justify-between items-center">
+                <div>
+                  <span>{{ b.name }}</span>
+                  <span class="text-xs text-gray-400 block">{{ b.tower ? b.tower.name : 'Sem torre' }}</span>
                 </div>
+                <button 
+                  @click="showRemoveConfirmation('block', b)" 
+                  :disabled="hasApartmentsInBlock(b.id)"
+                  :class="[
+                    'text-xs px-2 py-1 rounded transition-colors',
+                    hasApartmentsInBlock(b.id) 
+                      ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
+                      : 'bg-red-600 hover:bg-red-700 text-white'
+                  ]"
+                  :title="hasApartmentsInBlock(b.id) ? 'Não é possível remover bloco com apartamentos' : 'Remover bloco'"
+                >
+                  {{ hasApartmentsInBlock(b.id) ? 'Bloqueado' : 'Remover' }}
+                </button>
+              </li>
+            </ul>
+          </GlassScrollContainer>
+        </section>
+
+        <!-- Card de Apartamentos -->
+        <section class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl shadow-xl p-6 border-2 border-blue-500/20">
+          <h3 class="text-lg font-medium text-blue-300 mb-4">Apartamentos/Casas</h3>
+          <form @submit.prevent="createApartment" class="space-y-4 mb-6">
+            <div class="grid grid-cols-2 gap-4">
+              <input v-model="newApartment.number" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" placeholder="Número" />
+              <input v-model.number="newApartment.floor" type="number" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" placeholder="Andar" />
+            </div>
+            <select v-model="newApartment.tower_id" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+                <option :value="null">Sem torre</option>
+                <option v-for="t in towers" :value="t.id" :key="t.id">{{ t.name }}</option>
+            </select>
+            <select v-model="newApartment.block_id" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+                <option :value="null">Sem bloco</option>
+                <option v-for="b in blocks" :value="b.id" :key="b.id">{{ b.name }}</option>
+            </select>
+            <NeonButton type="submit" size="md" :loading="loadingApartment" class="w-full">Salvar Unidade</NeonButton>
+          </form>
+
+          <!-- Seção de Inserção em Lote - Apartamentos -->
+          <div class="border-t border-gray-700 pt-6 mb-6">
+            <h4 class="text-sm font-medium text-blue-300 mb-3">Inserção em Lote</h4>
+            <div class="space-y-3">
+              <input 
+                v-model="batchApartment.range" 
+                class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" 
+                placeholder="Ex: 101 a 108, 201 a 208" 
+              />
+              <select v-model="batchApartment.tower_id" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+                <option :value="null">Sem torre</option>
+                <option v-for="t in towers" :value="t.id" :key="t.id">{{ t.name }}</option>
+              </select>
+              <select v-model="batchApartment.block_id" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+                <option :value="null">Sem bloco</option>
+                <option v-for="b in blocks" :value="b.id" :key="b.id">{{ b.name }}</option>
+              </select>
+              <div class="flex gap-2">
+                <NeonButton @click="generateApartmentBatch" size="sm" class="flex-1">Gerar Lista</NeonButton>
+                <NeonButton 
+                  v-if="batchApartment.preview.length > 0" 
+                  @click="confirmApartmentBatch" 
+                  size="sm" 
+                  :loading="loadingApartmentBatch" 
+                  class="flex-1"
+                >
+                  Confirmar ({{ batchApartment.preview.length }})
+                </NeonButton>
               </div>
-              <button 
-                @click="showRemoveConfirmation('apartment', a)" 
-                class="text-xs px-2 py-1 rounded bg-red-600 hover:bg-red-700 text-white transition-colors"
-                title="Remover apartamento"
-              >
-                Remover
-              </button>
-            </li>
-          </ul>
-        </GlassScrollContainer>
-      </section>
-    </div>
-
-    <!-- Modal de Confirmação de Remoção -->
-    <div v-if="removeConfirmation.show" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" @click="closeRemoveConfirmation">
-      <div class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl shadow-2xl p-6 border-2 border-red-500/30 max-w-md w-full mx-4" @click.stop>
-        <div class="flex items-center mb-4">
-          <div class="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center mr-4">
-            <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-            </svg>
+              <div v-if="batchApartment.preview.length > 0" class="bg-gray-800/50 rounded-lg p-3 max-h-24 overflow-y-auto">
+                <div class="text-xs text-blue-200">Preview:</div>
+                <div class="text-xs text-gray-300">{{ batchApartment.preview.join(', ') }}</div>
+              </div>
+            </div>
           </div>
-          <div>
-            <h3 class="text-lg font-semibold text-white">Confirmar Remoção</h3>
-            <p class="text-sm text-gray-400">Esta ação não pode ser desfeita</p>
-          </div>
-        </div>
 
-                 <div class="mb-6">
-           <p class="text-gray-300 mb-2">
-             {{ removeConfirmation.message }}
-           </p>
-           <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-3">
-             <p class="text-red-300 text-sm font-medium">
-               {{ removeConfirmation.itemName }}
+          <GlassScrollContainer color="blue" animate-items max-height="240px">
+            <ul class="space-y-2 text-blue-100">
+              <li v-for="a in apartmentsSorted" :key="a.id" class="bg-gray-800/50 p-3 rounded-lg flex justify-between items-center">
+                <div>
+                  <div class="font-semibold">Unidade {{ a.number }}</div>
+                  <div class="text-sm text-gray-400">
+                    Andar {{ a.floor }}
+                    <span v-if="a.tower"> - T: {{ a.tower.name }}</span>
+                    <span v-if="a.block"> - B: {{ a.block.name }}</span>
+                  </div>
+                </div>
+                <button 
+                  @click="showRemoveConfirmation('apartment', a)" 
+                  class="text-xs px-2 py-1 rounded bg-red-600 hover:bg-red-700 text-white transition-colors"
+                  title="Remover apartamento"
+                >
+                  Remover
+                </button>
+              </li>
+            </ul>
+          </GlassScrollContainer>
+        </section>
+      </div>
+
+      <!-- Modal de Confirmação de Remoção -->
+      <div v-if="removeConfirmation.show" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" @click="closeRemoveConfirmation">
+        <div class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl shadow-2xl p-6 border-2 border-red-500/30 max-w-md w-full mx-4" @click.stop>
+          <div class="flex items-center mb-4">
+            <div class="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center mr-4">
+              <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-white">Confirmar Remoção</h3>
+              <p class="text-sm text-gray-400">Esta ação não pode ser desfeita</p>
+            </div>
+          </div>
+
+                   <div class="mb-6">
+             <p class="text-gray-300 mb-2">
+               {{ removeConfirmation.message }}
              </p>
-             <!-- Informações adicionais para apartamentos -->
-             <div v-if="removeConfirmation.type === 'apartment' && removeConfirmation.item" class="mt-2 pt-2 border-t border-red-500/20">
-               <div class="space-y-1 text-xs text-gray-400">
-                 <div>
-                   <span class="text-gray-500">Andar:</span>
-                   <span class="text-gray-300 ml-1">{{ removeConfirmation.item.floor }}</span>
-                 </div>
-                 <div v-if="removeConfirmation.item.tower">
-                   <span class="text-gray-500">Torre:</span>
-                   <span class="text-gray-300 ml-1">{{ removeConfirmation.item.tower.name }}</span>
-                 </div>
-                 <div v-if="removeConfirmation.item.block">
-                   <span class="text-gray-500">Bloco:</span>
-                   <span class="text-gray-300 ml-1">{{ removeConfirmation.item.block.name }}</span>
+             <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-3">
+               <p class="text-red-300 text-sm font-medium">
+                 {{ removeConfirmation.itemName }}
+               </p>
+               <!-- Informações adicionais para apartamentos -->
+               <div v-if="removeConfirmation.type === 'apartment' && removeConfirmation.item" class="mt-2 pt-2 border-t border-red-500/20">
+                 <div class="space-y-1 text-xs text-gray-400">
+                   <div>
+                     <span class="text-gray-500">Andar:</span>
+                     <span class="text-gray-300 ml-1">{{ removeConfirmation.item.floor }}</span>
+                   </div>
+                   <div v-if="removeConfirmation.item.tower">
+                     <span class="text-gray-500">Torre:</span>
+                     <span class="text-gray-300 ml-1">{{ removeConfirmation.item.tower.name }}</span>
+                   </div>
+                   <div v-if="removeConfirmation.item.block">
+                     <span class="text-gray-500">Bloco:</span>
+                     <span class="text-gray-300 ml-1">{{ removeConfirmation.item.block.name }}</span>
+                   </div>
                  </div>
                </div>
              </div>
            </div>
-         </div>
 
-        <div class="flex gap-3">
-          <button 
-            @click="closeRemoveConfirmation"
-            class="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
-          >
-            Cancelar
-          </button>
-          <button 
-            @click="confirmRemove"
-            :disabled="removeConfirmation.loading"
-            class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-red-800 disabled:cursor-not-allowed text-white rounded-lg transition-colors flex items-center justify-center"
-          >
-            <span v-if="!removeConfirmation.loading">Remover</span>
-            <div v-else class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-          </button>
+          <div class="flex gap-3">
+            <button 
+              @click="closeRemoveConfirmation"
+              class="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+            >
+              Cancelar
+            </button>
+            <button 
+              @click="confirmRemove"
+              :disabled="removeConfirmation.loading"
+              class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-red-800 disabled:cursor-not-allowed text-white rounded-lg transition-colors flex items-center justify-center"
+            >
+              <span v-if="!removeConfirmation.loading">Remover</span>
+              <div v-else class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -273,6 +289,7 @@
 
 <script>
 import { ref, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import AuthenticatedLayout from './layouts/AuthenticatedLayout.vue';
 import NeonButton from './NeonButton.vue';
 import GlassScrollContainer from './GlassScrollContainer.vue';
@@ -281,6 +298,7 @@ export default {
   name: 'UnitsView',
   components: { AuthenticatedLayout, NeonButton, GlassScrollContainer },
   setup() {
+    const router = useRouter();
     const token = localStorage.getItem('token');
     const selectedCondo = localStorage.getItem('selectedCondominium');
     
@@ -898,6 +916,10 @@ export default {
       });
     });
 
+    const goBack = () => {
+      router.push('/units-list');
+    };
+
     onMounted(() => {
       loadData();
     });
@@ -936,7 +958,8 @@ export default {
       hasApartmentsInTower,
       hasApartmentsInBlock,
       blocksSorted,
-      apartmentsSorted
+      apartmentsSorted,
+      goBack
     };
   }
 };

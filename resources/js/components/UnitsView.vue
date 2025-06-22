@@ -1,6 +1,20 @@
 <template>
   <AuthenticatedLayout page-title="Gerenciar Unidades">
     <div class="space-y-6">
+      <!-- Header com Botão Voltar -->
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-white">Gerenciar Unidades</h1>
+          <p class="text-gray-400 mt-1">{{ selectedCondominiumName }}</p>
+        </div>
+        <NeonButton @click="goBack" variant="secondary" size="md">
+          <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Voltar
+        </NeonButton>
+      </div>
+
       <!-- Aviso quando nenhum condomínio está selecionado -->
       <div v-if="!selectedCondominiumName && !loading" class="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
         <div class="flex items-center space-x-2">
@@ -252,11 +266,11 @@
               </svg>
               <span class="text-sm font-medium text-green-300">Morador</span>
             </div>
-            <div class="space-y-1 text-sm">
-              <p class="text-white font-medium">{{ unit.resident.name }}</p>
-              <p class="text-gray-300">{{ unit.resident.email }}</p>
-              <p class="text-gray-300">{{ unit.resident.phone }}</p>
-            </div>
+                          <div class="space-y-1 text-sm">
+                <p class="text-white font-medium">{{ unit.resident.name }}</p>
+                <p class="text-gray-300" v-if="unit.resident.email">{{ unit.resident.email }}</p>
+                <p class="text-gray-300" v-if="unit.resident.cell_phone || unit.resident.phone">{{ unit.resident.cell_phone || unit.resident.phone }}</p>
+              </div>
           </div>
 
           <!-- Ações -->
@@ -396,6 +410,7 @@ export default {
         
         if (unitsResponse.ok) {
           const unitsData = await unitsResponse.json();
+          console.log('Dados das unidades retornados pela API:', unitsData);
           units.value = Array.isArray(unitsData) ? unitsData : (unitsData.data || []);
         } else {
           error.value = 'Falha ao carregar unidades';
@@ -408,11 +423,11 @@ export default {
               active: true,
               tower: { id: 1, name: 'Torre A' },
               block: { id: 1, name: 'Bloco 1' },
-              resident: {
-                name: 'João Silva',
-                email: 'joao@email.com',
-                phone: '(11) 99999-9999'
-              }
+                          resident: {
+              name: 'João Silva',
+              email: 'joao@email.com',
+              cell_phone: '(11) 99999-9999'
+            }
             },
             {
               id: 2,
@@ -479,7 +494,7 @@ export default {
             resident: {
               name: 'João Silva',
               email: 'joao@email.com',
-              phone: '(11) 99999-9999'
+              cell_phone: '(11) 99999-9999'
             }
           },
           {
@@ -545,8 +560,12 @@ export default {
       });
     });
 
+    const goBack = () => {
+      router.push('/units-list');
+    };
+
     const openNewUnitModal = () => {
-      router.push('/units/create');
+      router.push('/units');
     };
 
     const editUnit = (unit) => {
@@ -589,6 +608,7 @@ export default {
       towerFilter,
       blockFilter,
       filteredUnits,
+      goBack,
       openNewUnitModal,
       editUnit,
       deleteUnit,

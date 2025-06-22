@@ -150,14 +150,107 @@
 
       <!-- Unidade -->
       <div>
-        <label for="apartment_id" class="block text-sm font-medium text-gray-300 mb-2">Unidade</label>
+        <label for="apartment_id" class="block text-sm font-medium text-gray-300 mb-2">
+          Unidade
+          <span v-if="form.condominium_id && apartments.length > 0" class="text-xs text-green-400">
+            ({{ apartments.length }} unidades disponíveis)
+          </span>
+          <span v-else-if="form.condominium_id && !loadingApartments" class="text-xs text-orange-400">
+            (nenhuma unidade encontrada)
+          </span>
+          <span v-else-if="form.condominium_id" class="text-xs text-blue-400">
+            (carregando...)
+          </span>
+        </label>
+        
+        <!-- Select de unidades quando condomínio está selecionado -->
+        <select
+          v-if="form.condominium_id && apartments.length > 0"
+          id="apartment_id"
+          v-model="form.apartment_id"
+          class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+        >
+          <option value="">Selecione uma unidade</option>
+          <option 
+            v-for="apartment in apartments" 
+            :key="apartment.id" 
+            :value="apartment.id"
+            class="bg-gray-800"
+          >
+            {{ formatApartmentDescription(apartment) }}
+          </option>
+        </select>
+        
+        <!-- Input numérico como fallback -->
         <input
+          v-else
           id="apartment_id"
           v-model="form.apartment_id"
           type="number"
           class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+          placeholder="Digite o ID da unidade"
         />
+        
+        <!-- Mensagens informativas -->
+        <div v-if="form.condominium_id && apartments.length === 0 && !loadingApartments" class="mt-1 text-xs text-orange-400">
+          ⚠️ Nenhuma unidade encontrada neste condomínio. Verifique se existem unidades cadastradas.
+        </div>
+        <div v-if="!form.condominium_id" class="mt-1 text-xs text-gray-500">
+          ℹ️ Selecione um condomínio primeiro para carregar as unidades disponíveis.
+        </div>
+        
         <p v-if="errors.apartment_id" class="mt-1 text-sm text-red-400">{{ errors.apartment_id }}</p>
+      </div>
+
+      <!-- Unidades do Proprietário (visível apenas para proprietários) -->
+      <div v-if="form.classification === 'proprietario'">
+        <label for="owned_apartments" class="block text-sm font-medium text-gray-300 mb-2">
+          Unidades Possuídas
+        </label>
+        <VueMultiselect
+          id="owned_apartments"
+          v-model="form.owned_apartment_ids"
+          :options="apartments"
+          :multiple="true"
+          :close-on-select="false"
+          :clear-on-select="false"
+          :preserve-search="true"
+          placeholder="Selecione as unidades"
+          label="number"
+          track-by="id"
+          :preselect-first="false"
+        >
+          <template #option="{ option }">
+            <span>{{ formatApartmentDescription(option) }}</span>
+          </template>
+        </VueMultiselect>
+        <p class="mt-1 text-xs text-gray-500">
+          Selecione todas as unidades que este morador possui.
+        </p>
+
+        <!-- Cards das unidades possuídas -->
+        <div v-if="form.owned_apartment_ids && form.owned_apartment_ids.length > 0" class="mt-4 space-y-3">
+            <h4 class="text-sm font-medium text-gray-400">Unidades Selecionadas:</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div 
+                v-for="apartment in form.owned_apartment_ids" 
+                :key="apartment.id" 
+                class="bg-gray-800/50 border border-gray-700 rounded-lg p-3 flex items-center justify-between"
+              >
+                <span class="text-sm text-white">{{ formatApartmentDescription(apartment) }}</span>
+                <button 
+                  @click="removeOwnedApartment(apartment)"
+                  type="button"
+                  class="p-1 rounded-full text-gray-400 hover:bg-red-500/20 hover:text-red-400 transition-colors"
+                  title="Desvincular unidade"
+                >
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+        </div>
       </div>
 
       <!-- Classificação -->
@@ -243,12 +336,17 @@
 </template>
 
 <script>
-import { ref, reactive, computed, watch } from 'vue';
+import { ref, reactive, computed, watch, onMounted } from 'vue';
 import NeonButton from './NeonButton.vue';
+import { formatApartmentDescription } from '../utils/formatters.js';
+import { useRouter } from 'vue-router';
+import VueMultiselect from 'vue-multiselect';
+import 'vue-multiselect/dist/vue-multiselect.css';
+import api from '@/utils/api';
 
 export default {
   name: 'ResidentForm',
-  components: { NeonButton },
+  components: { NeonButton, VueMultiselect },
   props: {
     resident: {
       type: Object,
@@ -263,6 +361,9 @@ export default {
   setup(props, { emit }) {
     const loading = ref(false);
     const errors = ref({});
+    const apartments = ref([]);
+    const loadingApartments = ref(false);
+    const router = useRouter();
 
     const form = reactive({
       name: '',
@@ -280,32 +381,96 @@ export default {
       apartment_id: '',
       classification: '',
       active: true,
-      condominium_id: ''
+      condominium_id: '',
+      owned_apartment_ids: [],
     });
 
     const isEditing = computed(() => !!props.resident);
 
-    // Preencher formulário quando editar
-    watch(() => props.resident, (newResident) => {
-      if (newResident) {
-        form.name = newResident.name || '';
-        form.email = newResident.email || '';
-        form.person_type = newResident.person_type || 'fisica';
-        form.cpf = newResident.cpf || '';
-        form.photo = newResident.photo || '';
-        form.cell_phone = newResident.cell_phone || '';
-        form.commercial_phone = newResident.commercial_phone || '';
-        form.whatsapp = newResident.whatsapp || '';
-        form.notes = newResident.notes || '';
-        form.is_porter = newResident.is_porter || false;
-        form.is_janitor = newResident.is_janitor || false;
-        form.is_cleaning = newResident.is_cleaning || false;
-        form.apartment_id = newResident.apartment_id || '';
-        form.classification = newResident.classification || '';
-        form.active = newResident.active !== undefined ? newResident.active : true;
-        form.condominium_id = newResident.condominium_id || '';
+    // Função para carregar apartamentos do condomínio
+    const loadApartments = async (condominiumId) => {
+      if (!condominiumId) {
+        apartments.value = [];
+        return;
       }
-    }, { immediate: true });
+
+      try {
+        loadingApartments.value = true;
+        const token = localStorage.getItem('token');
+        const response = await fetch(`/api/apartments?condominium_id=${condominiumId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          apartments.value = await response.json();
+        } else {
+          console.error('Erro ao carregar unidades:', response.statusText);
+          apartments.value = [];
+        }
+      } catch (error) {
+        console.error('Erro ao carregar unidades:', error);
+        apartments.value = [];
+      } finally {
+        loadingApartments.value = false;
+      }
+    };
+
+    // Watcher para carregar apartamentos quando condomínio muda
+    watch(() => form.condominium_id, (newCondominiumId) => {
+      if (newCondominiumId) {
+        loadApartments(newCondominiumId);
+      } else {
+        apartments.value = [];
+        form.apartment_id = '';
+      }
+    });
+
+    // Preencher formulário quando editar
+    const fillFormForEditing = (resident) => {
+        if (resident) {
+            form.name = resident.name || '';
+            form.email = resident.email || '';
+            form.person_type = resident.person_type || 'fisica';
+            form.cpf = resident.cpf || '';
+            form.photo = resident.photo || '';
+            form.cell_phone = resident.cell_phone || '';
+            form.commercial_phone = resident.commercial_phone || '';
+            form.whatsapp = resident.whatsapp || '';
+            form.notes = resident.notes || '';
+            form.is_porter = resident.is_porter || false;
+            form.is_janitor = resident.is_janitor || false;
+            form.is_cleaning = resident.is_cleaning || false;
+            form.apartment_id = resident.apartment_id || '';
+            form.classification = resident.raw_classification || resident.classification || '';
+            form.active = resident.active !== undefined ? resident.active : true;
+            form.condominium_id = resident.condominium_id || '';
+            
+            if (resident.owned_apartments && Array.isArray(resident.owned_apartments)) {
+                form.owned_apartment_ids = apartments.value.filter(apt => 
+                    resident.owned_apartments.some(ownedApt => ownedApt.id === apt.id)
+                );
+            } else {
+                form.owned_apartment_ids = [];
+            }
+        }
+    };
+
+    // Watcher para preencher o formulário quando o morador e os apartamentos estiverem prontos
+    watch([() => props.resident, apartments], ([newResident, newApartments]) => {
+      if (isEditing.value && newResident && newApartments.length > 0) {
+        newResident.classification = newResident.raw_classification || newResident.classification;
+        fillFormForEditing(newResident);
+      }
+    }, { immediate: true, deep: true });
+
+    const removeOwnedApartment = (apartmentToRemove) => {
+        form.owned_apartment_ids = form.owned_apartment_ids.filter(
+            apartment => apartment.id !== apartmentToRemove.id
+        );
+    };
 
     const handlePhoto = (event) => {
       const file = event.target.files[0];
@@ -328,6 +493,14 @@ export default {
           : '/api/residents';
         
         const method = isEditing.value ? 'PUT' : 'POST';
+
+        const payload = { ...form };
+
+        if (payload.classification === 'proprietario' && Array.isArray(payload.owned_apartment_ids)) {
+          payload.owned_apartment_ids = payload.owned_apartment_ids.map(apartment => apartment.id);
+        } else {
+          delete payload.owned_apartment_ids;
+        }
         
         const response = await fetch(url, {
           method,
@@ -336,7 +509,7 @@ export default {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
-          body: JSON.stringify(form)
+          body: JSON.stringify(payload)
         });
 
         const data = await response.json();
@@ -359,14 +532,57 @@ export default {
       }
     };
 
+    onMounted(async () => {
+        await loadCondominiums();
+        if (isEditing.value && props.resident) {
+            form.condominium_id = props.resident.condominium_id;
+            if (form.condominium_id) {
+                await loadApartments(form.condominium_id);
+            }
+            // A chamada para fillFormForEditing será feita pelo watcher agora
+        } else if (localStorage.getItem('selectedCondominium')) {
+            form.condominium_id = localStorage.getItem('selectedCondominium');
+        }
+    });
+
     return {
       form,
       loading,
       errors,
       isEditing,
       handleSubmit,
-      handlePhoto
+      handlePhoto,
+      formatApartmentDescription,
+      apartments,
+      loadingApartments,
+      removeOwnedApartment,
     };
   }
 };
-</script> 
+</script>
+
+<style src="vue-multiselect/dist/vue-multiselect.css"></style>
+<style>
+/* Custom styles for Vue-Multiselect to match the dark theme */
+.multiselect__tags {
+  @apply bg-gray-800 border-gray-700 rounded-lg text-white placeholder-gray-500;
+}
+.multiselect__input {
+  @apply bg-gray-800 text-white placeholder-gray-500;
+}
+.multiselect__content-wrapper {
+  @apply bg-gray-800 border-gray-700;
+}
+.multiselect__option--highlight {
+  @apply bg-indigo-500;
+}
+.multiselect__option--selected {
+  @apply bg-indigo-600;
+}
+.multiselect__tag {
+  @apply bg-indigo-500;
+}
+.multiselect__tag-icon:hover {
+  @apply bg-indigo-700;
+}
+</style> 

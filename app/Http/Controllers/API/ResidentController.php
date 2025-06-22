@@ -10,6 +10,24 @@ use Illuminate\Validation\Rule;
 
 class ResidentController extends Controller
 {
+    /**
+     * Converte strings booleanas e números para booleanos reais
+     */
+    private function convertBooleanFields(array $data): array
+    {
+        $booleanFields = ['is_porter', 'is_janitor', 'is_cleaning', 'active'];
+        foreach ($booleanFields as $field) {
+            if (isset($data[$field])) {
+                if (is_string($data[$field])) {
+                    $data[$field] = filter_var($data[$field], FILTER_VALIDATE_BOOLEAN);
+                } elseif (is_numeric($data[$field])) {
+                    $data[$field] = (bool) $data[$field];
+                }
+            }
+        }
+        return $data;
+    }
+
     public function index(Request $request)
     {
         $query = Resident::with('condominium');
@@ -18,11 +36,30 @@ class ResidentController extends Controller
             $query->where('condominium_id', $request->condominium_id);
         }
 
+        if ($request->has('apartment_id')) {
+            $query->where(function ($q) use ($request) {
+                $apartmentId = $request->apartment_id;
+                $q->where('apartment_id', $apartmentId)
+                  ->orWhereHas('apartments', function ($subQuery) use ($apartmentId) {
+                      $subQuery->where('apartments.id', $apartmentId);
+                  })
+                  ->orWhereHas('ownedApartments', function ($subQuery) use ($apartmentId) {
+                      $subQuery->where('apartments.id', $apartmentId);
+                  })
+                  ->orWhereHas('rentedApartments', function ($subQuery) use ($apartmentId) {
+                      $subQuery->where('apartments.id', $apartmentId);
+                  });
+            });
+        }
+
         return $query->get();
     }
 
     public function store(Request $request)
     {
+        // Determinar o condomínio automaticamente
+        $condominiumId = $this->getCurrentCondominiumId($request);
+        
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'rg' => 'nullable|string|max:30',
@@ -37,7 +74,12 @@ class ResidentController extends Controller
             'is_porter' => 'boolean',
             'is_janitor' => 'boolean',
             'is_cleaning' => 'boolean',
-            'apartment_id' => ['nullable', Rule::exists('apartments','id')],
+            'apartment_id' => [
+                'nullable', 
+                Rule::exists('apartments','id')->where(function ($query) use ($condominiumId) {
+                    return $query->where('condominium_id', $condominiumId);
+                })
+            ],
             'billing_address_type' => 'required|in:condominium,custom',
             'cep' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:255',
@@ -46,60 +88,186 @@ class ResidentController extends Controller
             'state' => 'nullable|string|max:2',
             'classification' => ['required', Rule::in([ 'proprietario', 'morador', 'inquilino' ])],
             'active' => 'boolean',
-            'condominium_id' => 'required|integer|exists:condominiums,id',
+            'condominium_id' => [
+                'sometimes', // Mudado de 'required' para 'sometimes'
+                'integer',
+                Rule::exists('condominiums','id')->where(function ($query) {
+                    return $query->where('active', true);
+                })
+            ],
+            'owned_apartment_ids' => 'nullable|array',
+            'owned_apartment_ids.*' => [
+                'integer',
+                Rule::exists('apartments','id')->where(function ($query) use ($condominiumId) {
+                    return $query->where('condominium_id', $condominiumId);
+                })
+            ],
         ]);
 
-        // Regra: proprietário não pode ser inquilino
-        if (($request->classification === 'proprietario' && $request->classification === 'inquilino')) {
-            return response()->json(['errors' => ['classification' => 'Proprietário não pode ser inquilino']], 422);
+        // Converter strings booleanas para booleanos se necessário
+        $validated = $this->convertBooleanFields($validated);
+        
+        // Definir o condomínio automaticamente se não foi fornecido
+        if (!isset($validated['condominium_id'])) {
+            $validated['condominium_id'] = $condominiumId;
         }
 
         $resident = Resident::create($validated);
 
-        return response()->json($resident, 201);
+        if ($resident->classification == ResidentClassification::PROPRIETARIO && !empty($validated['owned_apartment_ids'])) {
+            \App\Models\Apartment::whereIn('id', $validated['owned_apartment_ids'])
+                                 ->update(['owner_id' => $resident->id]);
+        }
+
+        return response()->json($resident->load('ownedApartments'), 201);
     }
 
     public function show(Resident $resident)
     {
-        return $resident->load('condominium');
+        return $resident->load(['condominium', 'ownedApartments'])->append('raw_classification');
     }
 
     public function update(Request $request, Resident $resident)
     {
-        $validated = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'rg' => 'nullable|string|max:30',
-            'cpf' => 'sometimes|string|max:20',
-            'cell_phone' => 'nullable|string|max:20',
-            'commercial_phone' => 'nullable|string|max:20',
-            'whatsapp' => 'nullable|string|max:20',
-            'email' => ['sometimes','email', Rule::unique('residents')->ignore($resident->id)],
-            'person_type' => ['sometimes', Rule::in(['fisica','juridica'])],
-            'photo' => 'nullable|string',
-            'notes' => 'nullable|string',
-            'is_porter' => 'boolean',
-            'is_janitor' => 'boolean',
-            'is_cleaning' => 'boolean',
-            'apartment_id' => ['nullable', Rule::exists('apartments','id')],
-            'billing_address_type' => 'sometimes|in:condominium,custom',
-            'cep' => 'nullable|string|max:20',
-            'address' => 'nullable|string|max:255',
-            'neighborhood' => 'nullable|string|max:100',
-            'city' => 'nullable|string|max:100',
-            'state' => 'nullable|string|max:2',
-            'classification' => ['sometimes', Rule::in([ 'proprietario', 'morador', 'inquilino' ])],
-            'active' => 'boolean',
-            'condominium_id' => 'sometimes|integer|exists:condominiums,id',
+        \Log::info('=== INÍCIO UPDATE RESIDENT ===');
+        \Log::info('Resident ID:', ['id' => $resident->id]);
+        \Log::info('Request method:', ['method' => $request->method()]);
+        \Log::info('Request headers:', $request->headers->all());
+        \Log::info('Request all data:', $request->all());
+        \Log::info('Request input owned_apartment_ids:', ['data' => $request->input('owned_apartment_ids')]);
+        \Log::info('Request input classification:', ['data' => $request->input('classification')]);
+        \Log::info('Request input condominium_id:', ['data' => $request->input('condominium_id')]);
+        
+        // Debug temporário para identificar problemas
+        \Log::info('Resident update request data:', [
+            'resident_id' => $resident->id,
+            'request_data' => $request->all(),
+            'owned_apartment_ids' => $request->input('owned_apartment_ids'),
+            'classification' => $request->input('classification'),
         ]);
 
-        // Regra: proprietário não pode ser inquilino
-        if (($request->classification === 'proprietario' && $request->classification === 'inquilino')) {
-            return response()->json(['errors' => ['classification' => 'Proprietário não pode ser inquilino']], 422);
+        try {
+            \Log::info('Iniciando validação...');
+            
+            // Determinar o condomínio automaticamente
+            $condominiumId = $this->getCurrentCondominiumId($request);
+            
+            $validated = $request->validate([
+                'name' => 'sometimes|string|max:255',
+                'rg' => 'nullable|string|max:30',
+                'cpf' => 'sometimes|string|max:20',
+                'cell_phone' => 'nullable|string|max:20',
+                'commercial_phone' => 'nullable|string|max:20',
+                'whatsapp' => 'nullable|string|max:20',
+                'email' => ['sometimes','email', Rule::unique('residents')->ignore($resident->id)],
+                'person_type' => ['sometimes', Rule::in(['fisica','juridica'])],
+                'photo' => 'nullable|string',
+                'notes' => 'nullable|string',
+                'is_porter' => 'sometimes|boolean',
+                'is_janitor' => 'sometimes|boolean',
+                'is_cleaning' => 'sometimes|boolean',
+                'apartment_id' => [
+                    'nullable', 
+                    Rule::exists('apartments','id')->where(function ($query) use ($condominiumId) {
+                        return $query->where('condominium_id', $condominiumId);
+                    })
+                ],
+                'billing_address_type' => 'sometimes|in:condominium,custom',
+                'cep' => 'nullable|string|max:20',
+                'address' => 'nullable|string|max:255',
+                'neighborhood' => 'nullable|string|max:100',
+                'city' => 'nullable|string|max:100',
+                'state' => 'nullable|string|max:2',
+                'classification' => ['sometimes', Rule::in([ 'proprietario', 'morador', 'inquilino' ])],
+                'active' => 'sometimes|boolean',
+                'owned_apartment_ids' => 'nullable|array',
+                'owned_apartment_ids.*' => [
+                    'integer',
+                    Rule::exists('apartments','id')->where(function ($query) use ($condominiumId) {
+                        return $query->where('condominium_id', $condominiumId);
+                    })
+                ],
+                'condominium_id' => [
+                    'sometimes', // Mudado de 'required' para 'sometimes'
+                    'integer',
+                    Rule::exists('condominiums','id')->where(function ($query) {
+                        return $query->where('active', true);
+                    })
+                ],
+            ]);
+            
+            \Log::info('Validação passou com sucesso!');
+            \Log::info('Dados validados:', $validated);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('=== ERRO DE VALIDAÇÃO ===');
+            \Log::error('Mensagem de erro:', ['message' => $e->getMessage()]);
+            \Log::error('Erros de validação:', $e->errors());
+            \Log::error('Dados que falharam na validação:', $request->all());
+            throw $e;
+        } catch (\Exception $e) {
+            \Log::error('=== ERRO GERAL ===');
+            \Log::error('Tipo de erro:', ['type' => get_class($e)]);
+            \Log::error('Mensagem:', ['message' => $e->getMessage()]);
+            throw $e;
         }
+
+        // Converter strings booleanas para booleanos se necessário
+        $validated = $this->convertBooleanFields($validated);
+        
+        // Definir o condomínio automaticamente se não foi fornecido
+        if (!isset($validated['condominium_id'])) {
+            $validated['condominium_id'] = $condominiumId;
+        }
+
+        \Log::info('Dados finais para atualização:', $validated);
 
         $resident->update($validated);
 
-        return $resident->refresh();
+        // Atualizar relacionamentos de apartamentos possuídos
+        if (isset($validated['owned_apartment_ids'])) {
+            // Remover todas as relações existentes
+            $resident->ownedApartments()->update(['owner_id' => null]);
+            
+            // Adicionar as novas relações
+            if (!empty($validated['owned_apartment_ids'])) {
+                \App\Models\Apartment::whereIn('id', $validated['owned_apartment_ids'])
+                                     ->update(['owner_id' => $resident->id]);
+            }
+        }
+
+        \Log::info('=== FIM UPDATE RESIDENT ===');
+        return $resident->load(['condominium', 'ownedApartments'])->append('raw_classification');
+    }
+
+    /**
+     * Determina o ID do condomínio atual baseado no contexto da requisição
+     * Segue o princípio DRY para reutilização em diferentes métodos
+     */
+    private function getCurrentCondominiumId(Request $request): int
+    {
+        // 1. Verificar se foi fornecido explicitamente na requisição
+        if ($request->has('condominium_id') && $request->condominium_id) {
+            return (int) $request->condominium_id;
+        }
+        
+        // 2. Verificar se há um condomínio definido pelo tenant middleware
+        if (app()->bound('currentCondominium')) {
+            return app('currentCondominium')->id;
+        }
+        
+        // 3. Verificar se há um condomínio na requisição (atributos)
+        if ($request->attributes->has('condominium')) {
+            return $request->attributes->get('condominium')->id;
+        }
+        
+        // 4. Fallback: usar o condomínio do usuário autenticado
+        if (auth()->check() && auth()->user()->condominium_id) {
+            return auth()->user()->condominium_id;
+        }
+        
+        // 5. Se nada estiver disponível, lançar exceção
+        throw new \InvalidArgumentException('Não foi possível determinar o condomínio atual. Verifique se você está logado e se um condomínio foi selecionado.');
     }
 
     public function destroy(Resident $resident)

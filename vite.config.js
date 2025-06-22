@@ -79,10 +79,20 @@ export default defineConfig({
                 theme_color: '#1e293b',
                 background_color: '#0f172a',
                 display: 'standalone',
+                display_override: ["window-controls-overlay"],
                 orientation: 'portrait',
                 scope: '/',
                 start_url: '/',
                 lang: 'pt-BR',
+                screenshots: [
+                    {
+                        "src": "/images/condo_ai_horizontal.png",
+                        "type": "image/png",
+                        "sizes": "1280x720",
+                        "form_factor": "wide",
+                        "label": "Tela principal do CondoAI"
+                    }
+                ],
                 icons: [
                     {
                         src: '/pwa-192x192.png',

@@ -14,6 +14,10 @@ return new class extends Migration
             $table->foreignId('apartment_id')->constrained('apartments')->onDelete('cascade');
             $table->dateTime('start_time');
             $table->dateTime('end_time');
+            $table->enum('booking_type', ['custom', 'morning', 'afternoon', 'evening', 'full_day'])->default('custom');
+            $table->enum('status', ['pending', 'confirmed', 'cancelled', 'completed'])->default('pending');
+            $table->decimal('total_price', 10, 2)->nullable();
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }

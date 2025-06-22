@@ -115,4 +115,9 @@ class Resident extends Model
     {
         return $this->person_type->label();
     }
+
+    public function getRawClassificationAttribute()
+    {
+        return $this->classification->value;
+    }
 }

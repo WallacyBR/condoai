@@ -173,36 +173,42 @@
     </div>
 
     <!-- Modals (styles updated to match theme) -->
-    <Modal :show="showEditModal" @close="showEditModal = false" title="Editar Vaga">
-      <form v-if="editingSpot" @submit.prevent="updateSpot" class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-300">Identificador</label>
-          <input v-model="editingSpot.identifier" class="mt-1 block w-full bg-gray-900 border-gray-700 rounded px-3 py-2 text-white" placeholder="Ex: G1-01" required />
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-300">Unidade Proprietária</label>
-          <select v-model="editingSpot.apartment_id" class="mt-1 block w-full bg-gray-900 border-gray-700 rounded px-3 py-2 text-white" required>
-            <option v-for="a in apartments" :value="a.id" :key="a.id">{{ formatApartmentDescription(a) }}</option>
-          </select>
-        </div>
-        <div class="flex justify-end space-x-4 pt-4">
-          <NeonButton type="button" @click="showEditModal = false" class="bg-gray-600/40 hover:bg-gray-600/60">Cancelar</NeonButton>
-          <NeonButton type="submit">Salvar</NeonButton>
-        </div>
-      </form>
+    <Modal :show="showEditModal" @close="showEditModal = false" size="lg">
+      <div class="space-y-4">
+        <h2 class="text-xl font-semibold text-white mb-4">Editar Vaga</h2>
+        <form v-if="editingSpot" @submit.prevent="updateSpot" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-300">Identificador</label>
+            <input v-model="editingSpot.identifier" class="mt-1 block w-full bg-gray-900 border-gray-700 rounded px-3 py-2 text-white" placeholder="Ex: G1-01" required />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-300">Unidade Proprietária</label>
+            <select v-model="editingSpot.apartment_id" class="mt-1 block w-full bg-gray-900 border-gray-700 rounded px-3 py-2 text-white" required>
+              <option v-for="a in apartments" :value="a.id" :key="a.id">{{ formatApartmentDescription(a) }}</option>
+            </select>
+          </div>
+          <div class="flex justify-end space-x-4 pt-4">
+            <NeonButton type="button" @click="showEditModal = false" class="bg-gray-600/40 hover:bg-gray-600/60">Cancelar</NeonButton>
+            <NeonButton type="submit">Salvar</NeonButton>
+          </div>
+        </form>
+      </div>
     </Modal>
 
-    <Modal :show="showCreateBatchModal" @close="showCreateBatchModal = false" title="Criar Vagas em Lote">
-      <form @submit.prevent="createBatchSpots" class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-300">Vagas por unidade</label>
-          <input v-model.number="spotsPerApartment" type="number" min="1" class="mt-1 block w-full bg-gray-900 border-gray-700 rounded px-3 py-2 text-white" required />
-        </div>
-        <div class="flex justify-end space-x-4 pt-4">
-            <NeonButton type="button" @click="showCreateBatchModal = false" class="bg-gray-600/40 hover:bg-gray-600/60">Cancelar</NeonButton>
-            <NeonButton type="submit" class="bg-blue-600/40 hover:bg-blue-600/60">Criar</NeonButton>
-        </div>
-      </form>
+    <Modal :show="showCreateBatchModal" @close="showCreateBatchModal = false" size="lg">
+      <div class="space-y-4">
+        <h2 class="text-xl font-semibold text-white mb-4">Criar Vagas em Lote</h2>
+        <form @submit.prevent="createBatchSpots" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-300">Vagas por unidade</label>
+            <input v-model.number="spotsPerApartment" type="number" min="1" class="mt-1 block w-full bg-gray-900 border-gray-700 rounded px-3 py-2 text-white" required />
+          </div>
+          <div class="flex justify-end space-x-4 pt-4">
+              <NeonButton type="button" @click="showCreateBatchModal = false" class="bg-gray-600/40 hover:bg-gray-600/60">Cancelar</NeonButton>
+              <NeonButton type="submit" class="bg-blue-600/40 hover:bg-blue-600/60">Criar</NeonButton>
+          </div>
+        </form>
+      </div>
     </Modal>
 
     <!-- Modal de Confirmação de Exclusão -->

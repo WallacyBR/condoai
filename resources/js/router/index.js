@@ -129,6 +129,18 @@ const routes = [
     meta: { requiresAuth: true, requiresCondo: true }
   },
   {
+    path: '/common-areas/new',
+    name: 'common-areas.new',
+    component: () => import('../pages/CommonAreaFormPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/common-areas/:id/edit',
+    name: 'common-areas.edit',
+    component: () => import('../pages/CommonAreaFormPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
     path: '/reports',
     name: 'reports',
     component: () => import('../components/ReportsView.vue'),

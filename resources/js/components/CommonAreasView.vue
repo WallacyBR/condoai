@@ -1,6 +1,16 @@
 <template>
   <AuthenticatedLayout page-title="Áreas Comuns">
     <div class="space-y-6">
+      <TopCard title="Áreas Comuns" :icon="AreaIcon" :subtitle="selectedCondominiumName">
+        <template #actions>
+          <NeonButton @click="createNewArea()" size="md">
+            <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Nova Área Comum
+          </NeonButton>
+        </template>
+      </TopCard>
       <!-- Aviso quando nenhum condomínio está selecionado -->
       <div v-if="!selectedCondominiumName && !loading" class="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
         <div class="flex items-center space-x-2">
@@ -46,13 +56,6 @@
             </div>
           </div>
           
-          <!-- Botão Nova Área -->
-          <NeonButton @click="createNewArea()" size="md">
-            <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-            Nova Área Comum
-          </NeonButton>
         </div>
       </div>
 
@@ -301,18 +304,20 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, h } from 'vue';
 import { useRouter } from 'vue-router';
 import AuthenticatedLayout from './layouts/AuthenticatedLayout.vue';
 import NeonButton from './NeonButton.vue';
 import CommonAreaCalendar from './CommonAreaCalendar.vue';
+import TopCard from './ui/TopCard.vue';
 
 export default {
   name: 'CommonAreasView',
-  components: { 
-    AuthenticatedLayout, 
-    NeonButton, 
-    CommonAreaCalendar
+  components: {
+    AuthenticatedLayout,
+    NeonButton,
+    CommonAreaCalendar,
+    TopCard
   },
   setup() {
     const router = useRouter();
@@ -323,6 +328,14 @@ export default {
     const filter = ref('all');
     const showCalendar = ref(false);
     const selectedArea = ref(null);
+
+    const AreaIcon = {
+      render() {
+        return h('svg', { class: 'h-5 w-5', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
+          h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M3 7h18M3 12h18M3 17h18' })
+        ]);
+      }
+    };
 
     // Estado do condomínio selecionado
     const selectedCondominiumId = ref(localStorage.getItem('selectedCondominium'));
@@ -465,7 +478,8 @@ export default {
       closeCalendar,
       deleteArea,
       getImageUrl,
-      formatPrice
+      formatPrice,
+      AreaIcon
     };
   }
 };

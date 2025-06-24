@@ -1,6 +1,24 @@
 <template>
   <AuthenticatedLayout page-title="Correspondências">
     <div class="space-y-6">
+      <TopCard title="Correspondências" :icon="PackageIcon">
+        <template #actions>
+          <div class="flex space-x-2">
+            <NeonButton @click="navigateToDelivery" size="md" class="bg-cyan-600/40 hover:bg-cyan-600/60">
+              <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2M8 7h8M9 12h6" />
+              </svg>
+              Entrega
+            </NeonButton>
+            <NeonButton @click="navigateToNew" size="md">
+              <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              Nova Correspondência
+            </NeonButton>
+          </div>
+        </template>
+      </TopCard>
       <!-- Aviso quando nenhum condomínio está selecionado -->
       <div v-if="!selectedCondominiumName && !loading" class="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
         <div class="flex items-center space-x-2">
@@ -135,20 +153,6 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
             Limpar
-          </NeonButton>
-        </div>
-        <div class="flex space-x-2">
-          <NeonButton @click="navigateToDelivery" size="md" class="bg-cyan-600/40 hover:bg-cyan-600/60">
-            <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2M8 7h8M9 12h6" />
-            </svg>
-            Entrega
-          </NeonButton>
-          <NeonButton @click="navigateToNew" size="md">
-            <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-            Nova Correspondência
           </NeonButton>
         </div>
       </div>
@@ -382,17 +386,18 @@
 </template>
 
 <script>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch, h } from 'vue';
 import { useRouter } from 'vue-router';
 import AuthenticatedLayout from './layouts/AuthenticatedLayout.vue';
 import NeonButton from './NeonButton.vue';
+import TopCard from './ui/TopCard.vue';
 import { apiRequest } from '../utils/api';
 import { formatApartmentDescription } from '../utils/formatters';
 import PackageInfoModal from './PackageInfoModal.vue';
 
 export default {
   name: 'PackagesView',
-  components: { AuthenticatedLayout, NeonButton, PackageInfoModal },
+  components: { AuthenticatedLayout, NeonButton, PackageInfoModal, TopCard },
   setup() {
     const router = useRouter();
     const packages = ref([]);
@@ -408,6 +413,14 @@ export default {
     const blocks = ref([]);
     const selected = ref(null);
     const showInfo = ref(false);
+
+    const PackageIcon = {
+      render() {
+        return h('svg', { class: 'h-5 w-5', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
+          h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' })
+        ]);
+      }
+    };
 
     // Estado para modal de confirmação de exclusão
     const deleteConfirmation = ref({
@@ -680,6 +693,7 @@ export default {
       blockFilter,
       towers,
       blocks
+      PackageIcon
     };
   }
 };

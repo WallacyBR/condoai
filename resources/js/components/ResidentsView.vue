@@ -1,6 +1,16 @@
 <template>
   <AuthenticatedLayout page-title="Moradores">
     <div class="space-y-6">
+      <TopCard title="Moradores" :icon="UserIcon">
+        <template #actions>
+          <NeonButton @click="openNewResidentPage" size="md">
+            <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Novo Morador
+          </NeonButton>
+        </template>
+      </TopCard>
       <!-- Aviso quando nenhum condomínio está selecionado -->
       <div v-if="!selectedCondominiumName && !loading" class="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
         <div class="flex items-center space-x-2">
@@ -159,12 +169,6 @@
             Limpar
           </NeonButton>
         </div>
-        <NeonButton @click="openNewResidentPage" size="md">
-          <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
-          Novo Morador
-        </NeonButton>
       </div>
 
       <!-- Filter Status -->
@@ -352,17 +356,25 @@
 </template>
 
 <script>
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch, onMounted, h } from 'vue';
 import { useRouter } from 'vue-router';
 import AuthenticatedLayout from './layouts/AuthenticatedLayout.vue';
 import NeonButton from './NeonButton.vue';
 import ResidentPhoto from './ResidentPhoto.vue';
+import TopCard from './ui/TopCard.vue';
 
 export default {
   name: 'ResidentsView',
-  components: { AuthenticatedLayout, NeonButton, ResidentPhoto },
+  components: { AuthenticatedLayout, NeonButton, ResidentPhoto, TopCard },
   setup() {
     const router = useRouter();
+    const UserIcon = {
+      render() {
+        return h('svg', { class: 'h-5 w-5', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
+          h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' })
+        ]);
+      }
+    };
     const residents = ref([]);
     const condominiums = ref([]);
     const loading = ref(true);
@@ -809,7 +821,8 @@ export default {
       deleteConfirmation,
       showDeleteConfirmation,
       closeDeleteConfirmation,
-      confirmDelete
+      confirmDelete,
+      UserIcon
     };
   }
 };

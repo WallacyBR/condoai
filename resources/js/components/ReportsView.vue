@@ -1,6 +1,7 @@
 <template>
   <AuthenticatedLayout page-title="Relatórios">
     <div class="space-y-6">
+      <TopCard title="Relatórios" :icon="ReportIcon" />
       <!-- Filters -->
       <div class="bg-white shadow-sm rounded-lg p-6">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -154,17 +155,26 @@
 </template>
 
 <script>
-import { ref, reactive } from 'vue';
+import { ref, reactive, h } from 'vue';
 import AuthenticatedLayout from './layouts/AuthenticatedLayout.vue';
+import TopCard from './ui/TopCard.vue';
 
 export default {
   name: 'ReportsView',
-  components: { AuthenticatedLayout },
+  components: { AuthenticatedLayout, TopCard },
   setup() {
     const condominiums = ref([]);
     const loading = ref(false);
     const error = ref('');
     const report = ref(null);
+
+    const ReportIcon = {
+      render() {
+        return h('svg', { class: 'h-5 w-5', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
+          h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' })
+        ]);
+      }
+    };
 
     const filters = reactive({
       condominium: '',
@@ -244,7 +254,8 @@ export default {
       generateReport,
       formatDate,
       downloadPDF,
-      downloadExcel
+      downloadExcel,
+      ReportIcon
     };
   }
 };

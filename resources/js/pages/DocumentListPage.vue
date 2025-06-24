@@ -1,8 +1,6 @@
 <template>
   <AuthenticatedLayout>
-    <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Documentos do Condomínio</h2>
-    </template>
+    <TopCard title="Documentos do Condomínio" :icon="DocIcon" />
 
     <div class="py-12">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -90,8 +88,17 @@
 
 <script setup>
 import AuthenticatedLayout from '@/components/layouts/AuthenticatedLayout.vue';
-import { ref, reactive, onMounted, watch } from 'vue';
+import { ref, reactive, onMounted, watch, h } from 'vue';
 import api from '@/utils/api';
+import TopCard from '@/components/ui/TopCard.vue';
+
+const DocIcon = {
+  render() {
+    return h('svg', { class: 'h-5 w-5', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
+      h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' })
+    ]);
+  }
+};
 // import documentService from '@/services/documentService'; // Idealmente
 
 const documents = ref([]);

@@ -1,19 +1,16 @@
 <template>
   <AuthenticatedLayout page-title="Avisos do Condomínio">
     <div class="max-w-7xl mx-auto space-y-6">
-      <!-- Header Section -->
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-3xl font-bold text-white">Avisos do Condomínio</h1>
-          <p class="text-gray-400 mt-1">Gerencie e visualize todos os avisos do seu condomínio</p>
-        </div>
-        <NeonButton @click="router.push({ name: 'notices.create' })" size="md">
-          <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
-          Novo Aviso
-        </NeonButton>
-      </div>
+      <TopCard title="Avisos" :icon="NoticeIcon" subtitle="Gerencie e visualize todos os avisos do seu condomínio">
+        <template #actions>
+          <NeonButton @click="router.push({ name: 'notices.create' })" size="md">
+            <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Novo Aviso
+          </NeonButton>
+        </template>
+      </TopCard>
 
       <!-- Filter Section -->
       <div class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl shadow-xl p-6 border-2 border-indigo-500/20">
@@ -253,9 +250,18 @@
 <script setup>
 import AuthenticatedLayout from '@/components/layouts/AuthenticatedLayout.vue';
 import NeonButton from '@/components/NeonButton.vue';
-import { ref, onMounted, watch, computed } from 'vue';
+import { ref, onMounted, watch, computed, h } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '@/utils/api';
+import TopCard from '@/components/ui/TopCard.vue';
+
+const NoticeIcon = {
+  render() {
+    return h('svg', { class: 'h-5 w-5', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
+      h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M11 5.882V4a2 2 0 10-4 0v1.882a5.002 5.002 0 00-4.472 4.975 4.993 4.993 0 003.386 4.613V20a1 1 0 001 1h2a1 1 0 001-1v-4.53a4.993 4.993 0 003.386-4.613A5.002 5.002 0 0011 5.882z' })
+    ]);
+  }
+};
 
 const router = useRouter();
 

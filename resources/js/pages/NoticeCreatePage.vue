@@ -55,21 +55,27 @@
             <h3 class="text-xl font-semibold text-indigo-300 border-b border-indigo-500/30 pb-2">
               Anexos
             </h3>
-            <div>
-              <label for="attachments" class="block text-sm font-medium text-gray-300 mb-2">Adicionar Arquivos (Imagens ou Documentos)</label>
-              <input type="file" id="attachments" name="attachments" multiple @change="handleFileUpload"
-                     class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer"
-                     :class="{ 'border-red-500': errors.attachments }">
-              <p class="mt-1 text-xs text-gray-500">Tipos permitidos: PNG, JPG, GIF, PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, TXT (MAX. 10MB por arquivo).</p>
-              <div v-if="form.attachments.length > 0" class="mt-3 space-y-2">
-                <p class="text-sm font-medium text-gray-300">Arquivos selecionados:</p>
-                <ul class="list-disc list-inside pl-1">
-                  <li v-for="(file, index) in form.attachments" :key="index" class="text-sm text-gray-400">
-                    {{ file.name }} ({{ (file.size / 1024).toFixed(2) }} KB)
-                  </li>
-                </ul>
+            <div class="bg-gradient-to-br from-gray-900/90 via-gray-800/90 to-gray-900/90 rounded-2xl p-6 border-2 border-gray-700/50 shadow-xl">
+              <div class="flex items-center space-x-3 mb-6">
+                <div class="h-10 w-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+                  <svg class="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 class="text-xl font-semibold text-white">Upload de Documentos</h2>
+                  <p class="text-sm text-gray-400">Envie arquivos arrastando aqui ou clicando para selecionar</p>
+                </div>
               </div>
-              <p v-if="errors.attachments" class="mt-1 text-sm text-red-400">{{ errors.attachments[0] }}</p>
+              <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-600/30">
+                <FileUpload
+                  v-model="form.attachments"
+                  :accept="'.png,.jpg,.jpeg,.gif,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt'"
+                  :multiple="true"
+                  :max-size="10"
+                />
+              </div>
+              <p v-if="errors.attachments" class="mt-3 text-sm text-red-400">{{ errors.attachments[0] }}</p>
               <p v-if="errors['attachments.0']" class="mt-1 text-sm text-red-400">{{ errors['attachments.0'][0] }}</p>
             </div>
           </div>
@@ -183,6 +189,7 @@
 import AuthenticatedLayout from '@/components/layouts/AuthenticatedLayout.vue';
 import NeonButton from '@/components/NeonButton.vue'; // Assumindo que NeonButton está em @/components/
 import MultiSelectField from '@/components/MultiSelectField.vue';
+import FileUpload from '@/components/FileUpload.vue';
 import { ref, reactive, onMounted, watch, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '@/utils/api';
@@ -222,9 +229,6 @@ const apartmentOptions = computed(() =>
   }))
 );
 
-function handleFileUpload(event) {
-  form.attachments = Array.from(event.target.files);
-}
 
 async function fetchTargetData() {
   try {

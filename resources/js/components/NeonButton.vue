@@ -5,6 +5,7 @@
     :class="[
       'liquid-glass-btn group relative flex justify-center items-center font-medium text-white transition-all duration-300 ease-in-out overflow-hidden',
       sizeClass,
+      variantClass,
       extraClass,
       { 'opacity-50 cursor-not-allowed': disabled || loading }
     ]"
@@ -27,6 +28,7 @@ import { computed } from 'vue';
 const props = defineProps({
   type: { type: String, default: 'button' },
   size: { type: String, default: 'md' }, // 'sm', 'md', 'lg', 'xl'
+  variant: { type: String, default: 'primary' },
   loading: { type: Boolean, default: false },
   disabled: { type: Boolean, default: false },
   extraClass: { type: String, default: '' }
@@ -42,6 +44,23 @@ const sizeClass = computed(() => {
       return 'px-10 py-5 text-xl rounded-full';
     default:
       return 'px-4 py-3 text-base rounded-2xl';
+  }
+});
+
+const variantClass = computed(() => {
+  switch (props.variant) {
+    case 'secondary':
+      return 'bg-gray-600/40 hover:bg-gray-600/60';
+    case 'primary-action':
+      return 'bg-gradient-to-r from-indigo-600/60 to-purple-600/60 hover:from-indigo-600/80 hover:to-purple-600/80';
+    case 'success':
+      return 'bg-gradient-to-r from-green-600/60 to-green-700/60 hover:from-green-600/80 hover:to-green-700/80';
+    case 'danger':
+      return 'bg-red-600/40 hover:bg-red-600/60';
+    case 'info':
+      return 'bg-blue-600/40 hover:bg-blue-600/60';
+    default:
+      return '';
   }
 });
 </script>

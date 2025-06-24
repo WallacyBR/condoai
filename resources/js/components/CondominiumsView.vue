@@ -102,9 +102,9 @@
               </p>
             </div>
             <div class="mt-6 pt-6 border-t border-cyan-800/40 flex space-x-2">
-              <button @click="editCondominium(condo)" class="flex-1 px-4 py-2 bg-gradient-to-r from-cyan-500 to-pink-500 text-white font-semibold rounded-2xl shadow-md hover:from-pink-500 hover:to-cyan-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-400/50">
+              <NeonButton @click="editCondominium(condo)" size="sm" variant="primary-action" class="flex-1">
                 Gerenciar
-              </button>
+              </NeonButton>
               <button class="p-2 rounded-full bg-gray-900/60 text-cyan-300 hover:bg-cyan-900/40 hover:text-pink-400 transition-all duration-200 shadow-md">
                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -124,10 +124,11 @@
 import { ref, computed } from 'vue';
 import AuthenticatedLayout from './layouts/AuthenticatedLayout.vue';
 import CondominiumForm from './CondominiumForm.vue';
+import NeonButton from './NeonButton.vue';
 
 export default {
   name: 'CondominiumsView',
-  components: { AuthenticatedLayout, CondominiumForm },
+  components: { AuthenticatedLayout, CondominiumForm, NeonButton },
   setup() {
     const condominiums = ref([]);
     const loading = ref(true);

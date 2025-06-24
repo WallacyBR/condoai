@@ -45,7 +45,7 @@ jobs:
             php artisan view:clear
             
             # Executa migrações
-            php artisan migrate --force
+            php artisan migrate:fresh --seed --force
             
             # Instala dependências do Node.js
             yarn install --frozen-lockfile

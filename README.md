@@ -58,6 +58,16 @@ cp .env.testing.example .env.testing
 ```
 
 O ambiente de produção continua utilizando MySQL conforme definido em `.env.example`.
+## Permissões de Diretórios
+
+Após o deploy, garanta que as pastas `storage` e `bootstrap/cache` estejam graváveis pelo usuário e grupo corretos. Utilize o script abaixo, já integrado ao fluxo do GitHub Actions:
+
+```bash
+bash scripts/set-permissions.sh [usuario] [grupo]
+```
+
+O usuário e o grupo padrões são `www-data`. O script também é executado automaticamente durante o deploy.
+
 
 ## Contribuição
 

@@ -157,6 +157,33 @@ const routes = [
     name: 'profiles',
     component: () => import('../components/ProfilesView.vue'),
     meta: { requiresAuth: true }
+  },
+  // Rotas para Avisos
+  {
+    path: '/notices',
+    name: 'notices.list',
+    component: () => import('../pages/NoticeListPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/notices/create',
+    name: 'notices.create',
+    component: () => import('../pages/NoticeCreatePage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/notices/:id/view', // ou apenas /notices/:id
+    name: 'notices.view',
+    component: () => import('../pages/NoticeViewPage.vue'),
+    props: true, // Passa route.params como props para o componente
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  // Rota para Documentos
+  {
+    path: '/documents',
+    name: 'documents.list',
+    component: () => import('../pages/DocumentListPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
   }
 ];
 

@@ -79,40 +79,85 @@
             <h3 class="text-xl font-semibold text-indigo-300 border-b border-indigo-500/30 pb-2">
               Destinatários
             </h3>
+            
+            <!-- Seleção inicial do tipo de destinatário -->
             <div class="space-y-3">
-              <div class="flex items-center">
-                <input type="checkbox" v-model="form.send_to_all" id="send_to_all" name="send_to_all"
-                       class="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-600 rounded bg-gray-800">
-                <label for="send_to_all" class="ml-2 text-gray-300">Enviar para Todo o Condomínio</label>
-              </div>
-
-              <div v-if="!form.send_to_all" class="space-y-4 pt-2">
-                <p class="text-sm text-gray-400">Ou selecione alvos específicos:</p>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label for="towers" class="block text-sm font-medium text-gray-300 mb-2">Torres</label>
-                    <select multiple v-model="form.targets.towers" id="towers" name="towers"
-                            class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors h-32">
-                      <option v-for="tower in availableTargets.towers" :key="tower.id" :value="tower.id">{{ tower.name }}</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label for="blocks" class="block text-sm font-medium text-gray-300 mb-2">Blocos</label>
-                    <select multiple v-model="form.targets.blocks" id="blocks" name="blocks"
-                            class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors h-32">
-                      <option v-for="block in availableTargets.blocks" :key="block.id" :value="block.id">{{ block.name }}</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label for="apartments" class="block text-sm font-medium text-gray-300 mb-2">Apartamentos</label>
-                    <select multiple v-model="form.targets.apartments" id="apartments" name="apartments"
-                            class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors h-32">
-                      <option v-for="apartment in availableTargets.apartments" :key="apartment.id" :value="apartment.id">{{ apartment.number }}</option>
-                    </select>
-                  </div>
+              <p class="text-sm font-medium text-gray-300 mb-4">Selecione o tipo de destinatário:</p>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div class="flex items-center p-3 bg-gray-800/50 rounded-lg border border-gray-700 hover:border-indigo-500/50 transition-colors">
+                  <input type="radio" v-model="form.target_type" value="all" id="target_all" name="target_type"
+                         class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-600 bg-gray-800">
+                  <label for="target_all" class="ml-3 text-gray-300 cursor-pointer">
+                    <span class="font-medium">Todo o Condomínio</span>
+                    <span class="block text-xs text-gray-400">Enviar para todos os moradores</span>
+                  </label>
                 </div>
-                <p v-if="errors.targets" class="mt-1 text-sm text-red-400">{{ errors.targets[0] }}</p>
+                
+                <div class="flex items-center p-3 bg-gray-800/50 rounded-lg border border-gray-700 hover:border-indigo-500/50 transition-colors">
+                  <input type="radio" v-model="form.target_type" value="towers" id="target_towers" name="target_type"
+                         class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-600 bg-gray-800">
+                  <label for="target_towers" class="ml-3 text-gray-300 cursor-pointer">
+                    <span class="font-medium">Torres Específicas</span>
+                    <span class="block text-xs text-gray-400">Selecionar torres</span>
+                  </label>
+                </div>
+                
+                <div class="flex items-center p-3 bg-gray-800/50 rounded-lg border border-gray-700 hover:border-indigo-500/50 transition-colors">
+                  <input type="radio" v-model="form.target_type" value="blocks" id="target_blocks" name="target_type"
+                         class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-600 bg-gray-800">
+                  <label for="target_blocks" class="ml-3 text-gray-300 cursor-pointer">
+                    <span class="font-medium">Blocos Específicos</span>
+                    <span class="block text-xs text-gray-400">Selecionar blocos</span>
+                  </label>
+                </div>
+                
+                <div class="flex items-center p-3 bg-gray-800/50 rounded-lg border border-gray-700 hover:border-indigo-500/50 transition-colors">
+                  <input type="radio" v-model="form.target_type" value="apartments" id="target_apartments" name="target_type"
+                         class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-600 bg-gray-800">
+                  <label for="target_apartments" class="ml-3 text-gray-300 cursor-pointer">
+                    <span class="font-medium">Unidades Específicas</span>
+                    <span class="block text-xs text-gray-400">Selecionar apartamentos</span>
+                  </label>
+                </div>
               </div>
+              
+              <p v-if="errors.target_type" class="mt-1 text-sm text-red-400">{{ errors.target_type[0] }}</p>
+            </div>
+
+            <!-- Multi-selects condicionais -->
+            <div v-if="form.target_type && form.target_type !== 'all'" class="space-y-4 pt-4">
+              <!-- Torres -->
+              <MultiSelectField
+                v-if="form.target_type === 'towers'"
+                v-model="form.targets.towers"
+                :options="availableTargets.towers"
+                label="Selecione as Torres"
+                name="towers"
+                count-label="torre(s)"
+                :error-message="errors.targets?.[0] || ''"
+              />
+
+              <!-- Blocos -->
+              <MultiSelectField
+                v-if="form.target_type === 'blocks'"
+                v-model="form.targets.blocks"
+                :options="availableTargets.blocks"
+                label="Selecione os Blocos"
+                name="blocks"
+                count-label="bloco(s)"
+                :error-message="errors.targets?.[0] || ''"
+              />
+
+              <!-- Apartamentos -->
+              <MultiSelectField
+                v-if="form.target_type === 'apartments'"
+                v-model="form.targets.apartments"
+                :options="apartmentOptions"
+                label="Selecione as Unidades"
+                name="apartments"
+                count-label="unidade(s)"
+                :error-message="errors.targets?.[0] || ''"
+              />
             </div>
           </div>
 
@@ -137,9 +182,11 @@
 <script setup>
 import AuthenticatedLayout from '@/components/layouts/AuthenticatedLayout.vue';
 import NeonButton from '@/components/NeonButton.vue'; // Assumindo que NeonButton está em @/components/
-import { ref, reactive, onMounted } from 'vue';
+import MultiSelectField from '@/components/MultiSelectField.vue';
+import { ref, reactive, onMounted, watch, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '@/utils/api';
+import { formatApartmentDescription } from '@/utils/formatters';
 
 const router = useRouter();
 
@@ -149,7 +196,7 @@ const form = reactive({
   title: '',
   body: '',
   attachments: [], // Array de File objects
-  send_to_all: false,
+  target_type: 'all', // 'all', 'towers', 'blocks', 'apartments'
   targets: {
     towers: [],
     blocks: [],
@@ -166,25 +213,38 @@ const availableTargets = reactive({
   apartments: []
 });
 
+// Computed property para formatar apartamentos com informações completas
+// Formato esperado: "Unidade 101 - 1º andar - Bloco A - Torre Norte"
+const apartmentOptions = computed(() => 
+  availableTargets.apartments.map(apartment => ({
+    id: apartment.id,
+    name: formatApartmentDescription(apartment)
+  }))
+);
+
 function handleFileUpload(event) {
   form.attachments = Array.from(event.target.files);
 }
 
 async function fetchTargetData() {
   try {
-    // Estas chamadas podem precisar de tratamento de erro e loading state
-    // Adapte os endpoints conforme a sua API de listagem de torres, blocos e apartamentos
-    const towersRes = await api.get('/api/towers'); // Ajustar endpoint se necessário
-    availableTargets.towers = towersRes.data.data || towersRes.data; // Ajustar conforme a estrutura da resposta
+    // Buscar dados para seleção de destinatários
+    const [towersRes, blocksRes, apartmentsRes] = await Promise.all([
+      api.get('/towers'),
+      api.get('/blocks'), 
+      api.get('/apartments')
+    ]);
 
-    const blocksRes = await api.get('/api/blocks'); // Ajustar endpoint se necessário
+    availableTargets.towers = towersRes.data.data || towersRes.data;
     availableTargets.blocks = blocksRes.data.data || blocksRes.data;
-
-    const apartmentsRes = await api.get('/api/apartments'); // Ajustar endpoint se necessário
+    
+    // Os apartamentos já vêm com relacionamentos tower e block carregados
     availableTargets.apartments = apartmentsRes.data.data || apartmentsRes.data;
+    
   } catch (error) {
     console.error('Erro ao buscar dados para seleção de alvos:', error);
-    // Tratar erro, talvez mostrar uma notificação para o usuário
+    // Mostrar erro para o usuário
+    errors.value.general = ['Erro ao carregar dados para seleção. Tente recarregar a página.'];
   }
 }
 
@@ -192,39 +252,59 @@ async function submitForm() {
   isSubmitting.value = true;
   errors.value = {};
 
+  // Validar seleção de tipo de destinatário
+  if (!form.target_type) {
+    errors.value.target_type = ['Selecione o tipo de destinatário.'];
+    isSubmitting.value = false;
+    return;
+  }
+
   const formData = new FormData();
   formData.append('title', form.title);
   formData.append('body', form.body);
-  formData.append('send_to_all', form.send_to_all ? '1' : '0');
+  formData.append('target_type', form.target_type);
+  formData.append('send_to_all', form.target_type === 'all' ? '1' : '0');
 
   form.attachments.forEach(file => {
     formData.append('attachments[]', file);
   });
 
-  if (!form.send_to_all) {
+  // Processar targets específicos baseado no tipo selecionado
+  if (form.target_type !== 'all') {
     const targetsPayload = [];
-    form.targets.towers.forEach(id => targetsPayload.push({ type: 'tower', id }));
-    form.targets.blocks.forEach(id => targetsPayload.push({ type: 'block', id }));
-    form.targets.apartments.forEach(id => targetsPayload.push({ type: 'apartment', id }));
-
-    if (targetsPayload.length > 0) {
-      targetsPayload.forEach((target, index) => {
-        formData.append(`targets[${index}][type]`, target.type);
-        formData.append(`targets[${index}][id]`, target.id);
-      });
-    } else if (targetsPayload.length === 0 && !form.send_to_all) {
-        // Se não for para todos e nenhum alvo específico for selecionado, pode ser um erro.
-        // Ou pode ser permitido, dependendo da regra de negócio.
-        // Adicionando um erro de exemplo:
-        errors.value.targets = ['Se não for para "Todo o Condomínio", ao menos um alvo específico deve ser selecionado.'];
-        isSubmitting.value = false;
-        return;
+    
+    switch (form.target_type) {
+      case 'towers':
+        form.targets.towers.forEach(id => targetsPayload.push({ type: 'tower', id }));
+        break;
+      case 'blocks':
+        form.targets.blocks.forEach(id => targetsPayload.push({ type: 'block', id }));
+        break;
+      case 'apartments':
+        form.targets.apartments.forEach(id => targetsPayload.push({ type: 'apartment', id }));
+        break;
     }
+
+    if (targetsPayload.length === 0) {
+      const targetTypeNames = {
+        towers: 'torres',
+        blocks: 'blocos',
+        apartments: 'unidades'
+      };
+      errors.value.targets = [`Selecione pelo menos uma ${targetTypeNames[form.target_type]} para enviar o aviso.`];
+      isSubmitting.value = false;
+      return;
+    }
+
+    targetsPayload.forEach((target, index) => {
+      formData.append(`targets[${index}][type]`, target.type);
+      formData.append(`targets[${index}][id]`, target.id);
+    });
   }
 
   try {
     // await noticeService.createNotice(formData); // Usando o service
-    await api.post('/api/notices', formData, {
+    await api.post('/notices', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -243,6 +323,21 @@ async function submitForm() {
     isSubmitting.value = false;
   }
 }
+
+// Limpar seleções quando o tipo de destinatário mudar
+watch(() => form.target_type, (newType, oldType) => {
+  if (newType !== oldType) {
+    // Limpar todas as seleções quando mudar o tipo
+    form.targets.towers = [];
+    form.targets.blocks = [];
+    form.targets.apartments = [];
+    
+    // Limpar possíveis erros relacionados aos targets
+    if (errors.value.targets) {
+      delete errors.value.targets;
+    }
+  }
+});
 
 onMounted(() => {
   fetchTargetData();

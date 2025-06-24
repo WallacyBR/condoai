@@ -60,7 +60,7 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('packages', \App\Http\Controllers\API\PackageController::class);
 
     // Notice and Document Routes
-    Route::apiResource('notices', \App\Http\Controllers\Api\NoticeController::class);
+    Route::apiResource('notices', \App\Http\Controllers\API\NoticeController::class);
     Route::get('documents', [\App\Http\Controllers\Api\DocumentController::class, 'index'])->name('documents.index');
 
     Route::get('common-areas/{common_area}/bookings', [CommonAreaController::class, 'bookings']);

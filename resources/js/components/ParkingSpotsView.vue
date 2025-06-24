@@ -1,6 +1,14 @@
 <template>
   <AuthenticatedLayout page-title="Gerenciar Vagas">
     <div class="space-y-6">
+      <TopCard title="Vagas" :icon="CarIcon">
+        <template #actions>
+          <div class="flex space-x-2">
+            <NeonButton @click="showCreateBatchModal = true" size="md">Criar em Lote</NeonButton>
+            <NeonButton @click="goToCreatePage" size="md">Nova Vaga</NeonButton>
+          </div>
+        </template>
+      </TopCard>
       <!-- Cards de Resumo -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <!-- Total de Vagas -->
@@ -64,10 +72,7 @@
             <option value="vacant">Livres</option>
           </select>
         </div>
-        <div class="flex space-x-2">
-            <NeonButton @click="showCreateBatchModal = true" size="md">Criar em Lote</NeonButton>
-            <NeonButton @click="goToCreatePage" size="md">Nova Vaga</NeonButton>
-        </div>
+        <div class="flex space-x-2"></div>
       </div>
 
       <!-- Loading State -->
@@ -279,16 +284,17 @@
 </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, h } from 'vue';
 import { useRouter } from 'vue-router';
 import AuthenticatedLayout from './layouts/AuthenticatedLayout.vue';
 import Modal from './Modal.vue';
 import NeonButton from './NeonButton.vue';
+import TopCard from './ui/TopCard.vue';
 import { formatApartmentDescription } from '../utils/formatters.js';
 
 export default {
   name: 'ParkingSpotsView',
-  components: { AuthenticatedLayout, Modal, NeonButton },
+  components: { AuthenticatedLayout, Modal, NeonButton, TopCard },
   setup() {
     const router = useRouter();
     const token = localStorage.getItem('token');
@@ -307,6 +313,14 @@ export default {
 
     const showEditModal = ref(false);
     const showCreateBatchModal = ref(false);
+
+    const CarIcon = {
+      render() {
+        return h('svg', { class: 'h-5 w-5', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
+          h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M3 13l2-2m0 0l7-7 7 7M5 11v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' })
+        ]);
+      }
+    };
 
     // Estado para modal de confirmação de exclusão
     const deleteConfirmation = ref({
@@ -475,7 +489,8 @@ export default {
       filteredSpots,
       goToCreatePage,
       rentSpot,
-      formatApartmentDescription
+      formatApartmentDescription,
+      CarIcon
     };
   }
 };

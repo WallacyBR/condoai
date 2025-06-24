@@ -8,6 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (!Schema::hasTable('common_areas')) {
+            return;
+        }
+
         Schema::table('common_areas', function (Blueprint $table) {
             $table->string('main_photo')->nullable()->after('description');
             $table->json('additional_photos')->nullable()->after('main_photo');
@@ -36,6 +40,10 @@ return new class extends Migration
 
     public function down(): void
     {
+        if (!Schema::hasTable('common_areas')) {
+            return;
+        }
+
         Schema::table('common_areas', function (Blueprint $table) {
             $table->dropColumn([
                 'main_photo',

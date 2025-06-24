@@ -48,7 +48,13 @@ class Notice extends Model
      */
     public function towers()
     {
-        return $this->morphToMany(Tower::class, 'noticable');
+        return $this->morphToMany(
+            Tower::class,
+            'noticable',
+            'noticables',
+            'notice_id',
+            'noticable_id'
+        );
     }
 
     /**
@@ -56,7 +62,13 @@ class Notice extends Model
      */
     public function blocks()
     {
-        return $this->morphToMany(Block::class, 'noticable');
+        return $this->morphToMany(
+            Block::class,
+            'noticable',
+            'noticables',
+            'notice_id',
+            'noticable_id'
+        );
     }
 
     /**
@@ -64,7 +76,13 @@ class Notice extends Model
      */
     public function apartments()
     {
-        return $this->morphToMany(Apartment::class, 'noticable');
+        return $this->morphToMany(
+            Apartment::class,
+            'noticable',
+            'noticables',
+            'notice_id',
+            'noticable_id'
+        );
     }
 
     /**

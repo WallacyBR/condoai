@@ -86,7 +86,12 @@ Route::middleware('auth:api')->group(function () {
         Route::apiResource('equipments', \App\Http\Controllers\API\MaintenanceEquipmentController::class);
         Route::post('equipments/{equipment}/sync-qr-access-users', [\App\Http\Controllers\API\MaintenanceEquipmentController::class, 'syncQrAccessUsers'])
             ->name('equipments.syncQrAccessUsers');
+
+        // Rota para tarefas do dia do usuário
+        Route::get('schedules/my-today', [\App\Http\Controllers\API\MaintenanceScheduleController::class, 'myTodaySchedules'])
+            ->name('schedules.myToday');
         Route::apiResource('schedules', \App\Http\Controllers\API\MaintenanceScheduleController::class);
+
         Route::apiResource('records', \App\Http\Controllers\API\MaintenanceRecordController::class);
         Route::post('records/{record}/update-status', [\App\Http\Controllers\API\MaintenanceRecordController::class, 'updateStatus'])
             ->name('records.updateStatus');

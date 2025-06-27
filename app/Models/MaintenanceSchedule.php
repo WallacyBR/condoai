@@ -56,4 +56,12 @@ class MaintenanceSchedule extends Model
     {
         return $this->hasMany(MaintenanceRecord::class);
     }
+
+    /**
+     * Os usuários responsáveis por este agendamento de manutenção.
+     */
+    public function responsibleUsers()
+    {
+        return $this->belongsToMany(User::class, 'maintenance_schedule_user', 'maintenance_schedule_id', 'user_id')->withTimestamps();
+    }
 }

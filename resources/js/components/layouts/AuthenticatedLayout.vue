@@ -298,6 +298,11 @@ export default {
         name: 'Manutenções',
         path: '/maintenance/dashboard', // Rota inicial do módulo de manutenção
         icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.5 6h3m-6.75 3h9.75m-1.5 3h4.5m-6.75 3h9.75M17.25 21L3 7.5m14.25 13.5L3 7.5V3.75C3 3.336 3.336 3 3.75 3h16.5c.414 0 .75.336.75.75v16.5c0 .414-.336.75-.75.75h-3.75Z"></path></svg>`
+      },
+      {
+        name: 'Minhas Tarefas Hoje',
+        path: '/maintenance/my-today-tasks',
+        icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>`
       }
     ];
 

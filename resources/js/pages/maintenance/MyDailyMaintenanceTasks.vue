@@ -58,9 +58,9 @@ import AuthenticatedLayout from '@/components/layouts/AuthenticatedLayout.vue';
 import api from '@/utils/api';
 import { format, parseISO,startOfToday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-// import { useRouter } from 'vue-router'; // Se for usar router.push para navegar
+import { useRouter } from 'vue-router';
 
-// const router = useRouter(); // Para navegação programática
+const router = useRouter();
 
 const tasks = ref([]);
 const isLoading = ref(false);
@@ -89,11 +89,7 @@ async function fetchMyTasks() {
 }
 
 function goToRecordForm(task) {
-  // Lógica para navegar para o formulário de registro de manutenção
-  // Isso pode envolver router.push, ou emitir um evento para um componente pai que gerencia modais/rotas.
-  // Exemplo: router.push({ name: 'MaintenanceRecordFormPage', params: { scheduleId: task.id } });
-  console.log('Navegar para registrar/detalhar tarefa:', task.id);
-  alert(`Funcionalidade de registro para "${task.title}" ainda não implementada nesta tela.`);
+  router.push({ name: 'MaintenanceRecordForm', params: { scheduleId: task.id } });
 }
 
 onMounted(() => {

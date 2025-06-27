@@ -51,16 +51,16 @@ import AuthenticatedLayout from '@/components/layouts/AuthenticatedLayout.vue';
 import FileUpload from '@/components/FileUpload.vue'; // Assumindo que este componente emite 'update:modelValue' com um array de Files
 import SignaturePad from '@/components/SignaturePad.vue'; // Assumindo que este tem um método para pegar a dataURL e limpar
 // import WebcamCapture from '@/components/WebcamCapture.vue'; // Se for usar
-import { ref, reactive } from 'vue';
-import { useRouter } from 'vue-router';
-import api from '@/utils/api'; // Supondo que api.js lida com base URL e token
+import { ref, reactive, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import api from '@/utils/api';
 
 const router = useRouter();
+const route = useRoute();
 const signaturePadRef = ref(null);
 const isSubmitting = ref(false);
 
-// Simular ID do agendamento (viria de props ou rota)
-const scheduleId = ref(1);
+const scheduleId = ref(route.params.scheduleId);
 
 const formData = reactive({
   maintenance_schedule_id: scheduleId.value, // Ou pegar da rota/prop

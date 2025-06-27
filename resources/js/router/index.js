@@ -211,9 +211,10 @@ const routes = [
     meta: { requiresAuth: true, requiresCondo: true }
   },
   {
-    path: '/maintenance/records/new', // Poderia ser /schedules/:schedId/records/new
+    path: '/maintenance/records/new/:scheduleId?',
     name: 'maintenance.records.new',
     component: () => import('../pages/maintenance/MaintenanceRecordForm.vue'),
+    props: true,
     meta: { requiresAuth: true, requiresCondo: true }
   },
   {

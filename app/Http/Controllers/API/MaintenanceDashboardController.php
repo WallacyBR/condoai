@@ -187,51 +187,52 @@ class MaintenanceDashboardController extends Controller
         $now = Carbon::now();
 
         $stats = \App\Models\MaintenanceArea::where('condominium_id', $currentCondominiumId)
-            ->select('id', 'name') // Selecionar campos necessários da área
+            ->select('id', 'name')
             ->withCount([
-                'equipments', // Total de equipamentos na área
-            ])
-            ->with(['equipments.schedules.records' => function ($query) use ($now) {
-                // Este aninhamento pode ser pesado. Idealmente, faríamos subqueries ou joins mais diretos.
-                // Para uma primeira versão, vamos tentar assim e otimizar se necessário.
-            }])
-            ->orderBy('name')
-            ->get()
-            ->map(function ($area) use ($now) {
-                $pendingCount = 0;
-                $completedCount = 0;
-                $overdueCount = 0;
-
-                foreach ($area->equipments as $equipment) {
-                    foreach ($equipment->schedules as $schedule) {
-                        foreach ($schedule->records as $record) {
-                            if ($record->status === 'completed') {
-                                $completedCount++;
-                            } elseif ($record->status === 'overdue') {
-                                $overdueCount++;
-                            } elseif ($record->status === 'pending') {
-                                // Lógica de pendente/vencido baseada na data
-                                $scheduleDate = Carbon::parse($schedule->start_date . ' ' . ($schedule->due_time ?? '00:00:00'));
-                                if ($scheduleDate->lt($now) && $schedule->type !== 'specific_days') { // specific_days pode não ter uma lógica simples de vencimento assim
-                                    $overdueCount++;
-                                } else {
-                                    $pendingCount++;
-                                }
-                            }
-                        }
-                    }
+                'equipments',
+                'equipments as pending_schedules_count' => function ($query) use ($now, $currentCondominiumId) {
+                    $query->whereHas('schedules.records', function ($q) use ($now) {
+                        $q->where('status', 'pending')
+                            ->whereHas('schedule', function ($sQuery) use ($now) {
+                                $sQuery->where(function ($sq) use ($now) {
+                                    $sq->where('start_date', '>', $now->toDateString())
+                                        ->orWhere(function ($sq2) use ($now) {
+                                            $sq2->where('start_date', '=', $now->toDateString())
+                                                ->where(function ($sq3) use ($now) {
+                                                    $sq3->whereNull('due_time')
+                                                        ->orWhere('due_time', '>=', $now->toTimeString());
+                                                });
+                                        });
+                                });
+                            });
+                    });
+                },
+                'equipments as completed_schedules_count' => function ($query) {
+                    $query->whereHas('schedules.records', function ($q) {
+                        $q->where('status', 'completed');
+                    });
+                },
+                'equipments as overdue_schedules_count' => function ($query) use ($now) {
+                    $query->whereHas('schedules.records', function ($q) use ($now) {
+                        $q->where('status', 'overdue')
+                            ->orWhere(function ($subQuery) use ($now) {
+                                $subQuery->where('status', 'pending')
+                                    ->whereHas('schedule', function ($sQuery) use ($now) {
+                                        $sQuery->where(function ($sq) use ($now) {
+                                            $sq->where('start_date', '<', $now->toDateString())
+                                                ->orWhere(function ($sq2) use ($now) {
+                                                    $sq2->where('start_date', '=', $now->toDateString())
+                                                        ->whereNotNull('due_time')
+                                                        ->where('due_time', '<', $now->toTimeString());
+                                                });
+                                        });
+                                    });
+                            });
+                    });
                 }
-                unset($area->equipments); // Remover para não poluir a resposta
-
-                return [
-                    'id' => $area->id,
-                    'name' => $area->name,
-                    'equipments_count' => $area->equipments_count, // Total de equipamentos
-                    'pending_schedules_count' => $pendingCount,
-                    'completed_schedules_count' => $completedCount,
-                    'overdue_schedules_count' => $overdueCount,
-                ];
-            });
+            ])
+            ->orderBy('name')
+            ->get();
 
         return response()->json($stats);
     }

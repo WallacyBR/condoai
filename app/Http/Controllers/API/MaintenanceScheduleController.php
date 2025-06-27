@@ -239,11 +239,6 @@ class MaintenanceScheduleController extends Controller
 
             if ($request->has('responsible_user_ids')) {
                 $schedule->responsibleUsers()->sync($request->input('responsible_user_ids'));
-            } else {
-                // Se responsible_user_ids não for enviado, ou enviado como array vazio, desvincula todos os usuários.
-                // Se a intenção for manter os atuais se não enviado, a lógica precisaria ser ajustada.
-                // Por ora, a ausência ou array vazio significa "nenhum responsável".
-                $schedule->responsibleUsers()->sync([]);
             }
         });
 

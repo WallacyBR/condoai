@@ -99,7 +99,7 @@ class MaintenanceEquipmentController extends Controller
             'location_details' => $request->location_details,
             'qr_code_access_level' => $request->input('qr_code_access_level', 'internal_users'),
             'condominium_id' => $currentCondominiumId,
-            'qr_code_hash' => Str::uuid()->toString(), // Gerar UUID para o hash do QR Code
+            'qr_code_hash' => Str::random(32), // Gerar um hash aleatório para o QR Code
         ]);
 
         return response()->json($equipment, 201);

@@ -29,7 +29,7 @@ class MaintenanceSchedule extends Model
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
-        'due_time' => 'datetime:H:i', // Para garantir que seja tratado como hora
+        'due_time' => 'string',
         'is_recurring' => 'boolean',
         'specific_days_of_week' => 'array', // Laravel trata JSON como array automaticamente
     ];

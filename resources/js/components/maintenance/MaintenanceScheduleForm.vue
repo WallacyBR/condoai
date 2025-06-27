@@ -60,7 +60,28 @@
         </div>
       </div>
 
-       <div>
+      <div v-if="form.type !== 'daily'">
+        <label for="end_date" class="block text-sm font-medium text-gray-300">Data de Término (Opcional)</label>
+        <input type="date" id="end_date" v-model="form.end_date"
+               class="mt-1 block w-full bg-gray-700 border-gray-600 text-white rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm">
+        <p v-if="errors.end_date" class="text-sm text-red-400 mt-1">{{ errors.end_date.join(', ') }}</p>
+      </div>
+
+      <div v-if="form.type === 'monthly'">
+        <label for="day_of_month" class="block text-sm font-medium text-gray-300">Dia do Mês</label>
+        <input type="number" id="day_of_month" v-model="form.day_of_month" min="1" max="31"
+               class="mt-1 block w-full bg-gray-700 border-gray-600 text-white rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm">
+        <p v-if="errors.day_of_month" class="text-sm text-red-400 mt-1">{{ errors.day_of_month.join(', ') }}</p>
+      </div>
+
+      <div v-if="form.type === 'semiannual' || form.type === 'annual'">
+        <label for="month_of_year" class="block text-sm font-medium text-gray-300">Mês do Ano</label>
+        <input type="number" id="month_of_year" v-model="form.month_of_year" min="1" max="12"
+               class="mt-1 block w-full bg-gray-700 border-gray-600 text-white rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm">
+        <p v-if="errors.month_of_year" class="text-sm text-red-400 mt-1">{{ errors.month_of_year.join(', ') }}</p>
+      </div>
+
+      <div>
         <label for="responsible_user_ids" class="block text-sm font-medium text-gray-300">Responsáveis</label>
         <!-- Idealmente, usar um componente MultiSelectField robusto aqui -->
         <select multiple id="responsible_user_ids" v-model="form.responsible_user_ids"
@@ -73,8 +94,7 @@
         <p v-if="errors.responsible_user_ids" class="text-sm text-red-400 mt-1">{{ errors.responsible_user_ids.join(', ') }}</p>
       </div>
 
-      <!-- Outros campos como end_date, specific_days_of_week, etc. podem ser adicionados aqui condicionalmente baseados no 'type' -->
-       <div v-if="form.type === 'weekly' || form.type === 'specific_days' || form.type === 'biweekly'">
+      <div v-if="form.type === 'weekly' || form.type === 'specific_days' || form.type === 'biweekly'">
         <label class="block text-sm font-medium text-gray-300">Dias da Semana Específicos</label>
         <div class="mt-2 grid grid-cols-3 sm:grid-cols-4 gap-2">
           <label v-for="(day, index) in daysOfWeek" :key="index" class="flex items-center space-x-2 p-2 bg-gray-700 rounded-md hover:bg-gray-600">
@@ -85,14 +105,6 @@
         </div>
         <p v-if="errors.specific_days_of_week" class="text-sm text-red-400 mt-1">{{ errors.specific_days_of_week.join(', ') }}</p>
       </div>
-
-
-      <div class="flex items-center">
-        <input id="is_recurring" type="checkbox" v-model="form.is_recurring"
-               class="h-4 w-4 text-cyan-600 focus:ring-cyan-500 border-gray-600 bg-gray-700 rounded">
-        <label for="is_recurring" class="ml-2 block text-sm text-gray-300">Agendamento Recorrente</label>
-      </div>
-       <p v-if="errors.is_recurring" class="text-sm text-red-400 mt-1">{{ errors.is_recurring.join(', ') }}</p>
 
       <div class="pt-6 flex justify-end space-x-3">
         <button type="button" @click="$emit('close')"
@@ -132,7 +144,6 @@ const form = ref({
   start_date: new Date().toISOString().split('T')[0],
   end_date: '',
   due_time: '',
-  is_recurring: true,
   specific_days_of_week: [], // 0 para Domingo, 6 para Sábado
   day_of_month: null,
   month_of_year: null,
@@ -169,7 +180,6 @@ function resetForm() {
     start_date: new Date().toISOString().split('T')[0],
     end_date: '',
     due_time: '',
-    is_recurring: true,
     specific_days_of_week: [],
     day_of_month: null,
     month_of_year: null,
@@ -223,15 +233,24 @@ async function submitForm() {
   try {
     let response;
     const payload = { ...form.value };
-    // Certifique-se de que os campos numéricos/booleanos estão corretos
-    payload.is_recurring = Boolean(payload.is_recurring);
+    // Limpar campos condicionais que não se aplicam ao tipo de recorrência selecionado
     if (payload.type !== 'weekly' && payload.type !== 'specific_days' && payload.type !== 'biweekly') {
-        delete payload.specific_days_of_week;
+        payload.specific_days_of_week = [];
     }
-     if (payload.type !== 'monthly') {
-        delete payload.day_of_month;
+    if (payload.type !== 'monthly') {
+        payload.day_of_month = null;
     }
-    // etc para outros campos condicionais
+    if (payload.type !== 'semiannual' && payload.type !== 'annual') {
+        payload.month_of_year = null;
+    }
+
+    // Se não for diário, mas não tiver end_date, definir como null
+    if (payload.type !== 'daily' && !payload.end_date) {
+        payload.end_date = null;
+    }
+
+    // Remover is_recurring, pois a recorrência é implícita pelo tipo
+    delete payload.is_recurring;
 
     if (isEditMode.value) {
       response = await api.put(`/maintenance/schedules/${props.scheduleData.id}`, payload);

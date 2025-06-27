@@ -74,8 +74,11 @@ class PublicMaintenanceReportController extends Controller
         ->with('user:id,name') // Quem realizou
         ->get(['id', 'performed_at', 'notes', 'user_id', 'status']);
 
-        // Buscar próxima manutenção agendada (simplificado - pega o próximo registro pendente)
-        // Uma lógica mais complexa seria necessária para calcular a próxima ocorrência de um schedule recorrente.
+        // Buscar próxima manutenção agendada.
+        // ATENÇÃO: Esta lógica busca apenas o próximo *registro de manutenção pendente* existente.
+        // Para agendamentos recorrentes, uma lógica mais robusta seria necessária para calcular
+        // a *próxima ocorrência futura* baseada nas regras de recorrência do MaintenanceSchedule,
+        // mesmo que ainda não haja um MaintenanceRecord gerado para ela.
         $nextPendingRecord = MaintenanceRecord::whereHas('schedule', function ($query) use ($equipment) {
             $query->where('maintenance_equipment_id', $equipment->id);
         })

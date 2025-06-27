@@ -1,0 +1,7 @@
+{
+    "overdue_maintenance": 5,
+    "completed_maintenance": 120,
+    "pending_maintenance": 15,
+    "total_equipment": 55,
+    "under_review_maintenance": 2
+}

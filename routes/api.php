@@ -79,4 +79,28 @@ Route::middleware('auth:api')->group(function () {
     // Rotas para upload de imagens
     Route::post('images/upload', [ImageUploadController::class, 'upload']);
     Route::delete('images/delete', [ImageUploadController::class, 'delete']);
+
+    // Maintenance Module Routes
+    Route::prefix('maintenance')->name('maintenance.')->group(function () {
+        Route::apiResource('areas', \App\Http\Controllers\API\MaintenanceAreaController::class);
+        Route::apiResource('equipments', \App\Http\Controllers\API\MaintenanceEquipmentController::class);
+        Route::post('equipments/{equipment}/sync-qr-access-users', [\App\Http\Controllers\API\MaintenanceEquipmentController::class, 'syncQrAccessUsers'])
+            ->name('equipments.syncQrAccessUsers');
+        Route::apiResource('schedules', \App\Http\Controllers\API\MaintenanceScheduleController::class);
+        Route::apiResource('records', \App\Http\Controllers\API\MaintenanceRecordController::class);
+        Route::post('records/{record}/update-status', [\App\Http\Controllers\API\MaintenanceRecordController::class, 'updateStatus'])
+            ->name('records.updateStatus');
+
+        // Dashboard Routes
+        Route::get('dashboard/general-stats', [\App\Http\Controllers\API\MaintenanceDashboardController::class, 'getGeneralStats'])
+            ->name('dashboard.generalStats');
+        Route::get('dashboard/by-equipment', [\App\Http\Controllers\API\MaintenanceDashboardController::class, 'getStatsByEquipment'])
+            ->name('dashboard.byEquipment');
+        Route::get('dashboard/by-area', [\App\Http\Controllers\API\MaintenanceDashboardController::class, 'getStatsByArea'])
+            ->name('dashboard.byArea');
+    });
 });
+
+// Public QR Code Report Route
+Route::get('/qr/{qr_code_hash}', [\App\Http\Controllers\API\PublicMaintenanceReportController::class, 'showReportByQrCode'])
+    ->name('public.maintenance.report');

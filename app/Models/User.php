@@ -64,4 +64,12 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->belongsTo(Condominium::class);
     }
+
+    /**
+     * Os agendamentos de manutenção pelos quais este usuário é responsável.
+     */
+    public function maintenanceSchedules()
+    {
+        return $this->belongsToMany(MaintenanceSchedule::class, 'maintenance_schedule_user', 'user_id', 'maintenance_schedule_id')->withTimestamps();
+    }
 }

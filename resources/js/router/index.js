@@ -223,6 +223,12 @@ const routes = [
     component: () => import('../pages/maintenance/MaintenanceRecordDetailView.vue'),
     meta: { requiresAuth: true, requiresCondo: true }
   },
+  {
+    path: '/maintenance/my-today-tasks',
+    name: 'maintenance.my-today-tasks',
+    component: () => import('../pages/maintenance/MyDailyMaintenanceTasks.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
   // Public QR Code Report Page
   {
     path: '/qr/:hash',

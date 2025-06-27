@@ -12,6 +12,8 @@ class MaintenanceEquipment extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'maintenance_equipments';
+
     protected $fillable = [
         'condominium_id',
         'maintenance_area_id',
@@ -59,5 +61,16 @@ class MaintenanceEquipment extends Model
     public function qrAccessUsers()
     {
         return $this->belongsToMany(User::class, 'maintenance_qr_access_users', 'maintenance_equipment_id', 'user_id');
+    }
+
+    /**
+     * Accessor para obter usuários com acesso QR (apenas quando o relacionamento estiver carregado)
+     */
+    public function getQrAccessUsersAttribute()
+    {
+        if ($this->relationLoaded('qrAccessUsers')) {
+            return $this->qrAccessUsers;
+        }
+        return [];
     }
 }

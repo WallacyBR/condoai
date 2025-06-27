@@ -16,7 +16,7 @@ return new class extends Migration
             // condominium_id is not strictly necessary here if we always access photos through MaintenanceRecord,
             // but can be useful for direct queries or if a photo could somehow be orphaned.
             // For strong tenancy, it's safer to include it.
-            $table->foreignId('condominium_id')->constrained()->onDelete('cascade');
+            $table->foreignId('condominium_id')->constrained('condominiums')->onDelete('cascade');
             $table->foreignId('maintenance_record_id')->constrained('maintenance_records')->onDelete('cascade');
             $table->string('file_path');
             $table->timestamp('uploaded_at')->useCurrent(); // Set default to current time

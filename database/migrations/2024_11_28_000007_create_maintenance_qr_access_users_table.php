@@ -22,7 +22,7 @@ return new class extends Migration
             $table->timestamps(); // Opcional para tabelas pivot, mas pode ser útil
 
             // Chave primária composta para garantir unicidade e otimizar queries
-            $table->unique(['maintenance_equipment_id', 'user_id']);
+            $table->unique(['maintenance_equipment_id', 'user_id'], 'maint_qr_access_equipment_user_unique');
         });
     }
 

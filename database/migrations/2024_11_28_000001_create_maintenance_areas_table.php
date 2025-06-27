@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('maintenance_areas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('condominium_id')->constrained()->onDelete('cascade');
+            $table->foreignId('condominium_id')->constrained('condominiums')->onDelete('cascade');
             $table->string('name');
             $table->text('description')->nullable();
             $table->timestamps();

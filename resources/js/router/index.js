@@ -184,6 +184,51 @@ const routes = [
     name: 'documents.list',
     component: () => import('../pages/DocumentListPage.vue'),
     meta: { requiresAuth: true, requiresCondo: true }
+  },
+  // Maintenance Module Routes
+  {
+    path: '/maintenance/dashboard',
+    name: 'maintenance.dashboard',
+    component: () => import('../pages/maintenance/MaintenanceDashboardView.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/maintenance/areas',
+    name: 'maintenance.areas',
+    component: () => import('../pages/maintenance/MaintenanceAreasView.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/maintenance/equipment',
+    name: 'maintenance.equipment',
+    component: () => import('../pages/maintenance/MaintenanceEquipmentView.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/maintenance/schedules', // Poderia ser /equipment/:equipId/schedules
+    name: 'maintenance.schedules',
+    component: () => import('../pages/maintenance/MaintenanceSchedulesView.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/maintenance/records/new', // Poderia ser /schedules/:schedId/records/new
+    name: 'maintenance.records.new',
+    component: () => import('../pages/maintenance/MaintenanceRecordForm.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/maintenance/records/:id',
+    name: 'maintenance.records.detail',
+    props: true,
+    component: () => import('../pages/maintenance/MaintenanceRecordDetailView.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  // Public QR Code Report Page
+  {
+    path: '/qr/:hash',
+    name: 'public.qr.report',
+    component: () => import('../pages/PublicEquipmentReportPage.vue'),
+    meta: { requiresAuth: false, requiresCondo: false } // Rota pública
   }
 ];
 

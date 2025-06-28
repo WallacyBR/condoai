@@ -39,23 +39,20 @@ jobs:
             composer install --no-dev --optimize-autoloader --no-interaction
             
             # Limpa caches antes de recriar
-            php artisan cache:clear
-            php artisan config:clear
-            php artisan route:clear
-            php artisan view:clear
+            php artisan view:clear         # Limpa views compiladas
+            php artisan route:clear        # Limpa rotas cacheadas
+            php artisan config:clear       # Limpa configurações
+            sudo php artisan cache:clear        # Limpa o cache de aplicação
+            php artisan clear-compiled     # Limpa arquivos compilados (services.php etc.)
             
             # Executa migrações
-            php artisan migrate:fresh --seed --force
+            php artisan migrate:fresh --seed
             
             # Instala dependências do Node.js
-            yarn install --frozen-lockfile
-            
-            # Garante permissões de execução para binários do Node
-            chmod +x node_modules/.bin/vite
-            chmod +x node_modules/@esbuild/linux-x64/bin/esbuild
+            npm install
             
             # Build dos assets
-            yarn build
+            npm run prod
             
             # Recria caches
             php artisan config:cache

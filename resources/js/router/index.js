@@ -93,9 +93,33 @@ const routes = [
     meta: { requiresAuth: true, requiresCondo: true }
   },
   {
+    path: '/vehicles/create',
+    name: 'vehicles.create',
+    component: () => import('../pages/VehicleFormPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/vehicles/:id/edit',
+    name: 'vehicles.edit',
+    component: () => import('../pages/VehicleFormPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
     path: '/pets',
     name: 'pets',
     component: () => import('../components/PetsView.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/pets/create',
+    name: 'pets.create',
+    component: () => import('../pages/PetFormPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/pets/:id/edit',
+    name: 'pets.edit',
+    component: () => import('../pages/PetFormPage.vue'),
     meta: { requiresAuth: true, requiresCondo: true }
   },
   {
@@ -199,15 +223,51 @@ const routes = [
     meta: { requiresAuth: true, requiresCondo: true }
   },
   {
+    path: '/maintenance/areas/create',
+    name: 'maintenance.areas.create',
+    component: () => import('../pages/maintenance/MaintenanceAreaFormPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/maintenance/areas/:id/edit',
+    name: 'maintenance.areas.edit',
+    component: () => import('../pages/maintenance/MaintenanceAreaFormPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
     path: '/maintenance/equipment',
     name: 'maintenance.equipment',
     component: () => import('../pages/maintenance/MaintenanceEquipmentView.vue'),
     meta: { requiresAuth: true, requiresCondo: true }
   },
   {
+    path: '/maintenance/equipment/create',
+    name: 'maintenance.equipment.create',
+    component: () => import('../pages/maintenance/MaintenanceEquipmentFormPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/maintenance/equipment/:id/edit',
+    name: 'maintenance.equipment.edit',
+    component: () => import('../pages/maintenance/MaintenanceEquipmentFormPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
     path: '/maintenance/schedules', // Poderia ser /equipment/:equipId/schedules
     name: 'maintenance.schedules',
     component: () => import('../pages/maintenance/MaintenanceSchedulesView.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/maintenance/schedules/create',
+    name: 'maintenance.schedules.create',
+    component: () => import('../pages/maintenance/MaintenanceScheduleFormPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/maintenance/schedules/:id/edit',
+    name: 'maintenance.schedules.edit',
+    component: () => import('../pages/maintenance/MaintenanceScheduleFormPage.vue'),
     meta: { requiresAuth: true, requiresCondo: true }
   },
   {
@@ -230,12 +290,30 @@ const routes = [
     component: () => import('../pages/maintenance/MyDailyMaintenanceTasks.vue'),
     meta: { requiresAuth: true, requiresCondo: true }
   },
+  {
+    path: '/maintenance/my-completed',
+    name: 'maintenance.my-completed',
+    component: () => import('../pages/maintenance/MyCompletedMaintenances.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
   // Public QR Code Report Page
   {
     path: '/qr/:hash',
     name: 'public.qr.report',
     component: () => import('../pages/PublicEquipmentReportPage.vue'),
     meta: { requiresAuth: false, requiresCondo: false } // Rota pública
+  },
+  {
+    path: '/signature-test',
+    name: 'signature-test',
+    component: () => import('../pages/SignatureTestPage.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/fileupload-test',
+    name: 'fileupload-test',
+    component: () => import('../pages/FileUploadTestPage.vue'),
+    meta: { requiresAuth: true }
   }
 ];
 

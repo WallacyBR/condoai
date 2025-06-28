@@ -692,7 +692,7 @@ export default {
       towerFilter,
       blockFilter,
       towers,
-      blocks
+      blocks,
       PackageIcon
     };
   }

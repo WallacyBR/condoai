@@ -19,7 +19,7 @@
 
       <div v-if="!loading && !error && reportData" class="bg-gray-800/60 backdrop-blur-xl shadow-2xl rounded-3xl p-6 sm:p-8 border-2 border-cyan-500/30">
         <div class="text-center mb-8">
-          <img src="/logo.png" alt="Logo Condomínio" class="h-16 mx-auto mb-4"/> <!-- Idealmente o logo do condomínio específico -->
+          <img :src="logoImage" alt="Logo Condomínio" class="h-16 mx-auto mb-4" @error="handleLogoError"/> <!-- Idealmente o logo do condomínio específico -->
           <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-pink-500">
             Relatório do Equipamento
           </h1>
@@ -74,6 +74,7 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import api from '@/utils/api'; // Supondo que api.js lida com base URL e token se necessário
+import logoImage from '../../images/condo_ai_quadrado.png';
 
 const route = useRoute();
 const router = useRouter();
@@ -113,6 +114,12 @@ const formatDate = (dateString) => {
 
 const goHome = () => {
   router.push('/'); // Ou para a página de login, dependendo do contexto
+};
+
+const handleLogoError = (event) => {
+  console.warn('Erro ao carregar logo:', event.target.src);
+  // Fallback: esconder imagem ou usar texto
+  event.target.style.display = 'none';
 };
 
 onMounted(() => {

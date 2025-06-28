@@ -25,154 +25,48 @@
 
       <!-- Cards de Resumo -->
       <div v-if="selectedCondominiumName && !loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <!-- Total de Unidades -->
-        <div class="bg-gradient-to-br from-purple-900/50 via-purple-800/50 to-purple-900/50 rounded-2xl p-6 border-2 border-purple-500/30 shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-purple-500/50">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-purple-300 text-sm font-medium">Total de Unidades</p>
-              <p class="text-2xl font-bold text-purple-100">{{ stats.totalUnidades }}</p>
-            </div>
-            <div class="h-12 w-12 rounded-full bg-purple-500/20 flex items-center justify-center">
-              <svg class="h-6 w-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <!-- Unidades Ocupadas -->
-        <div class="bg-gradient-to-br from-blue-900/50 via-blue-800/50 to-blue-900/50 rounded-2xl p-6 border-2 border-blue-500/30 shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-blue-500/50">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-blue-300 text-sm font-medium">Ocupadas</p>
-              <p class="text-2xl font-bold text-blue-100">{{ stats.ocupadas }}</p>
-            </div>
-            <div class="h-12 w-12 rounded-full bg-blue-500/20 flex items-center justify-center">
-              <svg class="h-6 w-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <!-- Unidades Vazias -->
-        <div class="bg-gradient-to-br from-orange-900/50 via-orange-800/50 to-orange-900/50 rounded-2xl p-6 border-2 border-orange-500/30 shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-orange-500/50">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-orange-300 text-sm font-medium">Vazias</p>
-              <p class="text-2xl font-bold text-orange-100">{{ stats.vazias }}</p>
-            </div>
-            <div class="h-12 w-12 rounded-full bg-orange-500/20 flex items-center justify-center">
-              <svg class="h-6 w-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <!-- Taxa de Ocupação -->
-        <div class="bg-gradient-to-br from-red-900/50 via-red-800/50 to-red-900/50 rounded-2xl p-6 border-2 border-red-500/30 shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-red-500/50">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-red-300 text-sm font-medium">Taxa de Ocupação</p>
-              <p class="text-2xl font-bold text-red-100">{{ stats.taxaOcupacao }}</p>
-            </div>
-            <div class="h-12 w-12 rounded-full bg-red-500/20 flex items-center justify-center">
-              <svg class="h-6 w-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-            </div>
-          </div>
-        </div>
+        <StatsCard 
+          label="Total de Unidades" 
+          :value="unitStats.totalUnidades"
+          variant="primary"
+          :default-icon-path="'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4'"
+        />
+        
+        <StatsCard 
+          label="Ocupadas" 
+          :value="unitStats.ocupadas"
+          variant="blue"
+          :default-icon-path="'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'"
+        />
+        
+        <StatsCard 
+          label="Vazias" 
+          :value="unitStats.vazias"
+          variant="orange"
+          :default-icon-path="'M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z'"
+        />
+        
+        <StatsCard 
+          label="Taxa de Ocupação" 
+          :value="unitStats.taxaOcupacao"
+          variant="red"
+        />
       </div>
 
-      <!-- Header Actions -->
-      <div v-if="selectedCondominiumName" class="flex justify-between items-center">
-        <div class="flex space-x-4">
-          <div class="relative">
-            <input
-              type="text"
-              v-model="search"
-              placeholder="Buscar unidades..."
-              class="w-64 pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-            />
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-          </div>
-          <select
-            v-model="statusFilter"
-            class="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-          >
-            <option value="all">Todos os Status</option>
-            <option value="occupied">Ocupadas</option>
-            <option value="vacant">Vazias</option>
-          </select>
-          <select
-            v-model="towerFilter"
-            class="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-          >
-            <option value="all">Todas as Torres</option>
-            <option v-for="tower in towers" :key="tower.id" :value="tower.id">
-              {{ tower.name }}
-            </option>
-          </select>
-          <select
-            v-model="blockFilter"
-            class="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-          >
-            <option value="all">Todos os Blocos</option>
-            <option v-for="block in blocks" :key="block.id" :value="block.id">
-              {{ block.name }}
-            </option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Filter Status -->
-      <div v-if="isFilterActive && selectedCondominiumName" class="bg-indigo-500/10 border border-indigo-500/30 rounded-lg p-4">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-4">
-            <div class="flex items-center space-x-2">
-              <svg class="h-5 w-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" />
-              </svg>
-              <span class="text-indigo-300 font-medium">Filtros Ativos:</span>
-            </div>
-            <div class="flex space-x-2">
-              <span v-if="search" class="px-2 py-1 bg-indigo-500/20 text-indigo-300 text-sm rounded-full border border-indigo-500/30">
-                Busca: "{{ search }}"
-              </span>
-              <span v-if="statusFilter !== 'all'" class="px-2 py-1 bg-indigo-500/20 text-indigo-300 text-sm rounded-full border border-indigo-500/30">
-                Status: {{ getStatusLabel(statusFilter) }}
-              </span>
-              <span v-if="towerFilter !== 'all'" class="px-2 py-1 bg-indigo-500/20 text-indigo-300 text-sm rounded-full border border-indigo-500/30">
-                Torre: {{ getTowerLabel(towerFilter) }}
-              </span>
-              <span v-if="blockFilter !== 'all'" class="px-2 py-1 bg-indigo-500/20 text-indigo-300 text-sm rounded-full border border-indigo-500/30">
-                Bloco: {{ getBlockLabel(blockFilter) }}
-              </span>
-            </div>
-          </div>
-          <div class="flex items-center space-x-3">
-            <div class="text-sm text-indigo-400">
-              {{ filteredUnits.length }} de {{ units.length }} unidades
-            </div>
-            <NeonButton 
-              @click="clearFilters" 
-              size="sm" 
-              class="flex items-center bg-gray-600/40 hover:bg-gray-600/60"
-            >
-              <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-              Limpar
-            </NeonButton>
-          </div>
-        </div>
+      <!-- Filtros -->
+      <div v-if="selectedCondominiumName">
+        <ListFilters
+          v-model="filters"
+          search-placeholder="Buscar unidades..."
+          :status-options="statusOptions"
+          :tower-options="towers"
+          :block-options="blocks"
+          @clear-filters="handleClearFilters"
+        >
+          <template #summary>
+            {{ filteredUnits.length }} de {{ units.length }} unidades
+          </template>
+        </ListFilters>
       </div>
 
       <!-- Loading State -->
@@ -218,8 +112,8 @@
             </div>
             <div class="flex flex-col items-end space-y-1">
               <span class="px-2 py-1 text-xs font-semibold rounded-full"
-                    :class="getStatusBadgeClass(unit)">
-                {{ getStatusLabel(unit) }}
+                    :class="unitStatsHelpers.getStatusClass(unit)">
+                {{ unitStatsHelpers.getStatusLabel(unit) }}
               </span>
               <span class="text-xs text-gray-400">{{ unit.floor }}º andar</span>
             </div>
@@ -299,10 +193,14 @@ import { useRouter } from 'vue-router';
 import AuthenticatedLayout from './layouts/AuthenticatedLayout.vue';
 import NeonButton from './NeonButton.vue';
 import TopCard from './ui/TopCard.vue';
+import StatsCard from './ui/StatsCard.vue';
+import ListFilters from './ui/ListFilters.vue';
+import { useListFilters } from '../composables/useListFilters.js';
+import { useUnitStats } from '../composables/useUnitStats.js';
 
 export default {
   name: 'UnitsListView',
-  components: { AuthenticatedLayout, NeonButton, TopCard },
+  components: { AuthenticatedLayout, NeonButton, TopCard, StatsCard, ListFilters },
   setup() {
     const router = useRouter();
     const units = ref([]);
@@ -310,10 +208,35 @@ export default {
     const blocks = ref([]);
     const loading = ref(true);
     const error = ref('');
-    const search = ref('');
-    const statusFilter = ref('all');
-    const towerFilter = ref('all');
-    const blockFilter = ref('all');
+    
+    // Usar composables
+    const { search, statusFilter, towerFilter, blockFilter, clearFilters, isFilterActive } = useListFilters();
+    const { stats: unitStats, getStatusClass, getStatusLabel } = useUnitStats(units);
+
+    // Opções para o filtro de status
+    const statusOptions = [
+      { value: 'occupied', label: 'Ocupadas' },
+      { value: 'vacant', label: 'Vazias' }
+    ];
+
+    // Filtros como objeto reativo
+    const filters = computed({
+      get: () => ({
+        search: search.value,
+        statusFilter: statusFilter.value,
+        towerFilter: towerFilter.value,
+        blockFilter: blockFilter.value
+      }),
+      set: (value) => {
+        search.value = value.search;
+        statusFilter.value = value.statusFilter;
+        towerFilter.value = value.towerFilter;
+        blockFilter.value = value.blockFilter;
+      }
+    });
+
+    // Helpers para o status das unidades
+    const unitStatsHelpers = { getStatusClass, getStatusLabel };
 
     const BuildingIcon = {
       render() {
@@ -342,44 +265,9 @@ export default {
       return baseUrl;
     };
 
-    // Computed para calcular estatísticas
-    const stats = computed(() => {
-      const totalUnidades = units.value.length;
-      const ocupadas = units.value.filter(u => u.owner || u.tenant).length;
-      const vazias = units.value.filter(u => !u.owner && !u.tenant).length;
-      const taxaOcupacao = totalUnidades > 0 ? Math.round((ocupadas / totalUnidades) * 100) : 0;
-
-      return {
-        totalUnidades,
-        ocupadas,
-        vazias,
-        taxaOcupacao: `${taxaOcupacao}%`
-      };
-    });
-
-    const clearFilters = () => {
-      search.value = '';
-      statusFilter.value = 'all';
-      towerFilter.value = 'all';
-      blockFilter.value = 'all';
-    };
-
-    const isFilterActive = computed(() => {
-      return search.value || statusFilter.value !== 'all' || towerFilter.value !== 'all' || blockFilter.value !== 'all';
-    });
-
-    const getStatusLabel = (unit) => {
-      if (unit.owner || unit.tenant) {
-        return 'Ocupada';
-      }
-      return 'Vazia';
-    };
-
-    const getStatusBadgeClass = (unit) => {
-      if (unit.owner || unit.tenant) {
-        return 'bg-blue-500/20 text-blue-300 border border-blue-500/30';
-      }
-      return 'bg-orange-500/20 text-orange-300 border border-orange-500/30';
+    // Função para lidar com limpeza de filtros
+    const handleClearFilters = () => {
+      clearFilters();
     };
 
     const getTypeLabel = (type) => {
@@ -389,16 +277,6 @@ export default {
         'commercial': 'Comercial'
       };
       return labels[type] || type;
-    };
-
-    const getTowerLabel = (towerId) => {
-      const tower = towers.value.find(t => t.id === towerId);
-      return tower ? tower.name : 'Todas as Torres';
-    };
-
-    const getBlockLabel = (blockId) => {
-      const block = blocks.value.find(b => b.id === blockId);
-      return block ? block.name : 'Todos os Blocos';
     };
 
     const loadData = async () => {
@@ -504,33 +382,33 @@ export default {
     const filteredUnits = computed(() => {
       return units.value.filter(unit => {
         // Filtro por busca (número)
-        const matchesSearch = !search.value || 
-          unit.number.toLowerCase().includes(search.value.toLowerCase());
+        const matchesSearch = !filters.value.search || 
+          unit.number.toLowerCase().includes(filters.value.search.toLowerCase());
         
         // Filtro por status
         let matchesFilter = false;
-        if (statusFilter.value === 'all') {
+        if (filters.value.statusFilter === 'all') {
           matchesFilter = true;
-        } else if (statusFilter.value === 'occupied') {
+        } else if (filters.value.statusFilter === 'occupied') {
           matchesFilter = unit.owner || unit.tenant;
-        } else if (statusFilter.value === 'vacant') {
+        } else if (filters.value.statusFilter === 'vacant') {
           matchesFilter = !unit.owner && !unit.tenant;
         }
 
         // Filtro por torre
         let matchesTower = false;
-        if (towerFilter.value === 'all') {
+        if (filters.value.towerFilter === 'all') {
           matchesTower = true;
         } else {
-          matchesTower = unit.tower && unit.tower.id == towerFilter.value;
+          matchesTower = unit.tower && unit.tower.id == filters.value.towerFilter;
         }
         
         // Filtro por bloco
         let matchesBlock = false;
-        if (blockFilter.value === 'all') {
+        if (filters.value.blockFilter === 'all') {
           matchesBlock = true;
         } else {
-          matchesBlock = unit.block && unit.block.id == blockFilter.value;
+          matchesBlock = unit.block && unit.block.id == filters.value.blockFilter;
         }
         
         return matchesSearch && matchesFilter && matchesTower && matchesBlock;
@@ -576,23 +454,17 @@ export default {
       blocks,
       loading,
       error,
-      search,
-      statusFilter,
-      towerFilter,
-      blockFilter,
       filteredUnits,
       navigateToUnitsManagement,
       viewResidents,
       viewVehicles,
-      clearFilters,
-      isFilterActive,
-      getStatusLabel,
-      getStatusBadgeClass,
       getTypeLabel,
-      getTowerLabel,
-      getBlockLabel,
       selectedCondominiumName,
-      stats,
+      unitStats,
+      unitStatsHelpers,
+      filters,
+      statusOptions,
+      handleClearFilters,
       BuildingIcon
     };
   }

@@ -126,9 +126,16 @@ class MaintenanceRecordController extends Controller
         $data = $request->only(['maintenance_schedule_id', 'performed_at', 'notes', 'status']);
         $data['condominium_id'] = $currentCondominiumId;
         $data['user_id'] = $request->input('user_id', Auth::id()); // Default to authenticated user
-        if (!$request->has('status')) {
-            $data['status'] = 'completed'; // Default status if performed
-        }
+        
+        // Garantir que o status seja 'completed' se não especificado
+        $data['status'] = $request->input('status', 'completed');
+        
+        // Log para debug
+        \Log::info('Criando registro de manutenção', [
+            'data' => $data,
+            'user_id' => Auth::id(),
+            'condominium_id' => $currentCondominiumId
+        ]);
 
 
         $record = MaintenanceRecord::create($data);
@@ -168,6 +175,16 @@ class MaintenanceRecordController extends Controller
         }
 
         $record->load(['photos', 'signature', 'user:id,name', 'schedule:id,title']);
+        
+        // Log para confirmar criação
+        \Log::info('Registro de manutenção criado com sucesso', [
+            'record_id' => $record->id,
+            'schedule_id' => $record->maintenance_schedule_id,
+            'status' => $record->status,
+            'performed_at' => $record->performed_at,
+            'user_id' => $record->user_id
+        ]);
+        
         return response()->json($record, 201);
     }
 

@@ -12,11 +12,24 @@ class CondominiumScope implements Scope
 
     public function apply(Builder $builder, Model $model): void
     {
+        // Log para debug
+        \Log::info('CondominiumScope::apply - Debug info', [
+            'model' => get_class($model),
+            'app_bound_currentCondominium' => app()->bound('currentCondominium'),
+            'relation' => $this->relation
+        ]);
+        
         if (! app()->bound('currentCondominium')) {
+            \Log::warning('CondominiumScope::apply - currentCondominium não está disponível');
             return;
         }
 
         $condominium = app('currentCondominium');
+        
+        \Log::info('CondominiumScope::apply - Aplicando filtro', [
+            'condominium_id' => $condominium->id,
+            'relation' => $this->relation
+        ]);
 
         if ($this->relation) {
             $builder->whereHas($this->relation, function (Builder $q) use ($condominium) {

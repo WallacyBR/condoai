@@ -441,7 +441,22 @@ async function updateAccessLevel(newLevel) {
     fetchEquipments(pagination.value.current_page);
   } catch (error) {
     console.error('Erro ao atualizar nível de acesso:', error);
-    alert('Erro ao atualizar nível de acesso.');
+    
+    // Tratar erros específicos
+    let errorMessage = 'Erro ao atualizar nível de acesso.';
+    if (error.response?.data?.message) {
+      errorMessage = error.response.data.message;
+    } else if (error.response?.status === 400) {
+      errorMessage = 'Dados inválidos fornecidos para a atualização.';
+    } else if (error.response?.status === 403) {
+      errorMessage = 'Você não tem permissão para alterar este equipamento.';
+    } else if (error.response?.status === 404) {
+      errorMessage = 'Equipamento não encontrado.';
+    } else if (error.response?.status >= 500) {
+      errorMessage = 'Erro interno do servidor. Tente novamente em alguns instantes.';
+    }
+    
+    alert(errorMessage);
   }
 }
 
@@ -454,7 +469,22 @@ async function syncQrAccessUsers() {
     fetchEquipments(pagination.value.current_page);
   } catch (error) {
     console.error('Erro ao sincronizar usuários:', error);
-    alert('Erro ao sincronizar usuários.');
+    
+    // Tratar erros específicos
+    let errorMessage = 'Erro ao sincronizar usuários.';
+    if (error.response?.data?.message) {
+      errorMessage = error.response.data.message;
+    } else if (error.response?.status === 400) {
+      errorMessage = 'Dados inválidos ou usuários não encontrados.';
+    } else if (error.response?.status === 403) {
+      errorMessage = 'Você não tem permissão para alterar este equipamento.';
+    } else if (error.response?.status === 404) {
+      errorMessage = 'Equipamento não encontrado.';
+    } else if (error.response?.status >= 500) {
+      errorMessage = 'Erro interno do servidor. Tente novamente em alguns instantes.';
+    }
+    
+    alert(errorMessage);
   } finally {
     isSyncingQrUsers.value = false;
   }

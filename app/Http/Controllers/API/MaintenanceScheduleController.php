@@ -37,11 +37,49 @@ class MaintenanceScheduleController extends Controller
      */
     public function index(Request $request)
     {
-        $condominiumId = Auth::user()->condominium_id;
-        if (!$condominiumId && !$request->attributes->has('condominium')) {
-            return response()->json(['message' => 'Condomínio não identificado para o usuário.'], 400);
+        $user = Auth::user();
+        $condominiumId = $user->condominium_id;
+        $currentCondominiumId = null;
+        
+        // Log para debug
+        \Log::info('MaintenanceScheduleController::index - Debug info', [
+            'user_id' => $user->id,
+            'user_name' => $user->name,
+            'user_condominium_id' => $condominiumId,
+            'request_has_condominium' => $request->attributes->has('condominium'),
+            'app_has_currentCondominium' => app()->bound('currentCondominium')
+        ]);
+        
+        if ($condominiumId) {
+            $currentCondominiumId = $condominiumId;
+            \Log::info('Usando condomínio do usuário', ['condominium_id' => $currentCondominiumId]);
+        } elseif ($request->attributes->has('condominium')) {
+            $currentCondominiumId = $request->attributes->get('condominium')->id;
+            \Log::info('Usando condomínio do request', ['condominium_id' => $currentCondominiumId]);
+        } elseif (app()->bound('currentCondominium')) {
+            $currentCondominiumId = app('currentCondominium')->id;
+            \Log::info('Usando condomínio do app', ['condominium_id' => $currentCondominiumId]);
         }
-        $currentCondominiumId = $condominiumId ?? $request->attributes->get('condominium')->id;
+        
+        if (!$currentCondominiumId) {
+            \Log::error('MaintenanceScheduleController::index - Condomínio não identificado', [
+                'user_id' => $user->id,
+                'user_condominium_id' => $condominiumId
+            ]);
+            return response()->json([
+                'message' => 'Condomínio não identificado para o usuário.',
+                'debug' => [
+                    'user_id' => $user->id,
+                    'user_condominium_id' => $condominiumId,
+                    'request_has_condominium' => $request->attributes->has('condominium'),
+                    'app_has_currentCondominium' => app()->bound('currentCondominium')
+                ]
+            ], 400);
+        }
+        
+        \Log::info('MaintenanceScheduleController::index - Usando condomínio', [
+            'condominium_id' => $currentCondominiumId
+        ]);
 
         $perPage = $request->input('per_page', 15);
         $query = MaintenanceSchedule::where('condominium_id', $currentCondominiumId)
@@ -53,6 +91,13 @@ class MaintenanceScheduleController extends Controller
 
         // Ordenar por data de início, depois por título
         $schedules = $query->orderBy('start_date', 'desc')->orderBy('title', 'asc')->paginate($perPage);
+        
+        \Log::info('MaintenanceScheduleController::index - Agendamentos encontrados', [
+            'total' => $schedules->total(),
+            'count' => $schedules->count(),
+            'condominium_id' => $currentCondominiumId
+        ]);
+        
         return response()->json($schedules);
     }
 
@@ -284,6 +329,7 @@ class MaintenanceScheduleController extends Controller
      * Retorna uma lista de agendamentos atribuídos ao usuário autenticado
      * que estão programados para ocorrer na data especificada (ou hoje, por padrão).
      * A lógica de recorrência é aplicada para determinar se um agendamento está ativo na data.
+     * Inclui informações sobre o status de conclusão para a data específica.
      *
      * @group Manutenção - Agendamentos
      * @authenticated
@@ -368,6 +414,191 @@ class MaintenanceScheduleController extends Controller
             return false;
         });
 
-        return response()->json($activeSchedulesForToday->values());
+        // Adicionar informações de status de conclusão para cada agendamento
+        $schedulesWithStatus = $activeSchedulesForToday->map(function ($schedule) use ($targetDate) {
+            // Verificar se existe um registro concluído para este agendamento na data específica
+            // Usando whereDate e também verificando por registros criados hoje com status completed
+            $completedRecord = $schedule->records()
+                ->where('status', 'completed')
+                ->where(function($query) use ($targetDate) {
+                    $query->whereDate('performed_at', $targetDate->toDateString())
+                          ->orWhere(function($subQuery) use ($targetDate) {
+                              $subQuery->whereDate('created_at', $targetDate->toDateString())
+                                      ->whereNotNull('performed_at');
+                          });
+                })
+                ->orderBy('performed_at', 'desc')
+                ->first();
+            
+            // Log para debug
+            \Log::info('Verificando registros para agendamento', [
+                'schedule_id' => $schedule->id,
+                'schedule_title' => $schedule->title,
+                'target_date' => $targetDate->toDateString(),
+                'records_count' => $schedule->records()->count(),
+                'completed_records_count' => $schedule->records()->where('status', 'completed')->count(),
+                'completed_record_found' => !is_null($completedRecord),
+                'completed_record_id' => $completedRecord ? $completedRecord->id : null
+            ]);
+            
+            // Adicionar informações de status
+            $schedule->is_completed_today = !is_null($completedRecord);
+            $schedule->completed_record_id = $completedRecord ? $completedRecord->id : null;
+            $schedule->completed_at = $completedRecord ? $completedRecord->performed_at : null;
+            $schedule->completion_notes = $completedRecord ? $completedRecord->notes : null;
+            
+            return $schedule;
+        });
+
+        return response()->json($schedulesWithStatus->values());
+    }
+
+    /**
+     * Atualizar o status de conclusão das tarefas para uma data específica.
+     *
+     * Force a re-verificação dos registros de manutenção para uma data específica.
+     *
+     * @group Manutenção - Agendamentos
+     * @authenticated
+     * @queryParam date string Data para a qual atualizar o status. Formato YYYY-MM-DD. Se não fornecido, usa a data atual. Example: "2024-07-28"
+     *
+     * @response status=200 scenario="Status atualizado" {"message": "Status das tarefas atualizado com sucesso", "updated_count": 3}
+     */
+    public function refreshTodaySchedules(Request $request)
+    {
+        $user = Auth::user();
+        $condominiumId = $user->condominium_id;
+
+        if (!$condominiumId && !$request->attributes->has('condominium')) {
+            return response()->json(['message' => 'Condomínio não identificado para o usuário.'], 400);
+        }
+        $currentCondominiumId = $condominiumId ?? $request->attributes->get('condominium')->id;
+
+        $targetDateStr = $request->input('date', Carbon::today()->toDateString());
+        try {
+            $targetDate = Carbon::parse($targetDateStr)->startOfDay();
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Formato de data inválido. Use YYYY-MM-DD.'], 400);
+        }
+
+        // Limpar cache se necessário
+        \Cache::forget("my_today_schedules_{$user->id}_{$targetDate->toDateString()}");
+        
+        // Listar todos os registros de manutenção do usuário para a data
+        $userRecords = \App\Models\MaintenanceRecord::where('user_id', $user->id)
+            ->where('condominium_id', $currentCondominiumId)
+            ->where(function($query) use ($targetDate) {
+                $query->whereDate('performed_at', $targetDate->toDateString())
+                      ->orWhereDate('created_at', $targetDate->toDateString());
+            })
+            ->with('schedule:id,title')
+            ->get();
+
+        \Log::info('Refresh Today Schedules - Records Found', [
+            'user_id' => $user->id,
+            'date' => $targetDate->toDateString(),
+            'records_count' => $userRecords->count(),
+            'records' => $userRecords->map(function($r) {
+                return [
+                    'id' => $r->id,
+                    'schedule_id' => $r->maintenance_schedule_id,
+                    'schedule_title' => $r->schedule->title ?? 'N/A',
+                    'status' => $r->status,
+                    'performed_at' => $r->performed_at,
+                    'created_at' => $r->created_at
+                ];
+            })
+        ]);
+
+        return response()->json([
+            'message' => 'Status das tarefas verificado com sucesso',
+            'target_date' => $targetDate->toDateString(),
+            'records_found' => $userRecords->count(),
+            'records' => $userRecords->map(function($record) {
+                return [
+                    'id' => $record->id,
+                    'schedule_id' => $record->maintenance_schedule_id,
+                    'schedule_title' => $record->schedule->title ?? 'N/A',
+                    'status' => $record->status,
+                    'performed_at' => $record->performed_at?->format('Y-m-d H:i:s'),
+                    'created_at' => $record->created_at->format('Y-m-d H:i:s')
+                ];
+            })
+        ]);
+    }
+
+    /**
+     * Listar registros de manutenção concluídos pelo usuário.
+     *
+     * Retorna uma lista de registros de manutenção que foram concluídos pelo usuário autenticado.
+     * Pode ser filtrado por período de datas.
+     *
+     * @group Manutenção - Agendamentos
+     * @authenticated
+     * @queryParam start_date string Data de início para filtrar registros. Formato YYYY-MM-DD. Example: "2024-07-01"
+     * @queryParam end_date string Data de fim para filtrar registros. Formato YYYY-MM-DD. Example: "2024-07-31"
+     * @queryParam page int A página a ser retornada. Example: 1
+     * @queryParam per_page int Número de itens por página. Example: 15
+     *
+     * @responseFile status=200 scenario="Sucesso" storage/responses/maintenancerecords.completed.json
+     * @responseFile status=401 scenario="Não autenticado" storage/responses/unauthenticated.json
+     * @responseFile status=400 scenario="Data inválida ou Condomínio não identificado" storage/responses/validation.error.json
+     */
+    public function myCompletedRecords(Request $request)
+    {
+        $user = Auth::user();
+        $condominiumId = $user->condominium_id;
+
+        if (!$condominiumId && !$request->attributes->has('condominium')) {
+            return response()->json(['message' => 'Condomínio não identificado para o usuário.'], 400);
+        }
+        $currentCondominiumId = $condominiumId ?? $request->attributes->get('condominium')->id;
+
+        $perPage = $request->input('per_page', 15);
+        
+        // Validar datas se fornecidas
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        
+        if ($startDate && !Carbon::createFromFormat('Y-m-d', $startDate)) {
+            return response()->json(['message' => 'Formato de start_date inválido. Use YYYY-MM-DD.'], 400);
+        }
+        
+        if ($endDate && !Carbon::createFromFormat('Y-m-d', $endDate)) {
+            return response()->json(['message' => 'Formato de end_date inválido. Use YYYY-MM-DD.'], 400);
+        }
+
+        $query = \App\Models\MaintenanceRecord::where('condominium_id', $currentCondominiumId)
+            ->where('user_id', $user->id)
+            ->where('status', 'completed')
+            ->with([
+                'schedule:id,title,maintenance_equipment_id,description',
+                'schedule.equipment:id,name',
+                'photos:id,maintenance_record_id,photo_path',
+                'signature:id,maintenance_record_id,signature_path'
+            ]);
+
+        // Aplicar filtros de data se fornecidos
+        if ($startDate) {
+            $query->whereDate('performed_at', '>=', $startDate);
+        }
+        
+        if ($endDate) {
+            $query->whereDate('performed_at', '<=', $endDate);
+        }
+
+        $records = $query->orderBy('performed_at', 'desc')
+                        ->paginate($perPage);
+
+        // Adicionar informações do equipamento para facilitar exibição
+        $records->getCollection()->transform(function ($record) {
+            if ($record->schedule && $record->schedule->equipment) {
+                $record->equipment_name = $record->schedule->equipment->name;
+                $record->schedule_title = $record->schedule->title;
+            }
+            return $record;
+        });
+
+        return response()->json($records);
     }
 }

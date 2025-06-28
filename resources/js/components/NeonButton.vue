@@ -59,6 +59,10 @@ const variantClass = computed(() => {
       return 'bg-red-600/40 hover:bg-red-600/60';
     case 'info':
       return 'bg-blue-600/40 hover:bg-blue-600/60';
+    case 'confirm':
+      return 'bg-gradient-to-r from-emerald-500/50 to-green-600/50 hover:from-emerald-500/70 hover:to-green-600/70 border-emerald-400/30 hover:border-emerald-400/50';
+    case 'cancel':
+      return 'bg-gradient-to-r from-red-500/50 to-rose-600/50 hover:from-red-500/70 hover:to-rose-600/70 border-red-400/30 hover:border-red-400/50';
     default:
       return '';
   }

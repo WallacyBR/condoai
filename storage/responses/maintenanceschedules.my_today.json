@@ -2,60 +2,76 @@
     {
         "id": 1,
         "condominium_id": 1,
+        "title": "Verificação da Bomba d'Água Principal",
+        "description": "Verificação de pressão, funcionamento e possíveis vazamentos na bomba d'água principal do condomínio.",
         "maintenance_equipment_id": 1,
-        "title": "Verificação Diária da Bomba da Piscina",
-        "description": "Checar níveis de cloro, pH e funcionamento geral da bomba.",
-        "type": "daily",
+        "priority": "medium",
+        "estimated_duration": 30,
+        "type": "weekly",
+        "specific_days_of_week": [1, 3, 5],
+        "due_time": "08:00:00",
+        "instructions": "Verificar se a pressão está entre 2-4 bar. Em caso de anomalias, contatar supervisão.",
         "start_date": "2024-07-01",
         "end_date": null,
-        "due_time": "09:00:00",
         "is_recurring": true,
-        "specific_days_of_week": null,
-        "day_of_month": null,
-        "month_of_year": null,
-        "created_at": "2024-07-01T10:00:00.000000Z",
-        "updated_at": "2024-07-01T10:00:00.000000Z",
+        "created_at": "2024-07-15T10:00:00.000000Z",
+        "updated_at": "2024-07-15T10:00:00.000000Z",
         "deleted_at": null,
+        "is_completed_today": false,
+        "completed_record_id": null,
+        "completed_at": null,
+        "completion_notes": null,
         "equipment": {
             "id": 1,
-            "name": "Bomba da Piscina Principal"
+            "name": "Bomba d'Água Principal",
+            "description": "Bomba responsável pelo abastecimento de água do condomínio",
+            "maintenance_area": {
+                "name": "Casa de Máquinas"
+            }
         },
         "responsible_users": [
             {
-                "id": 5,
-                "name": "Carlos Zelador"
+                "id": 2,
+                "name": "João Silva",
+                "email": "joao.silva@exemplo.com"
             }
         ]
     },
     {
         "id": 2,
         "condominium_id": 1,
-        "maintenance_equipment_id": 3,
-        "title": "Limpeza Semanal do Hall Bloco A",
-        "description": "Limpeza completa do piso, vidros e elevadores do hall do Bloco A.",
+        "title": "Limpeza dos Filtros do Ar Condicionado",
+        "description": "Limpeza e verificação dos filtros do sistema de ar condicionado central.",
+        "maintenance_equipment_id": 2,
+        "priority": "low",
+        "estimated_duration": 45,
         "type": "weekly",
-        "start_date": "2024-07-05",
-        "end_date": "2025-07-05",
-        "due_time": "14:00:00",
+        "specific_days_of_week": [2, 6],
+        "due_time": "14:30:00",
+        "instructions": "Remover os filtros, lavar com água e sabão neutro, secar completamente antes de reinstalar.",
+        "start_date": "2024-07-01",
+        "end_date": null,
         "is_recurring": true,
-        "specific_days_of_week": [5],
-        "day_of_month": null,
-        "month_of_year": null,
-        "created_at": "2024-07-01T11:00:00.000000Z",
-        "updated_at": "2024-07-03T15:30:00.000000Z",
+        "created_at": "2024-07-15T10:30:00.000000Z",
+        "updated_at": "2024-07-15T10:30:00.000000Z",
         "deleted_at": null,
+        "is_completed_today": true,
+        "completed_record_id": 15,
+        "completed_at": "2024-07-28T14:45:00.000000Z",
+        "completion_notes": "Filtros estavam muito sujos, mas foram limpos adequadamente. Sistema funcionando normalmente.",
         "equipment": {
-            "id": 3,
-            "name": "Hall de Entrada - Bloco A"
+            "id": 2,
+            "name": "Ar Condicionado Central",
+            "description": "Sistema de climatização das áreas comuns",
+            "maintenance_area": {
+                "name": "Área Técnica"
+            }
         },
         "responsible_users": [
             {
-                "id": 5,
-                "name": "Carlos Zelador"
-            },
-            {
-                "id": 8,
-                "name": "Equipe Limpeza Extra"
+                "id": 2,
+                "name": "João Silva",
+                "email": "joao.silva@exemplo.com"
             }
         ]
     }

@@ -42,7 +42,7 @@ class MaintenanceEquipmentController extends Controller
 
         $perPage = $request->input('per_page', 15);
         $query = MaintenanceEquipment::where('condominium_id', $currentCondominiumId)
-                                     ->with('maintenanceArea:id,name'); // Otimizar carregamento da área
+                                     ->with(['maintenanceArea:id,name', 'qrAccessUsers:id,name']); // Otimizar carregamento da área e usuários
 
         if ($request->has('maintenance_area_id')) {
             $query->where('maintenance_area_id', $request->maintenance_area_id);
@@ -127,7 +127,7 @@ class MaintenanceEquipmentController extends Controller
             return response()->json(['message' => 'Acesso não autorizado a este equipamento.'], 403);
         }
 
-        $equipment->load('maintenanceArea:id,name'); // Carregar informação da área
+        $equipment->load(['maintenanceArea:id,name', 'qrAccessUsers:id,name']); // Carregar informação da área e usuários
         return response()->json($equipment);
     }
 
@@ -185,6 +185,7 @@ class MaintenanceEquipmentController extends Controller
             'qr_code_access_level'
         ]));
 
+        $equipment->load(['maintenanceArea:id,name', 'qrAccessUsers:id,name']);
         return response()->json($equipment);
     }
 
@@ -249,7 +250,11 @@ class MaintenanceEquipmentController extends Controller
             return response()->json(['message' => 'Acesso não autorizado a este equipamento.'], 403);
         }
 
-        if ($equipment->qr_code_access_level !== 'specific_users') {
+        // Permitir sincronização se for 'specific_users' OU se for um array vazio (limpeza durante mudança de nível)
+        $userIds = $request->input('user_ids', []);
+        $isClearing = empty($userIds);
+        
+        if ($equipment->qr_code_access_level !== 'specific_users' && !$isClearing) {
             return response()->json(['message' => 'Este equipamento não está configurado para acesso específico de usuários.'], 400);
         }
 

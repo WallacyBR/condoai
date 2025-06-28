@@ -43,7 +43,7 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('auth/me', 'me');
 });
 
-Route::middleware('auth:api')->group(function () {
+Route::middleware(['auth:api', 'tenant'])->group(function () {
     Route::get('condominiums/{condominium}/stats', [CondominiumController::class, 'stats']);
     Route::apiResource('condominiums', CondominiumController::class);
     Route::apiResource('residents', ResidentController::class);
@@ -90,6 +90,12 @@ Route::middleware('auth:api')->group(function () {
         // Rota para tarefas do dia do usuário
         Route::get('schedules/my-today', [\App\Http\Controllers\API\MaintenanceScheduleController::class, 'myTodaySchedules'])
             ->name('schedules.myToday');
+        // Rota para atualizar/verificar status das tarefas
+        Route::post('schedules/refresh-today', [\App\Http\Controllers\API\MaintenanceScheduleController::class, 'refreshTodaySchedules'])
+            ->name('schedules.refreshToday');
+        // Rota para manutenções concluídas do usuário
+        Route::get('schedules/my-completed', [\App\Http\Controllers\API\MaintenanceScheduleController::class, 'myCompletedRecords'])
+            ->name('schedules.myCompleted');
         Route::apiResource('schedules', \App\Http\Controllers\API\MaintenanceScheduleController::class);
 
         Route::apiResource('records', \App\Http\Controllers\API\MaintenanceRecordController::class);

@@ -39,7 +39,8 @@ class MaintenanceSchedule extends Model
      */
     protected static function booted(): void
     {
-        static::addGlobalScope(new CondominiumScope());
+        // Temporariamente comentado para debug
+        // static::addGlobalScope(new CondominiumScope());
     }
 
     public function condominium()

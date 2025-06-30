@@ -28,7 +28,16 @@ class ProfileModuleTest extends TestCase
         $token = $this->authenticate();
         $modules = Module::factory()->count(2)->create();
         $data = Profile::factory()->make()->toArray();
-        $data['modules'] = $modules->pluck('id')->toArray();
+        $data['modules'] = $modules->map(function ($m) {
+            return [
+                'id' => $m->id,
+                'can_view' => true,
+                'can_create' => true,
+                'can_update' => false,
+                'can_delete' => false,
+                'scope' => 'own',
+            ];
+        })->toArray();
         $response = $this->withHeader('Authorization', 'Bearer '.$token)
             ->postJson('/api/profiles', $data);
         $response->assertStatus(201)
@@ -47,5 +56,27 @@ class ProfileModuleTest extends TestCase
             ->postJson('/api/profiles', $data);
         $response->assertStatus(201)
             ->assertJsonCount(3, 'modules');
+    }
+
+    public function test_privileges_are_saved_with_module(): void
+    {
+        $token = $this->authenticate();
+        $module = Module::factory()->create();
+        $data = Profile::factory()->make()->toArray();
+        $data['modules'] = [[
+            'id' => $module->id,
+            'can_view' => true,
+            'can_create' => false,
+            'can_update' => true,
+            'can_delete' => false,
+            'scope' => 'condominium',
+        ]];
+
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->postJson('/api/profiles', $data);
+
+        $response->assertStatus(201)
+            ->assertJsonPath('modules.0.pivot.can_view', 1)
+            ->assertJsonPath('modules.0.pivot.scope', 'condominium');
     }
 }

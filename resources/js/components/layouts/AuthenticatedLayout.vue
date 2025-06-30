@@ -277,6 +277,8 @@
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useNotifications } from '../../composables/useNotifications.js';
+import { useUser } from '../../composables/useUser.js';
+import auth from '../../services/auth.js';
 import ToastContainer from '../ToastContainer.vue';
 import logoImage from '../../../images/condo_ai_quadrado.png';
 
@@ -290,6 +292,7 @@ export default {
     const router = useRouter();
     const route = useRoute();
     const { notifications, getBadgeColor, simulateNotificationUpdate, loadNotificationsFromServer } = useNotifications();
+    const { user } = useUser();
     const isSidebarOpen = ref(window.innerWidth >= 1024);
     const isCollapsed = ref(false);
     const isDesktop = ref(window.innerWidth >= 1024);
@@ -297,6 +300,18 @@ export default {
 
     const selectedCondoId = ref(localStorage.getItem('selectedCondominium'));
     const selectedCondoName = ref(localStorage.getItem('selectedCondominiumName'));
+
+    const allowedModules = computed(() => {
+      const permissions = {};
+      if (user.value && user.value.profile && user.value.profile.modules) {
+        user.value.profile.modules.forEach(m => {
+          if (m.pivot && m.pivot.can_view) {
+            permissions[m.name] = true;
+          }
+        });
+      }
+      return permissions;
+    });
     
     const updateSelected = () => {
       selectedCondoId.value = localStorage.getItem('selectedCondominium');
@@ -363,6 +378,7 @@ export default {
       {
         name: 'Unidades',
         path: '/units-list',
+        module: 'Unidades',
         icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -389,6 +405,7 @@ export default {
       {
         name: 'Moradores',
         path: '/residents',
+        module: 'Moradores',
         icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm00 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -397,6 +414,7 @@ export default {
       {
         name: 'Correspondências',
         path: '/packages',
+        module: 'Correspondências',
         icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -407,6 +425,7 @@ export default {
       {
         name: 'Ocorrências',
         path: '/occurrences',
+        module: 'Ocorrências',
         icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
         // badge: notifications.value.occurrences, // Adicionar se houver sistema de notificação para ocorrências
         // badgeColor: getBadgeColor('occurrences', notifications.value.occurrences)
@@ -499,6 +518,7 @@ export default {
       {
         name: 'Relatórios',
         path: '/reports',
+        module: 'Relatórios',
         icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -584,11 +604,30 @@ export default {
       }
     ]);
 
+    const filteredCondoItems = computed(() => {
+      return condoItems.value
+        .map(item => {
+          if (item.children) {
+            const children = item.children.filter(child => {
+              return !child.module || allowedModules.value[child.module];
+            });
+            return { ...item, children };
+          }
+          return item;
+        })
+        .filter(item => {
+          if (item.module && !allowedModules.value[item.module]) {
+            return item.children && item.children.length > 0;
+          }
+          return true;
+        });
+    });
+
     const menuItems = computed(() => {
       if (!selectedCondoId.value) {
         return baseItems;
       }
-      return [...baseItems, ...condoItems.value];
+      return [...baseItems, ...filteredCondoItems.value];
     });
 
     const toggleSidebar = () => { 
@@ -633,17 +672,15 @@ export default {
       }
     };
 
-    const logout = () => {
-      localStorage.removeItem('token');
-      localStorage.removeItem('selectedCondominium');
-      localStorage.removeItem('selectedCondominiumName');
-      localStorage.removeItem('user');
-      
-      router.push('/login');
+    const logout = async () => {
+      await auth.logout();
     };
 
-    const userName = computed(() => 'Usuário Exemplo');
-    const userInitials = computed(() => 'UE');
+    const userName = computed(() => user.value?.name || 'Usuário');
+    const userInitials = computed(() => {
+      if (!user.value?.name) return 'U';
+      return user.value.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+    });
 
     const handleImageError = (event) => {
       console.error('Erro ao carregar imagem:', event.target.src);

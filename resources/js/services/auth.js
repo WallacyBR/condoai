@@ -1,5 +1,6 @@
 import { apiRequest } from '../utils/api';
 import router from '../router';
+import { useUser } from '../composables/useUser';
 
 class AuthService {
     constructor() {
@@ -8,9 +9,12 @@ class AuthService {
         this.tokenExpirationTime = null;
         this.isRefreshing = false; // Flag para evitar múltiplos refreshes simultâneos
         this.refreshPromise = null; // Promise para sincronizar múltiplas tentativas de refresh
-        
+        const { setUser } = useUser();
+        this.setUser = setUser;
+
         if (this.token) {
             this.setupTokenRefresh();
+            this.fetchCurrentUser();
         }
     }
 
@@ -74,6 +78,7 @@ class AuthService {
                 this.token = response.authorization.token;
                 localStorage.setItem('token', this.token);
                 this.setupTokenRefresh();
+                await this.fetchCurrentUser();
                 return response;
             }
             throw new Error('Token não recebido no login');
@@ -118,6 +123,7 @@ class AuthService {
                 this.token = response.authorization.token;
                 localStorage.setItem('token', this.token);
                 this.setupTokenRefresh();
+                await this.fetchCurrentUser();
                 console.log('Token refreshado com sucesso');
                 return true;
             }
@@ -133,6 +139,15 @@ class AuthService {
         }
     }
 
+    async fetchCurrentUser() {
+        try {
+            const data = await apiRequest('/api/auth/me');
+            this.setUser(data);
+        } catch (error) {
+            console.error('Erro ao obter dados do usuário:', error);
+        }
+    }
+
     _handleAuthFailure() {
         console.log('Falha na autenticação, limpando estado...');
         if (this.refreshTimeout) {
@@ -143,6 +158,7 @@ class AuthService {
         this.isRefreshing = false;
         this.refreshPromise = null;
         localStorage.removeItem('token');
+        this.setUser(null);
         router.push({ name: 'login' });
     }
 

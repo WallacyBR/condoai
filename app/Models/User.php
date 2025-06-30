@@ -72,4 +72,14 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->belongsToMany(MaintenanceSchedule::class, 'maintenance_schedule_user', 'user_id', 'maintenance_schedule_id')->withTimestamps();
     }
+
+    public function solicitacoesAcessoDestinadas()
+    {
+        return $this->hasMany(SolicitacaoAcesso::class, 'morador_destino_id');
+    }
+
+    public function medidasProtetivasComoProtegido()
+    {
+        return $this->hasMany(MedidaProtetiva::class, 'morador_protegido_id');
+    }
 }

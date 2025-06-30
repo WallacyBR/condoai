@@ -375,6 +375,60 @@ const routes = [
     props: true,
     meta: { requiresAuth: true, requiresCondo: true }
   },
+  // Access Control Module Routes
+  {
+    path: '/access-control/dashboard',
+    name: 'AccessControlDashboard',
+    component: () => import('../pages/AccessControl/AccessControlDashboardPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true } // Portaria precisa de condomínio selecionado
+  },
+  {
+    path: '/access-control/new-request',
+    name: 'NewAccessRequest',
+    component: () => import('../pages/AccessControl/NewAccessRequestPage.vue'), // Será criado
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/access-control/requests/:id/record-entry',
+    name: 'RecordAccessEntry',
+    component: () => import('../pages/AccessControl/RecordAccessEntryPage.vue'), // Será criado
+    props: true,
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+   {
+    path: '/access-control/requests/:id', // Rota de detalhes, se necessária
+    name: 'AccessRequestDetails',
+    component: () => import('../pages/AccessControl/AccessRequestDetailsPage.vue'), // Será criado
+    props: true,
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  // Protective Measures Routes
+  {
+    path: '/protective-measures',
+    name: 'ProtectiveMeasuresList',
+    component: () => import('../pages/AccessControl/ProtectiveMeasuresListPage.vue'), // Será criado
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/protective-measures/new',
+    name: 'NewProtectiveMeasure',
+    component: () => import('../pages/AccessControl/ProtectiveMeasureFormPage.vue'), // Será criado
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/protective-measures/:id/edit',
+    name: 'EditProtectiveMeasure',
+    component: () => import('../pages/AccessControl/ProtectiveMeasureFormPage.vue'), // Será criado
+    props: true,
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  // Resident's Access Authorizations Page
+  {
+    path: '/my-authorizations',
+    name: 'MyAuthorizations',
+    component: () => import('../pages/AccessControl/MyAuthorizationsPage.vue'), // Será criado
+    meta: { requiresAuth: true, requiresCondo: true } // Morador precisa de condomínio selecionado
+  },
 ];
 
 const router = createRouter({

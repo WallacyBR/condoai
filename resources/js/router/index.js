@@ -253,7 +253,7 @@ const routes = [
     meta: { requiresAuth: true, requiresCondo: true }
   },
   {
-    path: '/maintenance/schedules', // Poderia ser /equipment/:equipId/schedules
+    path: '/maintenance/schedules',
     name: 'maintenance.schedules',
     component: () => import('../pages/maintenance/MaintenanceSchedulesView.vue'),
     meta: { requiresAuth: true, requiresCondo: true }
@@ -301,7 +301,7 @@ const routes = [
     path: '/qr/:hash',
     name: 'public.qr.report',
     component: () => import('../pages/PublicEquipmentReportPage.vue'),
-    meta: { requiresAuth: false, requiresCondo: false } // Rota pública
+    meta: { requiresAuth: false, requiresCondo: false }
   },
   {
     path: '/signature-test',
@@ -314,39 +314,6 @@ const routes = [
     name: 'fileupload-test',
     component: () => import('../pages/FileUploadTestPage.vue'),
     meta: { requiresAuth: true }
-  },
-  // Rotas para Classificados
-  {
-    path: '/classifieds',
-    name: 'classifieds.index',
-    component: () => import('../pages/Classifieds/ClassifiedsIndexPage.vue'),
-    meta: { requiresAuth: true, requiresCondo: true }
-  },
-  {
-    path: '/classifieds/:id',
-    name: 'classifieds.show',
-    component: () => import('../pages/Classifieds/AdDetailsPage.vue'),
-    props: true,
-    meta: { requiresAuth: true, requiresCondo: true }
-  },
-  {
-    path: '/classifieds/create',
-    name: 'classifieds.create',
-    component: () => import('../pages/Classifieds/AdFormPage.vue'),
-    meta: { requiresAuth: true, requiresCondo: true }
-  },
-  {
-    path: '/classifieds/:id/edit',
-    name: 'classifieds.edit',
-    component: () => import('../pages/Classifieds/AdFormPage.vue'),
-    props: true,
-    meta: { requiresAuth: true, requiresCondo: true }
-  },
-  {
-    path: '/my-ads',
-    name: 'classifieds.my-ads',
-    component: () => import('../pages/Classifieds/MyAdsPage.vue'),
-    meta: { requiresAuth: true, requiresCondo: true }
   },
   // Rotas para Classificados
   {

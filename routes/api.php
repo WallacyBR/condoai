@@ -14,6 +14,11 @@ use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\ResidentController;
 use App\Http\Controllers\API\TowerController;
 use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\Api\OccurrenceController;
+use App\Http\Controllers\API\VisitorController;
+use App\Http\Controllers\API\VisitorVehicleController;
+use App\Http\Controllers\API\ProtectiveMeasureController;
+use App\Http\Controllers\API\AccessRequestController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
@@ -89,6 +94,13 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
     Route::get('my-ads', [\App\Http\Controllers\AdController::class, 'myAds']);
     Route::get('ads/{ad}/statistics', [\App\Http\Controllers\AdController::class, 'adStatistics']);
 
+    // Occurrence Routes
+    Route::apiResource('occurrences', OccurrenceController::class);
+    Route::post('occurrences/{occurrence}/photos', [OccurrenceController::class, 'addPhoto']);
+    Route::delete('occurrences/{occurrence}/photos/{photo}', [OccurrenceController::class, 'deletePhoto']);
+    Route::post('occurrences/{occurrence}/comments', [OccurrenceController::class, 'addComment']);
+    Route::delete('occurrences/{occurrence}/comments/{comment}', [OccurrenceController::class, 'deleteComment']);
+
     // Maintenance Module Routes
     Route::prefix('maintenance')->name('maintenance.')->group(function () {
         Route::apiResource('areas', \App\Http\Controllers\API\MaintenanceAreaController::class);
@@ -118,6 +130,31 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
             ->name('dashboard.byEquipment');
         Route::get('dashboard/by-area', [\App\Http\Controllers\API\MaintenanceDashboardController::class, 'getStatsByArea'])
             ->name('dashboard.byArea');
+    });
+
+    // Access Control Module Routes
+    Route::prefix('access-control')->name('access-control.')->group(function () {
+        // Visitors
+        Route::get('visitors/search-by-document', [VisitorController::class, 'searchByDocument'])->name('visitors.searchByDocument');
+        Route::apiResource('visitors', VisitorController::class);
+
+        // Visitor Vehicles (nested under visitors)
+        Route::apiResource('visitors.vehicles', VisitorVehicleController::class)->shallow();
+        // Example: GET /api/access-control/visitors/{visitor}/vehicles
+        // GET /api/access-control/vehicles/{vehicle} (due to shallow)
+
+        // Protective Measures
+        Route::apiResource('protective-measures', ProtectiveMeasureController::class);
+
+        // Access Requests
+        Route::post('access-requests', [AccessRequestController::class, 'store'])->name('access-requests.store');
+        Route::get('access-requests/gatehouse', [AccessRequestController::class, 'listForGatehouse'])->name('access-requests.listForGatehouse');
+        Route::get('access-requests/my-requests', [AccessRequestController::class, 'listMyRequestsAsResident'])->name('access-requests.listMyRequestsAsResident');
+        Route::get('access-requests/{access_request}', [AccessRequestController::class, 'show'])->name('access-requests.show');
+        Route::post('access-requests/{access_request}/respond', [AccessRequestController::class, 'respondToRequest'])->name('access-requests.respond');
+        Route::post('access-requests/{access_request}/record-entry', [AccessRequestController::class, 'recordEntry'])->name('access-requests.recordEntry');
+        Route::post('access-requests/{access_request}/record-exit', [AccessRequestController::class, 'recordExit'])->name('access-requests.recordExit');
+        Route::post('access-requests/{access_request}/cancel', [AccessRequestController::class, 'cancelRequest'])->name('access-requests.cancel');
     });
 });
 

@@ -41,6 +41,54 @@ class OccurrenceApiTest extends TestCase
             ->assertJsonCount(3, 'data');
     }
 
+    public function test_can_filter_occurrences_by_status()
+    {
+        Occurrence::factory()->for($this->condominium)->for($this->user)->create(['status' => OccurrenceStatus::OPEN]);
+        Occurrence::factory()->for($this->condominium)->for($this->user)->create(['status' => OccurrenceStatus::CLOSED]);
+
+        $response = $this->getJson(route('occurrences.index', ['status' => OccurrenceStatus::OPEN->value]));
+
+        $response->assertStatus(200)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.status', OccurrenceStatus::OPEN->value);
+    }
+
+    public function test_can_filter_occurrences_by_priority()
+    {
+        Occurrence::factory()->for($this->condominium)->for($this->user)->create(['priority' => OccurrencePriority::HIGH]);
+        Occurrence::factory()->for($this->condominium)->for($this->user)->create(['priority' => OccurrencePriority::LOW]);
+
+        $response = $this->getJson(route('occurrences.index', ['priority' => OccurrencePriority::HIGH->value]));
+
+        $response->assertStatus(200)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.priority', OccurrencePriority::HIGH->value);
+    }
+
+    public function test_can_order_occurrences()
+    {
+        Occurrence::factory()->for($this->condominium)->for($this->user)->create(['title' => 'Alpha Occurrence', 'created_at' => now()->subDay()]);
+        Occurrence::factory()->for($this->condominium)->for($this->user)->create(['title' => 'Beta Occurrence', 'created_at' => now()]);
+
+        $response = $this->getJson(route('occurrences.index', ['order_by' => 'title', 'order_direction' => 'asc']));
+        $response->assertStatus(200)->assertJsonPath('data.0.title', 'Alpha Occurrence');
+
+        $response = $this->getJson(route('occurrences.index', ['order_by' => 'title', 'order_direction' => 'desc']));
+        $response->assertStatus(200)->assertJsonPath('data.0.title', 'Beta Occurrence');
+    }
+
+    public function test_pagination_for_occurrences()
+    {
+        Occurrence::factory()->count(20)->for($this->condominium)->for($this->user)->create();
+
+        $response = $this->getJson(route('occurrences.index', ['per_page' => 5]));
+        $response->assertStatus(200)
+            ->assertJsonCount(5, 'data')
+            ->assertJsonPath('meta.total', 20)
+            ->assertJsonPath('meta.per_page', 5);
+    }
+
+
     public function test_can_create_occurrence_without_photos()
     {
         $data = [
@@ -218,5 +266,17 @@ class OccurrenceApiTest extends TestCase
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['title', 'priority']);
+    }
+
+    public function test_validation_fails_for_updating_occurrence_with_invalid_data()
+    {
+        $occurrence = Occurrence::factory()->for($this->condominium)->for($this->user)->create();
+        $response = $this->putJson(route('occurrences.update', $occurrence), [
+            'status' => 'invalid_status_value', // Invalid: not in enum
+            'priority' => [], // Invalid: should be a string
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['status', 'priority']);
     }
 }

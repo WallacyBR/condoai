@@ -26,7 +26,16 @@ class DefaultProfileSeeder extends Seeder
         $allModules = Module::all();
         
         if ($sysOpProfile && $allModules->count() > 0) {
-            $sysOpProfile->modules()->sync($allModules->pluck('id'));
+            $syncData = $allModules->mapWithKeys(function ($m) {
+                return [$m->id => [
+                    'can_view' => true,
+                    'can_create' => true,
+                    'can_update' => true,
+                    'can_delete' => true,
+                    'scope' => 'all',
+                ]];
+            })->toArray();
+            $sysOpProfile->modules()->sync($syncData);
         }
     }
 }

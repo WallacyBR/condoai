@@ -114,14 +114,15 @@ async function clearPWACache() {
         clearServiceWorkerCaches(),
         unregisterServiceWorkers(),
         clearStorage(),
-        clearIndexedDB()
+        clearIndexedDB(),
+        clearPWABannerState()
     ]);
     
     const successCount = results.filter(Boolean).length;
     console.log(`\n📊 Resumo da limpeza:`);
-    console.log(`✅ ${successCount}/4 operações concluídas com sucesso`);
+    console.log(`✅ ${successCount}/5 operações concluídas com sucesso`);
     
-    if (successCount === 4) {
+    if (successCount === 5) {
         console.log('🎉 Limpeza completa realizada! Recarregue a página.');
         setTimeout(() => {
             window.location.reload();
@@ -131,8 +132,54 @@ async function clearPWACache() {
     }
 }
 
+// Nova função para limpar estado do banner PWA
+async function clearPWABannerState() {
+    try {
+        // Limpar localStorage do banner
+        localStorage.removeItem('pwa-banner-dismissed');
+        localStorage.removeItem('pwa-banner-dismissed-time');
+        
+        // Resetar deferredPrompt se existir
+        if (window.deferredPrompt) {
+            window.deferredPrompt = null;
+        }
+        
+        console.log('✅ Estado do banner PWA limpo');
+        return true;
+    } catch (error) {
+        console.error('❌ Erro ao limpar estado do banner PWA:', error);
+        return false;
+    }
+}
+
+// Função específica para forçar exibição do banner PWA
+function forceShowPWABanner() {
+    console.log('🔄 Forçando exibição do banner de instalação PWA...');
+    
+    // Limpar localStorage
+    localStorage.removeItem('pwa-banner-dismissed');
+    localStorage.removeItem('pwa-banner-dismissed-time');
+    
+    // Disparar evento customizado se o prompt estiver disponível
+    if (window.deferredPrompt) {
+        console.log('✅ deferredPrompt disponível, disparando evento...');
+        window.dispatchEvent(new CustomEvent('pwa-prompt-available'));
+    } else {
+        console.log('⚠️ deferredPrompt não está disponível');
+        console.log('💡 Possíveis soluções:');
+        console.log('1. Recarregue a página');
+        console.log('2. Certifique-se de que está em HTTPS');
+        console.log('3. Verifique se o PWA não está já instalado');
+        console.log('4. Teste em uma aba privada/incógnita');
+    }
+    
+    return !localStorage.getItem('pwa-banner-dismissed');
+}
+
 // Executar limpeza
 clearPWACache();
 
-// Exportar função para uso global
-window.clearPWACache = clearPWACache; 
+// Exportar funções para uso global
+window.clearPWACache = clearPWACache;
+window.forceShowPWABanner = forceShowPWABanner;
+window.clearPWABannerState = clearPWABannerState; 

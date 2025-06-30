@@ -99,10 +99,14 @@ export function usePWA() {
 
     // Instalar PWA
     const installPWA = () => {
+        console.log('installPWA called, deferredPrompt:', !!window.deferredPrompt);
+        
         if (window.deferredPrompt) {
             try {
+                console.log('Showing install prompt...');
                 window.deferredPrompt.prompt();
                 window.deferredPrompt.userChoice.then((choiceResult) => {
+                    console.log('User choice:', choiceResult.outcome);
                     if (choiceResult.outcome === 'accepted') {
                         console.log('PWA instalado com sucesso');
                         isInstalled.value = true;
@@ -115,7 +119,41 @@ export function usePWA() {
                 console.error('Erro ao instalar PWA:', error);
             }
         } else {
-            console.log('Prompt de instalação não disponível');
+            console.log('Prompt de instalação não disponível. Possíveis motivos:');
+            console.log('- App já está instalado');
+            console.log('- Navegador não suporta');
+            console.log('- Critérios de instalação não atendidos');
+            console.log('- Evento beforeinstallprompt ainda não foi disparado');
+        }
+    };
+
+    // Função para verificar critérios de instalação PWA
+    const checkInstallCriteria = () => {
+        const criteria = {
+            hasServiceWorker: 'serviceWorker' in navigator,
+            hasManifest: document.querySelector('link[rel="manifest"]') !== null,
+            isHTTPS: location.protocol === 'https:' || location.hostname === 'localhost',
+            hasIcons: true, // Presumimos que sim baseado no manifest
+            isInstalled: isInstalled.value,
+            deferredPromptAvailable: !!window.deferredPrompt
+        };
+        
+        console.log('PWA Installation Criteria:', criteria);
+        return criteria;
+    };
+    
+    // Função para forçar verificação do prompt
+    const forceCheckPrompt = () => {
+        console.log('Forcing beforeinstallprompt check...');
+        checkInstallCriteria();
+        
+        // Verificar se estamos em um contexto válido para PWA
+        if (!window.deferredPrompt) {
+            console.log('💡 Dica: O evento beforeinstallprompt só dispara quando:');
+            console.log('1. A página atende aos critérios de PWA');
+            console.log('2. O usuário não instalou o app ainda');
+            console.log('3. O usuário visitou o site pelo menos uma vez');
+            console.log('4. O navegador suporta PWA (Chrome, Edge, Safari, Firefox)');
         }
     };
 
@@ -200,9 +238,13 @@ export function usePWA() {
 
         // Event listener para instalação do PWA
         window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('beforeinstallprompt event fired!', e);
             e.preventDefault();
             window.deferredPrompt = e;
-            console.log('Prompt de instalação do PWA disponível');
+            console.log('Prompt de instalação do PWA disponível - deferredPrompt armazenado');
+            
+            // Dispatch evento customizado para notificar componentes
+            window.dispatchEvent(new CustomEvent('pwa-prompt-available'));
         });
 
         // Event listener para quando o PWA é instalado
@@ -242,6 +284,8 @@ export function usePWA() {
         updateServiceWorker,
         syncInBackground,
         checkConnectivity,
-        clearCache
+        clearCache,
+        checkInstallCriteria,
+        forceCheckPrompt
     };
 } 

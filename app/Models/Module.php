@@ -16,6 +16,8 @@ class Module extends Model
 
     public function profiles()
     {
-        return $this->belongsToMany(Profile::class);
+        return $this->belongsToMany(Profile::class)
+            ->withPivot(['can_view', 'can_create', 'can_update', 'can_delete', 'scope'])
+            ->withTimestamps();
     }
 }

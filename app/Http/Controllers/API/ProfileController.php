@@ -27,16 +27,40 @@ class ProfileController extends Controller
             'name' => 'required|string|max:255|unique:profiles',
             'description' => 'nullable|string|max:255',
             'modules' => 'array',
-            'modules.*' => 'exists:modules,id',
+            'modules.*.id' => 'exists:modules,id',
+            'modules.*.can_view' => 'boolean',
+            'modules.*.can_create' => 'boolean',
+            'modules.*.can_update' => 'boolean',
+            'modules.*.can_delete' => 'boolean',
+            'modules.*.scope' => 'in:own,condominium,all',
         ]);
 
-        $modules = $validated['modules'] ?? [];
+        $modules = collect($validated['modules'] ?? [])
+            ->mapWithKeys(function ($m) {
+                $id = $m['id'];
+                unset($m['id']);
+                return [$id => [
+                    'can_view' => $m['can_view'] ?? false,
+                    'can_create' => $m['can_create'] ?? false,
+                    'can_update' => $m['can_update'] ?? false,
+                    'can_delete' => $m['can_delete'] ?? false,
+                    'scope' => $m['scope'] ?? 'own',
+                ]];
+            })->toArray();
         unset($validated['modules']);
 
         $profile = Profile::create($validated);
 
         if ($profile->name === 'SysOp') {
-            $modules = Module::pluck('id');
+            $modules = Module::all()->mapWithKeys(function ($m) {
+                return [$m->id => [
+                    'can_view' => true,
+                    'can_create' => true,
+                    'can_update' => true,
+                    'can_delete' => true,
+                    'scope' => 'all',
+                ]];
+            })->toArray();
         }
 
         $profile->modules()->sync($modules);
@@ -61,19 +85,43 @@ class ProfileController extends Controller
             'name' => ['string', 'max:255', Rule::unique('profiles')->ignore($profile->id)],
             'description' => 'nullable|string|max:255',
             'modules' => 'array',
-            'modules.*' => 'exists:modules,id',
+            'modules.*.id' => 'exists:modules,id',
+            'modules.*.can_view' => 'boolean',
+            'modules.*.can_create' => 'boolean',
+            'modules.*.can_update' => 'boolean',
+            'modules.*.can_delete' => 'boolean',
+            'modules.*.scope' => 'in:own,condominium,all',
         ]);
 
-        $modules = $validated['modules'] ?? null;
+        $modules = collect($validated['modules'] ?? [])
+            ->mapWithKeys(function ($m) {
+                $id = $m['id'];
+                unset($m['id']);
+                return [$id => [
+                    'can_view' => $m['can_view'] ?? false,
+                    'can_create' => $m['can_create'] ?? false,
+                    'can_update' => $m['can_update'] ?? false,
+                    'can_delete' => $m['can_delete'] ?? false,
+                    'scope' => $m['scope'] ?? 'own',
+                ]];
+            })->toArray();
         unset($validated['modules']);
 
         $profile->update($validated);
 
         if ($profile->name === 'SysOp') {
-            $modules = Module::pluck('id');
+            $modules = Module::all()->mapWithKeys(function ($m) {
+                return [$m->id => [
+                    'can_view' => true,
+                    'can_create' => true,
+                    'can_update' => true,
+                    'can_delete' => true,
+                    'scope' => 'all',
+                ]];
+            })->toArray();
         }
 
-        if (is_array($modules)) {
+        if (!empty($modules)) {
             $profile->modules()->sync($modules);
         }
 

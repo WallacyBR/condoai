@@ -54,4 +54,30 @@ class AuthTest extends TestCase
 
         $response->assertStatus(200);
     }
+
+    public function test_login_returns_user_modules(): void
+    {
+        $profile = \App\Models\Profile::factory()->create();
+        $module = \App\Models\Module::factory()->create();
+        $profile->modules()->attach($module->id, [
+            'can_view' => true,
+            'can_create' => true,
+            'can_update' => false,
+            'can_delete' => false,
+            'scope' => 'own',
+        ]);
+        $user = User::factory()->create([
+            'password' => bcrypt('secret'),
+            'profile_id' => $profile->id,
+        ]);
+
+        $response = $this->postJson('/api/auth/login', [
+            'email' => $user->email,
+            'password' => 'secret',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonPath('user.profile.modules.0.id', $module->id)
+            ->assertJsonPath('user.profile.modules.0.pivot.can_view', 1);
+    }
 }

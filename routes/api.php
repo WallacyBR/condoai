@@ -89,6 +89,15 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
     Route::get('my-ads', [\App\Http\Controllers\AdController::class, 'myAds']);
     Route::get('ads/{ad}/statistics', [\App\Http\Controllers\AdController::class, 'adStatistics']);
 
+    // Classifieds (Ads) Routes
+    Route::apiResource('ads', \App\Http\Controllers\AdController::class);
+    Route::patch('ads/{ad}/mark-sold', [\App\Http\Controllers\AdController::class, 'markAsSold']);
+    Route::patch('ads/{ad}/mark-unsold', [\App\Http\Controllers\AdController::class, 'markAsUnsold']);
+    Route::post('ads/{ad}/report', [\App\Http\Controllers\AdController::class, 'reportAd']);
+    Route::post('ads/{ad}/contact-click', [\App\Http\Controllers\AdController::class, 'contactClick']);
+    Route::get('my-ads', [\App\Http\Controllers\AdController::class, 'myAds']);
+    Route::get('ads/{ad}/statistics', [\App\Http\Controllers\AdController::class, 'adStatistics']);
+
     // Maintenance Module Routes
     Route::prefix('maintenance')->name('maintenance.')->group(function () {
         Route::apiResource('areas', \App\Http\Controllers\API\MaintenanceAreaController::class);

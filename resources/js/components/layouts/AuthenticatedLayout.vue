@@ -515,6 +515,11 @@ export default {
         icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>`
       },
       {
+        name: 'Classificados',
+        path: '/classifieds',
+        icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>`
+      },
+      {
         name: 'Manutenções',
         path: '/maintenance/dashboard', // Rota inicial do módulo de manutenção
         icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.5 6h3m-6.75 3h9.75m-1.5 3h4.5m-6.75 3h9.75M17.25 21L3 7.5m14.25 13.5L3 7.5V3.75C3 3.336 3.336 3 3.75 3h16.5c.414 0 .75.336.75.75v16.5c0 .414-.336.75-.75.75h-3.75Z"></path></svg>`,

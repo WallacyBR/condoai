@@ -64,7 +64,7 @@ class AuthController extends Controller
             ]);
         }
 
-        $user = Auth::guard('api')->user();
+        $user = Auth::guard('api')->user()->load('profile.modules');
         if (app()->bound('currentCondominium') &&
             $user->condominium_id !== app('currentCondominium')->id) {
             Auth::guard('api')->logout();
@@ -95,9 +95,11 @@ class AuthController extends Controller
 
     public function refresh()
     {
+        $user = Auth::guard('api')->user()->load('profile.modules');
+
         return response()->json([
             'status' => 'success',
-            'user' => Auth::guard('api')->user(),
+            'user' => $user,
             'authorization' => [
                 'token' => Auth::guard('api')->refresh(),
                 'type' => 'bearer',
@@ -107,6 +109,6 @@ class AuthController extends Controller
 
     public function me()
     {
-        return response()->json(Auth::guard('api')->user());
+        return response()->json(Auth::guard('api')->user()->load('profile.modules'));
     }
 }

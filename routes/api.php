@@ -88,6 +88,7 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
     Route::post('ads/{ad}/contact-click', [\App\Http\Controllers\AdController::class, 'contactClick']);
     Route::get('my-ads', [\App\Http\Controllers\AdController::class, 'myAds']);
     Route::get('ads/{ad}/statistics', [\App\Http\Controllers\AdController::class, 'adStatistics']);
+<<<<<<< Updated upstream
 
     // Maintenance Module Routes
     Route::prefix('maintenance')->name('maintenance.')->group(function () {
@@ -119,6 +120,8 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
         Route::get('dashboard/by-area', [\App\Http\Controllers\API\MaintenanceDashboardController::class, 'getStatsByArea'])
             ->name('dashboard.byArea');
     });
+=======
+>>>>>>> Stashed changes
 });
 
 // Public QR Code Report Route

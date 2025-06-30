@@ -209,6 +209,7 @@ const routes = [
     component: () => import('../pages/DocumentListPage.vue'),
     meta: { requiresAuth: true, requiresCondo: true }
   },
+<<<<<<< Updated upstream
   // Maintenance Module Routes
   {
     path: '/maintenance/dashboard',
@@ -315,6 +316,8 @@ const routes = [
     component: () => import('../pages/FileUploadTestPage.vue'),
     meta: { requiresAuth: true }
   },
+=======
+>>>>>>> Stashed changes
   // Rotas para Classificados
   {
     path: '/classifieds',

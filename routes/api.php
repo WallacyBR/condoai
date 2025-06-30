@@ -14,6 +14,7 @@ use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\ResidentController;
 use App\Http\Controllers\API\TowerController;
 use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\Api\OccurrenceController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
@@ -88,6 +89,13 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
     Route::post('ads/{ad}/contact-click', [\App\Http\Controllers\AdController::class, 'contactClick']);
     Route::get('my-ads', [\App\Http\Controllers\AdController::class, 'myAds']);
     Route::get('ads/{ad}/statistics', [\App\Http\Controllers\AdController::class, 'adStatistics']);
+
+    // Occurrence Routes
+    Route::apiResource('occurrences', OccurrenceController::class);
+    Route::post('occurrences/{occurrence}/photos', [OccurrenceController::class, 'addPhoto']);
+    Route::delete('occurrences/{occurrence}/photos/{photo}', [OccurrenceController::class, 'deletePhoto']);
+    Route::post('occurrences/{occurrence}/comments', [OccurrenceController::class, 'addComment']);
+    Route::delete('occurrences/{occurrence}/comments/{comment}', [OccurrenceController::class, 'deleteComment']);
 
     // Maintenance Module Routes
     Route::prefix('maintenance')->name('maintenance.')->group(function () {

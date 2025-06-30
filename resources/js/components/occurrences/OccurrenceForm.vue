@@ -40,24 +40,20 @@
       </div>
 
       <!-- Upload de Fotos -->
-      <div v-if="!isEditing">
+      <div v-if="!isEditing" class="space-y-2">
         <label class="block text-sm font-medium text-gray-700">Fotos (opcional)</label>
-        <input type="file" multiple @change="handleFileUpload" accept="image/*"
-               class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100"
-               :class="{'border-red-500': errors.photos}">
-         <p v-if="errors.photos" class="mt-1 text-xs text-red-500">{{ errors.photos.join(', ') }}</p>
-         <div v-if="form.photos.length > 0" class="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2">
-            <div v-for="(photo, index) in photoPreviews" :key="index" class="relative">
-                <img :src="photo.url" alt="Preview" class="h-24 w-full object-cover rounded-md">
-                <input type="text" v-model="photo.description" placeholder="Descrição (opcional)"
-                       class="mt-1 text-xs w-full py-1 px-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                <button @click="removePhoto(index)" type="button" class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-0.5 text-xs">&times;</button>
-            </div>
-        </div>
+        <FileUpload
+          v-model="form.photos"
+          :multiple="true"
+          accept="image/*"
+          :maxSize="5"
+        />
+        <p v-if="errors.photos" class="mt-1 text-xs text-red-500">{{ errors.photos.join(', ') }}</p>
+        <!-- A pré-visualização e remoção de fotos agora são tratadas dentro do FileUpload.vue -->
+        <!-- A entrada de descrição individual por foto no upload inicial foi removida para simplificação -->
       </div>
 
-
-      <div class="flex justify-end space-x-3">
+      <div class="flex justify-end space-x-3 pt-4">
         <router-link :to="{ name: 'OccurrenceIndex' }"
                      class="py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
           Cancelar
@@ -77,6 +73,7 @@ import { ref, reactive, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import api from '../../utils/api';
 import { useToast } from '../../composables/useToast';
+import FileUpload from '../FileUpload.vue'; // Importar o componente FileUpload
 
 const router = useRouter();
 const route = useRoute();
@@ -90,11 +87,12 @@ const form = reactive({
   description: '',
   priority: '',
   status: 'open', // Default para criação, será atualizado se editando
-  photos: [], // Array de File objects
-  photo_descriptions: [], // Array de strings
+  photos: [], // Array de File objects // Este será agora o v-model para FileUpload
+  // photo_descriptions: [], // Removido conforme decisão de simplificação
 });
 
-const photoPreviews = ref([]); // Para exibir prévias das imagens e suas descrições
+// photoPreviews será gerenciado internamente pelo FileUpload ou não será mais necessário da mesma forma
+// const photoPreviews = ref([]);
 
 const errors = ref({});
 const submitError = ref('');
@@ -132,29 +130,8 @@ const fetchOccurrence = async () => {
   }
 };
 
-const handleFileUpload = (event) => {
-  const files = Array.from(event.target.files);
-  form.photos = [...form.photos, ...files];
-
-  files.forEach(file => {
-    photoPreviews.value.push({
-      url: URL.createObjectURL(file),
-      file: file,
-      description: ''
-    });
-  });
-  event.target.value = ''; // Limpar o input para permitir seleção do mesmo arquivo novamente
-};
-
-const removePhoto = (index) => {
-    const removedPreview = photoPreviews.value.splice(index, 1)[0];
-    const photoIndexInForm = form.photos.findIndex(p => p === removedPreview.file);
-    if (photoIndexInForm > -1) {
-        form.photos.splice(photoIndexInForm, 1);
-    }
-    URL.revokeObjectURL(removedPreview.url); // Liberar memória
-};
-
+// handleFileUpload e removePhoto não são mais necessários aqui,
+// pois FileUpload.vue gerencia seus próprios arquivos internamente via v-model.
 
 const handleSubmit = async () => {
   submitting.value = true;
@@ -168,19 +145,19 @@ const handleSubmit = async () => {
 
   if (isEditing.value) {
     formData.append('status', form.status);
-    // Para edições, o Laravel espera _method PUT para FormData
     formData.append('_method', 'PUT');
+    // Nota: A lógica de upload de fotos para edição não está neste formulário.
+    // As fotos são gerenciadas na OccurrenceView.vue ou precisarão ser adicionadas aqui se o escopo mudar.
+  } else {
+    // Apenas adicionar fotos se não estiver editando e houver fotos
+    if (form.photos.length > 0) {
+      form.photos.forEach((file, index) => {
+        formData.append(`photos[${index}]`, file);
+        // Descrições individuais no upload inicial foram removidas para simplificação.
+        // Se necessário, o FileUpload.vue precisaria ser estendido ou as descrições gerenciadas de outra forma.
+      });
+    }
   }
-
-  if (!isEditing.value && form.photos.length > 0) {
-    photoPreviews.value.forEach((preview, index) => {
-        formData.append(`photos[${index}]`, preview.file);
-        if (preview.description) {
-            formData.append(`photo_descriptions[${index}]`, preview.description);
-        }
-    });
-  }
-
 
   try {
     let response;

@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
         // Chamar o novo seeder customizado para os condomínios e moradores
         $this->call([
             CustomCondominiumResidentsSeeder::class,
+            OccurrenceSeeder::class, // Adicionar o novo seeder aqui
         ]);
     }
 }

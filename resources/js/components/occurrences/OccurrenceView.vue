@@ -46,15 +46,42 @@
       </div>
 
       <!-- Seção de Fotos -->
-      <div v-if="occurrence.photos && occurrence.photos.length > 0" class="p-6 border-t border-gray-200">
+      <div class="p-6 border-t border-gray-200">
         <div class="flex justify-between items-center mb-3">
             <h2 class="text-xl font-semibold text-gray-700">Fotos</h2>
-            <button @click="showAddPhotoModal = true" v-if="canEditOccurrence"
-                    class="py-1 px-3 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md transition duration-150 ease-in-out">
-                Adicionar Foto
+            <button
+                @click="showAddPhotoSection = !showAddPhotoSection"
+                v-if="canEditOccurrence"
+                class="py-1 px-3 text-sm font-medium text-white rounded-md transition duration-150 ease-in-out"
+                :class="showAddPhotoSection ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'"
+            >
+                {{ showAddPhotoSection ? 'Cancelar Adição' : 'Adicionar Novas Fotos' }}
             </button>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+
+        <!-- Seção Inline para Adicionar Novas Fotos -->
+        <div v-if="showAddPhotoSection && canEditOccurrence" class="my-4 p-4 border border-gray-300 rounded-lg bg-gray-50">
+          <h3 class="text-lg font-medium text-gray-800 mb-2">Adicionar Novas Fotos</h3>
+          <form @submit.prevent="handleAddPhotos">
+            <FileUpload
+              v-model="newPhotos"
+              :multiple="true"
+              accept="image/*"
+              :maxSize="5"
+            />
+            <!-- Poderia adicionar um campo de descrição geral para o lote de fotos aqui se necessário -->
+            <!-- <textarea v-model="addPhotoDescription" placeholder="Descrição para as novas fotos (opcional)" class="mt-2 w-full ..."></textarea> -->
+            <div class="mt-4 flex justify-end">
+              <button type="submit" :disabled="submittingPhoto || newPhotos.length === 0"
+                      class="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 disabled:opacity-50">
+                {{ submittingPhoto ? 'Enviando...' : 'Salvar Novas Fotos' }}
+              </button>
+            </div>
+            <p v-if="addPhotoError" class="text-xs text-red-500 mt-1">{{ addPhotoError }}</p>
+          </form>
+        </div>
+
+        <div v-if="occurrence.photos && occurrence.photos.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
           <div v-for="photo in occurrence.photos" :key="photo.id" class="relative group">
             <img :src="getPhotoUrl(photo.photo_path)" alt="Foto da ocorrência"
                  class="w-full h-48 object-cover rounded-lg shadow-md cursor-pointer"
@@ -66,19 +93,10 @@
             </button>
           </div>
         </div>
+       <!-- Mensagem se não houver fotos e não estiver adicionando -->
+      <div v-else-if="!showAddPhotoSection && !(occurrence.photos && occurrence.photos.length > 0)" class="mt-4 text-gray-500">
+        Nenhuma foto adicionada a esta ocorrência.
       </div>
-       <!-- Seção para adicionar foto se não houver fotos e pode editar -->
-      <div v-else-if="canEditOccurrence" class="p-6 border-t border-gray-200">
-        <div class="flex justify-between items-center mb-3">
-            <h2 class="text-xl font-semibold text-gray-700">Fotos</h2>
-        </div>
-        <p class="text-gray-500 mb-2">Nenhuma foto adicionada a esta ocorrência.</p>
-        <button @click="showAddPhotoModal = true"
-                class="py-1 px-3 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md transition duration-150 ease-in-out">
-            Adicionar Foto
-        </button>
-      </div>
-
 
       <!-- Seção de Comentários -->
       <div class="p-6 border-t border-gray-200">
@@ -118,35 +136,7 @@
       </div>
     </div>
 
-    <!-- Modal para Adicionar Foto -->
-    <Modal :show="showAddPhotoModal" @close="showAddPhotoModal = false" title="Adicionar Nova Foto">
-        <form @submit.prevent="handleAddPhoto">
-            <div class="mt-2">
-                <label for="photoFile" class="block text-sm font-medium text-gray-700">Arquivo da Foto</label>
-                <input type="file" id="photoFile" @change="onFileChange" required accept="image/*"
-                       class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100">
-                <p v-if="addPhotoForm.errors.photo" class="text-xs text-red-500 mt-1">{{ addPhotoForm.errors.photo.join(', ') }}</p>
-            </div>
-            <div class="mt-4">
-                <label for="photoDescription" class="block text-sm font-medium text-gray-700">Descrição (opcional)</label>
-                <input type="text" id="photoDescription" v-model="addPhotoForm.description"
-                       class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-            </div>
-            <div class="mt-6 flex justify-end space-x-2">
-                <button type="button" @click="showAddPhotoModal = false"
-                        class="py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                    Cancelar
-                </button>
-                <button type="submit" :disabled="submittingPhoto"
-                        class="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50">
-                    {{ submittingPhoto ? 'Enviando...' : 'Adicionar Foto' }}
-                </button>
-            </div>
-             <p v-if="addPhotoForm.submitError" class="text-xs text-red-500 mt-1">{{ addPhotoForm.submitError }}</p>
-        </form>
-    </Modal>
-
-    <!-- Modal para Visualizar Imagem -->
+    <!-- Modal para Visualizar Imagem (mantido, pois é para visualização) -->
     <Modal :show="showImageModal" @close="showImageModal = false" :title="'Visualizar Imagem'" :maxWidth="'3xl'">
         <img :src="currentImageModalUrl" alt="Foto da ocorrência em tamanho maior" class="max-w-full max-h-[80vh] mx-auto">
          <div class="mt-4 flex justify-end">
@@ -166,8 +156,9 @@ import api from '../../utils/api';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useToast } from '../../composables/useToast';
-import Modal from '../Modal.vue'; // Assume que você tem um componente Modal global
-import { useAuthStore } from '../../stores/authStore'; // Para verificar permissões
+import Modal from '../Modal.vue';
+import FileUpload from '../FileUpload.vue'; // Importar FileUpload
+import { useAuthStore } from '../../stores/authStore';
 
 const route = useRoute();
 const router = useRouter();
@@ -183,14 +174,15 @@ const newComment = ref('');
 const submittingComment = ref(false);
 const commentError = ref('');
 
-const showAddPhotoModal = ref(false);
+// Variáveis para a nova seção inline de adicionar fotos
+const showAddPhotoSection = ref(false);
+const newPhotos = ref([]); // Para o v-model do FileUpload
 const submittingPhoto = ref(false);
-const addPhotoForm = reactive({
-    photo: null,
-    description: '',
-    errors: {},
-    submitError: '',
-});
+const addPhotoError = ref('');
+// addPhotoForm não é mais necessário da mesma forma, FileUpload lida com o arquivo.
+// Descrições podem ser tratadas separadamente se necessário após seleção/upload.
+// const addPhotoDescription = ref(''); // Para uma descrição geral das novas fotos, se aplicável, pode ser adicionado depois.
+
 
 const showImageModal = ref(false);
 const currentImageModalUrl = ref('');
@@ -317,50 +309,52 @@ const confirmDeleteComment = async (commentId) => {
     }
 };
 
-const onFileChange = (e) => {
-    addPhotoForm.photo = e.target.files[0];
-    addPhotoForm.errors.photo = null; // Limpa erro anterior ao selecionar novo arquivo
-};
+// onFileChange não é mais necessário pois FileUpload lida com isso.
 
-const handleAddPhoto = async () => {
-    if (!addPhotoForm.photo) {
-        addPhotoForm.errors.photo = ['Selecione um arquivo de imagem.'];
+const handleAddPhotos = async () => { // Renomeado para plural e para nova lógica
+    if (newPhotos.value.length === 0) {
+        addPhotoError.value = 'Selecione ao menos uma foto para adicionar.';
+        toast.error(addPhotoError.value);
         return;
     }
     submittingPhoto.value = true;
-    addPhotoForm.errors = {};
-    addPhotoForm.submitError = '';
+    addPhotoError.value = '';
+    let allSucceeded = true;
 
-    const formData = new FormData();
-    formData.append('photo', addPhotoForm.photo);
-    if (addPhotoForm.description) {
-        formData.append('description', addPhotoForm.description);
+    for (const file of newPhotos.value) {
+        const formData = new FormData();
+        formData.append('photo', file);
+        // Descrições são gerenciadas individualmente por foto no backend/modelo OccurrencePhoto.
+        // Se uma descrição geral fosse adicionada para o lote:
+        // if (addPhotoDescription.value) formData.append('description', addPhotoDescription.value);
+
+        try {
+            const response = await api.post(`/occurrences/${occurrenceId}/photos`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            if (!occurrence.value.photos) {
+                occurrence.value.photos = [];
+            }
+            occurrence.value.photos.push(response.data);
+        } catch (err) {
+            allSucceeded = false;
+            console.error("Erro ao adicionar foto:", file.name, err);
+            const specificError = err.response?.data?.errors?.photo?.join(', ') || err.response?.data?.message || `Erro ao enviar ${file.name}.`;
+            addPhotoError.value += `${specificError}\n`;
+            toast.error(`Erro ao adicionar ${file.name}.`);
+            // Continuar tentando enviar as outras fotos
+        }
     }
 
-    try {
-        const response = await api.post(`/occurrences/${occurrenceId}/photos`, formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        });
-        if (!occurrence.value.photos) {
-            occurrence.value.photos = [];
-        }
-        occurrence.value.photos.push(response.data);
-        toast.success('Foto adicionada com sucesso!');
-        showAddPhotoModal.value = false;
-        addPhotoForm.photo = null;
-        addPhotoForm.description = '';
-    } catch (err) {
-        console.error("Erro ao adicionar foto:", err);
-        if (err.response && err.response.status === 422) {
-            addPhotoForm.errors = err.response.data.errors;
-            addPhotoForm.submitError = "Por favor, corrija os erros.";
-        } else {
-            addPhotoForm.submitError = err.response?.data?.message || 'Não foi possível adicionar a foto.';
-        }
-        toast.error(addPhotoForm.submitError);
-    } finally {
-        submittingPhoto.value = false;
+    if (allSucceeded) {
+        toast.success('Todas as fotos foram adicionadas com sucesso!');
+        showAddPhotoSection.value = false;
+        newPhotos.value = []; // Limpar após o upload
+        // addPhotoDescription.value = ''; // Limpar descrição geral se usada
+    } else {
+        toast.warning('Algumas fotos não puderam ser adicionadas. Verifique os erros.');
     }
+    submittingPhoto.value = false;
 };
 
 const confirmDeletePhoto = async (photoId) => {

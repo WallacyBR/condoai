@@ -347,7 +347,34 @@ const routes = [
     name: 'classifieds.my-ads',
     component: () => import('../pages/Classifieds/MyAdsPage.vue'),
     meta: { requiresAuth: true, requiresCondo: true }
-  }
+  },
+  // Occurrence Routes
+  {
+    path: '/occurrences',
+    name: 'OccurrenceIndex',
+    component: () => import('../pages/occurrences/OccurrenceIndexPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/occurrences/new',
+    name: 'OccurrenceCreate',
+    component: () => import('../pages/occurrences/OccurrenceCreatePage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/occurrences/:id/edit',
+    name: 'OccurrenceEdit',
+    component: () => import('../pages/occurrences/OccurrenceEditPage.vue'),
+    props: true,
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/occurrences/:id',
+    name: 'OccurrenceShow',
+    component: () => import('../pages/occurrences/OccurrenceShowPage.vue'),
+    props: true,
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
 ];
 
 const router = createRouter({

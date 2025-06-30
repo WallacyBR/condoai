@@ -41,4 +41,9 @@ class ParkingSpot extends Model
     {
         return $this->hasMany(Vehicle::class);
     }
+
+    public function solicitacoesAcesso()
+    {
+        return $this->hasMany(SolicitacaoAcesso::class, 'vaga_utilizada_id');
+    }
 }

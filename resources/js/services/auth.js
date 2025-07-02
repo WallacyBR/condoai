@@ -1,6 +1,15 @@
-import { apiRequest } from '../utils/api';
-import router from '../router';
+import api from '../utils/api';
 import { useUser } from '../composables/useUser';
+
+// Lazy import do router para evitar dependência circular
+let router = null;
+const getRouter = async () => {
+  if (!router) {
+    const routerModule = await import('../router');
+    router = routerModule.default;
+  }
+  return router;
+};
 
 class AuthService {
     constructor() {
@@ -69,17 +78,22 @@ class AuthService {
 
     async login(credentials) {
         try {
-            const response = await apiRequest('/api/auth/login', {
-                method: 'POST',
-                body: JSON.stringify(credentials)
-            });
+            const response = await api.post('/auth/login', credentials);
 
-            if (response && response.authorization && response.authorization.token) {
-                this.token = response.authorization.token;
+            if (response.data && response.data.authorization && response.data.authorization.token) {
+                this.token = response.data.authorization.token;
                 localStorage.setItem('token', this.token);
                 this.setupTokenRefresh();
                 await this.fetchCurrentUser();
-                return response;
+                
+                // Armazenar condomínio atual se fornecido na resposta
+                if (response.data.current_condominium) {
+                    localStorage.setItem('selectedCondominium', response.data.current_condominium.id);
+                    localStorage.setItem('selectedCondominiumName', response.data.current_condominium.name);
+                    console.log('Condomínio definido automaticamente:', response.data.current_condominium.name);
+                }
+                
+                return response.data;
             }
             throw new Error('Token não recebido no login');
         } catch (error) {
@@ -115,12 +129,10 @@ class AuthService {
 
     async _performRefresh() {
         try {
-            const response = await apiRequest('/api/auth/refresh', {
-                method: 'POST'
-            });
+            const response = await api.post('/auth/refresh');
 
-            if (response && response.authorization && response.authorization.token) {
-                this.token = response.authorization.token;
+            if (response.data && response.data.authorization && response.data.authorization.token) {
+                this.token = response.data.authorization.token;
                 localStorage.setItem('token', this.token);
                 this.setupTokenRefresh();
                 await this.fetchCurrentUser();
@@ -128,11 +140,11 @@ class AuthService {
                 return true;
             }
             console.warn('Resposta inválida no refresh do token');
-            this._handleAuthFailure();
+            await this._handleAuthFailure();
             return false;
         } catch (error) {
             console.error('Erro no refresh do token:', error);
-            this._handleAuthFailure();
+            await this._handleAuthFailure();
             return false;
         } finally {
             this.isRefreshing = false;
@@ -141,14 +153,14 @@ class AuthService {
 
     async fetchCurrentUser() {
         try {
-            const data = await apiRequest('/api/auth/me');
-            this.setUser(data);
+            const response = await api.get('/auth/me');
+            this.setUser(response.data);
         } catch (error) {
             console.error('Erro ao obter dados do usuário:', error);
         }
     }
 
-    _handleAuthFailure() {
+    async _handleAuthFailure() {
         console.log('Falha na autenticação, limpando estado...');
         if (this.refreshTimeout) {
             clearTimeout(this.refreshTimeout);
@@ -158,8 +170,12 @@ class AuthService {
         this.isRefreshing = false;
         this.refreshPromise = null;
         localStorage.removeItem('token');
+        localStorage.removeItem('selectedCondominium');
+        localStorage.removeItem('selectedCondominiumName');
         this.setUser(null);
-        router.push({ name: 'login' });
+        
+        const routerInstance = await getRouter();
+        routerInstance.push({ name: 'login' });
     }
 
     async logout() {
@@ -170,9 +186,7 @@ class AuthService {
         
         if (shouldCallLogoutApi) {
             try {
-                await apiRequest('/api/auth/logout', {
-                    method: 'POST'
-                });
+                await api.post('/auth/logout');
                 console.log('Logout na API realizado com sucesso');
             } catch (error) {
                 console.error('Erro no logout (ignorado, continuando com logout local):', error);
@@ -182,7 +196,7 @@ class AuthService {
         }
         
         // Usar método centralizado para limpeza
-        this._handleAuthFailure();
+        await this._handleAuthFailure();
     }
 
     isAuthenticated() {
@@ -197,6 +211,22 @@ class AuthService {
 
     getToken() {
         return this.token;
+    }
+
+    async fetchCurrentCondominium() {
+        try {
+            const response = await api.get('/auth/current-condominium');
+            if (response.data && response.data.current_condominium) {
+                localStorage.setItem('selectedCondominium', response.data.current_condominium.id);
+                localStorage.setItem('selectedCondominiumName', response.data.current_condominium.name);
+                console.log('Condomínio atual obtido:', response.data.current_condominium.name);
+                return response.data.current_condominium;
+            }
+            return null;
+        } catch (error) {
+            console.error('Erro ao obter condomínio atual:', error);
+            return null;
+        }
     }
 }
 

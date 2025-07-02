@@ -490,7 +490,7 @@ export default {
         const token = localStorage.getItem('token');
         const url = isEditing.value 
           ? `/api/residents/${props.resident.id}`
-          : '/api/residents';
+          : '/residents';
         
         const method = isEditing.value ? 'PUT' : 'POST';
 

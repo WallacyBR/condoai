@@ -85,6 +85,11 @@ class Resident extends Model
         return $this->apartments()->wherePivot('type', 'resident');
     }
 
+    public function pets()
+    {
+        return $this->hasMany(Pet::class);
+    }
+
     // Métodos auxiliares para verificar classificações
     public function isProprietario(): bool
     {

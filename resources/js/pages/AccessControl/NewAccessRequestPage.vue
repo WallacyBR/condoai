@@ -192,7 +192,7 @@ const fetchResidents = async () => {
   loadingResidents.value = true;
   try {
     // Idealmente, esta rota teria paginação ou um limite, ou um select com busca
-    const response = await api.get('/api/users?profile_type=resident&per_page=1000'); // Exemplo, ajustar endpoint
+    const response = await api.get('/users?profile_type=resident&per_page=1000'); // Exemplo, ajustar endpoint
     residents.value = response.data.data || response.data; // Ajustar conforme estrutura da API de users
   } catch (e) {
     console.error("Erro ao buscar moradores:", e);
@@ -300,7 +300,7 @@ const submitNewAccessRequest = async () => {
   if (form.gatehouse_observation) formData.append('gatehouse_observation', form.gatehouse_observation);
 
   try {
-    await api.post('/api/access-control/access-requests', formData, {
+    await api.post('/access-control/access-requests', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }

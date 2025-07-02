@@ -39,10 +39,10 @@ describe('NewAccessRequestPage.vue', () => {
 
   beforeEach(async () => {
     api.get.mockImplementation((url) => {
-      if (url.startsWith('/api/users')) { // Mock para fetchResidents
+      if (url.startsWith('/users')) { // Mock para fetchResidents
         return Promise.resolve({ data: { data: mockResidents } });
       }
-      if (url.startsWith('/api/access-control/visitors/search-by-document')) {
+      if (url.startsWith('/access-control/visitors/search-by-document')) {
         // Será mockado individualmente nos testes de busca
         return Promise.resolve({ data: {} });
       }
@@ -77,7 +77,7 @@ describe('NewAccessRequestPage.vue', () => {
   });
 
   it('fetches residents on mount', () => {
-    expect(api.get).toHaveBeenCalledWith('/api/users?profile_type=resident&per_page=1000');
+    expect(api.get).toHaveBeenCalledWith('/users?profile_type=resident&per_page=1000');
     expect(wrapper.vm.residents.length).toBe(mockResidents.length);
   });
 
@@ -96,7 +96,7 @@ describe('NewAccessRequestPage.vue', () => {
        await new Promise(resolve => setTimeout(resolve, 0));
 
 
-      expect(api.get).toHaveBeenCalledWith('/api/access-control/visitors/search-by-document?document=123');
+      expect(api.get).toHaveBeenCalledWith('/access-control/visitors/search-by-document?document=123');
       expect(wrapper.vm.form.visitor_id).toBe(mockVisitor.id);
       expect(wrapper.vm.form.visitor_name).toBe(mockVisitor.name);
       expect(mockSuccessToast).toHaveBeenCalledWith(`Visitante "${mockVisitor.name}" encontrado.`);
@@ -133,7 +133,7 @@ describe('NewAccessRequestPage.vue', () => {
       const calledUrl = api.post.mock.calls[0][0];
       const calledData = api.post.mock.calls[0][1];
 
-      expect(calledUrl).toBe('/api/access-control/access-requests');
+      expect(calledUrl).toBe('/access-control/access-requests');
       expect(calledData.get('visitor_name')).toBe('Teste Visitante');
       expect(calledData.get('visitor_document')).toBe('DOC999');
       expect(calledData.get('resident_id')).toBe(String(mockResidents[0].id));

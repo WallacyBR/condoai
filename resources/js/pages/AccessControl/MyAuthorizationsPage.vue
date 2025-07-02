@@ -3,7 +3,7 @@
     <HeaderCard
       title="Autorizações de Acesso Pendentes"
       description="Visualize e responda às solicitações de acesso de visitantes para sua unidade."
-      icon-path="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+      icon-path="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1 0 21 9z"
       icon-color="blue"
     />
 
@@ -75,7 +75,7 @@ const fetchMyRequests = async () => {
   error.value = '';
   try {
     // A API já filtra por status 'pendente' por padrão para esta rota
-    const response = await api.get('/api/access-control/access-requests/my-requests');
+    const response = await api.get('/access-control/access-requests/my-requests');
     myRequests.value = response.data?.data || [];
   } catch (e) {
     console.error("Erro ao buscar minhas solicitações:", e);

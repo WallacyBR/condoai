@@ -78,7 +78,7 @@ import { ref, onMounted, computed } from 'vue';
 import api from '../../utils/api'; // Supondo que api.js está configurado
 import NeonButton from '../NeonButton.vue';
 import AccessRequestCard from './AccessRequestCard.vue'; // Será criado
-import ConfirmActionModal from '../Modal.vue'; // Usando o Modal genérico para confirmação
+import ConfirmActionModal from '../ConfirmActionModal.vue';
 import RecordEntryModal from './RecordEntryModal.vue'; // Será criado
 import { useToast } from '../../composables/useToast';
 
@@ -106,7 +106,7 @@ const fetchAccessRequests = async () => {
   error.value = '';
   try {
     // Vamos buscar apenas as "ativas" por padrão. Outros filtros podem ser adicionados.
-    const response = await api.get('/api/access-control/access-requests/gatehouse?ativas=true&per_page=50');
+    const response = await api.get('/access-control/access-requests/gatehouse?ativas=true&per_page=50');
     accessRequests.value = response.data?.data || [];
   } catch (e) {
     console.error("Erro ao buscar solicitações de acesso:", e);

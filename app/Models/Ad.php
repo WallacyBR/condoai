@@ -18,6 +18,8 @@ class Ad extends Model
      */
     protected $fillable = [
         'user_id',
+        'resident_id',
+        'condominium_id',
         'title',
         'description',
         'price',
@@ -26,6 +28,8 @@ class Ad extends Model
         'condition',
         'location',
         'contact_info',
+        'contact_phone',
+        'contact_email',
         'status',
         'views_count',
         'reported_count',
@@ -64,5 +68,21 @@ class Ad extends Model
     public function interactions()
     {
         return $this->hasMany(AdInteraction::class);
+    }
+
+    /**
+     * Get the resident that owns the Ad.
+     */
+    public function resident()
+    {
+        return $this->belongsTo(Resident::class);
+    }
+
+    /**
+     * Get the condominium of the Ad.
+     */
+    public function condominium()
+    {
+        return $this->belongsTo(Condominium::class);
     }
 }

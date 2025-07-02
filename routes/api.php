@@ -11,6 +11,8 @@ use App\Http\Controllers\API\ParkingSpotController;
 use App\Http\Controllers\API\VehicleController;
 use App\Http\Controllers\API\CommonAreaController;
 use App\Http\Controllers\API\ProfileController;
+use App\Http\Controllers\API\ProfileManagementController;
+use App\Http\Controllers\API\ProfileAnalyticsDashboardController;
 use App\Http\Controllers\API\ResidentController;
 use App\Http\Controllers\API\TowerController;
 use App\Http\Controllers\API\UserController;
@@ -48,6 +50,9 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('auth/me', 'me');
 });
 
+// Rota para obter condomínio atual (precisa do middleware tenant)
+Route::get('auth/current-condominium', [AuthController::class, 'currentCondominium'])->middleware(['tenant']);
+
 Route::middleware(['auth:api', 'tenant'])->group(function () {
     Route::get('condominiums/{condominium}/stats', [CondominiumController::class, 'stats']);
     Route::apiResource('condominiums', CondominiumController::class);
@@ -58,6 +63,22 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
     Route::apiResource('profiles', ProfileController::class);
     Route::apiResource('modules', ModuleController::class);
     Route::apiResource('users', UserController::class);
+
+    // Profile Management Routes
+    Route::prefix('profile-management')->name('profile-management.')->group(function () {
+        Route::get('data', [ProfileManagementController::class, 'getManagementData'])->name('data');
+        Route::post('profiles', [ProfileManagementController::class, 'createProfile'])->name('createProfile');
+        Route::put('profiles/{profile}', [ProfileManagementController::class, 'updateProfile'])->name('updateProfile');
+        Route::delete('profiles/{profile}', [ProfileManagementController::class, 'deleteProfile'])->name('deleteProfile');
+        Route::post('profiles/{profile}/duplicate', [ProfileManagementController::class, 'duplicateProfile'])->name('duplicateProfile');
+        Route::get('profiles/{profile}/users', [ProfileManagementController::class, 'getProfileUsers'])->name('getProfileUsers');
+        Route::get('privileges-report', [ProfileManagementController::class, 'getPrivilegesReport'])->name('privilegesReport');
+    });
+
+    // Profile Analytics Dashboard Routes
+    Route::prefix('profile-analytics')->name('profile-analytics.')->group(function () {
+        Route::get('dashboard', [ProfileAnalyticsDashboardController::class, 'getDashboardData'])->name('dashboard');
+    });
     Route::apiResource('parking-spots', ParkingSpotController::class);
     Route::apiResource('vehicles', VehicleController::class);
     Route::apiResource('pets', \App\Http\Controllers\API\PetController::class);
@@ -68,6 +89,9 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
     Route::apiResource('notices', \App\Http\Controllers\API\NoticeController::class);
     Route::get('documents', [\App\Http\Controllers\Api\DocumentController::class, 'index'])->name('documents.index');
 
+    // Common Area Bookings Routes
+    Route::get('common-area-bookings', [CommonAreaController::class, 'allBookings']);
+    Route::get('common-area-bookings/{id}', [CommonAreaController::class, 'showBooking']);
     Route::get('common-areas/{common_area}/bookings', [CommonAreaController::class, 'bookings']);
     Route::post('common-areas/{common_area}/bookings', [CommonAreaController::class, 'book']);
     Route::patch('common-areas/{common_area}/bookings/{booking}/cancel', [CommonAreaController::class, 'cancelBooking']);
@@ -147,7 +171,9 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
         Route::apiResource('protective-measures', ProtectiveMeasureController::class);
 
         // Access Requests
+        Route::get('access-requests', [AccessRequestController::class, 'index'])->name('access-requests.index');
         Route::post('access-requests', [AccessRequestController::class, 'store'])->name('access-requests.store');
+        Route::get('access-requests/history', [AccessRequestController::class, 'history'])->name('access-requests.history');
         Route::get('access-requests/gatehouse', [AccessRequestController::class, 'listForGatehouse'])->name('access-requests.listForGatehouse');
         Route::get('access-requests/my-requests', [AccessRequestController::class, 'listMyRequestsAsResident'])->name('access-requests.listMyRequestsAsResident');
         Route::get('access-requests/{access_request}', [AccessRequestController::class, 'show'])->name('access-requests.show');

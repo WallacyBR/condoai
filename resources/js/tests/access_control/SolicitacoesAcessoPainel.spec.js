@@ -55,7 +55,7 @@ describe('SolicitacoesAcessoPainel.vue', () => {
         }
     });
 
-    expect(api.get).toHaveBeenCalledWith('/api/access-control/access-requests/gatehouse?ativas=true&per_page=50');
+    expect(api.get).toHaveBeenCalledWith('/access-control/access-requests/gatehouse?ativas=true&per_page=50');
 
     // Aguardar a resolução da Promise e atualização do DOM
     await wrapper.vm.$nextTick(); // Para Vue 2 ou Options API

@@ -1,6 +1,15 @@
 import axios from 'axios';
 import router from '../router';
-import auth from '../services/auth';
+
+// Lazy import do auth para evitar dependência circular
+let auth = null;
+const getAuth = async () => {
+  if (!auth) {
+    const authModule = await import('../services/auth');
+    auth = authModule.default;
+  }
+  return auth;
+};
 
 export const authHeader = () => {
   const token = localStorage.getItem('token');
@@ -40,14 +49,15 @@ export async function handleApiError(error) {
         console.log('Erro 401 detectado, tentando refresh do token...');
         
         try {
-            const refreshed = await auth.refreshToken();
+            const authInstance = await getAuth();
+            const refreshed = await authInstance.refreshToken();
             if (refreshed) {
                 console.log('Token refreshado, retentando requisição...');
                 return true;
             }
             
             console.log('Falha no refresh, fazendo logout...');
-            await auth.logout();
+            await authInstance.logout();
             return false;
         } finally {
             isHandling401 = false;
@@ -57,7 +67,11 @@ export async function handleApiError(error) {
 }
 
 export async function apiRequest(url, options = {}) {
-    const token = auth.getToken();
+    const authInstance = await getAuth();
+    const token = authInstance.getToken();
+    
+    // Adicionar prefixo /api se não estiver presente
+    const fullUrl = url.startsWith('/api') ? url : `/api${url}`;
     
     const defaultHeaders = {
         'Content-Type': 'application/json',
@@ -69,7 +83,7 @@ export async function apiRequest(url, options = {}) {
     }
 
     try {
-        const response = await fetch(url, {
+        const response = await fetch(fullUrl, {
             ...options,
             headers: {
                 ...defaultHeaders,
@@ -84,12 +98,12 @@ export async function apiRequest(url, options = {}) {
                 if (refreshed) {
                     // Retentar a requisição apenas uma vez após refresh
                     console.log('Retentando requisição após refresh...');
-                    const newToken = auth.getToken();
+                    const newToken = authInstance.getToken();
                     if (newToken) {
                         defaultHeaders['Authorization'] = `Bearer ${newToken}`;
                     }
                     
-                    const retryResponse = await fetch(url, {
+                    const retryResponse = await fetch(fullUrl, {
                         ...options,
                         headers: {
                             ...defaultHeaders,

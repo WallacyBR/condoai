@@ -15,8 +15,22 @@ class AccessRequest extends Model
         'visitor_id',
         'visitor_vehicle_id', // Alterado de veiculo_visitante_id
         'resident_id',        // Alterado de morador_destino_id
-        'request_timestamp',  // Alterado de data_hora_solicitacao
+        'apartment_id',
+        'visitor_name',
+        'visitor_document',
+        'visitor_phone',
+        'visit_date',
+        'visit_time',
+        'duration_hours',
+        'purpose',
         'status',             // Alterado de status_solicitacao
+        'observations',
+        'authorized_by',
+        'authorized_at',
+        'rejection_reason',
+        'entry_time',
+        'exit_time',
+        'request_timestamp',  // Alterado de data_hora_solicitacao
         'resident_observation', // Alterado de observacao_morador
         'gatehouse_observation',// Alterado de observacao_portaria
         'resident_response_timestamp', // Alterado de data_hora_resposta_morador
@@ -27,6 +41,10 @@ class AccessRequest extends Model
     ];
 
     protected $casts = [
+        'visit_date' => 'datetime',
+        'authorized_at' => 'datetime',
+        'entry_time' => 'datetime',
+        'exit_time' => 'datetime',
         'request_timestamp' => 'datetime',
         'resident_response_timestamp' => 'datetime',
         'actual_entry_timestamp' => 'datetime',
@@ -53,7 +71,12 @@ class AccessRequest extends Model
 
     public function resident(): BelongsTo // Alterado de moradorDestino
     {
-        return $this->belongsTo(User::class, 'resident_id'); // Alterado para resident_id
+        return $this->belongsTo(Resident::class, 'resident_id'); // Alterado para resident_id
+    }
+
+    public function apartment(): BelongsTo
+    {
+        return $this->belongsTo(Apartment::class);
     }
 
     public function parkingSpot(): BelongsTo // Alterado de vagaUtilizada

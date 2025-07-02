@@ -29,7 +29,7 @@
           </select>
         </div>
         <div class="flex justify-end space-x-4 pt-4">
-          <NeonButton type="button" @click="cancel" class="bg-gray-600/40 hover:bg-gray-600/60">Cancelar</NeonButton>
+                      <NeonButton type="button" @click="cancel" variant="secondary">Cancelar</NeonButton>
           <NeonButton type="submit">Salvar Vaga</NeonButton>
         </div>
       </form>

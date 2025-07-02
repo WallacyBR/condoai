@@ -337,7 +337,7 @@ export default {
           notes: form.value.notes || null
         };
 
-        const url = isEditing.value ? `/api/vehicles/${route.params.id}` : '/api/vehicles';
+        const url = isEditing.value ? `/vehicles/${route.params.id}` : '/vehicles';
         const method = isEditing.value ? 'PUT' : 'POST';
 
         const response = await fetch(url, {

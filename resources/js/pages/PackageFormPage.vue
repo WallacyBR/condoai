@@ -333,7 +333,7 @@ export default {
         saving.value = true;
         error.value = '';
 
-        const url = id ? `/api/packages/${id}` : '/api/packages';
+        const url = id ? `/packages/${id}` : '/packages';
         const method = id ? 'PUT' : 'POST';
         const condo = localStorage.getItem('selectedCondominium');
         

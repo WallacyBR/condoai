@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('ads', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignIdFor(\App\Models\User::class)->constrained()->onDelete('cascade');
+            $table->foreignId('resident_id')->nullable()->constrained('residents')->onDelete('cascade');
+            $table->foreignId('condominium_id')->constrained('condominiums')->onDelete('cascade');
             $table->string('title');
             $table->text('description')->nullable();
             $table->decimal('price', 10, 2)->nullable();
@@ -22,6 +24,8 @@ return new class extends Migration
             $table->string('condition');
             $table->string('location')->nullable();
             $table->string('contact_info')->nullable();
+            $table->string('contact_phone')->nullable();
+            $table->string('contact_email')->nullable();
             $table->string('status')->default('Ativo'); // Enum: Ativo, Pausado, Vendido, Excluído
             $table->integer('views_count')->default(0);
             $table->integer('reported_count')->default(0);

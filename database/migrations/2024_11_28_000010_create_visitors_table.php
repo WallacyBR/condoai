@@ -13,11 +13,14 @@ return new class extends Migration
     {
         Schema::create('visitors', function (Blueprint $table) { // Tabela 'visitors'
             $table->id();
-            $table->foreignId('condominium_id')->constrained()->onDelete('cascade');
+            $table->foreignId('condominium_id')->constrained('condominiums')->onDelete('cascade');
             $table->string('name'); // Coluna 'name'
             $table->string('document')->unique(); // Coluna 'document'
-            $table->string('photo_url')->nullable();
             $table->string('phone')->nullable();
+            $table->string('email')->nullable();
+            $table->string('visitor_type')->nullable();
+            $table->string('company')->nullable();
+            $table->string('photo_url')->nullable();
             $table->text('observations')->nullable();
             $table->boolean('is_blocked')->default(false); // Coluna 'is_blocked'
             $table->timestamps();

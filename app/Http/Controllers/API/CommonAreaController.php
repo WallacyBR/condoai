@@ -221,6 +221,41 @@ class CommonAreaController extends Controller
             ->get();
     }
 
+    public function allBookings(Request $request)
+    {
+        $condominiumId = $request->get('condominium_id');
+        
+        if (!$condominiumId) {
+            return response()->json(['message' => 'Condominium ID is required'], 400);
+        }
+
+        return \App\Models\CommonAreaBooking::with([
+            'commonArea', 
+            'apartment.tower', 
+            'apartment.block'
+        ])
+        ->whereHas('commonArea', function ($query) use ($condominiumId) {
+            $query->where('condominium_id', $condominiumId);
+        })
+        ->orderBy('start_time', 'desc')
+        ->get();
+    }
+
+    public function showBooking($id)
+    {
+        $booking = \App\Models\CommonAreaBooking::with([
+            'commonArea', 
+            'apartment.tower', 
+            'apartment.block'
+        ])->find($id);
+
+        if (!$booking) {
+            return response()->json(['message' => 'Reserva não encontrada'], 404);
+        }
+
+        return response()->json($booking);
+    }
+
     public function book(Request $request, CommonArea $commonArea)
     {
         $validated = $request->validate([

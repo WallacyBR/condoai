@@ -14,12 +14,14 @@ class ResidentClassificationSeeder extends Seeder
      */
     public function run(): void
     {
-        // Buscar um condomínio existente ou criar um novo
-        $condominium = Condominium::firstOrCreate(
-            ['domain' => 'teste-classificacao.com'],
-            [
+        // Buscar condomínios existentes primeiro
+        $condominiums = Condominium::all();
+        
+        if ($condominiums->isEmpty()) {
+            // Criar condomínio de exemplo apenas se não existir nenhum
+            $condominium = Condominium::create([
                 'name' => 'Condomínio Teste Classificação',
-                'document' => '11.111.111/1111-11',
+                'document' => '88.888.888/8888-88',
                 'address' => 'Rua Teste Classificação, 123',
                 'city' => 'São Paulo',
                 'state' => 'SP',
@@ -28,8 +30,12 @@ class ResidentClassificationSeeder extends Seeder
                 'email' => 'contato@teste-classificacao.com',
                 'responsible' => 'Síndico Teste',
                 'active' => true,
-            ]
-        );
+                'domain' => 'teste-classificacao.com',
+            ]);
+        } else {
+            // Usar o primeiro condomínio existente
+            $condominium = $condominiums->first();
+        }
 
         // Criar moradores com diferentes classificações
         $residents = [
@@ -79,7 +85,10 @@ class ResidentClassificationSeeder extends Seeder
 
         foreach ($residents as $residentData) {
             Resident::firstOrCreate(
-                ['email' => $residentData['email']],
+                [
+                    'email' => $residentData['email'],
+                    'condominium_id' => $condominium->id
+                ],
                 array_merge($residentData, ['condominium_id' => $condominium->id])
             );
         }

@@ -3,7 +3,7 @@
     :type="type"
     :disabled="disabled || loading"
     :class="[
-      'liquid-glass-btn group relative flex justify-center items-center font-medium text-white transition-all duration-300 ease-in-out overflow-hidden',
+      'glass-morphism-btn group relative flex justify-center items-center font-medium text-white transition-all duration-300 ease-in-out overflow-hidden',
       sizeClass,
       variantClass,
       extraClass,
@@ -18,7 +18,8 @@
       </svg>
     </span>
     <slot />
-    <span class="liquid-glass-highlight"></span>
+    <span class="glass-shine"></span>
+    <span class="glass-reflection"></span>
   </button>
 </template>
 
@@ -37,98 +38,233 @@ const props = defineProps({
 const sizeClass = computed(() => {
   switch (props.size) {
     case 'sm':
-      return 'px-3 py-2 text-sm rounded-xl';
+      return 'px-3 py-2 text-sm rounded-lg';
     case 'lg':
-      return 'px-8 py-4 text-lg rounded-3xl';
+      return 'px-8 py-4 text-lg rounded-xl';
     case 'xl':
-      return 'px-10 py-5 text-xl rounded-full';
+      return 'px-10 py-5 text-xl rounded-2xl';
     default:
-      return 'px-4 py-3 text-base rounded-2xl';
+      return 'px-4 py-3 text-base rounded-xl';
   }
 });
 
 const variantClass = computed(() => {
   switch (props.variant) {
     case 'secondary':
-      return 'bg-gray-600/40 hover:bg-gray-600/60';
+      return 'glass-secondary';
     case 'primary-action':
-      return 'bg-gradient-to-r from-indigo-600/60 to-purple-600/60 hover:from-indigo-600/80 hover:to-purple-600/80';
+      return 'glass-primary-action';
     case 'success':
-      return 'bg-gradient-to-r from-green-600/60 to-green-700/60 hover:from-green-600/80 hover:to-green-700/80';
+      return 'glass-success';
     case 'danger':
-      return 'bg-red-600/40 hover:bg-red-600/60';
+      return 'glass-danger';
     case 'info':
-      return 'bg-blue-600/40 hover:bg-blue-600/60';
+      return 'glass-info';
     case 'confirm':
-      return 'bg-gradient-to-r from-emerald-500/50 to-green-600/50 hover:from-emerald-500/70 hover:to-green-600/70 border-emerald-400/30 hover:border-emerald-400/50';
+      return 'glass-confirm';
     case 'cancel':
-      return 'bg-gradient-to-r from-red-500/50 to-rose-600/50 hover:from-red-500/70 hover:to-rose-600/70 border-red-400/30 hover:border-red-400/50';
+      return 'glass-cancel';
+    case 'warning':
+      return 'glass-warning';
     default:
-      return '';
+      return 'glass-primary';
   }
 });
 </script>
 
 <style scoped>
-.liquid-glass-btn {
+.glass-morphism-btn {
   position: relative;
-  background: rgba(255, 255, 255, 0.18);
-  border-radius: 2rem;
-  border: 1.5px solid rgba(255,255,255,0.35);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
   box-shadow:
-    0 8px 32px rgba(31, 38, 135, 0.18),
-    0 1.5px 4px rgba(255,255,255,0.12),
-    inset 0 4px 24px rgba(255,255,255,0.22);
-  backdrop-filter: blur(18px) saturate(200%);
-  -webkit-backdrop-filter: blur(18px) saturate(200%);
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    0 1px 4px rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
   overflow: hidden;
-  transition: 
-    box-shadow 0.3s,
-    border-color 0.3s,
-    backdrop-filter 0.3s,
-    -webkit-backdrop-filter 0.3s,
-    background 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 0.75rem; /* Arredondamento padrão */
 }
-.liquid-glass-btn:focus {
-  outline: 2px solid #22d3ee;
+
+/* Arredondamentos específicos por tamanho */
+.glass-morphism-btn.px-3.py-2 { /* sm */
+  border-radius: 0.5rem;
+}
+
+.glass-morphism-btn.px-4.py-3 { /* md - padrão */
+  border-radius: 0.75rem;
+}
+
+.glass-morphism-btn.px-8.py-4 { /* lg */
+  border-radius: 0.75rem;
+}
+
+.glass-morphism-btn.px-10.py-5 { /* xl */
+  border-radius: 1rem;
+}
+
+.glass-morphism-btn:focus {
+  outline: 2px solid rgba(99, 102, 241, 0.5);
   outline-offset: 2px;
 }
-.liquid-glass-btn:active {
-  box-shadow: 0 2px 8px rgba(31, 38, 135, 0.25);
-}
-.liquid-glass-btn:hover {
-  background: rgba(255,255,255,0.22);
+
+.glass-morphism-btn:active {
+  transform: translateY(1px);
   box-shadow:
-    0 12px 48px rgba(31, 38, 135, 0.28),
-    0 0 0 2px rgba(34, 211, 238, 0.18),
-    0 2px 8px rgba(255,255,255,0.18),
-    inset 0 10px 36px rgba(255,255,255,0.32);
-  border-color: rgba(255,255,255,0.55);
-  backdrop-filter: blur(24px) saturate(240%);
-  -webkit-backdrop-filter: blur(24px) saturate(240%);
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
-.liquid-glass-highlight {
-  content: '';
+
+.glass-morphism-btn:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(20px) saturate(200%);
+  -webkit-backdrop-filter: blur(20px) saturate(200%);
+  box-shadow:
+    0 6px 24px rgba(0, 0, 0, 0.15),
+    0 2px 8px rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Efeito de brilho deslizante */
+.glass-shine {
   position: absolute;
-  top: 0; left: 0; width: 100%; height: 60%;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.2) 45%, 
+    rgba(255, 255, 255, 0.4) 50%, 
+    rgba(255, 255, 255, 0.2) 55%, 
+    transparent 100%);
+  transition: left 0.6s ease;
+  z-index: 2;
+  opacity: 0;
+}
+
+.group:hover .glass-shine {
+  left: 100%;
+  opacity: 1;
+}
+
+/* Reflexão de vidro */
+.glass-reflection {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.06) 50%,
+    transparent 100%);
   border-radius: inherit;
-  background: linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.08) 80%, rgba(255,255,255,0) 100%);
-  opacity: 0.7;
   pointer-events: none;
-  box-shadow:
-    0 1.5px 8px rgba(255,255,255,0.18),
-    inset 0 2px 12px rgba(255,255,255,0.22);
-  filter: blur(0.5px) brightness(1.08);
   z-index: 1;
-  transition: opacity 0.3s, filter 0.3s;
 }
-.group:hover .liquid-glass-highlight {
-  opacity: 0.95;
-  filter: blur(1.5px) brightness(1.18);
+
+/* Variantes de cores */
+.glass-primary {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.3);
 }
+
+.glass-primary:hover {
+  background: rgba(99, 102, 241, 0.2);
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+.glass-secondary {
+  background: rgba(107, 114, 128, 0.15);
+  border-color: rgba(107, 114, 128, 0.3);
+}
+
+.glass-secondary:hover {
+  background: rgba(107, 114, 128, 0.2);
+  border-color: rgba(107, 114, 128, 0.4);
+}
+
+.glass-success {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.glass-success:hover {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.glass-danger {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.glass-danger:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.glass-info {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.glass-info:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+.glass-warning {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.glass-warning:hover {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+.glass-confirm {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.glass-confirm:hover {
+  background: rgba(34, 197, 94, 0.2);
+  border-color: rgba(34, 197, 94, 0.4);
+}
+
+.glass-cancel {
+  background: rgba(248, 113, 113, 0.15);
+  border-color: rgba(248, 113, 113, 0.3);
+}
+
+.glass-cancel:hover {
+  background: rgba(248, 113, 113, 0.2);
+  border-color: rgba(248, 113, 113, 0.4);
+}
+
+.glass-primary-action {
+  background: linear-gradient(135deg, 
+    rgba(99, 102, 241, 0.2) 0%, 
+    rgba(147, 51, 234, 0.2) 100%);
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+.glass-primary-action:hover {
+  background: linear-gradient(135deg, 
+    rgba(99, 102, 241, 0.3) 0%, 
+    rgba(147, 51, 234, 0.3) 100%);
+  border-color: rgba(99, 102, 241, 0.5);
+}
+
 .animate-spin {
   animation: spin 1s linear infinite;
 }
+
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }

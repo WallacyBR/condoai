@@ -124,7 +124,7 @@ import { format, parseISO } from 'date-fns';
 
 const route = useRoute();
 const router = useRouter();
-const { successToast, errorToast } = useToast();
+const { success, error: errorToast } = useToast();
 
 const measureId = route.params.id;
 const isEditing = computed(() => !!measureId);
@@ -155,7 +155,7 @@ const submitting = ref(false);
 const fetchUsers = async () => {
   loadingUsers.value = true;
   try {
-    const response = await api.get('/api/users?profile_type=resident&per_page=1000'); // Ajustar conforme API
+    const response = await api.get('/users?profile_type=resident&per_page=1000'); // Ajustar conforme API
     users.value = response.data.data || response.data;
   } catch (e) {
     errorToast('Erro ao carregar lista de moradores.');
@@ -167,7 +167,7 @@ const fetchUsers = async () => {
 const fetchVisitors = async () => {
   loadingVisitors.value = true;
   try {
-    const response = await api.get('/api/access-control/visitors?per_page=1000'); // Ajustar conforme API
+    const response = await api.get('/access-control/visitors?per_page=1000'); // Ajustar conforme API
     visitors.value = response.data.data || response.data;
   } catch (e) {
     errorToast('Erro ao carregar lista de visitantes.');
@@ -181,7 +181,7 @@ const fetchMeasureDetails = async () => {
   loadingInitialData.value = true;
   initialError.value = '';
   try {
-    const response = await api.get(`/api/access-control/protective-measures/${measureId}`);
+    const response = await api.get(`/access-control/protective-measures/${measureId}`);
     const data = response.data;
     form.protected_resident_id = data.protected_resident_id;
     form.aggressor_visitor_id = data.aggressor_visitor_id;
@@ -204,7 +204,7 @@ const markDocumentForRemoval = () => {
     documentMarkedForRemoval.value = true;
     form.document_url = ''; // Remove a URL para indicar que será removido
     documentFile.value = []; // Limpa qualquer novo arquivo selecionado
-    successToast("Documento existente será removido ao salvar.");
+    success("Documento existente será removido ao salvar.");
 }
 
 const submitProtectiveMeasure = async () => {
@@ -229,8 +229,8 @@ const submitProtectiveMeasure = async () => {
 
 
   const url = isEditing.value
-    ? `/api/access-control/protective-measures/${measureId}`
-    : '/api/access-control/protective-measures';
+    ? `/access-control/protective-measures/${measureId}`
+    : '/access-control/protective-measures';
 
   // Para PUT com FormData, precisa enviar como POST e adicionar _method
   if (isEditing.value) {
@@ -243,7 +243,7 @@ const submitProtectiveMeasure = async () => {
         'Content-Type': 'multipart/form-data'
       }
     });
-    successToast(`Medida protetiva ${isEditing.value ? 'atualizada' : 'registrada'} com sucesso!`);
+    success(`Medida protetiva ${isEditing.value ? 'atualizada' : 'registrada'} com sucesso!`);
     router.push({ name: 'ProtectiveMeasuresList' });
   } catch (e) {
     console.error("Erro ao salvar medida:", e);

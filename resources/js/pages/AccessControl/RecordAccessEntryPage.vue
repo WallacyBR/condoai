@@ -155,7 +155,7 @@ const fetchAvailableParkingSpots = async () => {
   loadingParkingSpots.value = true;
   try {
     // TODO: Ajustar endpoint para buscar apenas vagas DISPONÍVEIS
-    const response = await api.get('/api/parking-spots?per_page=1000'); // Assumindo que lista todas
+    const response = await api.get('/parking-spots?per_page=1000'); // Assumindo que lista todas
     availableParkingSpots.value = response.data.data || response.data;
   } catch (e) {
     console.error("Erro ao buscar vagas:", e);

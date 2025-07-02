@@ -63,7 +63,7 @@ describe('MyAuthorizationsPage.vue', () => {
     api.get.mockResolvedValue({ data: { data: mockPendingRequests } });
     const wrapper = mountPage();
 
-    expect(api.get).toHaveBeenCalledWith('/api/access-control/access-requests/my-requests');
+    expect(api.get).toHaveBeenCalledWith('/access-control/access-requests/my-requests');
     await wrapper.vm.$nextTick(); // Esperar a resolução da promise
     await new Promise(resolve => setTimeout(resolve,0)); // Forçar ciclo de eventos
 

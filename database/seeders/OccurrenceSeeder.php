@@ -22,26 +22,23 @@ class OccurrenceSeeder extends Seeder
      */
     public function run()
     {
-        // Ensure storage/app/public/occurrence_photos exists
+        // Verificar se o diretório de fotos existe
         $photosPath = storage_path('app/public/occurrence_photos');
         if (!File::exists($photosPath)) {
             File::makeDirectory($photosPath, 0755, true);
         }
-        // Placeholder: copy a dummy image if you have one, e.g. from public/images
-        // For now, we'll just use placeholder paths without actual files.
-        // if (!File::exists($photosPath . '/placeholder.jpg')) {
-        //     File::copy(public_path('images/condo_ai_quadrado.png'), $photosPath . '/placeholder.jpg');
-        // }
 
+        // Buscar condomínios e usuários existentes
         $condominiums = Condominium::all();
+        $users = User::whereNotNull('condominium_id')->get();
+
         if ($condominiums->isEmpty()) {
-            $this->command->info('No condominiums found. Skipping OccurrenceSeeder.');
+            $this->command->info('Nenhum condomínio encontrado. Execute o CustomCondominiumResidentsSeeder primeiro.');
             return;
         }
-
-        $users = User::whereNotNull('condominium_id')->get();
+        
         if ($users->isEmpty()) {
-            $this->command->info('No users with condominiums found. Skipping OccurrenceSeeder.');
+            $this->command->info('Nenhum usuário com condomínio encontrado. Execute o TestUserSeeder primeiro.');
             return;
         }
 
@@ -107,45 +104,50 @@ class OccurrenceSeeder extends Seeder
             ],
         ];
 
-        foreach ($sampleOccurrences as $occurrenceData) {
-            $condominium = $condominiums->random();
-            $user = $users->where('condominium_id', $condominium->id)->random();
-
-            if (!$user) { // Fallback if no user for that specific condo
-                $user = $users->random();
+        // Criar ocorrências para cada condomínio
+        foreach ($condominiums as $condominium) {
+            // Buscar usuários deste condomínio
+            $condominiumUsers = $users->where('condominium_id', $condominium->id);
+            
+            if ($condominiumUsers->isEmpty()) {
+                // Se não há usuários específicos do condomínio, usar usuários gerais
+                $condominiumUsers = $users->take(3);
             }
 
-            $occurrence = Occurrence::create([
-                'condominium_id' => $condominium->id,
-                'user_id' => $user->id,
-                'title' => $occurrenceData['title'],
-                'description' => $occurrenceData['description'],
-                'priority' => $occurrenceData['priority'],
-                'status' => $occurrenceData['status'],
-            ]);
+            foreach ($sampleOccurrences as $occurrenceData) {
+                $user = $condominiumUsers->random();
 
-            foreach ($occurrenceData['photos'] as $photoData) {
-                OccurrencePhoto::create([
-                    'occurrence_id' => $occurrence->id,
-                    'photo_path' => $photoData['photo_path'], // Placeholder path
-                    'description' => $photoData['description'],
+                $occurrence = Occurrence::create([
+                    'condominium_id' => $condominium->id,
+                    'user_id' => $user->id,
+                    'title' => $occurrenceData['title'],
+                    'description' => $occurrenceData['description'],
+                    'priority' => $occurrenceData['priority'],
+                    'status' => $occurrenceData['status'],
                 ]);
-            }
 
-            $commentUsers = $users->where('condominium_id', $condominium->id)->count() > 1 ?
-                            $users->where('condominium_id', $condominium->id)->random(min(2, $users->where('condominium_id', $condominium->id)->count())) :
-                            collect([$user]);
+                // Criar fotos da ocorrência (se existirem)
+                foreach ($occurrenceData['photos'] as $photoData) {
+                    OccurrencePhoto::create([
+                        'occurrence_id' => $occurrence->id,
+                        'photo_path' => $photoData['photo_path'],
+                        'description' => $photoData['description'],
+                    ]);
+                }
 
-            foreach ($occurrenceData['comments'] as $index => $commentData) {
-                $commentUser = $commentUsers->get($index % $commentUsers->count()) ?: $user;
-                OccurrenceComment::create([
-                    'occurrence_id' => $occurrence->id,
-                    'user_id' => $commentUser->id,
-                    'comment' => $commentData['comment'],
-                ]);
+                // Criar comentários da ocorrência
+                foreach ($occurrenceData['comments'] as $index => $commentData) {
+                    $commentUser = $condominiumUsers->skip($index)->first() ?? $user;
+                    
+                    OccurrenceComment::create([
+                        'occurrence_id' => $occurrence->id,
+                        'user_id' => $commentUser->id,
+                        'comment' => $commentData['comment'],
+                    ]);
+                }
             }
         }
 
-        $this->command->info('OccurrenceSeeder run successfully.');
+        $this->command->info('Ocorrências criadas com sucesso para ' . $condominiums->count() . ' condomínio(s)!');
     }
 }

@@ -146,11 +146,17 @@ const routes = [
     component: () => import('../pages/PackageDeliveryPage.vue'),
     meta: { requiresAuth: true, requiresCondo: true }
   },
+  // Rotas de Áreas Comuns
+  {
+    path: '/areas',
+    name: 'areas',
+    component: () => import('../pages/AreasPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  // Redirecionamento para compatibilidade com rota antiga
   {
     path: '/common-areas',
-    name: 'common-areas',
-    component: () => import('../components/CommonAreasView.vue'),
-    meta: { requiresAuth: true, requiresCondo: true }
+    redirect: '/areas'
   },
   {
     path: '/common-areas/new',
@@ -162,6 +168,37 @@ const routes = [
     path: '/common-areas/:id/edit',
     name: 'common-areas.edit',
     component: () => import('../pages/CommonAreaFormPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  // Rotas de Reservas
+  {
+    path: '/bookings',
+    name: 'bookings',
+    component: () => import('../pages/BookingsPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/bookings/new',
+    name: 'bookings.new',
+    component: () => import('../pages/BookingFormPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/bookings/:id/edit',
+    name: 'bookings.edit',
+    component: () => import('../pages/BookingFormPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/bookings/:id',
+    name: 'bookings.show',
+    component: () => import('../pages/BookingDetailPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/common-areas/:id/bookings',
+    name: 'common-areas.bookings',
+    component: () => import('../pages/AreaBookingsPage.vue'),
     meta: { requiresAuth: true, requiresCondo: true }
   },
   {
@@ -179,7 +216,25 @@ const routes = [
   {
     path: '/perfis',
     name: 'profiles',
-    component: () => import('../components/ProfilesView.vue'),
+    component: () => import('../pages/ProfileManagementPage.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/perfis/dashboard',
+    name: 'profiles.dashboard',
+    component: () => import('../pages/ProfileAnalyticsDashboardPage.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/perfis/novo',
+    name: 'profiles.create',
+    component: () => import('../pages/ProfileFormPage.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/perfis/:id/editar',
+    name: 'profiles.edit',
+    component: () => import('../pages/ProfileFormPage.vue'),
     meta: { requiresAuth: true }
   },
   // Rotas para Avisos
@@ -385,7 +440,14 @@ const routes = [
   {
     path: '/access-control/new-request',
     name: 'NewAccessRequest',
-    component: () => import('../pages/AccessControl/NewAccessRequestPage.vue'), // Será criado
+    component: () => import('../pages/AccessControl/NewAccessRequestPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  // Rota alternativa para compatibilidade
+  {
+    path: '/access-requests/create',
+    name: 'AccessRequestsCreate',
+    component: () => import('../pages/AccessControl/NewAccessRequestPage.vue'),
     meta: { requiresAuth: true, requiresCondo: true }
   },
   {
@@ -393,6 +455,13 @@ const routes = [
     name: 'RecordAccessEntry',
     component: () => import('../pages/AccessControl/RecordAccessEntryPage.vue'), // Será criado
     props: true,
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  // Rota alternativa para compatibilidade
+  {
+    path: '/access-requests/create',
+    name: 'AccessRequestsCreate',
+    component: () => import('../pages/AccessControl/NewAccessRequestPage.vue'),
     meta: { requiresAuth: true, requiresCondo: true }
   },
    {
@@ -429,6 +498,20 @@ const routes = [
     component: () => import('../pages/AccessControl/MyAuthorizationsPage.vue'), // Será criado
     meta: { requiresAuth: true, requiresCondo: true } // Morador precisa de condomínio selecionado
   },
+  // Access Request History Page
+  {
+    path: '/access-requests/history',
+    name: 'AccessRequestHistory',
+    component: () => import('../pages/AccessControl/AccessRequestHistoryPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  // Authorized Visitors Page
+  {
+    path: '/visitors/authorized',
+    name: 'AuthorizedVisitors',
+    component: () => import('../pages/AccessControl/AuthorizedVisitorsPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
 ];
 
 const router = createRouter({
@@ -437,9 +520,9 @@ const router = createRouter({
 });
 
 // Navigation Guard
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const isAuthenticated = !!localStorage.getItem('token');
-  const hasCondo = !!localStorage.getItem('selectedCondominium');
+  let hasCondo = !!localStorage.getItem('selectedCondominium');
 
   console.log('=== Navigation Guard Debug ===');
   console.log('De:', from.path);
@@ -453,9 +536,28 @@ router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth && !isAuthenticated) {
     console.log('Redirecionando para login - não autenticado');
     next('/login');
+    return;
   } 
+
+  // Se está autenticado mas não tem condomínio, tentar buscar do backend
+  if (isAuthenticated && !hasCondo && to.path !== '/login') {
+    console.log('Usuário autenticado sem condomínio, buscando do backend...');
+    try {
+      // Importar dinamicamente o serviço de auth para evitar dependência circular
+      const authModule = await import('../services/auth');
+      const auth = authModule.default;
+      const condominium = await auth.fetchCurrentCondominium();
+      if (condominium) {
+        hasCondo = true;
+        console.log('Condomínio obtido do backend:', condominium.name);
+      }
+    } catch (error) {
+      console.error('Erro ao buscar condomínio do backend:', error);
+    }
+  }
+  
   // Se está na página de login e já está autenticado
-  else if (to.path === '/login' && isAuthenticated) {
+  if (to.path === '/login' && isAuthenticated) {
     console.log('Já autenticado, redirecionando...');
     next(hasCondo ? '/dashboard' : '/condominium-select');
   } 

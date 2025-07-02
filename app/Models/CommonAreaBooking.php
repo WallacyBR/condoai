@@ -12,17 +12,39 @@ class CommonAreaBooking extends Model
     protected $fillable = [
         'common_area_id',
         'apartment_id',
+        'resident_id',
+        'condominium_id',
+        'booking_date',
         'start_time',
         'end_time',
-        'booking_type',
+        'duration_hours',
+        'purpose',
+        'guest_count',
+        'total_amount',
+        'payment_status',
         'status',
-        'total_price',
+        'special_requirements',
+        'cleaning_fee',
+        'deposit_amount',
+        'booking_rules_accepted',
+        'confirmation_date',
+        'cancellation_reason',
+        'cancelled_at',
+        'booking_type',
+        'total_price', // Mantido para compatibilidade
         'notes',
     ];
 
     protected $casts = [
+        'booking_date' => 'date',
         'start_time' => 'datetime',
         'end_time' => 'datetime',
+        'total_amount' => 'decimal:2',
+        'cleaning_fee' => 'decimal:2',
+        'deposit_amount' => 'decimal:2',
+        'booking_rules_accepted' => 'boolean',
+        'confirmation_date' => 'datetime',
+        'cancelled_at' => 'datetime',
         'total_price' => 'decimal:2',
     ];
 
@@ -47,6 +69,16 @@ class CommonAreaBooking extends Model
     public function apartment()
     {
         return $this->belongsTo(Apartment::class);
+    }
+
+    public function resident()
+    {
+        return $this->belongsTo(Resident::class);
+    }
+
+    public function condominium()
+    {
+        return $this->belongsTo(Condominium::class);
     }
 
     // Obter nome do tipo de reserva

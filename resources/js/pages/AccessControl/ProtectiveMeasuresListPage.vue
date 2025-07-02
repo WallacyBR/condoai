@@ -83,12 +83,12 @@ import AuthenticatedLayout from '../../components/layouts/AuthenticatedLayout.vu
 import HeaderCard from '../../components/layouts/HeaderCard.vue';
 import NeonButton from '../../components/NeonButton.vue';
 import ProtectiveMeasureCard from '../../components/access_control/ProtectiveMeasureCard.vue'; // Será criado
-import ConfirmActionModal from '../../components/Modal.vue';
+import ConfirmActionModal from '../../components/ConfirmActionModal.vue';
 import api from '../../utils/api';
 import { useToast } from '../../composables/useToast';
 
 const router = useRouter();
-const { successToast, errorToast } = useToast();
+const { success, error: errorToast } = useToast();
 
 const measures = ref([]);
 const loading = ref(false);
@@ -106,7 +106,7 @@ const fetchProtectiveMeasures = async () => {
   loading.value = true;
   error.value = '';
   try {
-    const response = await api.get('/api/access-control/protective-measures');
+    const response = await api.get('/access-control/protective-measures');
     measures.value = response.data || [];
   } catch (e) {
     console.error("Erro ao buscar medidas protetivas:", e);
@@ -136,8 +136,8 @@ const confirmToggleStatus = async () => {
   try {
     const measure = selectedMeasureForStatusToggle.value;
     const newStatus = !measure.is_active;
-    await api.put(`/api/access-control/protective-measures/${measure.id}`, { is_active: newStatus });
-    successToast(`Medida protetiva ${newStatus ? 'ativada' : 'desativada'} com sucesso!`);
+    await api.put(`/access-control/protective-measures/${measure.id}`, { is_active: newStatus });
+    success(`Medida protetiva ${newStatus ? 'ativada' : 'desativada'} com sucesso!`);
     fetchProtectiveMeasures();
   } catch (e) {
     console.error('Erro ao alterar status da medida:', e);
@@ -158,8 +158,8 @@ const confirmDelete = async () => {
   if (!selectedMeasureForDelete.value) return;
   deletingMeasure.value = true;
   try {
-    await api.delete(`/api/access-control/protective-measures/${selectedMeasureForDelete.value.id}`);
-    successToast('Medida protetiva excluída com sucesso!');
+    await api.delete(`/access-control/protective-measures/${selectedMeasureForDelete.value.id}`);
+    success('Medida protetiva excluída com sucesso!');
     fetchProtectiveMeasures();
   } catch (e) {
     console.error('Erro ao excluir medida:', e);

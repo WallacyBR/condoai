@@ -14,8 +14,11 @@ class Visitor extends Model
     protected $fillable = [
         'name',
         'document',
-        'photo_url',
         'phone',
+        'email',
+        'visitor_type',
+        'company',
+        'photo_url',
         'observations',
         'is_blocked', // Alterado de 'bloqueado'
         'condominium_id',

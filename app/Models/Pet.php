@@ -13,12 +13,29 @@ class Pet extends Model
         'name',
         'species',
         'breed',
+        'age',
+        'weight',
+        'color',
+        'is_vaccinated',
+        'observations',
         'photo',
         'apartment_id',
+        'resident_id',
+        'condominium_id',
     ];
 
     public function apartment()
     {
         return $this->belongsTo(Apartment::class);
+    }
+
+    public function resident()
+    {
+        return $this->belongsTo(Resident::class);
+    }
+
+    public function condominium()
+    {
+        return $this->belongsTo(Condominium::class);
     }
 }

@@ -168,13 +168,13 @@
 
           <!-- Ações -->
           <div class="flex space-x-2">
-            <NeonButton @click="viewResidents(unit)" size="sm" class="flex-1 bg-green-600/40 hover:bg-green-600/60">
+            <NeonButton @click="viewResidents(unit)" size="sm" variant="success" class="flex-1">
               <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a1.5 1.5 0 01-3 0 1.5 1.5 0 013 0z" />
               </svg>
               Moradores
             </NeonButton>
-            <NeonButton @click="viewVehicles(unit)" size="sm" class="flex-1 bg-purple-600/40 hover:bg-purple-600/60">
+            <NeonButton @click="viewVehicles(unit)" size="sm" variant="info" class="flex-1">
               <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-3 3m0 0l-3-3m3 3V8a2 2 0 00-2-2H9m11 11H9m0 0V6a2 2 0 012-2h5a2 2 0 012 2v3" />
               </svg>
@@ -284,7 +284,7 @@ export default {
         const token = localStorage.getItem('token');
         
         // Carregar unidades
-        const url = buildUrlWithCondominiumFilter('/api/apartments');
+        const url = buildUrlWithCondominiumFilter('/apartments');
         const response = await fetch(url, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -307,7 +307,7 @@ export default {
           }
 
           // Carregar torres
-          const towersUrl = buildUrlWithCondominiumFilter('/api/towers');
+          const towersUrl = buildUrlWithCondominiumFilter('/towers');
           const towersResponse = await fetch(towersUrl, {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -321,7 +321,7 @@ export default {
           }
 
           // Carregar blocos
-          const blocksUrl = buildUrlWithCondominiumFilter('/api/blocks');
+          const blocksUrl = buildUrlWithCondominiumFilter('/blocks');
           const blocksResponse = await fetch(blocksUrl, {
             headers: {
               Authorization: `Bearer ${token}`,

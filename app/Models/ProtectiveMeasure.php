@@ -5,21 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\SoftDeletes; // Adicionado
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProtectiveMeasure extends Model
 {
-    use HasFactory, SoftDeletes; // Adicionado SoftDeletes
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'protected_resident_id', // Alterado de morador_protegido_id
-        'aggressor_visitor_id',  // Alterado de visitante_agressor_id
-        'process_number',        // Alterado de numero_processo
-        'measure_description',   // Alterado de descricao_medida
+        'protected_resident_id',
+        'aggressor_visitor_id',
+        'process_number',
+        'measure_description',
         'document_url',
-        'validity_start_date',   // Alterado de data_inicio_validade
-        'validity_end_date',     // Alterado de data_fim_validade
-        'is_active',             // Alterado de ativa
+        'validity_start_date',
+        'validity_end_date',
+        'is_active',
         'condominium_id',
     ];
 
@@ -37,18 +37,27 @@ class ProtectiveMeasure extends Model
         return $query->where('condominium_id', $condominiumId);
     }
 
-    public function protectedResident(): BelongsTo // Alterado de moradorProtegido
+    /**
+     * Relacionamento com o morador protegido
+     */
+    public function protectedResident(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'protected_resident_id'); // Alterado para protected_resident_id
+        return $this->belongsTo(User::class, 'protected_resident_id');
     }
 
-    public function aggressorVisitor(): BelongsTo // Alterado de visitanteAgressor
+    /**
+     * Relacionamento com o visitante agressor
+     */
+    public function aggressorVisitor(): BelongsTo
     {
-        return $this->belongsTo(Visitor::class, 'aggressor_visitor_id'); // Alterado para aggressor_visitor_id e Visitor
+        return $this->belongsTo(Visitor::class, 'aggressor_visitor_id');
     }
 
-    public function condominium()
+    /**
+     * Relacionamento com o condomínio
+     */
+    public function condominiumRelation(): BelongsTo
     {
-        return $this->belongsTo(Condominium::class);
+        return $this->belongsTo(Condominium::class, 'condominium_id');
     }
 }

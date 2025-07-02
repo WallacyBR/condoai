@@ -13,6 +13,22 @@ class Package extends Model
 
     protected $fillable = [
         'apartment_id',
+        'resident_id',
+        'condominium_id',
+        'recipient_name',
+        'recipient_apartment',
+        'recipient_phone',
+        'sender',
+        'description',
+        'size',
+        'weight',
+        'tracking_code',
+        'arrived_at',
+        'delivered_at',
+        'delivered_to',
+        'is_delivered',
+        'notes',
+        'received_by',
         'photo',
         'pickup_location',
         'observation',
@@ -24,7 +40,11 @@ class Package extends Model
     ];
 
     protected $casts = [
+        'arrived_at' => 'datetime',
+        'delivered_at' => 'datetime',
         'retrieved_at' => 'datetime',
+        'is_delivered' => 'boolean',
+        'weight' => 'decimal:2',
     ];
 
     protected static function booted()
@@ -44,5 +64,15 @@ class Package extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function resident()
+    {
+        return $this->belongsTo(Resident::class);
+    }
+
+    public function condominium()
+    {
+        return $this->belongsTo(Condominium::class);
     }
 }

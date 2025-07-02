@@ -4,7 +4,7 @@
       <TopCard title="Correspondências" :icon="PackageIcon">
         <template #actions>
           <div class="flex space-x-2">
-            <NeonButton @click="navigateToDelivery" size="md" class="bg-cyan-600/40 hover:bg-cyan-600/60">
+            <NeonButton @click="navigateToDelivery" size="md" variant="info">
               <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2M8 7h8M9 12h6" />
               </svg>
@@ -290,19 +290,19 @@
 
           <!-- Ações -->
           <div class="flex space-x-2">
-            <NeonButton @click="openInfo(pkg)" size="sm" class="flex-1 bg-blue-600/40 hover:bg-blue-600/60">
+            <NeonButton @click="openInfo(pkg)" size="sm" variant="info" class="flex-1">
               <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               Info
             </NeonButton>
-            <NeonButton @click="editPackage(pkg)" size="sm" class="flex-1 bg-indigo-600/40 hover:bg-indigo-600/60">
+            <NeonButton @click="editPackage(pkg)" size="sm" variant="info" class="flex-1">
               <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
               Editar
             </NeonButton>
-            <NeonButton @click="showDeleteConfirmation(pkg)" size="sm" class="flex-1 bg-red-600/40 hover:bg-red-600/60">
+            <NeonButton @click="showDeleteConfirmation(pkg)" size="sm" variant="danger" class="flex-1">
               <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
@@ -493,7 +493,7 @@ export default {
     };
 
     const buildUrl = () => {
-      let url = '/api/packages';
+      let url = '/packages';
       const params = [];
       const condo = localStorage.getItem('selectedCondominium');
       if (condo) params.push('condominium_id=' + condo);

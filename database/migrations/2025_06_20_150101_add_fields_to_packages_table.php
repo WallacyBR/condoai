@@ -9,9 +9,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('packages', function (Blueprint $table) {
-            $table->string('pickup_location')->after('photo');
+            $table->string('pickup_location')->nullable()->after('photo');
             $table->text('observation')->nullable()->after('pickup_location');
-            $table->foreignId('user_id')->constrained('users')->after('apartment_id');
+            $table->foreignId('user_id')->nullable()->constrained('users')->after('apartment_id');
             $table->string('signature')->nullable()->after('retrieved_at');
             $table->string('document_photo')->nullable()->after('signature');
         });

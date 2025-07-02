@@ -50,7 +50,7 @@
       </div>
       <div class="flex justify-end pt-4 space-x-2">
         <NeonButton type="submit">Salvar</NeonButton>
-        <NeonButton type="button" @click="close" extraClass="bg-red-600/40">Cancelar</NeonButton>
+                    <NeonButton type="button" @click="close" variant="cancel">Cancelar</NeonButton>
       </div>
     </form>
   </Modal>
@@ -91,7 +91,7 @@ const title = computed(() => props.condominium ? 'Editar Condomínio' : 'Novo Co
 
 const submit = async () => {
   const token = localStorage.getItem('token');
-  const url = props.condominium ? `/api/condominiums/${props.condominium.id}` : '/api/condominiums';
+      const url = props.condominium ? `/condominiums/${props.condominium.id}` : '/condominiums';
   const method = props.condominium ? 'PUT' : 'POST';
   const response = await fetch(url, {
     method,

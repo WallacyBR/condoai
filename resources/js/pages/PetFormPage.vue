@@ -496,7 +496,7 @@ export default {
           formData.append('photo_url', form.value.photo_url);
         }
 
-        const url = isEditing.value ? `/api/pets/${route.params.id}` : '/api/pets';
+        const url = isEditing.value ? `/pets/${route.params.id}` : '/pets';
         const method = isEditing.value ? 'PUT' : 'POST';
 
         // For PUT requests, append _method field

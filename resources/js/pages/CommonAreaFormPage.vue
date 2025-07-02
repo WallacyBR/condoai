@@ -1044,7 +1044,7 @@ export default {
         }
 
         // Redirecionar para a lista de áreas comuns
-        router.push({ name: 'common-areas' });
+        router.push({ name: 'areas' });
       } catch (error) {
         console.error('Erro ao salvar área comum:', error);
         errors.value = { general: 'Erro de conexão. Tente novamente.' };
@@ -1054,7 +1054,7 @@ export default {
     };
 
     const goBack = () => {
-      router.push({ name: 'common-areas' });
+      router.push({ name: 'areas' });
     };
 
     // Carregar dados ao montar o componente

@@ -2,7 +2,7 @@
   <AuthenticatedLayout>
     <OccurrenceView />
   </AuthenticatedLayout>
-</template
+</template>
 
 <script setup>
 import AuthenticatedLayout from '../../components/layouts/AuthenticatedLayout.vue';

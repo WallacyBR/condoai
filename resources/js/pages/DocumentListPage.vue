@@ -143,7 +143,7 @@ async function fetchDocuments(page = 1) {
     }
 
     // const response = await documentService.getDocuments(params);
-    const response = await api.get('/api/documents', { params });
+    const response = await api.get('/documents', { params });
     documents.value = response.data.data;
     pagination.value = response.data;
   } catch (err) {

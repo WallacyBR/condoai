@@ -73,9 +73,20 @@ class AuthController extends Controller
             ]);
         }
 
+        // Obter informações do condomínio atual
+        $currentCondominium = null;
+        if (app()->bound('currentCondominium')) {
+            $currentCondominium = app('currentCondominium');
+        }
+
         return response()->json([
             'status' => 'success',
             'user' => $user,
+            'current_condominium' => $currentCondominium ? [
+                'id' => $currentCondominium->id,
+                'name' => $currentCondominium->name,
+                'domain' => $currentCondominium->domain,
+            ] : null,
             'authorization' => [
                 'token' => $token,
                 'type' => 'bearer',
@@ -110,5 +121,28 @@ class AuthController extends Controller
     public function me()
     {
         return response()->json(Auth::guard('api')->user()->load('profile.modules'));
+    }
+
+    /**
+     * Retorna o condomínio atual definido pelo middleware
+     */
+    public function currentCondominium()
+    {
+        if (!app()->bound('currentCondominium')) {
+            return response()->json([
+                'current_condominium' => null,
+                'message' => 'Nenhum condomínio definido no contexto atual'
+            ]);
+        }
+
+        $condominium = app('currentCondominium');
+        
+        return response()->json([
+            'current_condominium' => [
+                'id' => $condominium->id,
+                'name' => $condominium->name,
+                'domain' => $condominium->domain,
+            ]
+        ]);
     }
 }

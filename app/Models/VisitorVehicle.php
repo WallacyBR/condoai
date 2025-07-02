@@ -14,9 +14,11 @@ class VisitorVehicle extends Model
 
     protected $fillable = [
         'visitor_id',
-        'plate',
+        'brand',
         'model',
         'color',
+        'license_plate',
+        'plate', // Mantido para compatibilidade
         'condominium_id',
     ];
 

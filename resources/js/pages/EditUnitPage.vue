@@ -15,7 +15,7 @@
 
       <!-- Botão Voltar -->
       <div class="flex items-center space-x-4">
-        <NeonButton @click="goBack" size="sm" class="bg-gray-600/40 hover:bg-gray-600/60">
+        <NeonButton @click="goBack" size="sm" variant="secondary">
           <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
@@ -89,7 +89,7 @@
               type="button"
               @click="goBack"
               size="md"
-              class="bg-gray-600/40 hover:bg-gray-600/60"
+              variant="secondary"
             >
               Cancelar
             </NeonButton>
@@ -97,7 +97,7 @@
               type="submit"
               size="md"
               :disabled="loading"
-              class="bg-indigo-600/40 hover:bg-indigo-600/60"
+              variant="success"
             >
               <svg v-if="loading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

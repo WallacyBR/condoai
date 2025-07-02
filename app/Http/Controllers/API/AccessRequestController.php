@@ -5,8 +5,23 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+/**
+ * @group Controle de Acessos
+ *
+ * Endpoints para gerenciar solicitações de acesso de visitantes.
+ */
 class AccessRequestController extends Controller
 {
+    /**
+     * Listar solicitações de acesso.
+     *
+     * Retorna uma lista filtrável de solicitações cadastradas.
+     *
+     * @queryParam status string Filtra por status. Example: authorized
+     * @queryParam exclude_status string Exclui determinado status. Example: cancelled
+     *
+     * @responseFile status=200 storage/responses/accessrequests.index.json
+     */
     public function index(Request $request)
     {
         // Retornar dados fictícios para evitar páginas em branco
@@ -77,6 +92,15 @@ class AccessRequestController extends Controller
         ]);
     }
 
+    /**
+     * Criar uma nova solicitação de acesso.
+     *
+     * @bodyParam visitor_id int ID do visitante. Example: 1
+     * @bodyParam resident_id int ID do morador responsável. Example: 2
+     * @bodyParam has_vehicle boolean Indica se há veículo. Example: true
+     *
+     * @responseFile status=201 storage/responses/accessrequests.store.json
+     */
     public function store(Request $request)
     {
         return response()->json([
@@ -84,6 +108,13 @@ class AccessRequestController extends Controller
         ], 501);
     }
 
+    /**
+     * Listagem para portaria.
+     *
+     * Retorna todas as solicitações do condomínio para uso na guarita.
+     *
+     * @responseFile status=200 storage/responses/accessrequests.index.json
+     */
     public function listForGatehouse(Request $request)
     {
         return response()->json([
@@ -92,6 +123,13 @@ class AccessRequestController extends Controller
         ]);
     }
 
+    /**
+     * Solicitações do morador autenticado.
+     *
+     * Lista apenas as solicitações pendentes do usuário.
+     *
+     * @responseFile status=200 storage/responses/accessrequests.index.json
+     */
     public function listMyRequestsAsResident(Request $request)
     {
         // Dados fictícios para "Minhas Autorizações"
@@ -118,6 +156,13 @@ class AccessRequestController extends Controller
         ]);
     }
 
+    /**
+     * Detalhes de uma solicitação.
+     *
+     * @urlParam id int ID da solicitação. Example: 1
+     *
+     * @responseFile status=200 storage/responses/accessrequests.show.json
+     */
     public function show($id)
     {
         return response()->json([
@@ -125,6 +170,15 @@ class AccessRequestController extends Controller
         ], 501);
     }
 
+    /**
+     * Responder a uma solicitação.
+     *
+     * @urlParam id int ID da solicitação. Example: 1
+     * @bodyParam response string required Resposta do morador (authorized ou unauthorized). Example: authorized
+     * @bodyParam resident_observation string Observação opcional. Example: "Pode subir"
+     *
+     * @responseFile status=200 storage/responses/accessrequests.respond.json
+     */
     public function respondToRequest(Request $request, $id)
     {
         return response()->json([
@@ -132,6 +186,15 @@ class AccessRequestController extends Controller
         ], 501);
     }
 
+    /**
+     * Registrar entrada do visitante.
+     *
+     * @urlParam id int ID da solicitação. Example: 1
+     * @bodyParam parking_spot_id int ID da vaga utilizada. Example: 5
+     * @bodyParam gatehouse_entry_observation string Observação da portaria. Example: "Entrada confirmada"
+     *
+     * @responseFile status=200 storage/responses/accessrequests.recordentry.json
+     */
     public function recordEntry(Request $request, $id)
     {
         return response()->json([
@@ -139,6 +202,14 @@ class AccessRequestController extends Controller
         ], 501);
     }
 
+    /**
+     * Registrar saída do visitante.
+     *
+     * @urlParam id int ID da solicitação. Example: 1
+     * @bodyParam gatehouse_exit_observation string Observação da portaria. Example: "Saída registrada"
+     *
+     * @responseFile status=200 storage/responses/accessrequests.recordexit.json
+     */
     public function recordExit(Request $request, $id)
     {
         return response()->json([
@@ -146,6 +217,14 @@ class AccessRequestController extends Controller
         ], 501);
     }
 
+    /**
+     * Cancelar uma solicitação.
+     *
+     * @urlParam id int ID da solicitação. Example: 1
+     * @bodyParam cancellation_observation string Motivo do cancelamento. Example: "Visitante não compareceu"
+     *
+     * @responseFile status=200 storage/responses/accessrequests.cancel.json
+     */
     public function cancelRequest(Request $request, $id)
     {
         return response()->json([
@@ -153,6 +232,17 @@ class AccessRequestController extends Controller
         ], 501);
     }
 
+    /**
+     * Histórico de solicitações.
+     *
+     * Permite filtrar por status e consultar de forma paginada.
+     *
+     * @queryParam status string Filtrar por status específico. Example: authorized
+     * @queryParam page int Página desejada. Example: 1
+     * @queryParam per_page int Itens por página. Example: 15
+     *
+     * @responseFile status=200 storage/responses/accessrequests.history.json
+     */
     public function history(Request $request)
     {
         // Dados fictícios para histórico com paginação

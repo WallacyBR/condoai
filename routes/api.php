@@ -1,35 +1,34 @@
 <?php
 
+use App\Http\Controllers\API\AccessRequestController;
 use App\Http\Controllers\API\ApartmentController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\BlockController;
+use App\Http\Controllers\API\CommonAreaController;
 use App\Http\Controllers\API\CondominiumController;
-use App\Http\Controllers\API\HealthController;
 use App\Http\Controllers\API\ImageUploadController;
 use App\Http\Controllers\API\ModuleController;
+use App\Http\Controllers\Api\OccurrenceController;
 use App\Http\Controllers\API\ParkingSpotController;
-use App\Http\Controllers\API\VehicleController;
-use App\Http\Controllers\API\CommonAreaController;
+use App\Http\Controllers\API\ProfileAnalyticsDashboardController;
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\ProfileManagementController;
-use App\Http\Controllers\API\ProfileAnalyticsDashboardController;
+use App\Http\Controllers\API\ProtectiveMeasureController;
 use App\Http\Controllers\API\ResidentController;
 use App\Http\Controllers\API\TowerController;
 use App\Http\Controllers\API\UserController;
-use App\Http\Controllers\Api\OccurrenceController;
+use App\Http\Controllers\API\VehicleController;
 use App\Http\Controllers\API\VisitorController;
 use App\Http\Controllers\API\VisitorVehicleController;
-use App\Http\Controllers\API\ProtectiveMeasureController;
-use App\Http\Controllers\API\AccessRequestController;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 // Health check endpoint
 Route::get('/health', function () {
     return response()->json([
         'status' => 'ok',
         'timestamp' => now()->toISOString(),
-        'version' => '1.0.0'
+        'version' => '1.0.0',
     ]);
 });
 
@@ -38,7 +37,7 @@ Route::post('test-upload', function (Request $request) {
     return response()->json([
         'success' => true,
         'message' => 'Rota de teste funcionando',
-        'data' => $request->all()
+        'data' => $request->all(),
     ]);
 });
 
@@ -86,7 +85,7 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
     Route::apiResource('packages', \App\Http\Controllers\API\PackageController::class);
 
     // Notice and Document Routes
-    Route::apiResource('notices', \App\Http\Controllers\API\NoticeController::class);
+    Route::apiResource('notices', \App\Http\Controllers\Api\NoticeController::class);
     Route::get('documents', [\App\Http\Controllers\Api\DocumentController::class, 'index'])->name('documents.index');
 
     // Common Area Bookings Routes
@@ -181,6 +180,23 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
         Route::post('access-requests/{access_request}/record-entry', [AccessRequestController::class, 'recordEntry'])->name('access-requests.recordEntry');
         Route::post('access-requests/{access_request}/record-exit', [AccessRequestController::class, 'recordExit'])->name('access-requests.recordExit');
         Route::post('access-requests/{access_request}/cancel', [AccessRequestController::class, 'cancelRequest'])->name('access-requests.cancel');
+    });
+
+    // Finance Module Routes
+    Route::prefix('finance')->name('finance.')->group(function () {
+        Route::apiResource('banks', \App\Http\Controllers\API\BankController::class);
+        Route::apiResource('chart-accounts', \App\Http\Controllers\API\ChartAccountController::class);
+        Route::apiResource('transactions', \App\Http\Controllers\API\TransactionController::class);
+        Route::apiResource('payables', \App\Http\Controllers\API\PayableController::class);
+        Route::apiResource('receivables', \App\Http\Controllers\API\ReceivableController::class);
+        Route::apiResource('cash-flows', \App\Http\Controllers\API\CashFlowController::class);
+
+        Route::post('bank-statements/upload', [\App\Http\Controllers\API\BankStatementController::class, 'upload']);
+        Route::post('accounts/reconcile', [\App\Http\Controllers\API\AccountReconciliationController::class, 'reconcile']);
+        Route::get('accounts/history', [\App\Http\Controllers\API\AccountReconciliationController::class, 'history']);
+        Route::apiResource('expense-requests', \App\Http\Controllers\API\ExpenseRequestController::class)->only(['index', 'store']);
+        Route::post('expense-requests/{expense_request}/approve', [\App\Http\Controllers\API\ExpenseRequestController::class, 'approve']);
+        Route::get('dashboard/forecast', [\App\Http\Controllers\API\FinanceDashboardController::class, 'forecast']);
     });
 });
 

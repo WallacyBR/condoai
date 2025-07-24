@@ -50,6 +50,13 @@ class DatabaseSeeder extends Seeder
             // 9. Dados financeiros iniciais
             ChartAccountSeeder::class,
             TransactionSeeder::class,
+
+            // 10. Novas tabelas financeiras
+            BankSeeder::class,
+            PayableSeeder::class,
+            ReceivableSeeder::class,
+            ExpenseRequestSeeder::class,
+            CashFlowSeeder::class,
         ]);
     }
 }

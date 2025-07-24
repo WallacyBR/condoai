@@ -525,6 +525,29 @@ export default {
               </svg>`
       },
       {
+        name: 'Financeiro',
+        path: '/finance',
+        icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0-6a2 2 0 00-2 2v1H9a1 1 0 000 2h1v2H9a1 1 0 100 2h1v2H9a1 1 0 100 2h1v1a2 2 0 104 0v-1h1a1 1 0 100-2h-1v-2h1a1 1 0 100-2h-1V7h1a1 1 0 100-2h-1V4a2 2 0 00-2-2z" />
+               </svg>`,
+        children: [
+          {
+            name: 'Contas',
+            path: '/finance/accounts',
+            icon: `<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4c0 .55.45 1 1 1h3v13h4V8h3c.55 0 1-.45 1-1V3H5z" />
+                  </svg>`
+          },
+          {
+            name: 'Lançamentos',
+            path: '/finance/transactions',
+            icon: `<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                  </svg>`
+          }
+        ]
+      },
+      {
         name: 'Perfis e Privilégios',
         path: '/perfis',
         module: 'Usuários',

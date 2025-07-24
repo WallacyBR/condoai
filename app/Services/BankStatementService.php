@@ -29,7 +29,10 @@ class BankStatementService
                 'created_by' => auth()->id(),
                 'date' => $entry['date'],
                 'amount' => $entry['amount'],
-                'type' => $entry['amount'] >= 0 ? TransactionType::CREDIT : TransactionType::DEBIT,
+                // Valores positivos representam receitas, negativos, despesas
+                'type' => $entry['amount'] >= 0
+                    ? TransactionType::RECEITA
+                    : TransactionType::DESPESA,
                 'status' => 'pendente',
                 'description' => $entry['description'],
             ]));

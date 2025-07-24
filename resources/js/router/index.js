@@ -264,6 +264,19 @@ const routes = [
     component: () => import('../pages/DocumentListPage.vue'),
     meta: { requiresAuth: true, requiresCondo: true }
   },
+  // Finance Module Routes
+  {
+    path: '/finance/accounts',
+    name: 'finance.accounts',
+    component: () => import('../finance/AccountsView.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/finance/transactions',
+    name: 'finance.transactions',
+    component: () => import('../finance/TransactionsView.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
   // Maintenance Module Routes
   {
     path: '/maintenance/dashboard',

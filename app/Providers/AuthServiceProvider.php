@@ -8,6 +8,10 @@ use App\Models\Occurrence;
 use App\Policies\OccurrencePolicy;
 use App\Models\OccurrenceComment;
 use App\Policies\OccurrenceCommentPolicy;
+use App\Models\Payable;
+use App\Models\Receivable;
+use App\Policies\PayablePolicy;
+use App\Policies\ReceivablePolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -19,6 +23,8 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         Occurrence::class => OccurrencePolicy::class,
         OccurrenceComment::class => OccurrenceCommentPolicy::class,
+        Payable::class => PayablePolicy::class,
+        Receivable::class => ReceivablePolicy::class,
     ];
 
     /**

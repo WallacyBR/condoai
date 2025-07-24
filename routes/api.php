@@ -86,7 +86,7 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
     Route::apiResource('packages', \App\Http\Controllers\API\PackageController::class);
 
     // Notice and Document Routes
-    Route::apiResource('notices', \App\Http\Controllers\API\NoticeController::class);
+    Route::apiResource('notices', \App\Http\Controllers\Api\NoticeController::class);
     Route::get('documents', [\App\Http\Controllers\Api\DocumentController::class, 'index'])->name('documents.index');
 
     // Common Area Bookings Routes
@@ -181,6 +181,16 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
         Route::post('access-requests/{access_request}/record-entry', [AccessRequestController::class, 'recordEntry'])->name('access-requests.recordEntry');
         Route::post('access-requests/{access_request}/record-exit', [AccessRequestController::class, 'recordExit'])->name('access-requests.recordExit');
         Route::post('access-requests/{access_request}/cancel', [AccessRequestController::class, 'cancelRequest'])->name('access-requests.cancel');
+    });
+
+    // Finance Module Routes
+    Route::prefix('finance')->name('finance.')->group(function () {
+        Route::apiResource('banks', \App\Http\Controllers\API\BankController::class);
+        Route::apiResource('chart-accounts', \App\Http\Controllers\API\ChartAccountController::class);
+        Route::apiResource('transactions', \App\Http\Controllers\API\TransactionController::class);
+        Route::apiResource('payables', \App\Http\Controllers\API\PayableController::class);
+        Route::apiResource('receivables', \App\Http\Controllers\API\ReceivableController::class);
+        Route::apiResource('cash-flows', \App\Http\Controllers\API\CashFlowController::class);
     });
 });
 

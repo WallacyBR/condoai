@@ -46,6 +46,10 @@ class DatabaseSeeder extends Seeder
             PackageSeeder::class,
             VisitorSeeder::class,
             CommonAreaBookingSeeder::class,
+
+            // 9. Dados financeiros iniciais
+            ChartAccountSeeder::class,
+            TransactionSeeder::class,
         ]);
     }
 }

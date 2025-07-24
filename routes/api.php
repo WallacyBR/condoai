@@ -197,6 +197,13 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
         Route::apiResource('expense-requests', \App\Http\Controllers\API\ExpenseRequestController::class)->only(['index', 'store']);
         Route::post('expense-requests/{expense_request}/approve', [\App\Http\Controllers\API\ExpenseRequestController::class, 'approve']);
         Route::get('dashboard/forecast', [\App\Http\Controllers\API\FinanceDashboardController::class, 'forecast']);
+
+        Route::post('webhooks/stripe', [\App\Http\Controllers\API\FinanceWebhookController::class, 'stripe']);
+        Route::post('webhooks/mercadopago', [\App\Http\Controllers\API\FinanceWebhookController::class, 'mercadoPago']);
+        Route::post('webhooks/cnab', [\App\Http\Controllers\API\FinanceWebhookController::class, 'cnab']);
+
+        Route::get('reports/dre', [\App\Http\Controllers\API\FinanceReportController::class, 'dre']);
+        Route::get('reports/balancete', [\App\Http\Controllers\API\FinanceReportController::class, 'balancete']);
     });
 });
 

@@ -2,17 +2,17 @@ import { shallowMount, mount, flushPromises } from '@vue/test-utils';
 import OccurrenceForm from '../../components/occurrences/OccurrenceForm.vue';
 import api from '../../utils/api';
 import { useToast } from '../../composables/useToast';
-import { vi } from 'vitest';
+import { jest } from '@jest/globals';
 
 // Mock vue-router
 const mockRouter = {
-  push: vi.fn(),
+  push: jest.fn(),
 };
 const mockRoute = {
   params: {}, // Default to create mode
 };
 
-vi.mock('vue-router', () => ({
+jest.mock('vue-router', () => ({
   useRouter: () => mockRouter,
   useRoute: () => mockRoute,
   RouterLink: { template: '<a><slot/></a>' }
@@ -21,13 +21,13 @@ vi.mock('vue-router', () => ({
 // Mock useToast
 vi.mock('../../composables/useToast', () => ({
   useToast: () => ({
-    success: vi.fn(),
-    error: vi.fn(),
+    success: jest.fn(),
+    error: jest.fn(),
   }),
 }));
 
 // Mock api
-vi.mock('../../utils/api');
+jest.mock('../../utils/api');
 
 describe('OccurrenceForm.vue', () => {
   let wrapper;
@@ -45,7 +45,7 @@ describe('OccurrenceForm.vue', () => {
   };
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     api.get.mockResolvedValue({ data: { id: '1', title: 'Old Title', description: 'Old Desc', priority: 'low', status: 'open', photos: [] } });
   });
 

@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils';
 import MyDailyMaintenanceTasks from '@/pages/maintenance/MyDailyMaintenanceTasks.vue'; // Ajuste o caminho
 import api from '@/utils/api';
 import AuthenticatedLayout from '@/components/layouts/AuthenticatedLayout.vue'; // Stubbed
-import { format, startOfToday } from 'date-fns';
+const { format, startOfToday } = require('date-fns');
 
 jest.mock('@/utils/api', () => ({
   get: jest.fn(),

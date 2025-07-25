@@ -63,11 +63,12 @@ describe('SignaturePad.vue', () => {
   });
 
   it('tem botões de controle', () => {
-    const clearButton = wrapper.find('button:contains("Limpar")');
-    const undoButton = wrapper.find('button:contains("Desfazer")');
+    const buttons = wrapper.findAll('button');
+    const hasClearButton = buttons.some(button => button.text().includes('Limpar'));
+    const hasUndoButton = buttons.some(button => button.text().includes('Desfazer'));
     
-    expect(clearButton.exists()).toBe(true);
-    expect(undoButton.exists()).toBe(true);
+    expect(hasClearButton).toBe(true);
+    expect(hasUndoButton).toBe(true);
   });
 
   it('emite eventos quando a assinatura muda', async () => {

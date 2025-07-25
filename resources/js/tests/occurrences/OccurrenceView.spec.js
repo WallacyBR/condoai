@@ -3,17 +3,17 @@ import OccurrenceView from '../../components/occurrences/OccurrenceView.vue';
 import api from '../../utils/api';
 import { useToast } from '../../composables/useToast';
 import { useAuthStore } from '../../stores/authStore'; // Importe o store
-import { vi } from 'vitest';
+import { jest } from '@jest/globals';
 
 // Mock vue-router
 const mockRouter = {
-  push: vi.fn(),
+  push: jest.fn(),
 };
 const mockRoute = {
   params: { id: '1' }, // Default to viewing occurrence with ID 1
 };
 
-vi.mock('vue-router', () => ({
+jest.mock('vue-router', () => ({
   useRouter: () => mockRouter,
   useRoute: () => mockRoute,
   RouterLink: { template: '<a :to="to"><slot/></a>', props: ['to'] }
@@ -22,17 +22,17 @@ vi.mock('vue-router', () => ({
 // Mock useToast
 vi.mock('../../composables/useToast', () => ({
   useToast: () => ({
-    success: vi.fn(),
-    error: vi.fn(),
+    success: jest.fn(),
+    error: jest.fn(),
   }),
 }));
 
 // Mock api
-vi.mock('../../utils/api');
+jest.mock('../../utils/api');
 
 // Mock do authStore
 const mockUser = { id: 1, name: 'Test User', condominium_id: 1, is_super_admin: false };
-vi.mock('../../stores/authStore', () => ({
+jest.mock('../../stores/authStore', () => ({
   useAuthStore: () => ({
     user: mockUser,
     hasPermission: (permission) => {
@@ -80,7 +80,7 @@ describe('OccurrenceView.vue', () => {
   };
 
   beforeEach(async () => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     // Resetar o usuário do authStore para cada teste se necessário, ou configurar especificamente
     authStore.user = { ...mockUser, id: 1, is_super_admin: false }; // Usuário padrão para testes
     wrapper = mountComponent();

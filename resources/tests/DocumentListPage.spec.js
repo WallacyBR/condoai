@@ -1,6 +1,4 @@
-import fs from 'fs';
 
-const fileUrl = new URL('../js/pages/DocumentListPage.vue', import.meta.url);
 
 test('lista de documentos possui filtros', () => {
   const content = fs.readFileSync(fileUrl, 'utf8');

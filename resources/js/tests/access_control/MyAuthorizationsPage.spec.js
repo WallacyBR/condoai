@@ -5,12 +5,6 @@ import RespondAccessRequestModal from '../../components/access_control/RespondAc
 import NeonButton from '../../components/NeonButton.vue';
 import api from '../../utils/api';
 
-// Mocks
-jest.mock('../../utils/api', () => ({
-  get: jest.fn(),
-  post: jest.fn(), // Se o modal fizer chamadas post diretamente
-}));
-
 const mockSuccessToast = jest.fn();
 const mockErrorToast = jest.fn();
 jest.mock('../../composables/useToast', () => ({

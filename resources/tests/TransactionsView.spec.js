@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
-import { describe, it, expect, vi } from 'vitest';
+
 import TransactionsView from '../js/finance/TransactionsView.vue';
 import { useTransactionsStore } from '../js/finance/stores/transactionsStore';
 
@@ -8,7 +8,7 @@ describe('TransactionsView.vue', () => {
   it('exibe lista de lançamentos', async () => {
     setActivePinia(createPinia());
     const store = useTransactionsStore();
-    store.fetchTransactions = vi.fn(() => {
+    store.fetchTransactions = jest.fn(() => {
       store.transactions = [
         { id: 1, description: 'Mensalidade', amount: 100 }
       ];

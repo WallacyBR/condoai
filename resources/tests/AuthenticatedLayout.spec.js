@@ -1,6 +1,4 @@
-import fs from 'fs';
 
-const fileUrl = new URL('../js/components/layouts/AuthenticatedLayout.vue', import.meta.url);
 
 let content;
 

@@ -1,14 +1,14 @@
 import { shallowMount, flushPromises } from '@vue/test-utils';
 import OccurrenceList from '../../components/occurrences/OccurrenceList.vue';
 import api from '../../utils/api';
-import { vi } from 'vitest';
+import { jest } from '@jest/globals';
 
 // Mock para vue-router
 const mockRouter = {
-  push: vi.fn(),
+  push: jest.fn(),
 };
 
-vi.mock('vue-router', () => ({
+jest.mock('vue-router', () => ({
   useRouter: () => mockRouter,
   RouterLink: { template: '<a><slot /></a>' } // Stub RouterLink
 }));
@@ -16,13 +16,13 @@ vi.mock('vue-router', () => ({
 // Mock para o composable useToast
 vi.mock('../../composables/useToast', () => ({
   useToast: () => ({
-    success: vi.fn(),
-    error: vi.fn(),
+    success: jest.fn(),
+    error: jest.fn(),
   }),
 }));
 
 // Mock para o módulo API
-vi.mock('../../utils/api');
+jest.mock('../../utils/api');
 
 const mockOccurrences = {
   data: [
@@ -53,7 +53,7 @@ describe('OccurrenceList.vue', () => {
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   it('renders the component title', () => {

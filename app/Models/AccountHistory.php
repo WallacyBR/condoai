@@ -11,7 +11,8 @@ class AccountHistory extends Model
 
     protected $fillable = [
         'bank_id',
-        'transaction_id',
+        'payable_id',
+        'receivable_id',
         'reconciled_at',
         'notes',
     ];
@@ -25,8 +26,13 @@ class AccountHistory extends Model
         return $this->belongsTo(Bank::class);
     }
 
-    public function transaction()
+    public function payable()
     {
-        return $this->belongsTo(Transaction::class);
+        return $this->belongsTo(Payable::class);
+    }
+
+    public function receivable()
+    {
+        return $this->belongsTo(Receivable::class);
     }
 }

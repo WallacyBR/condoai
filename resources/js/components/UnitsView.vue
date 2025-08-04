@@ -400,7 +400,7 @@ export default {
         const token = localStorage.getItem('token');
         
         // Carregar unidades
-        const unitsUrl = buildUrlWithCondominiumFilter('/apartments');
+        const unitsUrl = buildUrlWithCondominiumFilter('/api/apartments');
         const unitsResponse = await fetch(unitsUrl, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -413,7 +413,10 @@ export default {
           console.log('Dados das unidades retornados pela API:', unitsData);
           units.value = Array.isArray(unitsData) ? unitsData : (unitsData.data || []);
         } else {
-          error.value = 'Falha ao carregar unidades';
+          const errorBody = await unitsResponse.json().catch(() => null);
+          const errorMessage = errorBody?.message || `Falha ao carregar unidades. Status: ${unitsResponse.status}`;
+          error.value = errorMessage;
+          console.error('Erro na API (unidades):', unitsResponse.status, unitsResponse.statusText, errorBody);
           // Dados de exemplo para teste
           units.value = [
             {
@@ -451,7 +454,7 @@ export default {
         }
 
         // Carregar torres
-        const towersUrl = buildUrlWithCondominiumFilter('/towers');
+        const towersUrl = buildUrlWithCondominiumFilter('/api/towers');
         const towersResponse = await fetch(towersUrl, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -465,7 +468,7 @@ export default {
         }
 
         // Carregar blocos
-        const blocksUrl = buildUrlWithCondominiumFilter('/blocks');
+        const blocksUrl = buildUrlWithCondominiumFilter('/api/blocks');
         const blocksResponse = await fetch(blocksUrl, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -479,7 +482,11 @@ export default {
         }
 
       } catch (e) {
-        error.value = 'Erro de conexão';
+        if (e instanceof SyntaxError) {
+          error.value = 'Erro ao processar a resposta do servidor. A resposta não é um JSON válido.';
+        } else {
+          error.value = e.message || 'Erro de conexão.';
+        }
         console.error('Exceção ao carregar dados:', e);
         
         // Dados de exemplo para teste

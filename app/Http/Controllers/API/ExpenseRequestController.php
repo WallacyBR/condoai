@@ -33,6 +33,33 @@ class ExpenseRequestController extends Controller
         return ExpenseRequest::create($validated);
     }
 
+    public function show(ExpenseRequest $expenseRequest)
+    {
+        return response()->json($expenseRequest);
+    }
+
+    public function update(Request $request, ExpenseRequest $expenseRequest)
+    {
+        $validated = $request->validate([
+            'condominium_id' => ['sometimes', Rule::exists('condominiums', 'id')],
+            'requested_by' => ['sometimes', Rule::exists('users', 'id')],
+            'amount' => 'sometimes|numeric|min:0.01',
+            'due_date' => 'sometimes|date',
+            'description' => 'nullable|string',
+            'status' => 'sometimes|string',
+        ]);
+
+        $expenseRequest->update($validated);
+
+        return response()->json($expenseRequest);
+    }
+
+    public function destroy(ExpenseRequest $expenseRequest)
+    {
+        $expenseRequest->delete();
+        return response()->json(null, 204);
+    }
+
     public function approve(ExpenseRequest $expenseRequest)
     {
         $expenseRequest->update([

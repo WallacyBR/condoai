@@ -3,7 +3,17 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\AccessRequest;
+use App\Models\Apartment;
+use App\Models\ProtectiveMeasure;
+use App\Models\Resident;
+use App\Models\User;
+use App\Models\Visitor;
+use App\Models\VisitorVehicle;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 /**
  * @group Controle de Acessos
@@ -12,6 +22,12 @@ use Illuminate\Http\Request;
  */
 class AccessRequestController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+        $this->middleware('tenant');
+    }
+
     /**
      * Listar solicitações de acesso.
      *
@@ -20,92 +36,235 @@ class AccessRequestController extends Controller
      * @queryParam status string Filtra por status. Example: authorized
      * @queryParam exclude_status string Exclui determinado status. Example: cancelled
      *
-     * @responseFile status=200 storage/responses/accessrequests.index.json
+     * @response { "data": [ { "id": 1, "status": "pending", ... } ], "meta": { ... } }
      */
     public function index(Request $request)
     {
-        // Retornar dados fictícios para evitar páginas em branco
-        $data = [
-            [
-                'id' => 1,
-                'status' => 'authorized',
-                'request_timestamp' => now()->subHours(2)->toISOString(),
-                'resident_response_timestamp' => now()->subHour()->toISOString(),
-                'visitor' => [
-                    'id' => 1,
-                    'name' => 'João Silva',
-                    'document' => '123.456.789-00',
-                    'phone' => '(11) 99999-9999',
-                    'photo_url' => null
-                ],
-                'resident' => [
-                    'id' => 1,
-                    'name' => 'Maria Santos'
-                ],
-                'visitor_vehicle' => null,
-                'resident_observation' => 'Visitante autorizado',
-                'gatehouse_observation' => 'Documentação verificada'
-            ],
-            [
-                'id' => 2,
-                'status' => 'unauthorized',
-                'request_timestamp' => now()->subHours(1)->toISOString(),
-                'resident_response_timestamp' => now()->subMinutes(30)->toISOString(),
-                'visitor' => [
-                    'id' => 2,
-                    'name' => 'Pedro Costa',
-                    'document' => '987.654.321-00',
-                    'phone' => '(11) 88888-8888',
-                    'photo_url' => null
-                ],
-                'resident' => [
-                    'id' => 2,
-                    'name' => 'Ana Lima'
-                ],
-                'visitor_vehicle' => [
-                    'id' => 1,
-                    'plate' => 'ABC-1234',
-                    'model' => 'Honda Civic'
-                ],
-                'resident_observation' => 'Não estou em casa',
-                'gatehouse_observation' => 'Morador não estava presente'
-            ]
-        ];
+        $condominiumId = auth()->user()->condominium_id;
 
-        // Filtrar por status se fornecido
-        if ($request->has('status')) {
-            $data = array_filter($data, function($item) use ($request) {
-                return $item['status'] === $request->status;
-            });
+        $query = AccessRequest::condominium($condominiumId)
+            ->with(['visitor', 'visitorVehicle', 'resident.user', 'apartment', 'parkingSpot']);
+
+        if ($request->has('status') && $request->status !== '') {
+            $query->where('status', $request->status);
         }
 
-        // Filtrar por exclude_status se fornecido
-        if ($request->has('exclude_status')) {
-            $data = array_filter($data, function($item) use ($request) {
-                return $item['status'] !== $request->exclude_status;
-            });
+        if ($request->has('exclude_status') && $request->exclude_status !== '') {
+            $query->where('status', '!=', $request->exclude_status);
         }
 
-        return response()->json([
-            'data' => array_values($data),
-            'message' => 'Dados de exemplo - Funcionalidade em desenvolvimento'
-        ]);
+        $accessRequests = $query->orderByDesc('request_timestamp')->paginate($request->get('per_page', 15));
+
+        return response()->json($accessRequests);
     }
 
     /**
      * Criar uma nova solicitação de acesso.
      *
-     * @bodyParam visitor_id int ID do visitante. Example: 1
+     * @bodyParam visitor_name string required Nome do visitante. Example: João Silva
+     * @bodyParam visitor_document string required Documento do visitante. Example: 123.456.789-00
+     * @bodyParam visitor_phone string Telefone do visitante. Example: (11) 99999-9999
+     * @bodyParam visitor_photo_url string URL da foto do visitante.
+     * @bodyParam visitor_vehicle_plate string Placa do veículo do visitante. Example: ABC-1234
+     * @bodyParam visitor_vehicle_model string Modelo do veículo do visitante. Example: Honda Civic
      * @bodyParam resident_id int ID do morador responsável. Example: 2
-     * @bodyParam has_vehicle boolean Indica se há veículo. Example: true
+     * @bodyParam apartment_id int ID do apartamento. Example: 1
+     * @bodyParam visit_date date Data da visita. Example: 2024-12-25
+     * @bodyParam visit_time string Hora da visita. Example: 14:00
+     * @bodyParam duration_hours int Duração da visita em horas. Example: 2
+     * @bodyParam purpose string Propósito da visita. Example: Visita familiar
+     * @bodyParam observations string Observações adicionais.
      *
-     * @responseFile status=201 storage/responses/accessrequests.store.json
+     * @response { "message": "Solicitação de acesso criada com sucesso!" }
+     * @response 422 { "message": "Medida protetiva ativa encontrada para este visitante/veículo." }
      */
     public function store(Request $request)
     {
-        return response()->json([
-            'message' => 'Funcionalidade em desenvolvimento'
-        ], 501);
+        $condominiumId = auth()->user()->condominium_id;
+
+        $validated = $request->validate([
+            'visitor_name' => 'required|string|max:255',
+            'visitor_document' => 'required|string|max:255',
+            'visitor_phone' => 'nullable|string|max:255',
+            'visitor_photo_url' => 'nullable|url',
+            'visitor_vehicle_plate' => 'nullable|string|max:20',
+            'visitor_vehicle_model' => 'nullable|string|max:255',
+            'resident_id' => ['required', Rule::exists('residents', 'id')->where(function ($query) use ($condominiumId) {
+                return $query->where('condominium_id', $condominiumId);
+            })],
+            'apartment_id' => ['required', Rule::exists('apartments', 'id')->where(function ($query) use ($condominiumId) {
+                return $query->where('condominium_id', $condominiumId);
+            })],
+            'visit_date' => 'required|date',
+            'visit_time' => 'required|string',
+            'duration_hours' => 'nullable|integer|min:1',
+            'purpose' => 'nullable|string|max:255',
+            'observations' => 'nullable|string',
+        ]);
+
+        // Check for protective measures
+        $protectiveMeasure = $this->_checkProtectiveMeasures(
+            $condominiumId,
+            $validated['visitor_document'],
+            $validated['visitor_vehicle_plate'] ?? null
+        );
+
+        if ($protectiveMeasure) {
+            return response()->json([
+                'message' => 'Medida protetiva ativa encontrada para este visitante/veículo.',
+                'protective_measure' => $protectiveMeasure
+            ], 422);
+        }
+
+        DB::beginTransaction();
+        try {
+            // Find or create Visitor
+            $visitor = Visitor::firstOrCreate(
+                ['document' => $validated['visitor_document'], 'condominium_id' => $condominiumId],
+                ['name' => $validated['visitor_name'], 'phone' => $validated['visitor_phone'], 'photo_url' => $validated['visitor_photo_url'] ?? null]
+            );
+
+            $visitorVehicle = null;
+            if (isset($validated['visitor_vehicle_plate'])) {
+                $visitorVehicle = VisitorVehicle::firstOrCreate(
+                    ['plate' => $validated['visitor_vehicle_plate'], 'condominium_id' => $condominiumId],
+                    ['model' => $validated['visitor_vehicle_model'] ?? null]
+                );
+            }
+
+            $accessRequest = AccessRequest::create([
+                'condominium_id' => $condominiumId,
+                'visitor_id' => $visitor->id,
+                'visitor_vehicle_id' => $visitorVehicle ? $visitorVehicle->id : null,
+                'resident_id' => $validated['resident_id'],
+                'apartment_id' => $validated['apartment_id'],
+                'visitor_name' => $validated['visitor_name'],
+                'visitor_document' => $validated['visitor_document'],
+                'visitor_phone' => $validated['visitor_phone'] ?? null,
+                'visit_date' => $validated['visit_date'],
+                'visit_time' => $validated['visit_time'],
+                'duration_hours' => $validated['duration_hours'] ?? null,
+                'purpose' => $validated['purpose'] ?? null,
+                'observations' => $validated['observations'] ?? null,
+                'status' => 'pending', // Initial status
+                'request_timestamp' => now(),
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Solicitação de acesso criada com sucesso!',
+                'access_request' => $accessRequest->load(['visitor', 'visitorVehicle', 'resident.user', 'apartment'])
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Erro ao criar solicitação de acesso', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Exibir detalhes de uma solicitação de acesso.
+     *
+     * @urlParam access_request int ID da solicitação de acesso.
+     *
+     * @response { "id": 1, "status": "pending", ... }
+     */
+    public function show(AccessRequest $accessRequest)
+    {
+        $accessRequest->load(['visitor', 'visitorVehicle', 'resident.user', 'apartment', 'parkingSpot']);
+        return response()->json($accessRequest);
+    }
+
+    /**
+     * Atualizar uma solicitação de acesso.
+     *
+     * @urlParam access_request int ID da solicitação de acesso.
+     *
+     * @response { "message": "Solicitação de acesso atualizada com sucesso!" }
+     */
+    public function update(Request $request, AccessRequest $accessRequest)
+    {
+        $condominiumId = auth()->user()->condominium_id;
+
+        $validated = $request->validate([
+            'visitor_name' => 'sometimes|required|string|max:255',
+            'visitor_document' => 'sometimes|required|string|max:255',
+            'visitor_phone' => 'nullable|string|max:255',
+            'visitor_photo_url' => 'nullable|url',
+            'visitor_vehicle_plate' => 'nullable|string|max:20',
+            'visitor_vehicle_model' => 'nullable|string|max:255',
+            'resident_id' => ['sometimes', 'required', Rule::exists('residents', 'id')->where(function ($query) use ($condominiumId) {
+                return $query->where('condominium_id', $condominiumId);
+            })],
+            'apartment_id' => ['sometimes', 'required', Rule::exists('apartments', 'id')->where(function ($query) use ($condominiumId) {
+                return $query->where('condominium_id', $condominiumId);
+            })],
+            'visit_date' => 'sometimes|required|date',
+            'visit_time' => 'sometimes|required|string',
+            'duration_hours' => 'nullable|integer|min:1',
+            'purpose' => 'nullable|string|max:255',
+            'observations' => 'nullable|string',
+            'status' => 'sometimes|required|string',
+            'authorized_by' => 'nullable|integer|exists:users,id',
+            'authorized_at' => 'nullable|date',
+            'rejection_reason' => 'nullable|string',
+            'entry_time' => 'nullable|date',
+            'exit_time' => 'nullable|date',
+            'resident_observation' => 'nullable|string',
+            'gatehouse_observation' => 'nullable|string',
+            'resident_response_timestamp' => 'nullable|date',
+            'actual_entry_timestamp' => 'nullable|date',
+            'actual_exit_timestamp' => 'nullable|date',
+            'parking_spot_id' => 'nullable|exists:parking_spots,id',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $accessRequest->update($validated);
+
+            // Update Visitor if necessary
+            if (isset($validated['visitor_document'])) {
+                $visitor = Visitor::firstOrCreate(
+                    ['document' => $validated['visitor_document'], 'condominium_id' => $condominiumId],
+                    ['name' => $validated['visitor_name'] ?? $accessRequest->visitor_name, 'phone' => $validated['visitor_phone'] ?? $accessRequest->visitor_phone, 'photo_url' => $validated['visitor_photo_url'] ?? $accessRequest->visitor_photo_url]
+                );
+                $accessRequest->visitor_id = $visitor->id;
+                $accessRequest->save();
+            }
+
+            // Update VisitorVehicle if necessary
+            if (isset($validated['visitor_vehicle_plate'])) {
+                $visitorVehicle = VisitorVehicle::firstOrCreate(
+                    ['plate' => $validated['visitor_vehicle_plate'], 'condominium_id' => $condominiumId],
+                    ['model' => $validated['visitor_vehicle_model'] ?? null]
+                );
+                $accessRequest->visitor_vehicle_id = $visitorVehicle->id;
+                $accessRequest->save();
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Solicitação de acesso atualizada com sucesso!',
+                'access_request' => $accessRequest->load(['visitor', 'visitorVehicle', 'resident.user', 'apartment'])
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Erro ao atualizar solicitação de acesso', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Excluir uma solicitação de acesso.
+     *
+     * @urlParam access_request int ID da solicitação de acesso.
+     *
+     * @response 204 null
+     */
+    public function destroy(AccessRequest $accessRequest)
+    {
+        $accessRequest->delete();
+        return response()->json(null, 204);
     }
 
     /**
@@ -113,14 +272,19 @@ class AccessRequestController extends Controller
      *
      * Retorna todas as solicitações do condomínio para uso na guarita.
      *
-     * @responseFile status=200 storage/responses/accessrequests.index.json
+     * @response { "data": [ { "id": 1, "status": "pending", ... } ] }
      */
     public function listForGatehouse(Request $request)
     {
-        return response()->json([
-            'data' => [],
-            'message' => 'Funcionalidade em desenvolvimento'
-        ]);
+        $condominiumId = auth()->user()->condominium_id;
+
+        $accessRequests = AccessRequest::condominium($condominiumId)
+            ->whereIn('status', ['pending', 'authorized', 'entry_recorded'])
+            ->with(['visitor', 'visitorVehicle', 'resident.user', 'apartment'])
+            ->orderByDesc('request_timestamp')
+            ->get();
+
+        return response()->json($accessRequests);
     }
 
     /**
@@ -128,108 +292,117 @@ class AccessRequestController extends Controller
      *
      * Lista apenas as solicitações pendentes do usuário.
      *
-     * @responseFile status=200 storage/responses/accessrequests.index.json
+     * @response { "data": [ { "id": 1, "status": "pending", ... } ] }
      */
     public function listMyRequestsAsResident(Request $request)
     {
-        // Dados fictícios para "Minhas Autorizações"
-        $data = [
-            [
-                'id' => 3,
-                'status' => 'pending',
-                'request_timestamp' => now()->subMinutes(10)->toISOString(),
-                'visitor' => [
-                    'id' => 3,
-                    'name' => 'Carlos Oliveira',
-                    'document' => '555.666.777-88',
-                    'phone' => '(11) 77777-7777',
-                    'photo_url' => null
-                ],
-                'visitor_vehicle' => null,
-                'gatehouse_observation' => 'Visitante aguardando na portaria'
-            ]
-        ];
+        $condominiumId = auth()->user()->condominium_id;
+        $residentId = auth()->user()->resident->id; // Assuming authenticated user is a resident
 
-        return response()->json([
-            'data' => $data,
-            'message' => 'Dados de exemplo - Funcionalidade em desenvolvimento'
-        ]);
-    }
+        $accessRequests = AccessRequest::condominium($condominiumId)
+            ->where('resident_id', $residentId)
+            ->whereIn('status', ['pending', 'authorized'])
+            ->with(['visitor', 'visitorVehicle', 'resident.user', 'apartment'])
+            ->orderByDesc('request_timestamp')
+            ->get();
 
-    /**
-     * Detalhes de uma solicitação.
-     *
-     * @urlParam id int ID da solicitação. Example: 1
-     *
-     * @responseFile status=200 storage/responses/accessrequests.show.json
-     */
-    public function show($id)
-    {
-        return response()->json([
-            'message' => 'Funcionalidade em desenvolvimento'
-        ], 501);
+        return response()->json($accessRequests);
     }
 
     /**
      * Responder a uma solicitação.
      *
-     * @urlParam id int ID da solicitação. Example: 1
+     * @urlParam access_request int ID da solicitação.
      * @bodyParam response string required Resposta do morador (authorized ou unauthorized). Example: authorized
      * @bodyParam resident_observation string Observação opcional. Example: "Pode subir"
      *
-     * @responseFile status=200 storage/responses/accessrequests.respond.json
+     * @response { "message": "Resposta registrada com sucesso!" }
      */
-    public function respondToRequest(Request $request, $id)
+    public function respondToRequest(Request $request, AccessRequest $accessRequest)
     {
-        return response()->json([
-            'message' => 'Funcionalidade em desenvolvimento'
-        ], 501);
+        $validated = $request->validate([
+            'response' => ['required', Rule::in(['authorized', 'unauthorized'])],
+            'resident_observation' => 'nullable|string',
+        ]);
+
+        $accessRequest->update([
+            'status' => $validated['response'],
+            'resident_observation' => $validated['resident_observation'],
+            'resident_response_timestamp' => now(),
+        ]);
+
+        return response()->json(['message' => 'Resposta registrada com sucesso!']);
     }
 
     /**
      * Registrar entrada do visitante.
      *
-     * @urlParam id int ID da solicitação. Example: 1
+     * @urlParam access_request int ID da solicitação.
      * @bodyParam parking_spot_id int ID da vaga utilizada. Example: 5
      * @bodyParam gatehouse_entry_observation string Observação da portaria. Example: "Entrada confirmada"
      *
-     * @responseFile status=200 storage/responses/accessrequests.recordentry.json
+     * @response { "message": "Entrada registrada com sucesso!" }
      */
-    public function recordEntry(Request $request, $id)
+    public function recordEntry(Request $request, AccessRequest $accessRequest)
     {
-        return response()->json([
-            'message' => 'Funcionalidade em desenvolvimento'
-        ], 501);
+        $validated = $request->validate([
+            'parking_spot_id' => 'nullable|exists:parking_spots,id',
+            'gatehouse_entry_observation' => 'nullable|string',
+        ]);
+
+        $accessRequest->update([
+            'status' => 'entry_recorded',
+            'parking_spot_id' => $validated['parking_spot_id'] ?? null,
+            'gatehouse_observation' => $validated['gatehouse_entry_observation'] ?? null,
+            'actual_entry_timestamp' => now(),
+        ]);
+
+        return response()->json(['message' => 'Entrada registrada com sucesso!']);
     }
 
     /**
      * Registrar saída do visitante.
      *
-     * @urlParam id int ID da solicitação. Example: 1
+     * @urlParam access_request int ID da solicitação.
      * @bodyParam gatehouse_exit_observation string Observação da portaria. Example: "Saída registrada"
      *
-     * @responseFile status=200 storage/responses/accessrequests.recordexit.json
+     * @response { "message": "Saída registrada com sucesso!" }
      */
-    public function recordExit(Request $request, $id)
+    public function recordExit(Request $request, AccessRequest $accessRequest)
     {
-        return response()->json([
-            'message' => 'Funcionalidade em desenvolvimento'
-        ], 501);
+        $validated = $request->validate([
+            'gatehouse_exit_observation' => 'nullable|string',
+        ]);
+
+        $accessRequest->update([
+            'status' => 'exit_recorded',
+            'gatehouse_observation' => $validated['gatehouse_exit_observation'] ?? null,
+            'actual_exit_timestamp' => now(),
+        ]);
+
+        return response()->json(['message' => 'Saída registrada com sucesso!']);
     }
 
     /**
      * Cancelar uma solicitação.
      *
-     * @urlParam id int ID da solicitação. Example: 1
+     * @urlParam access_request int ID da solicitação.
      * @bodyParam cancellation_observation string Motivo do cancelamento. Example: "Visitante não compareceu"
      *
-     * @responseFile status=200 storage/responses/accessrequests.cancel.json
+     * @response { "message": "Solicitação cancelada com sucesso!" }
      */
-    public function cancelRequest(Request $request, $id)
+    public function cancelRequest(Request $request, AccessRequest $accessRequest)
     {
-        return response()->json([
-            'message' => 'Funcionalidade em desenvolvimento'
-        ], 501);
+        $validated = $request->validate([
+            'cancellation_observation' => 'nullable|string',
+        ]);
+
+        $accessRequest->update([
+            'status' => 'cancelled',
+            'rejection_reason' => $validated['cancellation_observation'] ?? null,
+        ]);
+
+        return response()->json(['message' => 'Solicitação cancelada com sucesso!']);
     }
 
     /**
@@ -241,151 +414,87 @@ class AccessRequestController extends Controller
      * @queryParam page int Página desejada. Example: 1
      * @queryParam per_page int Itens por página. Example: 15
      *
-     * @responseFile status=200 storage/responses/accessrequests.history.json
+     * @response { "data": [ { "id": 1, "status": "authorized", ... } ], "meta": { ... } }
      */
     public function history(Request $request)
     {
-        // Dados fictícios para histórico com paginação
-        $allData = [
-            [
-                'id' => 1,
-                'status' => 'authorized',
-                'request_timestamp' => now()->subDays(5)->toISOString(),
-                'resident_response_timestamp' => now()->subDays(5)->addHours(1)->toISOString(),
-                'entry_timestamp' => now()->subDays(5)->addHours(2)->toISOString(),
-                'visitor' => [
-                    'id' => 1,
-                    'name' => 'João Silva',
-                    'document' => '123.456.789-00',
-                    'phone' => '(11) 99999-9999',
-                    'photo_url' => null
-                ],
-                'resident' => [
-                    'id' => 1,
-                    'name' => 'Maria Santos'
-                ],
-                'visitor_vehicle' => null,
-                'resident_observation' => 'Visitante autorizado',
-                'gatehouse_observation' => 'Entrada registrada às 14:30'
-            ],
-            [
-                'id' => 2,
-                'status' => 'unauthorized',
-                'request_timestamp' => now()->subDays(3)->toISOString(),
-                'resident_response_timestamp' => now()->subDays(3)->addMinutes(30)->toISOString(),
-                'visitor' => [
-                    'id' => 2,
-                    'name' => 'Pedro Costa',
-                    'document' => '987.654.321-00',
-                    'phone' => '(11) 88888-8888',
-                    'photo_url' => null
-                ],
-                'resident' => [
-                    'id' => 2,
-                    'name' => 'Ana Lima'
-                ],
-                'visitor_vehicle' => [
-                    'id' => 1,
-                    'plate' => 'ABC-1234',
-                    'model' => 'Honda Civic'
-                ],
-                'resident_observation' => 'Não estou em casa',
-                'gatehouse_observation' => 'Morador não estava presente'
-            ],
-            [
-                'id' => 3,
-                'status' => 'entry_recorded',
-                'request_timestamp' => now()->subDays(2)->toISOString(),
-                'resident_response_timestamp' => now()->subDays(2)->addMinutes(15)->toISOString(),
-                'entry_timestamp' => now()->subDays(2)->addMinutes(45)->toISOString(),
-                'visitor' => [
-                    'id' => 3,
-                    'name' => 'Carlos Oliveira',
-                    'document' => '555.666.777-88',
-                    'phone' => '(11) 77777-7777',
-                    'photo_url' => null
-                ],
-                'resident' => [
-                    'id' => 3,
-                    'name' => 'José Santos'
-                ],
-                'visitor_vehicle' => [
-                    'id' => 2,
-                    'plate' => 'XYZ-9876',
-                    'model' => 'Toyota Corolla'
-                ],
-                'resident_observation' => 'Funcionário da manutenção',
-                'gatehouse_observation' => 'Entrada e saída registradas'
-            ],
-            [
-                'id' => 4,
-                'status' => 'cancelled',
-                'request_timestamp' => now()->subDays(1)->toISOString(),
-                'visitor' => [
-                    'id' => 4,
-                    'name' => 'Fernanda Lima',
-                    'document' => '111.222.333-44',
-                    'phone' => '(11) 66666-6666',
-                    'photo_url' => null
-                ],
-                'resident' => [
-                    'id' => 4,
-                    'name' => 'Roberto Silva'
-                ],
-                'visitor_vehicle' => null,
-                'resident_observation' => null,
-                'gatehouse_observation' => 'Solicitação cancelada pelo visitante'
-            ],
-            [
-                'id' => 5,
-                'status' => 'inform_not_home',
-                'request_timestamp' => now()->subHours(6)->toISOString(),
-                'resident_response_timestamp' => now()->subHours(5)->addMinutes(30)->toISOString(),
-                'visitor' => [
-                    'id' => 5,
-                    'name' => 'Marcos Pereira',
-                    'document' => '999.888.777-66',
-                    'phone' => '(11) 55555-5555',
-                    'photo_url' => null
-                ],
-                'resident' => [
-                    'id' => 5,
-                    'name' => 'Carla Mendes'
-                ],
-                'visitor_vehicle' => null,
-                'resident_observation' => 'Saí e não consegui voltar a tempo',
-                'gatehouse_observation' => 'Visitante informado sobre ausência do morador'
-            ]
-        ];
+        $condominiumId = auth()->user()->condominium_id;
 
-        // Filtrar por status se fornecido
+        $query = AccessRequest::condominium($condominiumId)
+            ->with(['visitor', 'visitorVehicle', 'resident.user', 'apartment', 'parkingSpot']);
+
         if ($request->has('status') && $request->status !== '') {
-            $allData = array_filter($allData, function($item) use ($request) {
-                return $item['status'] === $request->status;
-            });
+            $query->where('status', $request->status);
         }
 
-        // Simular paginação
-        $perPage = $request->get('per_page', 15);
-        $page = $request->get('page', 1);
-        $total = count($allData);
-        $offset = ($page - 1) * $perPage;
-        $data = array_slice($allData, $offset, $perPage);
+        $accessRequests = $query->orderByDesc('request_timestamp')->paginate($request->get('per_page', 15));
 
-        // Calcular metadados de paginação
-        $lastPage = ceil($total / $perPage);
-        
-        return response()->json([
-            'data' => array_values($data),
-            'meta' => [
-                'current_page' => (int) $page,
-                'last_page' => $lastPage,
-                'per_page' => (int) $perPage,
-                'total' => $total,
-                'from' => $total > 0 ? $offset + 1 : null,
-                'to' => $total > 0 ? min($offset + $perPage, $total) : null
-            ],
-            'message' => 'Dados de exemplo - Histórico de solicitações'
-        ]);
+        return response()->json($accessRequests);
     }
-} 
+
+    /**
+     * Verifica se há medida protetiva ativa para um visitante ou veículo.
+     *
+     * @queryParam visitor_document string Documento do visitante. Example: 123.456.789-00
+     * @queryParam vehicle_plate string Placa do veículo. Example: ABC-1234
+     *
+     * @response { "has_protective_measure": true, "measure": { ... } }
+     * @response { "has_protective_measure": false }
+     */
+    public function checkProtectiveMeasure(Request $request)
+    {
+        $condominiumId = auth()->user()->condominium_id;
+
+        $request->validate([
+            'visitor_document' => 'nullable|string',
+            'vehicle_plate' => 'nullable|string',
+        ]);
+
+        $visitorDocument = $request->input('visitor_document');
+        $vehiclePlate = $request->input('vehicle_plate');
+
+        if (!$visitorDocument && !$vehiclePlate) {
+            return response()->json(['message' => 'Pelo menos um documento de visitante ou placa de veículo deve ser fornecido.'], 422);
+        }
+
+        $protectiveMeasure = $this->_checkProtectiveMeasures($condominiumId, $visitorDocument, $vehiclePlate);
+
+        if ($protectiveMeasure) {
+            return response()->json([
+                'has_protective_measure' => true,
+                'measure' => $protectiveMeasure->load(['aggressorVisitor', 'protectedResident.user'])
+            ]);
+        }
+
+        return response()->json(['has_protective_measure' => false]);
+    }
+
+    /**
+     * Helper method to check for active protective measures.
+     *
+     * @param int $condominiumId
+     * @param string|null $visitorDocument
+     * @param string|null $vehiclePlate
+     * @return ProtectiveMeasure|null
+     */
+    private function _checkProtectiveMeasures(?int $condominiumId, ?string $visitorDocument, ?string $vehiclePlate)
+    {
+        $query = ProtectiveMeasure::where('is_active', true)
+            ->where(function ($q) use ($condominiumId) {
+                $q->whereNull('condominium_id') // Global measure
+                    ->orWhere('condominium_id', $condominiumId); // Condominium specific measure
+            })
+            ->where(function ($q) use ($visitorDocument, $vehiclePlate) {
+                if ($visitorDocument) {
+                    $q->orWhereHas('aggressorVisitor', function ($sq) use ($visitorDocument) {
+                        $sq->where('document', $visitorDocument);
+                    });
+                }
+                // Note: Protective measures are currently only linked to visitors, not directly to vehicles.
+                // If vehicle-specific protective measures are needed, the ProtectiveMeasure model and migration
+                // would need to be updated to include a vehicle_id.
+            });
+
+        return $query->first();
+    }
+}

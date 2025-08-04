@@ -22,6 +22,7 @@
               id="visitor_document_search"
               v-model="searchDocument"
               @keyup.enter="searchVisitor"
+              @blur="searchVisitor" <!-- Adicionado para verificar ao sair do campo -->
               placeholder="Digite o número do documento"
               class="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors"
             />
@@ -57,7 +58,7 @@
           </div>
           <div>
             <label for="visitor_document" class="block text-sm font-medium text-gray-300 mb-1">Documento (CPF/RG/Passaporte) *</label>
-            <input type="text" id="visitor_document" v-model="form.visitor_document" :disabled="!!form.visitor_id" required class="form-input"/>
+            <input type="text" id="visitor_document" v-model="form.visitor_document" @blur="checkProtectiveMeasure" :disabled="!!form.visitor_id" required class="form-input"/>
           </div>
           <div>
             <label for="visitor_phone" class="block text-sm font-medium text-gray-300 mb-1">Telefone</label>
@@ -95,7 +96,7 @@
         <div v-if="form.has_vehicle" class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
           <div>
             <label for="vehicle_plate" class="block text-sm font-medium text-gray-300 mb-1">Placa *</label>
-            <input type="text" id="vehicle_plate" v-model="form.vehicle_plate" :required="form.has_vehicle" class="form-input"/>
+            <input type="text" id="vehicle_plate" v-model="form.vehicle_plate" @blur="checkProtectiveMeasure" :required="form.has_vehicle" class="form-input"/>
           </div>
           <div>
             <label for="vehicle_model" class="block text-sm font-medium text-gray-300 mb-1">Modelo *</label>
@@ -240,28 +241,34 @@ const searchVisitor = async () => {
 };
 
 const checkProtectiveMeasure = async () => {
-  if (form.visitor_id && form.resident_id) {
-    protectiveMeasureAlert.value = false; // Reset
-    // Esta chamada é conceitual, o backend fará a verificação final no submit.
-    // Mas podemos fazer uma pré-verificação para UX.
-    try {
-        // O endpoint de store da solicitação já faz essa verificação.
-        // Para UX, poderíamos ter um endpoint específico:
-        // await api.get(`/api/access-control/check-protective-measure?visitor_id=${form.visitor_id}&resident_id=${form.resident_id}`);
-        // Se o endpoint acima retornasse um status de erro (ex: 403 ou um JSON com 'active:true'), ativaríamos o alerta.
-        // Por ora, a verificação principal será no backend.
-        // Apenas para demonstração de alerta, vamos simular um caso:
-        // if (form.visitor_document === 'PROTECTED_AGAINST') {
-        //   protectiveMeasureAlert.value = true;
-        //   errorToast("ALERTA: Medida Protetiva Ativa!");
-        // }
-    } catch (e) {
-        if (e.response && e.response.data?.medida_protetiva_ativa) {
-            protectiveMeasureAlert.value = true;
-            errorToast("ALERTA: Medida Protetiva Ativa!");
-        }
-        console.warn("Pré-verificação de medida protetiva falhou ou indicou medida.", e);
+  protectiveMeasureAlert.value = false; // Resetar alerta
+  if (!form.visitor_document && !form.vehicle_plate) {
+    return; // Não há nada para verificar
+  }
+
+  try {
+    const response = await api.get('/access-control/check-protective-measure', {
+      params: {
+        visitor_document: form.visitor_document || null,
+        vehicle_plate: form.vehicle_plate || null,
+      },
+    });
+
+    if (response.data.has_protective_measure) {
+      protectiveMeasureAlert.value = true;
+      errorToast("ALERTA: Medida Protetiva Ativa! " + (response.data.measure.measure_description || ''));
+    } else {
+      protectiveMeasureAlert.value = false;
     }
+  } catch (e) {
+    console.error("Erro ao verificar medida protetiva:", e);
+    // Se o erro for 422 (validação), pode ser que nenhum documento/placa foi fornecido
+    if (e.response && e.response.status === 422) {
+        // Não fazer nada, apenas não ativar o alerta
+    } else {
+        errorToast('Erro ao verificar medidas protetivas.');
+    }
+    protectiveMeasureAlert.value = false; // Garantir que o alerta seja desativado em caso de erro inesperado
   }
 };
 

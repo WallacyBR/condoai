@@ -23,7 +23,8 @@ class CashFlowController extends Controller
     {
         $validated = $request->validate([
             'condominium_id' => ['required', Rule::exists('condominiums', 'id')],
-            'transaction_id' => ['required', Rule::exists('transactions', 'id')],
+            'payable_id' => ['nullable', Rule::exists('payables', 'id')],
+            'receivable_id' => ['nullable', Rule::exists('receivables', 'id')],
             'date' => 'required|date',
             'amount' => 'required|numeric|min:0.01',
             'type' => ['required', Rule::in(TransactionType::values())],
@@ -42,12 +43,18 @@ class CashFlowController extends Controller
     {
         $validated = $request->validate([
             'condominium_id' => ['sometimes', Rule::exists('condominiums', 'id')],
-            'transaction_id' => ['sometimes', Rule::exists('transactions', 'id')],
-            'date' => 'date',
-            'amount' => 'numeric|min:0.01',
-            'type' => [Rule::in(TransactionType::values())],
+            'payable_id' => ['nullable', Rule::exists('payables', 'id')],
+            'receivable_id' => ['nullable', Rule::exists('receivables', 'id')],
+            'date' => 'sometimes|date',
+            'amount' => 'sometimes|numeric|min:0.01',
+            'type' => ['sometimes', Rule::in(TransactionType::values())],
             'description' => 'nullable|string',
         ]);
+
+        // Ensure only one of payable_id or receivable_id is present if they are being updated
+        if (isset($validated['payable_id']) && isset($validated['receivable_id'])) {
+            return response()->json(['message' => 'Cannot associate with both payable and receivable.'], 422);
+        }
 
         $cashFlow->update($validated);
 

@@ -3,14 +3,36 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\Transaction;
+use App\Models\Payable;
+use App\Models\Receivable;
+use Illuminate\Support\Facades\DB;
 
 class FinanceDashboardController extends Controller
 {
     public function forecast()
     {
-        $amounts = Transaction::orderBy('date')
-            ->pluck('amount');
+        $payables = Payable::orderBy('due_date')->get();
+        $receivables = Receivable::orderBy('due_date')->get();
+
+        $allTransactions = collect();
+
+        foreach ($payables as $payable) {
+            $allTransactions->push([
+                'date' => $payable->due_date,
+                'amount' => -$payable->amount, // Expenses are negative
+            ]);
+        }
+
+        foreach ($receivables as $receivable) {
+            $allTransactions->push([
+                'date' => $receivable->due_date,
+                'amount' => $receivable->amount,
+            ]);
+        }
+
+        $allTransactions = $allTransactions->sortBy('date')->values();
+
+        $amounts = $allTransactions->pluck('amount');
 
         $movingAverage = $amounts->avg() ?? 0;
         $trend = $this->calculateTrend($amounts);

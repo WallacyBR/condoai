@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
 use App\Models\Block;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -21,6 +22,8 @@ class BlockController extends Controller
             $query->where('tower_id', $request->tower_id);
         }
 
+        Log::info('BlockController@index: condominium_id', ['condominium_id' => $request->condominium_id]);
+        Log::info('BlockController@index: condominium_id recebido', ['condominium_id_request' => $request->condominium_id]);
         return $query->with(['tower', 'apartments'])->orderByNameSmart()->get();
     }
 

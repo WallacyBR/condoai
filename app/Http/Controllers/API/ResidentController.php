@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Resident;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
 
 class ResidentController extends Controller
 {

@@ -157,6 +157,7 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
 
     // Access Control Module Routes
     Route::prefix('access-control')->name('access-control.')->group(function () {
+        Route::get('dashboard', [AccessControlDashboardController::class, 'getDashboardData'])->name('dashboard');
         // Visitors
         Route::get('visitors/search-by-document', [VisitorController::class, 'searchByDocument'])->name('visitors.searchByDocument');
         Route::apiResource('visitors', VisitorController::class);
@@ -188,13 +189,16 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
         Route::apiResource('chart-accounts', \App\Http\Controllers\API\ChartAccountController::class);
         Route::apiResource('transactions', \App\Http\Controllers\API\TransactionController::class);
         Route::apiResource('payables', \App\Http\Controllers\API\PayableController::class);
+        Route::apiResource('payables.attachments', \App\Http\Controllers\API\PayableAttachmentController::class)->except(['update']);
         Route::apiResource('receivables', \App\Http\Controllers\API\ReceivableController::class);
+        Route::apiResource('receivables.attachments', \App\Http\Controllers\API\ReceivableAttachmentController::class)->except(['update']);
         Route::apiResource('cash-flows', \App\Http\Controllers\API\CashFlowController::class);
 
         Route::post('bank-statements/upload', [\App\Http\Controllers\API\BankStatementController::class, 'upload']);
         Route::post('accounts/reconcile', [\App\Http\Controllers\API\AccountReconciliationController::class, 'reconcile']);
         Route::get('accounts/history', [\App\Http\Controllers\API\AccountReconciliationController::class, 'history']);
-        Route::apiResource('expense-requests', \App\Http\Controllers\API\ExpenseRequestController::class)->only(['index', 'store']);
+        Route::apiResource('expense-requests', \App\Http\Controllers\API\ExpenseRequestController::class);
+        Route::apiResource('expense-requests.attachments', \App\Http\Controllers\API\ExpenseRequestAttachmentController::class)->except(['update']);
         Route::post('expense-requests/{expense_request}/approve', [\App\Http\Controllers\API\ExpenseRequestController::class, 'approve']);
         Route::get('dashboard/forecast', [\App\Http\Controllers\API\FinanceDashboardController::class, 'forecast']);
 

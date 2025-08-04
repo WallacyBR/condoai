@@ -492,14 +492,20 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, h } from 'vue';
 import AuthenticatedLayout from '@/components/layouts/AuthenticatedLayout.vue';
 import api from '@/utils/api';
 import { format, parseISO, startOfToday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useRouter } from 'vue-router';
+import { useToast } from '@/composables/useToast';
 
 const router = useRouter();
+
+
+const { errorToast } = useToast();
+
+
 
 const tasks = ref([]);
 const isLoading = ref(false);
@@ -539,6 +545,7 @@ async function fetchMyTasks() {
     tasks.value = dataArray;
   } catch (error) {
     console.error('Erro ao buscar minhas tarefas de manutenção:', error);
+    errorToast('Erro ao carregar tarefas de manutenção.');
     tasks.value = [];
   } finally {
     isLoading.value = false;
@@ -562,7 +569,7 @@ async function checkRecords() {
     await fetchMyTasks();
   } catch (error) {
     console.error('Erro ao verificar registros:', error);
-    alert('Erro ao verificar registros. Veja o console para mais detalhes.');
+    errorToast('Erro ao verificar registros. Veja o console para mais detalhes.');
   }
 }
 
@@ -572,17 +579,19 @@ function closeDebugModal() {
 }
 
 function goToRecordForm(task) {
-  // Navega para o formulário de registro de execução
   const routeName = 'maintenance.records.new';
-  
+  if (!task || !task.id) {
+    errorToast('Tarefa inválida para registrar execução.');
+    return;
+  }
   try {
     router.push({ 
       name: routeName, 
       params: { scheduleId: task.id } 
     });
   } catch (error) {
-    // Se a rota não existir, redireciona para o dashboard de manutenção
-    console.warn('Rota de registro não encontrada, redirecionando para dashboard');
+    console.warn('Rota de registro não encontrada, redirecionando para dashboard', error);
+    errorToast('Não foi possível abrir o formulário de registro.');
     router.push({ name: 'maintenance.dashboard' });
   }
 }
@@ -595,15 +604,18 @@ function goToRecordFormFromModal(task) {
 }
 
 function viewCompletedRecord(task) {
-  if (task.completed_record_id) {
-    // Navegar para página de detalhes do registro concluído
-    router.push(`/maintenance/records/${task.completed_record_id}`);
-  } else {
-    console.warn('ID do registro concluído não encontrado');
+  if (!task || !task.completed_record_id) {
+    errorToast('Registro de conclusão não encontrado.');
+    return;
   }
+  router.push(`/maintenance/records/${task.completed_record_id}`);
 }
 
 function viewTaskDetails(task) {
+  if (!task) {
+    errorToast('Tarefa inválida para visualizar detalhes.');
+    return;
+  }
   selectedTask.value = task;
 }
 
@@ -612,7 +624,12 @@ function closeTaskDetails() {
 }
 
 onMounted(async () => {
-  await fetchMyTasks();
+  try {
+    await fetchMyTasks();
+  } catch (error) {
+    console.error('Erro na montagem do componente:', error);
+    errorToast('Erro ao carregar a página de tarefas.');
+  }
 });
 </script>
 

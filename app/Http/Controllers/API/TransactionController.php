@@ -2,65 +2,112 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
-use App\Models\Transaction;
+use App\Models\Payable;
+use App\Enums\TransactionType;
+use App\Models\CashFlow;
+use App\Models\Receivable;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Transaction::query();
-        if ($request->has('condominium_id')) {
-            $query->where('condominium_id', $request->condominium_id);
+        $type = $request->query('type'); // 'payable' or 'receivable'
+        $query = $request->query('query');
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+
+        $payables = collect();
+        $receivables = collect();
+
+        if (!$type || $type === 'payable') {
+            $payables = Payable::query();
+            if ($query) {
+                $payables->where('description', 'like', '%' . $query . '%');
+            }
+            if ($startDate) {
+                $payables->whereDate('due_date', '>=', $startDate);
+            }
+            if ($endDate) {
+                $payables->whereDate('due_date', '<=', $endDate);
+            }
+            $payables = $payables->get()->map(function ($item) {
+                $item->type = 'payable';
+                return $item;
+            });
         }
-        return $query->orderBy('date', 'desc')->get();
+
+        if (!$type || $type === 'receivable') {
+            $receivables = Receivable::query();
+            if ($query) {
+                $receivables->where('description', 'like', '%' . $query . '%');
+            }
+            if ($startDate) {
+                $receivables->whereDate('due_date', '>=', $startDate);
+            }
+            if ($endDate) {
+                $receivables->whereDate('due_date', '<=', $endDate);
+            }
+            $receivables = $receivables->get()->map(function ($item) {
+                $item->type = 'receivable';
+                return $item;
+            });
+        }
+
+        $transactions = $payables->merge($receivables)->sortByDesc(function ($transaction) {
+            return $transaction->due_date;
+        })->values();
+
+        return response()->json($transactions);
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'chart_account_id' => ['required', Rule::exists('chart_accounts', 'id')],
-            'condominium_id' => ['required', Rule::exists('condominiums', 'id')],
-            'created_by' => ['required', Rule::exists('users', 'id')],
-            'date' => 'required|date',
-            'amount' => 'required|numeric|min:0.01',
-            'type' => ['required', Rule::in(TransactionType::values())],
+        $request->validate([
+            'type' => 'required|in:payable,receivable',
+            'condominium_id' => 'required|exists:condominiums,id',
+            'chart_account_id' => 'required|exists:chart_accounts,id',
+            'bank_id' => 'nullable|exists:banks,id',
+            'due_date' => 'required|date',
+            'amount' => 'required|numeric',
             'status' => 'required|string',
             'description' => 'nullable|string',
+            'paid_at' => 'nullable|date',
+            'received_at' => 'nullable|date',
         ]);
 
-        return Transaction::create($validated);
-    }
+        try {
+            DB::beginTransaction();
 
-    public function show(Transaction $transaction)
-    {
-        return $transaction;
-    }
+            if ($request->type === 'payable') {
+                $transaction = Payable::create($request->except(['type', 'received_at']));
+                CashFlow::create([
+                    'condominium_id' => $transaction->condominium_id,
+                    'payable_id' => $transaction->id,
+                    'date' => $transaction->due_date,
+                    'amount' => $transaction->amount,
+                    'type' => TransactionType::DESPESA,
+                    'description' => $transaction->description,
+                ]);
+            } else {
+                $transaction = Receivable::create($request->except(['type', 'paid_at']));
+                CashFlow::create([
+                    'condominium_id' => $transaction->condominium_id,
+                    'receivable_id' => $transaction->id,
+                    'date' => $transaction->due_date,
+                    'amount' => $transaction->amount,
+                    'type' => TransactionType::RECEITA,
+                    'description' => $transaction->description,
+                ]);
+            }
 
-    public function update(Request $request, Transaction $transaction)
-    {
-        $validated = $request->validate([
-            'chart_account_id' => ['sometimes', Rule::exists('chart_accounts', 'id')],
-            'condominium_id' => ['sometimes', Rule::exists('condominiums', 'id')],
-            'created_by' => ['sometimes', Rule::exists('users', 'id')],
-            'date' => 'date',
-            'amount' => 'numeric|min:0.01',
-            'type' => [Rule::in(TransactionType::values())],
-            'status' => 'string',
-            'description' => 'nullable|string',
-        ]);
-
-        $transaction->update($validated);
-
-        return $transaction;
-    }
-
-    public function destroy(Transaction $transaction)
-    {
-        $transaction->delete();
-        return response()->json(null, 204);
+            DB::commit();
+            return response()->json($transaction, 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Error creating transaction', 'error' => $e->getMessage()], 500);
+        }
     }
 }

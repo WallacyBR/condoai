@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
 use App\Models\Tower;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -17,6 +18,8 @@ class TowerController extends Controller
             $query->where('condominium_id', $request->condominium_id);
         }
 
+        Log::info('TowerController@index: condominium_id', ['condominium_id' => $request->condominium_id]);
+        Log::info('TowerController@index: condominium_id recebido', ['condominium_id_request' => $request->condominium_id]);
         return $query->with(['blocks', 'apartments'])->orderByNameSmart()->get();
     }
 

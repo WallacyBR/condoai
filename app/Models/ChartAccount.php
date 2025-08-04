@@ -44,8 +44,15 @@ class ChartAccount extends Model
         return $this->hasMany(self::class, 'parent_id');
     }
 
-    public function transactions()
+    public function payables()
     {
-        return $this->hasMany(Transaction::class);
+        return $this->hasMany(Payable::class);
     }
+
+    public function receivables()
+    {
+        return $this->hasMany(Receivable::class);
+    }
+
+    
 }

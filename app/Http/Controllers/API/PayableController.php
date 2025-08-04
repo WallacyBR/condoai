@@ -4,84 +4,70 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Payable;
-use App\Models\PayableAttachment;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rule;
-use Illuminate\Http\UploadedFile;
 
 class PayableController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
     {
-        $query = Payable::with('attachments');
-        if ($request->has('condominium_id')) {
-            $query->where('condominium_id', $request->condominium_id);
-        }
-        return $query->orderBy('due_date')->get();
+        $payables = Payable::all();
+        return response()->json($payables);
     }
 
-    private function handleAttachments(Payable $payable, array $files): void
-    {
-        foreach ($files as $file) {
-            if ($file instanceof UploadedFile) {
-                $path = $file->store('payables', 'public');
-                PayableAttachment::create([
-                    'condominium_id' => $payable->condominium_id,
-                    'payable_id' => $payable->id,
-                    'file_path' => $path,
-                    'original_name' => $file->getClientOriginalName(),
-                    'file_type' => 'document',
-                    'mime_type' => $file->getClientMimeType(),
-                    'file_size' => $file->getSize(),
-                ]);
-            }
-        }
-    }
-
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'condominium_id' => ['required', Rule::exists('condominiums', 'id')],
-            'chart_account_id' => ['required', Rule::exists('chart_accounts', 'id')],
-            'bank_id' => ['nullable', Rule::exists('banks', 'id')],
+        $request->validate([
+            'condominium_id' => 'required|exists:condominiums,id',
+            'chart_account_id' => 'required|exists:chart_accounts,id',
+            'bank_id' => 'nullable|exists:banks,id',
             'due_date' => 'required|date',
-            'amount' => 'required|numeric|min:0.01',
+            'amount' => 'required|numeric',
             'status' => 'required|string',
             'description' => 'nullable|string',
-            'attachments.*' => 'file',
+            'paid_at' => 'nullable|date',
         ]);
 
-        $attachments = $request->file('attachments', []);
-        $payable = Payable::create($validated);
-        $this->handleAttachments($payable, $attachments);
-        return $payable->load('attachments');
+        $payable = Payable::create($request->all());
+        return response()->json($payable, 201);
     }
 
+    /**
+     * Display the specified resource.
+     */
     public function show(Payable $payable)
     {
-        return $payable->load('attachments');
+        return response()->json($payable);
     }
 
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, Payable $payable)
     {
-        $validated = $request->validate([
-            'condominium_id' => ['sometimes', Rule::exists('condominiums', 'id')],
-            'chart_account_id' => ['sometimes', Rule::exists('chart_accounts', 'id')],
-            'bank_id' => ['nullable', Rule::exists('banks', 'id')],
-            'due_date' => 'date',
-            'amount' => 'numeric|min:0.01',
-            'status' => 'string',
+        $request->validate([
+            'condominium_id' => 'required|exists:condominiums,id',
+            'chart_account_id' => 'required|exists:chart_accounts,id',
+            'bank_id' => 'nullable|exists:banks,id',
+            'due_date' => 'required|date',
+            'amount' => 'required|numeric',
+            'status' => 'required|string',
             'description' => 'nullable|string',
-            'attachments.*' => 'file',
+            'paid_at' => 'nullable|date',
         ]);
 
-        $attachments = $request->file('attachments', []);
-        $payable->update($validated);
-        $this->handleAttachments($payable, $attachments);
-        return $payable->load('attachments');
+        $payable->update($request->all());
+        return response()->json($payable);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy(Payable $payable)
     {
         $payable->delete();

@@ -4,84 +4,70 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Receivable;
-use App\Models\ReceivableAttachment;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rule;
-use Illuminate\Http\UploadedFile;
 
 class ReceivableController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
     {
-        $query = Receivable::with('attachments');
-        if ($request->has('condominium_id')) {
-            $query->where('condominium_id', $request->condominium_id);
-        }
-        return $query->orderBy('due_date')->get();
+        $receivables = Receivable::all();
+        return response()->json($receivables);
     }
 
-    private function handleAttachments(Receivable $receivable, array $files): void
-    {
-        foreach ($files as $file) {
-            if ($file instanceof UploadedFile) {
-                $path = $file->store('receivables', 'public');
-                ReceivableAttachment::create([
-                    'condominium_id' => $receivable->condominium_id,
-                    'receivable_id' => $receivable->id,
-                    'file_path' => $path,
-                    'original_name' => $file->getClientOriginalName(),
-                    'file_type' => 'document',
-                    'mime_type' => $file->getClientMimeType(),
-                    'file_size' => $file->getSize(),
-                ]);
-            }
-        }
-    }
-
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'condominium_id' => ['required', Rule::exists('condominiums', 'id')],
-            'chart_account_id' => ['required', Rule::exists('chart_accounts', 'id')],
-            'bank_id' => ['nullable', Rule::exists('banks', 'id')],
+        $request->validate([
+            'condominium_id' => 'required|exists:condominiums,id',
+            'chart_account_id' => 'required|exists:chart_accounts,id',
+            'bank_id' => 'nullable|exists:banks,id',
             'due_date' => 'required|date',
-            'amount' => 'required|numeric|min:0.01',
+            'amount' => 'required|numeric',
             'status' => 'required|string',
             'description' => 'nullable|string',
-            'attachments.*' => 'file',
+            'received_at' => 'nullable|date',
         ]);
 
-        $attachments = $request->file('attachments', []);
-        $receivable = Receivable::create($validated);
-        $this->handleAttachments($receivable, $attachments);
-        return $receivable->load('attachments');
+        $receivable = Receivable::create($request->all());
+        return response()->json($receivable, 201);
     }
 
+    /**
+     * Display the specified resource.
+     */
     public function show(Receivable $receivable)
     {
-        return $receivable->load('attachments');
+        return response()->json($receivable);
     }
 
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, Receivable $receivable)
     {
-        $validated = $request->validate([
-            'condominium_id' => ['sometimes', Rule::exists('condominiums', 'id')],
-            'chart_account_id' => ['sometimes', Rule::exists('chart_accounts', 'id')],
-            'bank_id' => ['nullable', Rule::exists('banks', 'id')],
-            'due_date' => 'date',
-            'amount' => 'numeric|min:0.01',
-            'status' => 'string',
+        $request->validate([
+            'condominium_id' => 'required|exists:condominiums,id',
+            'chart_account_id' => 'required|exists:chart_accounts,id',
+            'bank_id' => 'nullable|exists:banks,id',
+            'due_date' => 'required|date',
+            'amount' => 'required|numeric',
+            'status' => 'required|string',
             'description' => 'nullable|string',
-            'attachments.*' => 'file',
+            'received_at' => 'nullable|date',
         ]);
 
-        $attachments = $request->file('attachments', []);
-        $receivable->update($validated);
-        $this->handleAttachments($receivable, $attachments);
-        return $receivable->load('attachments');
+        $receivable->update($request->all());
+        return response()->json($receivable);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy(Receivable $receivable)
     {
         $receivable->delete();

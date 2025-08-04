@@ -284,7 +284,9 @@ export default {
         const token = localStorage.getItem('token');
         
         // Carregar unidades
-        const url = buildUrlWithCondominiumFilter('/apartments');
+        const url = buildUrlWithCondominiumFilter('/api/apartments');
+        console.log('Fetching units with token:', token ? 'Present' : 'Missing');
+        console.log('Fetching units from URL:', url);
         const response = await fetch(url, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -307,7 +309,9 @@ export default {
           }
 
           // Carregar torres
-          const towersUrl = buildUrlWithCondominiumFilter('/towers');
+          const towersUrl = buildUrlWithCondominiumFilter('/api/towers');
+          console.log('Fetching towers with token:', token ? 'Present' : 'Missing');
+          console.log('Fetching towers from URL:', towersUrl);
           const towersResponse = await fetch(towersUrl, {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -321,7 +325,9 @@ export default {
           }
 
           // Carregar blocos
-          const blocksUrl = buildUrlWithCondominiumFilter('/blocks');
+          const blocksUrl = buildUrlWithCondominiumFilter('/api/blocks');
+          console.log('Fetching blocks with token:', token ? 'Present' : 'Missing');
+          console.log('Fetching blocks from URL:', blocksUrl);
           const blocksResponse = await fetch(blocksUrl, {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -334,12 +340,19 @@ export default {
             blocks.value = Array.isArray(blocksData) ? blocksData : (blocksData.data || []);
           }
         } else {
-          error.value = 'Falha ao carregar dados';
-          console.error('Erro na API:', response.status, response.statusText);
+          // Tenta ler a resposta de erro como JSON, que é o esperado do Handler.php
+          const errorBody = await response.json().catch(() => null);
+          const errorMessage = errorBody?.message || `Falha ao carregar dados. Status: ${response.status}`;
+          error.value = errorMessage;
+          console.error('Erro na API:', response.status, response.statusText, errorBody);
           units.value = [];
         }
       } catch (e) {
-        error.value = 'Erro de conexão';
+        if (e instanceof SyntaxError) {
+          error.value = 'Erro ao processar a resposta do servidor. A resposta não é um JSON válido.';
+        } else {
+          error.value = e.message || 'Erro de conexão.';
+        }
         console.error('Exceção ao carregar dados:', e);
         units.value = [];
       } finally {

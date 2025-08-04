@@ -274,7 +274,31 @@ const routes = [
   {
     path: '/finance/transactions',
     name: 'finance.transactions',
-    component: () => import('../finance/TransactionsView.vue'),
+    component: () => import('../finance/FinancialTransactionsView.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/finance/expense-requests',
+    name: 'finance.expense-requests',
+    component: () => import('../finance/ExpenseRequestsView.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/finance/reports',
+    name: 'finance.reports',
+    component: () => import('../finance/FinancialReportsView.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/finance/dashboard',
+    name: 'finance.dashboard',
+    component: () => import('../finance/FinancialDashboardView.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/finance/cash-flow',
+    name: 'finance.cash-flow',
+    component: () => import('../finance/CashFlowView.vue'),
     meta: { requiresAuth: true, requiresCondo: true }
   },
   // Maintenance Module Routes

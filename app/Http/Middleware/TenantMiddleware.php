@@ -23,7 +23,10 @@ class TenantMiddleware
 
         $subdomain = null;
         $condo = null;
-        
+        $requestedCondominiumId = $request->query('condominium_id') ?? $request->input('condominium_id');
+
+        \Log::info('TenantMiddleware::handle - Condominium ID requested by frontend', ['requested_condominium_id' => $requestedCondominiumId]);
+
         // Se está em localhost ou desenvolvimento, usar o primeiro condomínio
         if ($host === 'localhost' || $host === '127.0.0.1' || str_contains($host, '.test') || app()->environment('local')) {
             \Log::info('TenantMiddleware::handle - Ambiente local detectado, usando primeiro condomínio');

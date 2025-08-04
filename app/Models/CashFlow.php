@@ -18,7 +18,8 @@ class CashFlow extends Model
 
     protected $fillable = [
         'condominium_id',
-        'transaction_id',
+        'payable_id',
+        'receivable_id',
         'date',
         'amount',
         'type',
@@ -36,8 +37,13 @@ class CashFlow extends Model
         return $this->belongsTo(Condominium::class);
     }
 
-    public function transaction()
+    public function payable()
     {
-        return $this->belongsTo(Transaction::class);
+        return $this->belongsTo(Payable::class);
+    }
+
+    public function receivable()
+    {
+        return $this->belongsTo(Receivable::class);
     }
 }

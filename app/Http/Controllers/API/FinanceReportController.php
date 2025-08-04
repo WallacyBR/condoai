@@ -5,7 +5,8 @@ namespace App\Http\Controllers\API;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Models\ChartAccount;
-use App\Models\Transaction;
+use App\Models\Payable;
+use App\Models\Receivable;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -20,12 +21,16 @@ class FinanceReportController extends Controller
             'end_date' => 'required|date',
         ]);
 
-        $transactions = Transaction::where('condominium_id', $validated['condominium_id'])
-            ->whereBetween('date', [$validated['start_date'], $validated['end_date']])
+        $payables = Payable::where('condominium_id', $validated['condominium_id'])
+            ->whereBetween('due_date', [$validated['start_date'], $validated['end_date']])
             ->get();
 
-        $receitas = $transactions->where('type', TransactionType::RECEITA)->sum('amount');
-        $despesas = $transactions->where('type', TransactionType::DESPESA)->sum('amount');
+        $receivables = Receivable::where('condominium_id', $validated['condominium_id'])
+            ->whereBetween('due_date', [$validated['start_date'], $validated['end_date']])
+            ->get();
+
+        $receitas = $receivables->sum('amount');
+        $despesas = $payables->sum('amount');
         $resultado = $receitas - $despesas;
 
         $pdf = Pdf::loadView('reports.dre', [
@@ -47,9 +52,33 @@ class FinanceReportController extends Controller
         ]);
 
         $accounts = ChartAccount::where('condominium_id', $validated['condominium_id'])
-            ->with(['transactions' => function ($q) use ($validated) {
-                $q->whereBetween('date', [$validated['start_date'], $validated['end_date']]);
+            ->with(['payables' => function ($q) use ($validated) {
+                $q->whereBetween('due_date', [$validated['start_date'], $validated['end_date']]);
+            }, 'receivables' => function ($q) use ($validated) {
+                $q->whereBetween('due_date', [$validated['start_date'], $validated['end_date']]);
             }])->get();
+
+        $reportData = [];
+        foreach ($accounts as $account) {
+            $debit = 0;
+            $credit = 0;
+
+            foreach ($account->payables as $payable) {
+                $debit += $payable->amount;
+            }
+
+            foreach ($account->receivables as $receivable) {
+                $credit += $receivable->amount;
+            }
+
+            $reportData[] = [
+                'account' => $account->name,
+                'type' => $account->type->value,
+                'debit' => $debit,
+                'credit' => $credit,
+                'balance' => $credit - $debit,
+            ];
+        }
 
         $pdf = Pdf::loadView('reports.balancete', [
             'accounts' => $accounts,

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
 use App\Models\Apartment;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -33,6 +34,8 @@ class ApartmentController extends Controller
             $apartment->resident = $apartment->owner ?: $apartment->tenant;
         });
 
+        Log::info('ApartmentController@index: condominium_id', ['condominium_id' => $request->condominium_id]);
+        Log::info('ApartmentController@index: condominium_id recebido', ['condominium_id_request' => $request->condominium_id]);
         return $apartments;
     }
 

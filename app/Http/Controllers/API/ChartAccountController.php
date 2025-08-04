@@ -16,6 +16,9 @@ class ChartAccountController extends Controller
         if ($request->has('condominium_id')) {
             $query->where('condominium_id', $request->condominium_id);
         }
+        if ($request->has('type')) {
+            $query->where('type', $request->type);
+        }
         return $query->orderBy('name')->get();
     }
 

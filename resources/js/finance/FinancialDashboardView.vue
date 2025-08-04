@@ -10,14 +10,29 @@
           <p class="text-gray-300">Tendência: <span class="font-bold text-blue-400">{{ forecastData.trend }}</span></p>
         </div>
 
-        <!-- Add more dashboard widgets here -->
+        <div class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl shadow-xl p-6 border-2 border-green-500/20">
+          <h2 class="text-xl font-semibold mb-2 text-white">Status do Orçamento (Mês Atual)</h2>
+          <div v-if="budgetStatus.totalBudgeted > 0">
+            <p class="text-gray-300">
+              Utilizado: <span class="font-bold text-green-400">R$ {{ budgetStatus.totalActual.toFixed(2) }}</span> de
+              <span class="font-bold text-gray-400">R$ {{ budgetStatus.totalBudgeted.toFixed(2) }}</span>
+            </p>
+            <div class="w-full bg-gray-700 rounded-full h-2.5 mt-2">
+              <div class="bg-green-500 h-2.5 rounded-full" :style="{ width: budgetStatus.percentageUsed + '%' }"></div>
+            </div>
+            <p class="text-right text-sm text-green-400 mt-1">{{ budgetStatus.percentageUsed.toFixed(2) }}%</p>
+          </div>
+          <div v-else>
+            <p class="text-gray-400">Nenhum orçamento definido para o mês atual.</p>
+          </div>
+        </div>
       </div>
     </div>
   </AuthenticatedLayout>
 </template>
 
 <script setup>
-import { ref, onMounted, h } from 'vue';
+import { ref, onMounted, h, computed } from 'vue';
 import api from '@/utils/api';
 import { useUser } from '@/composables/useUser';
 import AuthenticatedLayout from '../components/layouts/AuthenticatedLayout.vue';
@@ -28,8 +43,14 @@ const forecastData = ref({
   trend: 0,
 });
 
+const budgetStatus = ref({
+  totalBudgeted: 0,
+  totalActual: 0,
+  percentageUsed: 0,
+});
+
 const { user } = useUser();
-const condominiumId = user.value?.condominium_id;
+const condominiumId = computed(() => user.value?.condominium_id);
 
 const DashboardIcon = {
   render() {
@@ -40,19 +61,50 @@ const DashboardIcon = {
 };
 
 onMounted(() => {
-  fetchForecast();
+  if (condominiumId.value) {
+    fetchForecast();
+    fetchBudgetStatus();
+  }
 });
 
 async function fetchForecast() {
   try {
     const { data } = await api.get('/finance/dashboard/forecast', {
       params: {
-        condominium_id: condominiumId,
+        condominium_id: condominiumId.value,
       },
     });
     forecastData.value = data;
   } catch (error) {
     console.error('Erro ao carregar previsão financeira:', error);
+  }
+}
+
+async function fetchBudgetStatus() {
+  const currentYear = new Date().getFullYear();
+  try {
+    const { data } = await api.get('/finance/reports/budget', {
+      params: {
+        year: currentYear,
+        condominium_id: condominiumId.value,
+      },
+    });
+
+    const currentMonth = new Date().getMonth() + 1;
+    const currentMonthBudget = data.filter(item => item.month === currentMonth);
+
+    const totalBudgeted = currentMonthBudget.reduce((sum, item) => sum + item.budgeted_amount, 0);
+    const totalActual = currentMonthBudget.reduce((sum, item) => sum + item.actual_amount, 0);
+    const percentageUsed = totalBudgeted > 0 ? (totalActual / totalBudgeted) * 100 : 0;
+
+    budgetStatus.value = {
+      totalBudgeted,
+      totalActual,
+      percentageUsed,
+    };
+
+  } catch (error) {
+    console.error('Erro ao carregar status do orçamento:', error);
   }
 }
 </script>

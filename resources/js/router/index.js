@@ -301,6 +301,12 @@ const routes = [
     component: () => import('../finance/CashFlowView.vue'),
     meta: { requiresAuth: true, requiresCondo: true }
   },
+  {
+    path: '/finance/budget',
+    name: 'finance.budget',
+    component: () => import('../finance/BudgetView.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
   // Maintenance Module Routes
   {
     path: '/maintenance/dashboard',

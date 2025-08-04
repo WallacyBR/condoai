@@ -194,6 +194,10 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
         Route::apiResource('receivables.attachments', \App\Http\Controllers\API\ReceivableAttachmentController::class)->except(['update']);
         Route::apiResource('cash-flows', \App\Http\Controllers\API\CashFlowController::class);
 
+        // Budget Items
+        Route::post('budget-items/bulk', [\App\Http\Controllers\API\BudgetItemController::class, 'bulkUpdate']);
+        Route::apiResource('budget-items', \App\Http\Controllers\API\BudgetItemController::class);
+
         Route::post('bank-statements/upload', [\App\Http\Controllers\API\BankStatementController::class, 'upload']);
         Route::post('accounts/reconcile', [\App\Http\Controllers\API\AccountReconciliationController::class, 'reconcile']);
         Route::get('accounts/history', [\App\Http\Controllers\API\AccountReconciliationController::class, 'history']);
@@ -208,6 +212,7 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
 
         Route::get('reports/dre', [\App\Http\Controllers\API\FinanceReportController::class, 'dre']);
         Route::get('reports/balancete', [\App\Http\Controllers\API\FinanceReportController::class, 'balancete']);
+        Route::get('reports/budget', [\App\Http\Controllers\API\BudgetReportController::class, 'getReport']);
     });
 });
 

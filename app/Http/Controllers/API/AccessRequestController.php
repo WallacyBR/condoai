@@ -280,9 +280,35 @@ class AccessRequestController extends Controller
 
         $accessRequests = AccessRequest::condominium($condominiumId)
             ->whereIn('status', ['pending', 'authorized', 'entry_recorded'])
-            ->with(['visitor', 'visitorVehicle', 'resident.user', 'apartment'])
+            ->with(['visitor', 'visitorVehicle', 'resident.user', 'apartment', 'parkingSpot'])
             ->orderByDesc('request_timestamp')
             ->get();
+
+        // Obtenha todos os IDs de visitantes únicos dos pedidos de acesso
+        $visitorIds = $accessRequests->pluck('visitor_id')->unique()->filter()->values();
+
+        if ($visitorIds->isNotEmpty()) {
+            // Encontre todas as medidas protetivas ativas para esses visitantes em uma única consulta
+            $protectiveMeasures = ProtectiveMeasure::where('is_active', true)
+                ->whereIn('aggressor_visitor_id', $visitorIds)
+                ->with('protectedResident:id,name') // Carregue as informações do residente protegido
+                ->get()
+                ->keyBy('aggressor_visitor_id'); // Mapeie por aggressor_visitor_id para fácil consulta
+
+            // Anexe as informações da medida protetiva a cada pedido de acesso
+            $accessRequests->each(function ($request) use ($protectiveMeasures) {
+                if (isset($request->visitor_id) && $protectiveMeasures->has($request->visitor_id)) {
+                    $request->protective_measure = $protectiveMeasures[$request->visitor_id];
+                } else {
+                    $request->protective_measure = null;
+                }
+            });
+        } else {
+            // Garanta que o atributo protective_measure seja definido mesmo se não houver visitantes
+            $accessRequests->each(function ($request) {
+                $request->protective_measure = null;
+            });
+        }
 
         return response()->json($accessRequests);
     }

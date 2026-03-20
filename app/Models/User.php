@@ -20,9 +20,13 @@ class User extends Authenticatable implements JWTSubject
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'password',
         'profile_id',
         'condominium_id',
+        'notification_email',
+        'notification_push',
+        'notification_sms',
     ];
 
     /**
@@ -43,6 +47,9 @@ class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'notification_email' => 'boolean',
+        'notification_push' => 'boolean',
+        'notification_sms' => 'boolean',
     ];
 
     public function getJWTIdentifier()

@@ -2,40 +2,72 @@
 
 namespace App\Policies;
 
+use App\Enums\ModuleName;
 use App\Models\Payable;
 use App\Models\User;
+use App\Policies\Concerns\ChecksTenantAndModule;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class PayablePolicy
 {
+    use ChecksTenantAndModule;
     use HandlesAuthorization;
 
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
-        return $user->hasPermissionTo('view_payables') || $user->isSuperAdmin();
-    }
-
-    public function view(User $user, Payable $payable)
-    {
-        if ($user->isSuperAdmin()) {
+        if ($this->bypassesAuthorization($user)) {
             return true;
         }
-        return $user->condominium_id === $payable->condominium_id &&
-            $user->hasPermissionTo('view_payables');
+
+        return $this->canAccessModule($user, ModuleName::Financeiro->value, 'view');
     }
 
-    public function create(User $user)
+    public function view(User $user, Payable $payable): bool
     {
-        return $user->hasPermissionTo('create_payables') || $user->isSuperAdmin();
+        return $this->canAccessTenantResource(
+            $user,
+            $payable,
+            ModuleName::Financeiro->value,
+            'view'
+        );
     }
 
-    public function approve(User $user, Payable $payable)
+    public function create(User $user): bool
     {
-        return $user->hasPermissionTo('approve_payables') || $user->isSuperAdmin();
+        if ($this->bypassesAuthorization($user)) {
+            return true;
+        }
+
+        return $this->canAccessModule($user, ModuleName::Financeiro->value, 'create');
     }
 
-    public function reconcile(User $user, Payable $payable)
+    public function update(User $user, Payable $payable): bool
     {
-        return $user->hasPermissionTo('reconcile_payables') || $user->isSuperAdmin();
+        return $this->canAccessTenantResource(
+            $user,
+            $payable,
+            ModuleName::Financeiro->value,
+            'update'
+        );
+    }
+
+    public function delete(User $user, Payable $payable): bool
+    {
+        return $this->canAccessTenantResource(
+            $user,
+            $payable,
+            ModuleName::Financeiro->value,
+            'delete'
+        );
+    }
+
+    public function approve(User $user, Payable $payable): bool
+    {
+        return $this->update($user, $payable);
+    }
+
+    public function reconcile(User $user, Payable $payable): bool
+    {
+        return $this->update($user, $payable);
     }
 }

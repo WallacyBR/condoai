@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Concerns\ResolvesTenantCondominium;
 use App\Http\Controllers\Controller;
 use App\Models\Occurrence;
 use App\Models\OccurrencePhoto;
@@ -15,6 +16,7 @@ use Illuminate\Validation\Rules\Enum;
 
 class OccurrenceController extends Controller
 {
+    use ResolvesTenantCondominium;
     /**
      * @group Ocorrências
      * @authenticated
@@ -31,6 +33,8 @@ class OccurrenceController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Occurrence::class);
+
         $request->validate([
             'status' => ['sometimes', 'string', new Enum(OccurrenceStatus::class)],
             'priority' => ['sometimes', 'string', new Enum(OccurrencePriority::class)],
@@ -76,6 +80,8 @@ class OccurrenceController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Occurrence::class);
+
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -92,7 +98,7 @@ class OccurrenceController extends Controller
             'priority' => $validatedData['priority'],
             'status' => OccurrenceStatus::OPEN,
             'user_id' => Auth::id(),
-            'condominium_id' => Auth::user()->condominium_id,
+            'condominium_id' => $this->tenantCondominiumId($request),
         ]);
 
         if ($request->hasFile('photos')) {
@@ -256,7 +262,7 @@ class OccurrenceController extends Controller
      */
     public function addComment(Request $request, Occurrence $occurrence)
     {
-        $this->authorize('view', $occurrence); // Or a more specific "comment" permission
+        $this->authorize('create', [OccurrenceComment::class, $occurrence]);
 
         $validatedData = $request->validate([
             'comment' => 'required|string',

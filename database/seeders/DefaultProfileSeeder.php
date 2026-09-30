@@ -51,10 +51,20 @@ class DefaultProfileSeeder extends Seeder
             $sysOpProfile->modules()->sync($syncData);
         }
 
-        // Perfil Administradora - acesso amplo mas limitado
+        // Perfil Administradora - acesso amplo mas limitado; Financeiro com CRUD completo
         $adminProfile = Profile::where('name', 'Administradora')->first();
         if ($adminProfile) {
             $syncData = $allModules->mapWithKeys(function ($module) {
+                if ($module->name === 'Financeiro') {
+                    return [$module->id => [
+                        'can_view' => true,
+                        'can_create' => true,
+                        'can_update' => true,
+                        'can_delete' => true,
+                        'scope' => 'all',
+                    ]];
+                }
+
                 return [$module->id => [
                     'can_view' => true,
                     'can_create' => in_array($module->name, ['Condomínios', 'Moradores', 'Unidades', 'Relatórios']),
@@ -66,16 +76,16 @@ class DefaultProfileSeeder extends Seeder
             $adminProfile->modules()->sync($syncData);
         }
 
-        // Perfil Síndico - gestão do próprio condomínio
+        // Perfil Síndico - gestão do condomínio ativo; Ocorrências com escopo de condomínio
         $sindicoProfile = Profile::where('name', 'Síndico')->first();
         if ($sindicoProfile) {
             $syncData = $allModules->mapWithKeys(function ($module) {
                 return [$module->id => [
                     'can_view' => true,
-                    'can_create' => !in_array($module->name, ['Condomínios', 'Configurações']),
-                    'can_update' => !in_array($module->name, ['Condomínios', 'Configurações']),
-                    'can_delete' => in_array($module->name, ['Correspondências', 'Ocorrências']),
-                    'scope' => 'own',
+                    'can_create' => ! in_array($module->name, ['Condomínios', 'Configurações']),
+                    'can_update' => ! in_array($module->name, ['Condomínios', 'Configurações']),
+                    'can_delete' => in_array($module->name, ['Correspondências', 'Ocorrências', 'Financeiro']),
+                    'scope' => $module->name === 'Ocorrências' ? 'condominium' : 'own',
                 ]];
             })->toArray();
             $sindicoProfile->modules()->sync($syncData);
@@ -84,12 +94,32 @@ class DefaultProfileSeeder extends Seeder
         // Perfil Zelador - operações básicas
         $zeladorProfile = Profile::where('name', 'Zelador')->first();
         if ($zeladorProfile) {
-            $syncData = $allModules->whereIn('name', ['Correspondências', 'Ocorrências', 'Moradores'])
+            $syncData = $allModules->whereIn('name', ['Correspondências', 'Ocorrências', 'Moradores', 'Financeiro'])
                 ->mapWithKeys(function ($module) {
+                    if ($module->name === 'Financeiro') {
+                        return [$module->id => [
+                            'can_view' => true,
+                            'can_create' => false,
+                            'can_update' => false,
+                            'can_delete' => false,
+                            'scope' => 'condominium',
+                        ]];
+                    }
+
+                    if ($module->name === 'Ocorrências') {
+                        return [$module->id => [
+                            'can_view' => true,
+                            'can_create' => false,
+                            'can_update' => false,
+                            'can_delete' => false,
+                            'scope' => 'condominium',
+                        ]];
+                    }
+
                     return [$module->id => [
                         'can_view' => true,
-                        'can_create' => in_array($module->name, ['Correspondências', 'Ocorrências']),
-                        'can_update' => in_array($module->name, ['Correspondências', 'Ocorrências']),
+                        'can_create' => $module->name === 'Correspondências',
+                        'can_update' => $module->name === 'Correspondências',
                         'can_delete' => false,
                         'scope' => 'own',
                     ]];

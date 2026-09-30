@@ -26,7 +26,6 @@
       </div>
 
       <div v-else>
-        <!-- Informações gerais -->
         <div v-if="!selectable" class="mb-6 text-center">
           <p class="text-gray-400">
             {{ condominiums.length }} condomínio{{ condominiums.length !== 1 ? 's' : '' }} encontrado{{ condominiums.length !== 1 ? 's' : '' }}
@@ -38,50 +37,37 @@
                class="group relative bg-gradient-to-br from-gray-800/60 via-gray-700/60 to-gray-800/60 backdrop-blur-sm rounded-2xl shadow-xl border border-cyan-500/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-cyan-400/40 overflow-hidden animate-fade-in"
                :style="{ animationDelay: `${index * 100}ms` }">
             
-            <!-- Card Background Effect -->
             <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             
-            <!-- Card Content -->
             <div class="relative p-6">
-              <!-- Header -->
               <div class="flex items-start justify-between mb-4">
                 <div class="flex-1">
                   <h3 class="text-xl font-bold text-white mb-1 group-hover:text-cyan-300 transition-colors">
                     {{ condo.name }}
                   </h3>
                   <span class="inline-flex items-center px-3 py-1 text-xs font-medium rounded-full"
-                        :class="condo.status === 'active' 
+                        :class="isActive(condo)
                           ? 'bg-green-500/20 text-green-300 border border-green-400/30' 
                           : 'bg-gray-600/20 text-gray-400 border border-gray-500/30'">
                     <div class="w-2 h-2 rounded-full mr-2 animate-pulse"
-                         :class="condo.status === 'active' ? 'bg-green-400' : 'bg-gray-400'"></div>
-                    {{ condo.status === 'active' ? 'Ativo' : 'Inativo' }}
+                         :class="isActive(condo) ? 'bg-green-400' : 'bg-gray-400'"></div>
+                    {{ isActive(condo) ? 'Ativo' : 'Inativo' }}
                   </span>
                 </div>
               </div>
               
-              <!-- Details -->
               <div class="space-y-3 mb-6">
-                <div class="flex items-center text-gray-300">
+                <div v-if="condo.city || condo.state" class="flex items-center text-gray-300">
                   <svg class="h-5 w-5 mr-3 text-cyan-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                           d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                           d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                   </svg>
-                  <span class="font-medium">{{ condo.city }}, {{ condo.state }}</span>
-                </div>
-                
-                <div class="flex items-center text-gray-300">
-                  <svg class="h-5 w-5 mr-3 text-cyan-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                  </svg>
-                  <span class="font-medium">{{ condo.units }} unidades</span>
+                  <span class="font-medium">{{ condo.city }}<template v-if="condo.city && condo.state">, </template>{{ condo.state }}</span>
                 </div>
               </div>
 
-              <!-- Action Button -->
               <div class="pt-4 border-t border-gray-600/30">
                 <NeonButton 
                   class="w-full" 
@@ -109,6 +95,8 @@
 <script>
 import { ref, onMounted } from 'vue';
 import NeonButton from './NeonButton.vue';
+import api from '../utils/api';
+import { useTenantStore } from '../stores/tenant';
 
 export default {
   name: 'CondominiumList',
@@ -120,113 +108,72 @@ export default {
   },
   emits: ['update-stats', 'selected'],
   setup(props, { emit }) {
+    const tenantStore = useTenantStore();
     const condominiums = ref([]);
     const error = ref('');
     const loading = ref(true);
 
+    const isActive = (condo) => {
+      if (typeof condo.active === 'boolean') {
+        return condo.active;
+      }
+
+      return condo.status === 'active';
+    };
+
+    const emitStats = (items) => {
+      emit('update-stats', {
+        total: items.length,
+        active: items.filter((condo) => isActive(condo)).length,
+      });
+    };
+
     const loadData = async () => {
-      console.log('CondominiumList: Iniciando carregamento de dados...');
+      loading.value = true;
+      error.value = '';
+
       try {
-        const token = localStorage.getItem('token');
-        console.log('CondominiumList: Token encontrado:', !!token);
-        
-        const response = await fetch('/api/condominiums', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        
-        console.log('CondominiumList: Response status:', response.status);
-        
-        if (response.ok) {
-          condominiums.value = await response.json();
-          console.log('CondominiumList: Dados carregados da API:', condominiums.value);
-          // Emitir estatísticas para o componente pai
-          emit('update-stats', {
-            total: condominiums.value.length,
-            active: condominiums.value.filter(c => c.status === 'active').length
-          });
-        } else {
-          console.warn('CondominiumList: API não disponível, usando dados de teste');
-          // Dados de teste para desenvolvimento
-          condominiums.value = [
-            {
-              id: 1,
-              name: 'Condomínio Exemplo 1',
-              city: 'São Paulo',
-              state: 'SP',
-              units: 50,
-              status: 'active'
-            },
-            {
-              id: 2,
-              name: 'Condomínio Exemplo 2',
-              city: 'Rio de Janeiro',
-              state: 'RJ',
-              units: 30,
-              status: 'active'
+        if (props.selectable) {
+          condominiums.value = [...tenantStore.memberships];
+
+          if (condominiums.value.length === 0) {
+            const authModule = await import('../services/auth');
+            const hydration = await authModule.default.fetchCurrentUser();
+            condominiums.value = [...tenantStore.memberships];
+
+            if (condominiums.value.length === 0 && hydration?.needsSelection) {
+              error.value = 'Nenhum condomínio disponível para sua conta.';
             }
-          ];
-          console.log('CondominiumList: Usando dados de teste:', condominiums.value);
-          emit('update-stats', {
-            total: condominiums.value.length,
-            active: condominiums.value.filter(c => c.status === 'active').length
-          });
-        }
-      } catch (e) {
-        console.warn('CondominiumList: Erro na API, usando dados de teste:', e);
-        // Dados de teste para desenvolvimento
-        condominiums.value = [
-          {
-            id: 1,
-            name: 'Condomínio Exemplo 1',
-            city: 'São Paulo',
-            state: 'SP',
-            units: 50,
-            status: 'active'
-          },
-          {
-            id: 2,
-            name: 'Condomínio Exemplo 2',
-            city: 'Rio de Janeiro',
-            state: 'RJ',
-            units: 30,
-            status: 'active'
           }
-        ];
-        console.log('CondominiumList: Usando dados de teste após erro:', condominiums.value);
-        emit('update-stats', {
-          total: condominiums.value.length,
-          active: condominiums.value.filter(c => c.status === 'active').length
-        });
+        } else {
+          const response = await api.get('/condominiums');
+          condominiums.value = response.data;
+        }
+
+        emitStats(condominiums.value);
+      } catch (requestError) {
+        console.error('CondominiumList: erro ao carregar condomínios:', requestError);
+        error.value = requestError?.message || 'Não foi possível carregar os condomínios.';
+        condominiums.value = [];
       } finally {
         loading.value = false;
-        console.log('CondominiumList: Carregamento finalizado. Loading:', loading.value, 'Condominiums:', condominiums.value.length);
       }
     };
 
     const handleAction = (condo) => {
-      console.log('handleAction chamado:', { condo, selectable: props.selectable });
       if (props.selectable) {
-        console.log('Emitindo evento selected:', condo);
         emit('selected', condo);
-      } else {
-        console.log('Modo não selecionável - não fazendo nada');
       }
     };
 
-    onMounted(() => {
-      console.log('CondominiumList montado com props:', props);
-      console.log('Prop selectable:', props.selectable);
-      loadData();
-    });
+    onMounted(loadData);
 
     return { 
       condominiums, 
       error, 
       loading, 
       handleAction,
+      isActive,
       selectable: props.selectable
     };
   }

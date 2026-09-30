@@ -24,9 +24,10 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import NeonButton from './NeonButton.vue';
+import { useTenantStore } from '../stores/tenant';
 
 export default {
   name: 'CondominiumSelector',
@@ -43,11 +44,11 @@ export default {
   },
   setup() {
     const router = useRouter();
-    const selectedCondominiumName = ref(localStorage.getItem('selectedCondominiumName'));
+    const tenantStore = useTenantStore();
+    const selectedCondominiumName = computed(() => tenantStore.selectedName);
 
     const changeCondominium = () => {
-      localStorage.removeItem('selectedCondominium');
-      localStorage.removeItem('selectedCondominiumName');
+      tenantStore.clear();
       router.push('/condominium-select');
     };
 
@@ -57,4 +58,4 @@ export default {
     };
   }
 };
-</script> 
+</script>

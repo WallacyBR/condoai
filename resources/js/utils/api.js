@@ -1,5 +1,10 @@
 import axios from 'axios';
 import router from '../router/index.js';
+import {
+  applyTenantHeader,
+  handleTenantHttpError,
+  requestHadTenantHeader,
+} from './tenant';
 
 // Lazy import do auth para evitar dependência circular
 let auth = null;
@@ -42,12 +47,26 @@ api.interceptors.request.use(config => {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
+  const method = config.method || 'GET';
+  config.headers = applyTenantHeader(config.headers || {}, config.url, method);
+
   return config;
 });
 
 api.interceptors.response.use(
   response => response,
   async error => {
+    const status = error?.response?.status;
+    const message = error?.response?.data?.message;
+    const hadTenantHeader = requestHadTenantHeader(error.config?.headers || {});
+
+    if (status && status !== 401) {
+      const handled = await handleTenantHttpError({ status, message, hadTenantHeader });
+      if (handled) {
+        return Promise.reject(error);
+      }
+    }
+
     if (error?.response?.status !== 401 || error.config?._retry) {
       return Promise.reject(error);
     }
@@ -72,6 +91,12 @@ api.interceptors.response.use(
       if (newToken) {
         retryConfig.headers.Authorization = `Bearer ${newToken}`;
       }
+
+      retryConfig.headers = applyTenantHeader(
+        retryConfig.headers,
+        retryConfig.url,
+        retryConfig.method || 'GET'
+      );
 
       return api.request(retryConfig);
     } catch (refreshError) {
@@ -117,8 +142,9 @@ export async function apiRequest(url, options = {}) {
 
   const normalizedUrl = normalizeApiUrl(url);
   const fullUrl = normalizedUrl.startsWith('/api') ? normalizedUrl : `/api${normalizedUrl}`;
+  const method = options.method || 'GET';
 
-  const defaultHeaders = {
+  let defaultHeaders = {
     Accept: 'application/json'
   };
 
@@ -132,14 +158,22 @@ export async function apiRequest(url, options = {}) {
     defaultHeaders.Authorization = `Bearer ${token}`;
   }
 
-  try {
+  defaultHeaders = applyTenantHeader(defaultHeaders, normalizedUrl, method);
+
+  const executeRequest = async (headers) => {
     const response = await fetch(fullUrl, {
       ...options,
       headers: {
-        ...defaultHeaders,
+        ...headers,
         ...(options.headers || {})
       }
     });
+
+    return response;
+  };
+
+  try {
+    let response = await executeRequest(defaultHeaders);
 
     if (!response.ok) {
       if (response.status === 401) {
@@ -150,26 +184,33 @@ export async function apiRequest(url, options = {}) {
             defaultHeaders.Authorization = `Bearer ${newToken}`;
           }
 
-          const retryResponse = await fetch(fullUrl, {
-            ...options,
-            headers: {
-              ...defaultHeaders,
-              ...(options.headers || {})
-            }
-          });
+          defaultHeaders = applyTenantHeader(defaultHeaders, normalizedUrl, method);
 
-          if (!retryResponse.ok) {
+          response = await executeRequest(defaultHeaders);
+
+          if (!response.ok) {
             let errorMessage;
             try {
-              const errorData = await retryResponse.json();
+              const errorData = await response.json();
               errorMessage = errorData.message || 'Erro na requisição';
             } catch {
               errorMessage = 'Erro na requisição';
             }
+
+            const handled = await handleTenantHttpError({
+              status: response.status,
+              message: errorMessage,
+              hadTenantHeader: requestHadTenantHeader(defaultHeaders),
+            });
+
+            if (handled) {
+              throw new Error(errorMessage);
+            }
+
             throw new Error(errorMessage);
           }
 
-          return await retryResponse.json();
+          return await response.json();
         }
         return null;
       }
@@ -180,6 +221,16 @@ export async function apiRequest(url, options = {}) {
         errorMessage = errorData.message || 'Erro na requisição';
       } catch {
         errorMessage = 'Erro na requisição';
+      }
+
+      const handled = await handleTenantHttpError({
+        status: response.status,
+        message: errorMessage,
+        hadTenantHeader: requestHadTenantHeader(defaultHeaders),
+      });
+
+      if (handled) {
+        throw new Error(errorMessage);
       }
 
       throw new Error(errorMessage);

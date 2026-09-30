@@ -57,7 +57,7 @@
 <script>
 import CondominiumList from './CondominiumList.vue';
 import { useRouter } from 'vue-router';
-import { ref, onMounted } from 'vue';
+import { useTenantStore } from '../stores/tenant';
 import logoImage from '../../images/condo_ai_horizontal.png';
 
 export default {
@@ -65,16 +65,10 @@ export default {
   components: { CondominiumList },
   setup() {
     const router = useRouter();
+    const tenantStore = useTenantStore();
 
     const selectCondominium = (condo) => {
-      console.log('selectCondominium chamado com:', condo);
-      localStorage.setItem('selectedCondominium', condo.id);
-      localStorage.setItem('selectedCondominiumName', condo.name);
-      
-      // Disparar evento customizado para notificar outros componentes
-      window.dispatchEvent(new CustomEvent('condominiumSelected'));
-      
-      console.log('Redirecionando para dashboard...');
+      tenantStore.select(condo);
       router.push('/dashboard');
     };
 

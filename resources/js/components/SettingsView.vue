@@ -131,6 +131,8 @@
 <script>
 import { computed, onMounted, reactive, ref } from 'vue';
 import api from '../utils/api';
+import auth from '../services/auth';
+import { formatApiValidationError } from '../utils/helpers';
 import AuthenticatedLayout from './layouts/AuthenticatedLayout.vue';
 import PWASettings from './PWASettings.vue';
 
@@ -220,7 +222,7 @@ export default {
         setFeedback('Perfil atualizado com sucesso.');
       } catch (error) {
         console.error('Erro ao atualizar perfil:', error);
-        setFeedback(error?.response?.data?.message || 'Erro ao atualizar o perfil.', false);
+        setFeedback(formatApiValidationError(error, 'Erro ao atualizar o perfil.'), false);
       }
     };
 
@@ -231,7 +233,7 @@ export default {
       }
 
       try {
-        await api.put('/profile/password', {
+        const { data } = await api.put('/profile/password', {
           current_password: security.currentPassword,
           new_password: security.newPassword,
           new_password_confirmation: security.confirmPassword
@@ -240,10 +242,11 @@ export default {
         security.currentPassword = '';
         security.newPassword = '';
         security.confirmPassword = '';
-        setFeedback('Senha atualizada com sucesso.');
+        setFeedback(data?.message || 'Senha atualizada com sucesso. Faça login novamente.');
+        await auth.logout();
       } catch (error) {
         console.error('Erro ao atualizar senha:', error);
-        setFeedback(error?.response?.data?.message || 'Erro ao atualizar a senha.', false);
+        setFeedback(formatApiValidationError(error, 'Erro ao atualizar a senha.'), false);
       }
     };
 
@@ -253,7 +256,7 @@ export default {
         setFeedback('Preferências de notificação atualizadas com sucesso.');
       } catch (error) {
         console.error('Erro ao atualizar notificações:', error);
-        setFeedback(error?.response?.data?.message || 'Erro ao atualizar as notificações.', false);
+        setFeedback(formatApiValidationError(error, 'Erro ao atualizar as notificações.'), false);
       }
     };
 

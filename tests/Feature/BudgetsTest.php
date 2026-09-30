@@ -102,4 +102,17 @@ class BudgetsTest extends TestCase
                      'variance' => 250.0,
                  ]);
     }
+
+    public function test_budget_report_returns_forbidden_for_other_condominium(): void
+    {
+        $otherCondominium = Condominium::factory()->create();
+        $year = 2025;
+
+        $response = $this->getJson("/api/finance/reports/budget?year={$year}&condominium_id={$otherCondominium->id}");
+
+        $response->assertForbidden()
+                 ->assertJson([
+                     'message' => 'Acesso negado ao condomínio informado.',
+                 ]);
+    }
 }

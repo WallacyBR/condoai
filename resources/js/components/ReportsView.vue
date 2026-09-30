@@ -4,36 +4,38 @@
       <TopCard title="Relatórios" :icon="ReportIcon" />
 
       <div class="rounded-3xl border border-cyan-500/20 bg-gradient-to-br from-slate-900/90 via-slate-800/90 to-slate-900/90 p-6 shadow-2xl backdrop-blur-xl">
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
           <div>
             <label class="mb-1 block text-sm font-medium text-slate-200">Condomínio</label>
-            <select v-model="filters.condominium" class="w-full rounded-2xl border border-cyan-500/20 bg-slate-950/60 px-4 py-2 text-white focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/30">
-              <option value="">Selecione</option>
-              <option v-for="condo in condominiums" :key="condo.id" :value="String(condo.id)">
-                {{ condo.name }}
-              </option>
-            </select>
+            <input
+              :value="condominiumName"
+              type="text"
+              disabled
+              class="w-full cursor-not-allowed rounded-2xl border border-slate-700 bg-slate-900/60 px-4 py-2 text-slate-400"
+            />
           </div>
           <div>
             <label class="mb-1 block text-sm font-medium text-slate-200">Tipo de relatório</label>
             <select v-model="filters.type" class="w-full rounded-2xl border border-cyan-500/20 bg-slate-950/60 px-4 py-2 text-white focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/30">
               <option value="financial">Orçamento anual</option>
-              <option value="maintenance">Manutenção</option>
-              <option value="residents">Moradores</option>
-              <option value="incidents">Incidentes</option>
+              <option value="maintenance" disabled>Manutenção (em breve)</option>
+              <option value="residents" disabled>Moradores (em breve)</option>
+              <option value="incidents" disabled>Incidentes (em breve)</option>
             </select>
           </div>
           <div>
-            <label class="mb-1 block text-sm font-medium text-slate-200">Data inicial</label>
-            <input v-model="filters.startDate" type="date" class="w-full rounded-2xl border border-cyan-500/20 bg-slate-950/60 px-4 py-2 text-white focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/30" />
-          </div>
-          <div>
-            <label class="mb-1 block text-sm font-medium text-slate-200">Data final</label>
-            <input v-model="filters.endDate" type="date" class="w-full rounded-2xl border border-cyan-500/20 bg-slate-950/60 px-4 py-2 text-white focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/30" />
+            <label class="mb-1 block text-sm font-medium text-slate-200">Ano</label>
+            <select v-model="filters.year" class="w-full rounded-2xl border border-cyan-500/20 bg-slate-950/60 px-4 py-2 text-white focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/30">
+              <option v-for="year in yearOptions" :key="year" :value="String(year)">{{ year }}</option>
+            </select>
           </div>
         </div>
         <div class="mt-6 flex justify-end">
-          <button @click="generateReport" class="rounded-2xl bg-gradient-to-r from-cyan-500 to-fuchsia-500 px-4 py-2 font-medium text-slate-950 transition hover:opacity-90">
+          <button
+            @click="generateReport"
+            :disabled="!condominiumId"
+            class="rounded-2xl bg-gradient-to-r from-cyan-500 to-fuchsia-500 px-4 py-2 font-medium text-slate-950 transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+          >
             Gerar relatório
           </button>
         </div>
@@ -42,7 +44,9 @@
       <div v-if="loading" class="flex items-center justify-center py-8 text-sm text-slate-300">Gerando relatório...</div>
       <div v-else-if="error" class="rounded-2xl border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">{{ error }}</div>
 
-      <div v-else-if="report" class="space-y-6">
+      <div v-if="report" class="space-y-6">
+        <div v-if="exportError" class="rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">{{ exportError }}</div>
+
         <div class="rounded-3xl border border-cyan-500/20 bg-gradient-to-br from-slate-900/90 via-slate-800/90 to-slate-900/90 p-6 shadow-2xl backdrop-blur-xl">
           <div class="flex flex-col justify-between gap-4 md:flex-row md:items-center">
             <div>
@@ -89,12 +93,14 @@
 </template>
 
 <script>
-import { h, onMounted, reactive, ref } from 'vue';
+import { computed, h, reactive, ref } from 'vue';
 import api from '../utils/api';
+import { useUser } from '../composables/useUser';
+import { formatDate } from '../utils/dateHelpers';
 import AuthenticatedLayout from './layouts/AuthenticatedLayout.vue';
 import TopCard from './ui/TopCard.vue';
 
-const buildFinancialReport = (rows, filters) => {
+const buildFinancialReport = (rows, year) => {
   const totalBudgeted = rows.reduce((sum, row) => sum + Number(row.budgeted_amount || 0), 0);
   const totalActual = rows.reduce((sum, row) => sum + Number(row.actual_amount || 0), 0);
   const totalVariance = rows.reduce((sum, row) => sum + Number(row.variance || 0), 0);
@@ -107,9 +113,9 @@ const buildFinancialReport = (rows, filters) => {
   }, null);
 
   return {
-    title: `Relatório orçamentário ${new Date(filters.startDate).getFullYear()}`,
-    startDate: filters.startDate,
-    endDate: filters.endDate,
+    title: `Relatório orçamentário ${year}`,
+    startDate: `${year}-01-01`,
+    endDate: `${year}-12-31`,
     tableHeaders: ['Conta', 'Orçado', 'Realizado', 'Variação'],
     tableData: rows,
     summary: [
@@ -150,13 +156,31 @@ export default {
   name: 'ReportsView',
   components: { AuthenticatedLayout, TopCard },
   setup() {
-    const today = new Date();
-    const currentYear = today.getFullYear();
+    const currentYear = new Date().getFullYear();
+    const { user } = useUser();
 
-    const condominiums = ref([]);
     const loading = ref(false);
     const error = ref('');
+    const exportError = ref('');
     const report = ref(null);
+
+    const condominiumId = computed(() => user.value?.condominium_id ?? null);
+    const condominiumName = computed(() => {
+      if (user.value?.condominium?.name) {
+        return user.value.condominium.name;
+      }
+
+      return condominiumId.value ? `Condomínio #${condominiumId.value}` : 'Condomínio não associado';
+    });
+
+    const yearOptions = computed(() => {
+      const years = [];
+      for (let year = currentYear - 5; year <= currentYear + 1; year += 1) {
+        years.push(year);
+      }
+
+      return years;
+    });
 
     const ReportIcon = {
       render() {
@@ -167,33 +191,18 @@ export default {
     };
 
     const filters = reactive({
-      condominium: '',
       type: 'financial',
-      startDate: `${currentYear}-01-01`,
-      endDate: `${currentYear}-12-31`
+      year: String(currentYear)
     });
-
-    const loadCondominiums = async () => {
-      try {
-        const { data } = await api.get('/condominiums');
-        condominiums.value = Array.isArray(data) ? data : [];
-
-        if (!filters.condominium && condominiums.value.length) {
-          filters.condominium = String(condominiums.value[0].id);
-        }
-      } catch (requestError) {
-        console.error('Erro ao carregar condomínios:', requestError);
-        error.value = 'Não foi possível carregar a lista de condomínios.';
-      }
-    };
 
     const generateReport = async () => {
       loading.value = true;
       error.value = '';
+      exportError.value = '';
       report.value = null;
 
-      if (!filters.condominium) {
-        error.value = 'Selecione um condomínio para gerar o relatório.';
+      if (!condominiumId.value) {
+        error.value = 'Seu usuário não possui condomínio associado para gerar relatórios.';
         loading.value = false;
         return;
       }
@@ -207,44 +216,46 @@ export default {
       try {
         const { data } = await api.get('/finance/reports/budget', {
           params: {
-            condominium_id: filters.condominium,
-            year: new Date(filters.startDate).getFullYear()
+            condominium_id: condominiumId.value,
+            year: Number(filters.year)
           }
         });
 
-        report.value = buildFinancialReport(Array.isArray(data) ? data : [], filters);
+        report.value = buildFinancialReport(Array.isArray(data) ? data : [], Number(filters.year));
       } catch (requestError) {
         console.error('Erro ao gerar relatório:', requestError);
-        error.value = requestError?.response?.data?.message || 'Falha ao gerar o relatório financeiro.';
+        const status = requestError?.response?.status;
+        error.value = status === 403
+          ? (requestError?.response?.data?.message || 'Acesso negado ao condomínio informado.')
+          : (requestError?.response?.data?.message || 'Falha ao gerar o relatório financeiro.');
       } finally {
         loading.value = false;
       }
     };
 
-    const formatDate = date => new Date(date).toLocaleDateString('pt-BR');
-
     const downloadPDF = () => {
-      error.value = 'A exportação desta visão consolidada ainda não está disponível nesta tela.';
+      exportError.value = 'A exportação desta visão consolidada ainda não está disponível nesta tela.';
     };
 
     const downloadExcel = () => {
-      error.value = 'A exportação desta visão consolidada ainda não está disponível nesta tela.';
+      exportError.value = 'A exportação desta visão consolidada ainda não está disponível nesta tela.';
     };
 
-    onMounted(loadCondominiums);
-
     return {
-      condominiums,
+      condominiumId,
+      condominiumName,
       downloadExcel,
       downloadPDF,
       error,
+      exportError,
       filters,
       formatCurrency,
       formatDate,
       generateReport,
       loading,
       report,
-      ReportIcon
+      ReportIcon,
+      yearOptions
     };
   }
 };

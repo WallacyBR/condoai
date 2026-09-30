@@ -22,8 +22,22 @@ class BudgetReportController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
+        $user = $request->user();
+        $condominiumId = (int) $request->input('condominium_id');
+
+        if (! $user?->condominium_id) {
+            return response()->json([
+                'message' => 'Usuário não possui condomínio associado.',
+            ], 403);
+        }
+
+        if ($condominiumId !== (int) $user->condominium_id) {
+            return response()->json([
+                'message' => 'Acesso negado ao condomínio informado.',
+            ], 403);
+        }
+
         $year = $request->input('year');
-        $condominiumId = $request->input('condominium_id');
 
         // Get all budgeted items for the year
         $budgeted = BudgetItem::where('year', $year)

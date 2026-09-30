@@ -89,22 +89,18 @@ export async function handleApiError(error) {
   if (error.status === 401 || error?.response?.status === 401) {
     // Se já estamos tratando um erro 401, evitar loop
     if (isHandling401) {
-      console.log('Já está tratando erro 401, evitando loop...');
       return false;
     }
 
     isHandling401 = true;
-    console.log('Erro 401 detectado, tentando refresh do token...');
 
     try {
       const authInstance = await getAuth();
       const refreshed = await authInstance.refreshToken();
       if (refreshed) {
-        console.log('Token refreshado, retentando requisição...');
         return true;
       }
 
-      console.log('Falha no refresh, fazendo logout...');
       await authInstance.logout();
       await router.push({ name: 'login' });
       return false;
@@ -147,10 +143,8 @@ export async function apiRequest(url, options = {}) {
 
     if (!response.ok) {
       if (response.status === 401) {
-        console.log('Erro 401 na requisição, tentando refresh...');
         const refreshed = await handleApiError({ status: 401 });
         if (refreshed) {
-          console.log('Retentando requisição após refresh...');
           const newToken = authInstance.getToken();
           if (newToken) {
             defaultHeaders.Authorization = `Bearer ${newToken}`;

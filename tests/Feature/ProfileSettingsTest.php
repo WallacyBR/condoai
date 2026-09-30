@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class ProfileSettingsTest extends TestCase
 {
@@ -81,18 +82,27 @@ class ProfileSettingsTest extends TestCase
 
     public function test_can_update_password_and_notifications(): void
     {
-        $passwordResponse = $this->putJson('/api/profile/password', [
-            'current_password' => 'senha-atual',
-            'new_password' => 'nova-senha-segura',
-            'new_password_confirmation' => 'nova-senha-segura',
-        ]);
+        $token = JWTAuth::fromUser($this->user);
+
+        $passwordResponse = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->putJson('/api/profile/password', [
+                'current_password' => 'senha-atual',
+                'new_password' => 'NovaSenhaSegura123',
+                'new_password_confirmation' => 'NovaSenhaSegura123',
+            ]);
 
         $passwordResponse->assertOk()
             ->assertJson([
-                'message' => 'Senha atualizada com sucesso.',
+                'message' => 'Senha atualizada com sucesso. Faça login novamente.',
             ]);
 
-        $this->assertTrue(Hash::check('nova-senha-segura', $this->user->fresh()->password));
+        $this->assertTrue(Hash::check('NovaSenhaSegura123', $this->user->fresh()->password));
+
+        $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->getJson('/api/profile')
+            ->assertUnauthorized();
+
+        $this->actingAs($this->user->fresh(), 'api');
 
         $notificationsResponse = $this->putJson('/api/profile/notifications', [
             'email' => false,
@@ -116,5 +126,17 @@ class ProfileSettingsTest extends TestCase
             'notification_push' => true,
             'notification_sms' => true,
         ]);
+    }
+
+    public function test_password_update_rejects_weak_password(): void
+    {
+        $response = $this->putJson('/api/profile/password', [
+            'current_password' => 'senha-atual',
+            'new_password' => '123',
+            'new_password_confirmation' => '123',
+        ]);
+
+        $response->assertUnprocessable()
+            ->assertJsonValidationErrors(['new_password']);
     }
 }

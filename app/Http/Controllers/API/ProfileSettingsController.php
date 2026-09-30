@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
@@ -46,7 +47,7 @@ class ProfileSettingsController extends Controller
     {
         $validated = $request->validate([
             'current_password' => 'required|string',
-            'new_password' => ['required', 'string', 'confirmed', Password::min(6)],
+            'new_password' => ['required', 'string', 'confirmed', Password::defaults()],
         ]);
 
         $user = $request->user();
@@ -58,11 +59,13 @@ class ProfileSettingsController extends Controller
         }
 
         $user->update([
-            'password' => Hash::make($validated['new_password']),
+            'password' => $validated['new_password'],
         ]);
 
+        Auth::guard('api')->logout();
+
         return response()->json([
-            'message' => 'Senha atualizada com sucesso.',
+            'message' => 'Senha atualizada com sucesso. Faça login novamente.',
         ]);
     }
 

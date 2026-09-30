@@ -3,6 +3,17 @@ import { mount } from '@vue/test-utils';
 import ReportsView from '../js/components/ReportsView.vue';
 import api from '../js/utils/api';
 
+vi.mock('../js/composables/useUser', () => ({
+  useUser: () => ({
+    user: {
+      value: {
+        condominium_id: 1,
+        condominium: { name: 'Condomínio Central' },
+      },
+    },
+  }),
+}));
+
 vi.mock('../js/utils/api', () => ({
   default: {
     get: vi.fn(),
@@ -10,21 +21,17 @@ vi.mock('../js/utils/api', () => ({
 }));
 
 describe('ReportsView', () => {
+  const currentYear = new Date().getFullYear();
+
   beforeEach(() => {
     vi.clearAllMocks();
 
     api.get.mockImplementation((url, config = {}) => {
-      if (url === '/condominiums') {
-        return Promise.resolve({
-          data: [{ id: 1, name: 'Condomínio Central' }],
-        });
-      }
-
       if (url === '/finance/reports/budget') {
         expect(config).toEqual({
           params: {
-            condominium_id: '1',
-            year: 2026,
+            condominium_id: 1,
+            year: currentYear,
           },
         });
 
@@ -44,7 +51,7 @@ describe('ReportsView', () => {
     });
   });
 
-  it('gera relatório financeiro usando a rota existente do backend', async () => {
+  it('gera relatório financeiro usando o condomínio do usuário autenticado', async () => {
     const wrapper = mount(ReportsView, {
       global: {
         stubs: {
@@ -54,23 +61,22 @@ describe('ReportsView', () => {
       },
     });
 
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await wrapper.vm.$nextTick();
     await wrapper.find('button').trigger('click');
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await wrapper.vm.$nextTick();
 
-    expect(api.get).toHaveBeenCalledWith('/condominiums');
     expect(api.get).toHaveBeenCalledWith('/finance/reports/budget', {
       params: {
-        condominium_id: '1',
-        year: 2026,
+        condominium_id: 1,
+        year: currentYear,
       },
     });
-    expect(wrapper.text()).toContain('Relatório orçamentário 2026');
+    expect(wrapper.text()).toContain(`Relatório orçamentário ${currentYear}`);
     expect(wrapper.text()).toContain('Manutenção');
     expect(wrapper.text()).toContain('R$ 1.000,00');
   });
 
-  it('bloqueia tipos sem rota implementada no backend', async () => {
+  it('mantém o relatório visível ao tentar exportar', async () => {
     const wrapper = mount(ReportsView, {
       global: {
         stubs: {
@@ -80,14 +86,15 @@ describe('ReportsView', () => {
       },
     });
 
-    await new Promise(resolve => setTimeout(resolve, 0));
-
-    const selects = wrapper.findAll('select');
-    await selects[1].setValue('maintenance');
+    await wrapper.vm.$nextTick();
     await wrapper.find('button').trigger('click');
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await wrapper.vm.$nextTick();
 
-    expect(wrapper.text()).toContain('integrada apenas ao relatório orçamentário disponível no backend');
-    expect(api.get).not.toHaveBeenCalledWith('/finance/reports/budget', expect.anything());
+    const exportButtons = wrapper.findAll('button').filter(button => button.text().includes('Exportar'));
+    await exportButtons[0].trigger('click');
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.text()).toContain(`Relatório orçamentário ${currentYear}`);
+    expect(wrapper.text()).toContain('A exportação desta visão consolidada ainda não está disponível nesta tela.');
   });
 });

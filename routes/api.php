@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\AccessControlDashboardController;
 use App\Http\Controllers\API\AccessRequestController;
 use App\Http\Controllers\API\ApartmentController;
 use App\Http\Controllers\API\AuthController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\API\ParkingSpotController;
 use App\Http\Controllers\API\ProfileAnalyticsDashboardController;
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\ProfileManagementController;
+use App\Http\Controllers\API\ProfileSettingsController;
 use App\Http\Controllers\API\ProtectiveMeasureController;
 use App\Http\Controllers\API\ResidentController;
 use App\Http\Controllers\API\TowerController;
@@ -53,6 +55,11 @@ Route::controller(AuthController::class)->group(function () {
 Route::get('auth/current-condominium', [AuthController::class, 'currentCondominium'])->middleware(['tenant']);
 
 Route::middleware(['auth:api', 'tenant'])->group(function () {
+    Route::get('profile', [ProfileSettingsController::class, 'show']);
+    Route::put('profile', [ProfileSettingsController::class, 'update']);
+    Route::put('profile/password', [ProfileSettingsController::class, 'updatePassword']);
+    Route::put('profile/notifications', [ProfileSettingsController::class, 'updateNotifications']);
+
     Route::get('condominiums/{condominium}/stats', [CondominiumController::class, 'stats']);
     Route::apiResource('condominiums', CondominiumController::class);
     Route::apiResource('residents', ResidentController::class);

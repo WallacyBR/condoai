@@ -2,151 +2,89 @@
   <AuthenticatedLayout page-title="Relatórios">
     <div class="space-y-6">
       <TopCard title="Relatórios" :icon="ReportIcon" />
-      <!-- Filters -->
-      <div class="bg-white shadow-sm rounded-lg p-6">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+
+      <div class="rounded-3xl border border-cyan-500/20 bg-gradient-to-br from-slate-900/90 via-slate-800/90 to-slate-900/90 p-6 shadow-2xl backdrop-blur-xl">
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Condomínio</label>
-            <select
-              v-model="filters.condominium"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            >
-              <option value="">Todos</option>
-              <option v-for="condo in condominiums" :key="condo.id" :value="condo.id">
-                {{ condo.name }}
-              </option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Relatório</label>
-            <select
-              v-model="filters.type"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            >
-              <option value="financial">Financeiro</option>
-              <option value="maintenance">Manutenção</option>
-              <option value="residents">Moradores</option>
-              <option value="incidents">Incidentes</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Data Inicial</label>
+            <label class="mb-1 block text-sm font-medium text-slate-200">Condomínio</label>
             <input
-              type="date"
-              v-model="filters.startDate"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              :value="condominiumName"
+              type="text"
+              disabled
+              class="w-full cursor-not-allowed rounded-2xl border border-slate-700 bg-slate-900/60 px-4 py-2 text-slate-400"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Data Final</label>
-            <input
-              type="date"
-              v-model="filters.endDate"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            />
+            <label class="mb-1 block text-sm font-medium text-slate-200">Tipo de relatório</label>
+            <select v-model="filters.type" class="w-full rounded-2xl border border-cyan-500/20 bg-slate-950/60 px-4 py-2 text-white focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/30">
+              <option value="financial">Orçamento anual</option>
+              <option value="maintenance" disabled>Manutenção (em breve)</option>
+              <option value="residents" disabled>Moradores (em breve)</option>
+              <option value="incidents" disabled>Incidentes (em breve)</option>
+            </select>
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-200">Ano</label>
+            <select v-model="filters.year" class="w-full rounded-2xl border border-cyan-500/20 bg-slate-950/60 px-4 py-2 text-white focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/30">
+              <option v-for="year in yearOptions" :key="year" :value="String(year)">{{ year }}</option>
+            </select>
           </div>
         </div>
         <div class="mt-6 flex justify-end">
           <button
             @click="generateReport"
-            class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200 flex items-center"
+            :disabled="!condominiumId"
+            class="rounded-2xl bg-gradient-to-r from-cyan-500 to-fuchsia-500 px-4 py-2 font-medium text-slate-950 transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                    d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            Gerar Relatório
+            Gerar relatório
           </button>
         </div>
       </div>
 
-      <!-- Loading State -->
-      <div v-if="loading" class="flex justify-center items-center py-8">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-      </div>
+      <div v-if="loading" class="flex items-center justify-center py-8 text-sm text-slate-300">Gerando relatório...</div>
+      <div v-else-if="error" class="rounded-2xl border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">{{ error }}</div>
 
-      <!-- Error State -->
-      <div v-else-if="error" class="bg-red-50 border border-red-200 rounded-lg p-4 text-red-600">
-        {{ error }}
-      </div>
+      <div v-if="report" class="space-y-6">
+        <div v-if="exportError" class="rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">{{ exportError }}</div>
 
-      <!-- Report Content -->
-      <div v-else-if="report" class="space-y-6">
-        <!-- Report Header -->
-        <div class="bg-white shadow-sm rounded-lg p-6">
-          <div class="flex justify-between items-center">
+        <div class="rounded-3xl border border-cyan-500/20 bg-gradient-to-br from-slate-900/90 via-slate-800/90 to-slate-900/90 p-6 shadow-2xl backdrop-blur-xl">
+          <div class="flex flex-col justify-between gap-4 md:flex-row md:items-center">
             <div>
-              <h3 class="text-lg font-medium text-gray-900">{{ report.title }}</h3>
-              <p class="mt-1 text-sm text-gray-500">
-                Período: {{ formatDate(report.startDate) }} - {{ formatDate(report.endDate) }}
-              </p>
+              <h3 class="text-lg font-semibold text-white">{{ report.title }}</h3>
+              <p class="mt-1 text-sm text-slate-300">Período: {{ formatDate(report.startDate) }} - {{ formatDate(report.endDate) }}</p>
             </div>
-            <div class="flex space-x-4">
-              <button
-                @click="downloadPDF"
-                class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center"
-              >
-                <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                PDF
-              </button>
-              <button
-                @click="downloadExcel"
-                class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center"
-              >
-                <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                Excel
-              </button>
+            <div class="flex flex-wrap gap-3">
+              <button @click="downloadPDF" class="rounded-2xl border border-cyan-500/20 px-4 py-2 text-sm font-medium text-cyan-100 transition hover:bg-cyan-500/10">Exportar PDF</button>
+              <button @click="downloadExcel" class="rounded-2xl border border-cyan-500/20 px-4 py-2 text-sm font-medium text-cyan-100 transition hover:bg-cyan-500/10">Exportar Excel</button>
             </div>
           </div>
         </div>
 
-        <!-- Report Content -->
-        <div class="bg-white shadow-sm rounded-lg overflow-hidden">
-          <div class="p-6">
-            <!-- Summary Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-              <div v-for="(stat, index) in report.summary" :key="index" 
-                   class="bg-gray-50 rounded-lg p-4">
-                <h4 class="text-sm font-medium text-gray-500">{{ stat.label }}</h4>
-                <p class="mt-2 text-2xl font-semibold text-gray-900">{{ stat.value }}</p>
-                <p class="mt-1 text-sm" :class="stat.trend > 0 ? 'text-green-600' : 'text-red-600'">
-                  {{ stat.trend > 0 ? '+' : '' }}{{ stat.trend }}% em relação ao período anterior
-                </p>
-              </div>
-            </div>
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
+          <div v-for="stat in report.summary" :key="stat.label" class="rounded-3xl border border-cyan-500/20 bg-slate-900/80 p-5 shadow-xl">
+            <h4 class="text-sm font-medium text-slate-400">{{ stat.label }}</h4>
+            <p class="mt-2 text-2xl font-semibold text-white">{{ stat.value }}</p>
+            <p class="mt-1 text-sm" :class="stat.tone">{{ stat.helper }}</p>
+          </div>
+        </div>
 
-            <!-- Chart -->
-            <div class="h-96 bg-gray-50 rounded-lg flex items-center justify-center">
-              <p class="text-gray-500">Gráfico será renderizado aqui</p>
-            </div>
-
-            <!-- Data Table -->
-            <div class="mt-8">
-              <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                  <tr>
-                    <th v-for="header in report.tableHeaders" :key="header"
-                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {{ header }}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                  <tr v-for="(row, index) in report.tableData" :key="index" class="hover:bg-gray-50">
-                    <td v-for="(cell, cellIndex) in row" :key="cellIndex"
-                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {{ cell }}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+        <div class="overflow-hidden rounded-3xl border border-cyan-500/20 bg-slate-900/80 shadow-2xl">
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-800">
+              <thead class="bg-slate-950/80">
+                <tr>
+                  <th v-for="header in report.tableHeaders" :key="header" class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">{{ header }}</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800">
+                <tr v-for="row in report.tableData" :key="row.account_name" class="hover:bg-slate-800/60">
+                  <td class="px-6 py-4 text-sm text-slate-100">{{ row.account_name }}</td>
+                  <td class="px-6 py-4 text-sm text-slate-300">{{ formatCurrency(row.budgeted_amount) }}</td>
+                  <td class="px-6 py-4 text-sm text-slate-300">{{ formatCurrency(row.actual_amount) }}</td>
+                  <td class="px-6 py-4 text-sm" :class="row.variance >= 0 ? 'text-emerald-300' : 'text-rose-300'">{{ formatCurrency(row.variance) }}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -155,18 +93,94 @@
 </template>
 
 <script>
-import { ref, reactive, h } from 'vue';
+import { computed, h, reactive, ref } from 'vue';
+import api from '../utils/api';
+import { useUser } from '../composables/useUser';
+import { formatDate } from '../utils/dateHelpers';
 import AuthenticatedLayout from './layouts/AuthenticatedLayout.vue';
 import TopCard from './ui/TopCard.vue';
+
+const buildFinancialReport = (rows, year) => {
+  const totalBudgeted = rows.reduce((sum, row) => sum + Number(row.budgeted_amount || 0), 0);
+  const totalActual = rows.reduce((sum, row) => sum + Number(row.actual_amount || 0), 0);
+  const totalVariance = rows.reduce((sum, row) => sum + Number(row.variance || 0), 0);
+  const worstVariance = rows.reduce((current, row) => {
+    if (!current || Number(row.variance) < Number(current.variance)) {
+      return row;
+    }
+
+    return current;
+  }, null);
+
+  return {
+    title: `Relatório orçamentário ${year}`,
+    startDate: `${year}-01-01`,
+    endDate: `${year}-12-31`,
+    tableHeaders: ['Conta', 'Orçado', 'Realizado', 'Variação'],
+    tableData: rows,
+    summary: [
+      {
+        label: 'Total orçado',
+        value: formatCurrency(totalBudgeted),
+        helper: 'Soma do orçamento anual planejado.',
+        tone: 'text-cyan-300'
+      },
+      {
+        label: 'Total realizado',
+        value: formatCurrency(totalActual),
+        helper: 'Despesas efetivamente pagas no período.',
+        tone: 'text-cyan-300'
+      },
+      {
+        label: 'Saldo da variação',
+        value: formatCurrency(totalVariance),
+        helper: totalVariance >= 0 ? 'O realizado ficou abaixo do previsto.' : 'O realizado ultrapassou o previsto.',
+        tone: totalVariance >= 0 ? 'text-emerald-300' : 'text-rose-300'
+      },
+      {
+        label: 'Maior desvio',
+        value: worstVariance ? worstVariance.account_name : 'Sem dados',
+        helper: worstVariance ? formatCurrency(worstVariance.variance) : 'Nenhuma conta encontrada.',
+        tone: worstVariance && Number(worstVariance.variance) < 0 ? 'text-rose-300' : 'text-emerald-300'
+      }
+    ]
+  };
+};
+
+const formatCurrency = value => new Intl.NumberFormat('pt-BR', {
+  style: 'currency',
+  currency: 'BRL'
+}).format(Number(value || 0));
 
 export default {
   name: 'ReportsView',
   components: { AuthenticatedLayout, TopCard },
   setup() {
-    const condominiums = ref([]);
+    const currentYear = new Date().getFullYear();
+    const { user } = useUser();
+
     const loading = ref(false);
     const error = ref('');
+    const exportError = ref('');
     const report = ref(null);
+
+    const condominiumId = computed(() => user.value?.condominium_id ?? null);
+    const condominiumName = computed(() => {
+      if (user.value?.condominium?.name) {
+        return user.value.condominium.name;
+      }
+
+      return condominiumId.value ? `Condomínio #${condominiumId.value}` : 'Condomínio não associado';
+    });
+
+    const yearOptions = computed(() => {
+      const years = [];
+      for (let year = currentYear - 5; year <= currentYear + 1; year += 1) {
+        years.push(year);
+      }
+
+      return years;
+    });
 
     const ReportIcon = {
       render() {
@@ -177,86 +191,72 @@ export default {
     };
 
     const filters = reactive({
-      condominium: '',
       type: 'financial',
-      startDate: '',
-      endDate: ''
+      year: String(currentYear)
     });
-
-    const loadCondominiums = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('/api/condominiums', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        
-        if (response.ok) {
-          condominiums.value = await response.json();
-        }
-      } catch (e) {
-        console.error('Erro ao carregar condomínios:', e);
-      }
-    };
 
     const generateReport = async () => {
       loading.value = true;
       error.value = '';
-      
+      exportError.value = '';
+      report.value = null;
+
+      if (!condominiumId.value) {
+        error.value = 'Seu usuário não possui condomínio associado para gerar relatórios.';
+        loading.value = false;
+        return;
+      }
+
+      if (filters.type !== 'financial') {
+        error.value = 'No momento, a tela está integrada apenas ao relatório orçamentário disponível no backend.';
+        loading.value = false;
+        return;
+      }
+
       try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('/api/reports/generate', {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(filters)
+        const { data } = await api.get('/finance/reports/budget', {
+          params: {
+            condominium_id: condominiumId.value,
+            year: Number(filters.year)
+          }
         });
-        
-        if (response.ok) {
-          report.value = await response.json();
-        } else {
-          error.value = 'Falha ao gerar relatório';
-        }
-      } catch (e) {
-        error.value = 'Erro de conexão';
+
+        report.value = buildFinancialReport(Array.isArray(data) ? data : [], Number(filters.year));
+      } catch (requestError) {
+        console.error('Erro ao gerar relatório:', requestError);
+        const status = requestError?.response?.status;
+        error.value = status === 403
+          ? (requestError?.response?.data?.message || 'Acesso negado ao condomínio informado.')
+          : (requestError?.response?.data?.message || 'Falha ao gerar o relatório financeiro.');
       } finally {
         loading.value = false;
       }
     };
 
-    const formatDate = (date) => {
-      return new Date(date).toLocaleDateString('pt-BR');
-    };
-
     const downloadPDF = () => {
-      // Implementar download do PDF
-      console.log('Download PDF');
+      exportError.value = 'A exportação desta visão consolidada ainda não está disponível nesta tela.';
     };
 
     const downloadExcel = () => {
-      // Implementar download do Excel
-      console.log('Download Excel');
+      exportError.value = 'A exportação desta visão consolidada ainda não está disponível nesta tela.';
     };
 
-    // Carregar condomínios ao montar o componente
-    loadCondominiums();
-
     return {
-      condominiums,
-      loading,
-      error,
-      report,
-      filters,
-      generateReport,
-      formatDate,
-      downloadPDF,
+      condominiumId,
+      condominiumName,
       downloadExcel,
-      ReportIcon
+      downloadPDF,
+      error,
+      exportError,
+      filters,
+      formatCurrency,
+      formatDate,
+      generateReport,
+      loading,
+      report,
+      ReportIcon,
+      yearOptions
     };
   }
 };
-</script> 
+</script>

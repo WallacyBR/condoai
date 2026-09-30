@@ -25,4 +25,18 @@ export const truncateText = (text, maxLength) => {
 export const capitalize = (str) => {
   if (!str) return '';
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
+
+export const formatApiValidationError = (error, fallbackMessage = 'Erro na operação.') => {
+  const data = error?.response?.data;
+
+  if (!data) {
+    return fallbackMessage;
+  }
+
+  if (data.errors) {
+    return Object.values(data.errors).flat().join(' ');
+  }
+
+  return data.message || fallbackMessage;
 }; 

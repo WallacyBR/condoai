@@ -16,11 +16,22 @@ export const formatDateTime = (dateString) => {
   }
 };
 
+const parseLocalDate = (dateString) => {
+  const isoDateMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateString);
+
+  if (isoDateMatch) {
+    const [, year, month, day] = isoDateMatch;
+    return new Date(Number(year), Number(month) - 1, Number(day));
+  }
+
+  return new Date(dateString);
+};
+
 export const formatDate = (dateString) => {
   if (!dateString) return 'N/A';
   
   try {
-    const date = new Date(dateString);
+    const date = parseLocalDate(dateString);
     return date.toLocaleDateString('pt-BR', {
       day: '2-digit',
       month: '2-digit',

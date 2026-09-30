@@ -17,10 +17,6 @@ class CommonAreaController extends Controller
     {
         $query = CommonArea::query();
 
-        if ($request->has('condominium_id')) {
-            $query->where('condominium_id', $request->condominium_id);
-        }
-
         if ($request->has('active')) {
             $query->where('active', $request->boolean('active'));
         }

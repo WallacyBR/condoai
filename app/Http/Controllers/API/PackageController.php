@@ -17,12 +17,6 @@ class PackageController extends Controller
     {
         $query = Package::query();
 
-        if ($request->has('condominium_id')) {
-            $query->whereHas('apartment', function ($q) use ($request) {
-                $q->where('condominium_id', $request->condominium_id);
-            });
-        }
-
         if ($request->filled('status')) {
             if ($request->status === 'pending') {
                 $query->whereNull('retrieved_at');

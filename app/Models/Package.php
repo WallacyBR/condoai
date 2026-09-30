@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\CondominiumScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Apartment;
@@ -47,8 +48,10 @@ class Package extends Model
         'weight' => 'decimal:2',
     ];
 
-    protected static function booted()
+    protected static function booted(): void
     {
+        static::addGlobalScope(new CondominiumScope);
+
         static::creating(function ($package) {
             if (empty($package->code)) {
                 $package->code = strtoupper(substr(md5(uniqid((string) random_int(1, 9999), true)), 0, 8));

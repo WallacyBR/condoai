@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\CondominiumScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -10,6 +11,11 @@ use Illuminate\Database\Eloquent\SoftDeletes; // Adicionado
 class Visitor extends Model
 {
     use HasFactory, SoftDeletes; // Adicionado SoftDeletes
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new CondominiumScope);
+    }
 
     protected $fillable = [
         'name',

@@ -16,16 +16,8 @@ class VisitorController extends Controller
      */
     public function index(Request $request)
     {
-        $condominiumId = $request->query('condominium_id');
-        if (!$condominiumId) {
-            $user = auth()->user();
-            if (!$user || !$user->condominium_id) {
-                return response()->json(['message' => 'Condominium not specified or user not associated with a condominium.'], 400);
-            }
-            $condominiumId = $user->condominium_id;
-        }
+        $visitors = Visitor::with('vehicles')->orderBy('name')->get();
 
-        $visitors = Visitor::where('condominium_id', $condominiumId)->with('vehicles')->orderBy('name')->get();
         return response()->json($visitors);
     }
 

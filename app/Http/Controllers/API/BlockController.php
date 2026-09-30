@@ -2,59 +2,53 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Concerns\ResolvesTenantCondominium;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Log;
 use App\Models\Block;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class BlockController extends Controller
 {
+    use ResolvesTenantCondominium;
+
     public function index(Request $request)
     {
         $query = Block::query();
-
-        if ($request->has('condominium_id')) {
-            $query->where('condominium_id', $request->condominium_id);
-        }
 
         if ($request->has('tower_id')) {
             $query->where('tower_id', $request->tower_id);
         }
 
-        Log::info('BlockController@index: condominium_id', ['condominium_id' => $request->condominium_id]);
-        Log::info('BlockController@index: condominium_id recebido', ['condominium_id_request' => $request->condominium_id]);
         return $query->with(['tower', 'apartments'])->orderByNameSmart()->get();
     }
 
     public function store(Request $request)
     {
+        $condoId = $this->tenantCondominiumId($request);
+
         $validated = $request->validate([
             'name' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('blocks')->where(function ($query) use ($request) {
-                    return $query->where('condominium_id', $request->condominium_id)
+                Rule::unique('blocks')->where(function ($query) use ($request, $condoId) {
+                    return $query->where('condominium_id', $condoId)
                         ->where('tower_id', $request->tower_id);
-                }),
-            ],
-            'condominium_id' => [
-                'required',
-                Rule::exists('condominiums', 'id')->where(function ($query) {
-                    return $query->where('active', true);
                 }),
             ],
             'tower_id' => [
                 'nullable',
-                Rule::exists('towers', 'id')->where(function ($query) {
-                    return $query->where('active', true);
-                }),
+                Rule::exists('towers', 'id')->where(fn ($query) => $query->where('condominium_id', $condoId)->where('active', true)),
             ],
             'active' => 'boolean',
         ]);
 
+        unset($validated['condominium_id']);
+        $validated['condominium_id'] = $condoId;
+
         $block = Block::create($validated);
+
         return $block->load('tower');
     }
 
@@ -65,29 +59,25 @@ class BlockController extends Controller
 
     public function update(Request $request, Block $block)
     {
+        $condoId = $block->condominium_id;
+
         $validated = $request->validate([
             'name' => [
                 'string',
                 'max:255',
-                Rule::unique('blocks')->ignore($block->id)->where(function ($query) use ($request, $block) {
-                    return $query->where('condominium_id', $request->input('condominium_id', $block->condominium_id))
+                Rule::unique('blocks')->ignore($block->id)->where(function ($query) use ($request, $block, $condoId) {
+                    return $query->where('condominium_id', $condoId)
                         ->where('tower_id', $request->input('tower_id', $block->tower_id));
-                }),
-            ],
-            'condominium_id' => [
-                Rule::exists('condominiums', 'id')->where(function ($query) {
-                    return $query->where('active', true);
                 }),
             ],
             'tower_id' => [
                 'nullable',
-                Rule::exists('towers', 'id')->where(function ($query) {
-                    return $query->where('active', true);
-                }),
+                Rule::exists('towers', 'id')->where(fn ($query) => $query->where('condominium_id', $condoId)->where('active', true)),
             ],
             'active' => 'boolean',
         ]);
 
+        unset($validated['condominium_id']);
         $block->update($validated);
 
         return $block;

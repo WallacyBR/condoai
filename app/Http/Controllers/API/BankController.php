@@ -2,31 +2,33 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Concerns\ResolvesTenantCondominium;
 use App\Http\Controllers\Controller;
 use App\Models\Bank;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class BankController extends Controller
 {
+    use ResolvesTenantCondominium;
+
     public function index(Request $request)
     {
-        $query = Bank::query();
-        if ($request->has('condominium_id')) {
-            $query->where('condominium_id', $request->condominium_id);
-        }
-        return $query->orderBy('name')->get();
+        return Bank::query()->orderBy('name')->get();
     }
 
     public function store(Request $request)
     {
+        $condoId = $this->tenantCondominiumId($request);
+
         $validated = $request->validate([
-            'condominium_id' => ['required', Rule::exists('condominiums', 'id')],
             'name' => 'required|string|max:255',
             'agency' => 'nullable|string|max:50',
             'account_number' => 'required|string|max:50',
             'balance' => 'numeric|min:0',
         ]);
+
+        unset($validated['condominium_id']);
+        $validated['condominium_id'] = $condoId;
 
         return Bank::create($validated);
     }
@@ -39,13 +41,13 @@ class BankController extends Controller
     public function update(Request $request, Bank $bank)
     {
         $validated = $request->validate([
-            'condominium_id' => ['sometimes', Rule::exists('condominiums', 'id')],
             'name' => 'string|max:255',
             'agency' => 'nullable|string|max:50',
             'account_number' => 'string|max:50',
             'balance' => 'numeric|min:0',
         ]);
 
+        unset($validated['condominium_id']);
         $bank->update($validated);
 
         return $bank;
@@ -54,6 +56,7 @@ class BankController extends Controller
     public function destroy(Bank $bank)
     {
         $bank->delete();
+
         return response()->json(null, 204);
     }
 }

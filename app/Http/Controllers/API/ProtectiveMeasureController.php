@@ -2,44 +2,32 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Concerns\ResolvesTenantCondominium;
 use App\Http\Controllers\Controller;
 use App\Models\ProtectiveMeasure;
-use App\Models\Visitor;
 use App\Models\User;
+use App\Models\Visitor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class ProtectiveMeasureController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    use ResolvesTenantCondominium;
+
     public function index(Request $request)
     {
-        $user = auth()->user();
-        if (!$user || !$user->condominium_id) {
-            return response()->json(['message' => 'User not authenticated or not associated with a condominium.'], 403);
-        }
-        $condominiumId = $user->condominium_id;
-
-        $measures = ProtectiveMeasure::condominium($condominiumId)
+        $measures = ProtectiveMeasure::query()
             ->with(['protectedResident:id,name', 'aggressorVisitor:id,name,document'])
             ->orderBy('validity_start_date', 'desc')
             ->get();
+
         return response()->json($measures);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $user = auth()->user();
-        if (!$user || !$user->condominium_id) {
-            return response()->json(['message' => 'User not authenticated or not associated with a condominium.'], 403);
-        }
-        $condominiumId = $user->condominium_id;
+        $condominiumId = $this->tenantCondominiumId($request);
 
         $validator = Validator::make($request->all(), [
             'protected_resident_id' => 'required|exists:users,id',
@@ -57,15 +45,15 @@ class ProtectiveMeasureController extends Controller
         }
 
         $data = $validator->validated();
+        unset($data['condominium_id']);
         $data['condominium_id'] = $condominiumId;
 
-        // Validação adicional: morador e visitante devem pertencer ao mesmo condomínio
         $resident = User::where('id', $data['protected_resident_id'])->where('condominium_id', $condominiumId)->first();
-        if (!$resident) {
+        if (! $resident) {
             return response()->json(['message' => 'Protected resident not found in this condominium.'], 422);
         }
         $visitor = Visitor::where('id', $data['aggressor_visitor_id'])->where('condominium_id', $condominiumId)->first();
-        if (!$visitor) {
+        if (! $visitor) {
             return response()->json(['message' => 'Aggressor visitor not found in this condominium.'], 422);
         }
 
@@ -80,41 +68,26 @@ class ProtectiveMeasureController extends Controller
         return response()->json($measure, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Request $request, string $id)
+    public function show(string $id)
     {
-        $user = auth()->user();
-        if (!$user || !$user->condominium_id) {
-            return response()->json(['message' => 'User not authenticated or not associated with a condominium.'], 403);
-        }
-        $condominiumId = $user->condominium_id;
-
-        $measure = ProtectiveMeasure::condominium($condominiumId)
+        $measure = ProtectiveMeasure::query()
             ->with(['protectedResident:id,name', 'aggressorVisitor:id,name,document'])
             ->find($id);
 
-        if (!$measure) {
+        if (! $measure) {
             return response()->json(['message' => 'Protective measure not found.'], 404);
         }
+
         return response()->json($measure);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
-        $user = auth()->user();
-        if (!$user || !$user->condominium_id) {
-            return response()->json(['message' => 'User not authenticated or not associated with a condominium.'], 403);
-        }
-        $condominiumId = $user->condominium_id;
+        $condominiumId = $this->tenantCondominiumId($request);
 
-        $measure = ProtectiveMeasure::condominium($condominiumId)->find($id);
+        $measure = ProtectiveMeasure::find($id);
 
-        if (!$measure) {
+        if (! $measure) {
             return response()->json(['message' => 'Protective measure not found.'], 404);
         }
 
@@ -136,16 +109,15 @@ class ProtectiveMeasureController extends Controller
 
         $data = $validator->validated();
 
-        // Validação adicional para condomínio se IDs forem alterados
         if (isset($data['protected_resident_id'])) {
             $resident = User::where('id', $data['protected_resident_id'])->where('condominium_id', $condominiumId)->first();
-            if (!$resident) {
+            if (! $resident) {
                 return response()->json(['message' => 'Protected resident not found in this condominium.'], 422);
             }
         }
         if (isset($data['aggressor_visitor_id'])) {
             $visitor = Visitor::where('id', $data['aggressor_visitor_id'])->where('condominium_id', $condominiumId)->first();
-            if (!$visitor) {
+            if (! $visitor) {
                 return response()->json(['message' => 'Aggressor visitor not found in this condominium.'], 422);
             }
         }
@@ -166,27 +138,18 @@ class ProtectiveMeasureController extends Controller
             }
             $data['document_url'] = null;
         }
-        unset($data['document']);
+        unset($data['document'], $data['condominium_id']);
 
         $measure->update($data);
 
         return response()->json($measure);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Request $request, string $id)
+    public function destroy(string $id)
     {
-        $user = auth()->user();
-        if (!$user || !$user->condominium_id) {
-            return response()->json(['message' => 'User not authenticated or not associated with a condominium.'], 403);
-        }
-        $condominiumId = $user->condominium_id;
+        $measure = ProtectiveMeasure::find($id);
 
-        $measure = ProtectiveMeasure::condominium($condominiumId)->find($id);
-
-        if (!$measure) {
+        if (! $measure) {
             return response()->json(['message' => 'Protective measure not found.'], 404);
         }
 
@@ -201,4 +164,4 @@ class ProtectiveMeasureController extends Controller
 
         return response()->json(null, 204);
     }
-} 
+}

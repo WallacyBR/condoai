@@ -4,12 +4,17 @@ namespace Tests\Feature;
 
 use App\Models\Ad;
 use App\Models\Apartment;
+use App\Models\Bank;
 use App\Models\CommonArea;
 use App\Models\CommonAreaBooking;
 use App\Models\Condominium;
+use App\Models\MaintenanceEquipment;
+use App\Models\MaintenanceSchedule;
+use App\Models\Notice;
 use App\Models\Package;
 use App\Models\Profile;
 use App\Models\Resident;
+use App\Models\Tower;
 use App\Models\User;
 use App\Models\Visitor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -149,6 +154,57 @@ class TenantIsolationTest extends TestCase
             'title' => 'Anúncio Beta',
             'category' => 'Geral',
             'condition' => 'Novo',
+        ]);
+
+        Tower::factory()->create([
+            'condominium_id' => $this->condominiumA->id,
+            'name' => 'Torre Alpha',
+        ]);
+        Tower::factory()->create([
+            'condominium_id' => $this->condominiumB->id,
+            'name' => 'Torre Beta',
+        ]);
+
+        Notice::factory()->create([
+            'condominium_id' => $this->condominiumA->id,
+            'user_id' => $this->userA->id,
+            'title' => 'Aviso Alpha',
+        ]);
+        Notice::factory()->create([
+            'condominium_id' => $this->condominiumB->id,
+            'user_id' => $this->userB->id,
+            'title' => 'Aviso Beta',
+        ]);
+
+        Bank::factory()->create([
+            'condominium_id' => $this->condominiumA->id,
+            'name' => 'Banco Alpha',
+        ]);
+        Bank::factory()->create([
+            'condominium_id' => $this->condominiumB->id,
+            'name' => 'Banco Beta',
+        ]);
+
+        $equipmentA = MaintenanceEquipment::factory()->create([
+            'condominium_id' => $this->condominiumA->id,
+        ]);
+        $equipmentB = MaintenanceEquipment::factory()->create([
+            'condominium_id' => $this->condominiumB->id,
+        ]);
+
+        MaintenanceSchedule::factory()->create([
+            'condominium_id' => $this->condominiumA->id,
+            'maintenance_equipment_id' => $equipmentA->id,
+            'title' => 'Agenda Alpha',
+            'type' => 'daily',
+            'is_recurring' => true,
+        ]);
+        MaintenanceSchedule::factory()->create([
+            'condominium_id' => $this->condominiumB->id,
+            'maintenance_equipment_id' => $equipmentB->id,
+            'title' => 'Agenda Beta',
+            'type' => 'daily',
+            'is_recurring' => true,
         ]);
     }
 
@@ -329,6 +385,10 @@ class TenantIsolationTest extends TestCase
             'packages' => ['/api/packages', 'condominium_id', null],
             'visitors' => ['/api/access-control/visitors', 'document', '11111111111'],
             'ads' => ['/api/ads', 'title', 'Anúncio Alpha'],
+            'towers' => ['/api/towers', 'name', 'Torre Alpha'],
+            'banks' => ['/api/finance/banks', 'name', 'Banco Alpha'],
+            'notices' => ['/api/notices', 'title', 'Aviso Alpha'],
+            'maintenance schedules' => ['/api/maintenance/schedules', 'title', 'Agenda Alpha'],
         ];
     }
 
@@ -474,5 +534,84 @@ class TenantIsolationTest extends TestCase
 
         $response->assertOk()
             ->assertJsonPath('current_condominium.id', $this->condominiumA->id);
+    }
+
+    public function test_tower_create_uses_tenant_context_instead_of_body(): void
+    {
+        $this->actingAsTenant($this->userA, $this->condominiumA);
+
+        $response = $this->postJson('/api/towers', [
+            'name' => 'Torre Cross Tenant',
+            'condominium_id' => $this->condominiumB->id,
+        ]);
+
+        $response->assertCreated()
+            ->assertJsonPath('condominium_id', $this->condominiumA->id);
+
+        $this->assertDatabaseHas('towers', [
+            'name' => 'Torre Cross Tenant',
+            'condominium_id' => $this->condominiumA->id,
+        ]);
+    }
+
+    public function test_notice_create_uses_tenant_context_instead_of_user_home(): void
+    {
+        $this->actingAsTenant($this->userA, $this->condominiumA);
+
+        $response = $this->postJson('/api/notices', [
+            'title' => 'Aviso Tenant Context',
+            'body' => 'Conteúdo do aviso',
+            'send_to_all' => true,
+        ]);
+
+        $response->assertCreated()
+            ->assertJsonPath('condominium_id', $this->condominiumA->id);
+
+        $this->assertDatabaseHas('notices', [
+            'title' => 'Aviso Tenant Context',
+            'condominium_id' => $this->condominiumA->id,
+        ]);
+    }
+
+    public function test_bank_create_ignores_cross_tenant_condominium_id_in_body(): void
+    {
+        $this->actingAsTenant($this->userA, $this->condominiumA);
+
+        $response = $this->postJson('/api/finance/banks', [
+            'name' => 'Banco Cross Tenant',
+            'account_number' => '12345-6',
+            'condominium_id' => $this->condominiumB->id,
+        ]);
+
+        $response->assertCreated()
+            ->assertJsonPath('condominium_id', $this->condominiumA->id);
+
+        $this->assertDatabaseHas('banks', [
+            'name' => 'Banco Cross Tenant',
+            'condominium_id' => $this->condominiumA->id,
+        ]);
+    }
+
+    public function test_show_tower_returns_404_for_cross_tenant_resource(): void
+    {
+        $towerB = Tower::where('condominium_id', $this->condominiumB->id)->first();
+
+        $this->actingAsTenant($this->userA, $this->condominiumA);
+
+        $response = $this->getJson('/api/towers/'.$towerB->id);
+
+        $response->assertNotFound();
+    }
+
+    public function test_maintenance_schedule_listing_respects_tenant_header(): void
+    {
+        $this->actingAsTenant($this->userA, $this->condominiumA);
+
+        $response = $this->getJson('/api/maintenance/schedules?condominium_id='.$this->condominiumB->id);
+
+        $response->assertOk();
+        $items = $response->json('data') ?? $response->json();
+        $this->assertCount(1, $items);
+        $this->assertSame('Agenda Alpha', $items[0]['title']);
     }
 }

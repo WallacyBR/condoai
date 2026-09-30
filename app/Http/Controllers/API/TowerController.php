@@ -2,46 +2,40 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Concerns\ResolvesTenantCondominium;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Log;
 use App\Models\Tower;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class TowerController extends Controller
 {
+    use ResolvesTenantCondominium;
+
     public function index(Request $request)
     {
-        $query = Tower::query();
-
-        if ($request->has('condominium_id')) {
-            $query->where('condominium_id', $request->condominium_id);
-        }
-
-        Log::info('TowerController@index: condominium_id', ['condominium_id' => $request->condominium_id]);
-        Log::info('TowerController@index: condominium_id recebido', ['condominium_id_request' => $request->condominium_id]);
-        return $query->with(['blocks', 'apartments'])->orderByNameSmart()->get();
+        return Tower::query()
+            ->with(['blocks', 'apartments'])
+            ->orderByNameSmart()
+            ->get();
     }
 
     public function store(Request $request)
     {
+        $condoId = $this->tenantCondominiumId($request);
+
         $validated = $request->validate([
             'name' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('towers')->where(function ($query) use ($request) {
-                    return $query->where('condominium_id', $request->condominium_id);
-                }),
-            ],
-            'condominium_id' => [
-                'required',
-                Rule::exists('condominiums', 'id')->where(function ($query) {
-                    return $query->where('active', true);
-                }),
+                Rule::unique('towers')->where(fn ($query) => $query->where('condominium_id', $condoId)),
             ],
             'active' => 'boolean',
         ]);
+
+        unset($validated['condominium_id']);
+        $validated['condominium_id'] = $condoId;
 
         return Tower::create($validated);
     }
@@ -53,23 +47,21 @@ class TowerController extends Controller
 
     public function update(Request $request, Tower $tower)
     {
+        $condoId = $tower->condominium_id;
+
         $validated = $request->validate([
             'name' => [
                 'string',
                 'max:255',
-                Rule::unique('towers')->where(function ($query) use ($request, $tower) {
-                    return $query->where('condominium_id', $request->condominium_id ?? $tower->condominium_id)
+                Rule::unique('towers')->where(function ($query) use ($condoId, $tower) {
+                    return $query->where('condominium_id', $condoId)
                         ->where('id', '!=', $tower->id);
-                }),
-            ],
-            'condominium_id' => [
-                Rule::exists('condominiums', 'id')->where(function ($query) {
-                    return $query->where('active', true);
                 }),
             ],
             'active' => 'boolean',
         ]);
 
+        unset($validated['condominium_id']);
         $tower->update($validated);
 
         return $tower;

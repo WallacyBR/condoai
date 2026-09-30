@@ -2,28 +2,25 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Concerns\ResolvesTenantCondominium;
 use App\Http\Controllers\Controller;
 use App\Models\Payable;
 use Illuminate\Http\Request;
 
 class PayableController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    use ResolvesTenantCondominium;
+
     public function index()
     {
-        $payables = Payable::all();
-        return response()->json($payables);
+        return response()->json(Payable::all());
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $request->validate([
-            'condominium_id' => 'required|exists:condominiums,id',
+        $condoId = $this->tenantCondominiumId($request);
+
+        $validated = $request->validate([
             'chart_account_id' => 'required|exists:chart_accounts,id',
             'bank_id' => 'nullable|exists:banks,id',
             'due_date' => 'required|date',
@@ -33,25 +30,22 @@ class PayableController extends Controller
             'paid_at' => 'nullable|date',
         ]);
 
-        $payable = Payable::create($request->all());
+        unset($validated['condominium_id']);
+        $validated['condominium_id'] = $condoId;
+
+        $payable = Payable::create($validated);
+
         return response()->json($payable, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Payable $payable)
     {
         return response()->json($payable);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Payable $payable)
     {
-        $request->validate([
-            'condominium_id' => 'required|exists:condominiums,id',
+        $validated = $request->validate([
             'chart_account_id' => 'required|exists:chart_accounts,id',
             'bank_id' => 'nullable|exists:banks,id',
             'due_date' => 'required|date',
@@ -61,16 +55,16 @@ class PayableController extends Controller
             'paid_at' => 'nullable|date',
         ]);
 
-        $payable->update($request->all());
+        unset($validated['condominium_id']);
+        $payable->update($validated);
+
         return response()->json($payable);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Payable $payable)
     {
         $payable->delete();
+
         return response()->json(null, 204);
     }
 }

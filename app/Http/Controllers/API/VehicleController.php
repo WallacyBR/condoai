@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Concerns\ResolvesTenantCondominium;
 use App\Http\Controllers\Controller;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
@@ -9,15 +10,11 @@ use Illuminate\Validation\Rule;
 
 class VehicleController extends Controller
 {
+    use ResolvesTenantCondominium;
+
     public function index(Request $request)
     {
         $query = Vehicle::query();
-
-        if ($request->has('condominium_id')) {
-            $query->whereHas('apartment', function ($q) use ($request) {
-                $q->where('condominium_id', $request->condominium_id);
-            });
-        }
 
         if ($request->has('apartment_id')) {
             $query->where('apartment_id', $request->apartment_id);
@@ -32,17 +29,19 @@ class VehicleController extends Controller
 
     public function store(Request $request)
     {
+        $condoId = $this->tenantCondominiumId($request);
+
         $validated = $request->validate([
             'license_plate' => 'required|string|max:10|unique:vehicles,license_plate',
             'model' => 'required|string|max:255',
             'color' => 'required|string|max:50',
             'apartment_id' => [
                 'required',
-                Rule::exists('apartments', 'id'),
+                Rule::exists('apartments', 'id')->where(fn ($q) => $q->where('condominium_id', $condoId)),
             ],
             'parking_spot_id' => [
                 'nullable',
-                Rule::exists('parking_spots', 'id'),
+                Rule::exists('parking_spots', 'id')->where(fn ($q) => $q->where('condominium_id', $condoId)),
             ],
         ]);
 
@@ -58,6 +57,8 @@ class VehicleController extends Controller
 
     public function update(Request $request, Vehicle $vehicle)
     {
+        $condoId = $vehicle->apartment->condominium_id;
+
         $validated = $request->validate([
             'license_plate' => [
                 'string', 'max:10',
@@ -67,11 +68,11 @@ class VehicleController extends Controller
             'color' => 'string|max:50',
             'apartment_id' => [
                 'sometimes',
-                Rule::exists('apartments', 'id'),
+                Rule::exists('apartments', 'id')->where(fn ($q) => $q->where('condominium_id', $condoId)),
             ],
             'parking_spot_id' => [
                 'nullable',
-                Rule::exists('parking_spots', 'id'),
+                Rule::exists('parking_spots', 'id')->where(fn ($q) => $q->where('condominium_id', $condoId)),
             ],
         ]);
 

@@ -181,7 +181,7 @@ class AuthService {
 
         const tenantStore = useTenantStore();
         tenantStore.clear();
-        tenantStore.setMemberships([]);
+        tenantStore.resetMembershipCatalog();
         
         const routerInstance = await getRouter();
         routerInstance.push({ name: 'login' });

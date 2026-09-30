@@ -4,6 +4,7 @@ import {
   CONDOMINIUM_SELECTED_EVENT,
   getSelectedCondominiumId,
   getSelectedCondominiumName,
+  resetMembershipCache,
   setCachedMembershipIds,
   STORAGE_KEY_ID,
   STORAGE_KEY_NAME,
@@ -13,10 +14,15 @@ export const useTenantStore = defineStore('tenant', () => {
   const selectedId = ref(getSelectedCondominiumId());
   const selectedName = ref(getSelectedCondominiumName());
   const memberships = ref([]);
+  const membershipsLoaded = ref(false);
 
   const hasSelection = computed(() => {
     if (!selectedId.value) {
       return false;
+    }
+
+    if (!membershipsLoaded.value) {
+      return true;
     }
 
     return membershipIds().includes(String(selectedId.value));
@@ -26,6 +32,10 @@ export const useTenantStore = defineStore('tenant', () => {
     selectedId.value = getSelectedCondominiumId();
     selectedName.value = getSelectedCondominiumName();
 
+    if (!membershipsLoaded.value) {
+      return;
+    }
+
     if (selectedId.value && !membershipIds().includes(String(selectedId.value))) {
       clear();
     }
@@ -34,6 +44,13 @@ export const useTenantStore = defineStore('tenant', () => {
   function setMemberships(list) {
     memberships.value = Array.isArray(list) ? list : [];
     setCachedMembershipIds(memberships.value.map((membership) => membership.id));
+    membershipsLoaded.value = true;
+  }
+
+  function resetMembershipCatalog() {
+    memberships.value = [];
+    membershipsLoaded.value = false;
+    resetMembershipCache();
   }
 
   function membershipIds() {
@@ -47,7 +64,7 @@ export const useTenantStore = defineStore('tenant', () => {
 
     const id = String(condominium.id);
 
-    if (!membershipIds().includes(id)) {
+    if (membershipsLoaded.value && !membershipIds().includes(id)) {
       clear();
       return { ok: false, reason: 'not_member', needsSelection: true };
     }
@@ -74,7 +91,7 @@ export const useTenantStore = defineStore('tenant', () => {
   function hydrate(user) {
     if (!user) {
       clear();
-      setMemberships([]);
+      resetMembershipCatalog();
       return { needsSelection: true };
     }
 
@@ -110,10 +127,12 @@ export const useTenantStore = defineStore('tenant', () => {
     selectedId,
     selectedName,
     memberships,
+    membershipsLoaded,
     hasSelection,
     select,
     clear,
     setMemberships,
+    resetMembershipCatalog,
     hydrate,
     syncFromStorage,
   };

@@ -13,6 +13,7 @@ export const TENANT_ERROR_MESSAGES = [
 let handlingTenantError = false;
 let invalidSelectionRecoveryScheduled = false;
 let cachedMembershipIds = null;
+let membershipsKnown = false;
 
 export function getSelectedCondominiumId() {
   return localStorage.getItem(STORAGE_KEY_ID);
@@ -22,31 +23,26 @@ export function getSelectedCondominiumName() {
   return localStorage.getItem(STORAGE_KEY_NAME);
 }
 
+export function areMembershipsKnown() {
+  return membershipsKnown;
+}
+
 export function setCachedMembershipIds(ids) {
   cachedMembershipIds = Array.isArray(ids) ? ids.map(String) : [];
+  membershipsKnown = true;
+}
+
+export function resetMembershipCache() {
+  cachedMembershipIds = null;
+  membershipsKnown = false;
 }
 
 export function getMembershipIds() {
-  if (cachedMembershipIds !== null) {
-    return cachedMembershipIds;
-  }
-
-  try {
-    const storedUser = localStorage.getItem('user');
-    if (!storedUser) {
-      return [];
-    }
-
-    const user = JSON.parse(storedUser);
-    if (Array.isArray(user?.memberships)) {
-      cachedMembershipIds = user.memberships.map((membership) => String(membership.id));
-      return cachedMembershipIds;
-    }
-  } catch {
+  if (!membershipsKnown) {
     return [];
   }
 
-  return [];
+  return cachedMembershipIds ?? [];
 }
 
 export function isValidMembershipId(id) {
@@ -54,12 +50,11 @@ export function isValidMembershipId(id) {
     return false;
   }
 
-  const membershipIds = getMembershipIds();
-  if (membershipIds.length === 0) {
+  if (!membershipsKnown) {
     return false;
   }
 
-  return membershipIds.includes(String(id));
+  return getMembershipIds().includes(String(id));
 }
 
 function normalizeRequestPath(url = '') {
@@ -125,6 +120,10 @@ export function scheduleInvalidSelectionRecovery() {
 export function resolveTenantHeaderId() {
   const selectedId = getSelectedCondominiumId();
   if (!selectedId) {
+    return null;
+  }
+
+  if (!membershipsKnown) {
     return null;
   }
 
@@ -246,5 +245,5 @@ export async function handleTenantHttpError({ status, message, hadTenantHeader =
 export function resetTenantErrorHandlingForTests() {
   handlingTenantError = false;
   invalidSelectionRecoveryScheduled = false;
-  cachedMembershipIds = null;
+  resetMembershipCache();
 }

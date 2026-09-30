@@ -117,4 +117,59 @@ describe('tenant store', () => {
     expect(store.selectedId).toBeNull();
     expect(localStorage.getItem(STORAGE_KEY_ID)).toBeNull();
   });
+
+  it('preserva seleção no cold-start antes do hydrate com múltiplas memberships', () => {
+    localStorage.setItem(STORAGE_KEY_ID, '2');
+    localStorage.setItem(STORAGE_KEY_NAME, 'Condomínio B');
+
+    const store = useTenantStore();
+
+    expect(store.memberships).toEqual([]);
+    expect(store.membershipsLoaded).toBe(false);
+
+    store.syncFromStorage();
+
+    expect(store.selectedId).toBe('2');
+    expect(store.selectedName).toBe('Condomínio B');
+    expect(store.hasSelection).toBe(true);
+    expect(localStorage.getItem(STORAGE_KEY_ID)).toBe('2');
+
+    const result = store.hydrate({
+      condominium_id: 1,
+      memberships: [
+        { id: 1, name: 'Condomínio A' },
+        { id: 2, name: 'Condomínio B' },
+      ],
+    });
+
+    expect(result.needsSelection).toBe(false);
+    expect(store.selectedId).toBe('2');
+    expect(store.selectedName).toBe('Condomínio B');
+    expect(store.hasSelection).toBe(true);
+  });
+
+  it('limpa seleção somente após hydrate quando id não pertence às memberships', () => {
+    localStorage.setItem(STORAGE_KEY_ID, '99');
+    localStorage.setItem(STORAGE_KEY_NAME, 'Inválido');
+
+    const store = useTenantStore();
+    store.syncFromStorage();
+
+    expect(store.selectedId).toBe('99');
+    expect(store.hasSelection).toBe(true);
+    expect(localStorage.getItem(STORAGE_KEY_ID)).toBe('99');
+
+    const result = store.hydrate({
+      condominium_id: null,
+      memberships: [
+        { id: 1, name: 'Condomínio A' },
+        { id: 2, name: 'Condomínio B' },
+      ],
+    });
+
+    expect(result.needsSelection).toBe(true);
+    expect(store.selectedId).toBeNull();
+    expect(store.hasSelection).toBe(false);
+    expect(localStorage.getItem(STORAGE_KEY_ID)).toBeNull();
+  });
 });

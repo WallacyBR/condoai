@@ -46,6 +46,15 @@ describe('tenant utils', () => {
     expect(headers[TENANT_HEADER]).toBeUndefined();
   });
 
+  it('omite header antes do hydrate sem limpar seleção armazenada', () => {
+    localStorage.setItem(STORAGE_KEY_ID, '15');
+
+    const headers = applyTenantHeader({}, '/residents', 'GET');
+
+    expect(headers[TENANT_HEADER]).toBeUndefined();
+    expect(localStorage.getItem(STORAGE_KEY_ID)).toBe('15');
+  });
+
   it('não aplica header em rotas isentas', () => {
     localStorage.setItem(STORAGE_KEY_ID, '15');
     setCachedMembershipIds(['15']);

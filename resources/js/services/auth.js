@@ -1,6 +1,10 @@
 import api from '../utils/api';
 import { useUser } from '../composables/useUser';
 import { useTenantStore } from '../stores/tenant';
+import {
+    markTenantHydrationPending,
+    resolveTenantHydration,
+} from '../utils/tenant';
 
 // Lazy import do router para evitar dependência circular
 let router = null;
@@ -23,8 +27,9 @@ class AuthService {
         this.setUser = setUser;
 
         if (this.token) {
+            markTenantHydrationPending();
             this.setupTokenRefresh();
-            this.fetchCurrentUser();
+            this.fetchCurrentUser().finally(() => resolveTenantHydration());
         }
     }
 
@@ -85,12 +90,17 @@ class AuthService {
                 this.token = response.data.authorization.token;
                 localStorage.setItem('token', this.token);
                 this.setupTokenRefresh();
+                markTenantHydrationPending();
 
-                if (response.data.user) {
-                    this.setUser(response.data.user);
-                    this.hydrateTenant(response.data.user);
-                } else {
-                    await this.fetchCurrentUser();
+                try {
+                    if (response.data.user) {
+                        this.setUser(response.data.user);
+                        this.hydrateTenant(response.data.user);
+                    } else {
+                        await this.fetchCurrentUser();
+                    }
+                } finally {
+                    resolveTenantHydration();
                 }
                 
                 return response.data;
@@ -182,6 +192,7 @@ class AuthService {
         const tenantStore = useTenantStore();
         tenantStore.clear();
         tenantStore.resetMembershipCatalog();
+        resolveTenantHydration();
         
         const routerInstance = await getRouter();
         routerInstance.push({ name: 'login' });

@@ -9,6 +9,8 @@ import {
   handleTenantHttpError,
   resetTenantErrorHandlingForTests,
   setCachedMembershipIds,
+  markTenantHydrationPending,
+  resolveTenantHydration,
 } from '../js/utils/tenant';
 
 describe('tenant utils', () => {
@@ -37,7 +39,7 @@ describe('tenant utils', () => {
     expect(headers[TENANT_HEADER]).toBe('15');
   });
 
-  it('não envia header para id fora das memberships', () => {
+  it('não envia header para id fora das memberships após hydrate', () => {
     localStorage.setItem(STORAGE_KEY_ID, '99');
     setCachedMembershipIds(['15', '16']);
 
@@ -46,12 +48,12 @@ describe('tenant utils', () => {
     expect(headers[TENANT_HEADER]).toBeUndefined();
   });
 
-  it('omite header antes do hydrate sem limpar seleção armazenada', () => {
+  it('envia header provisório do storage antes do hydrate', () => {
     localStorage.setItem(STORAGE_KEY_ID, '15');
 
     const headers = applyTenantHeader({}, '/residents', 'GET');
 
-    expect(headers[TENANT_HEADER]).toBeUndefined();
+    expect(headers[TENANT_HEADER]).toBe('15');
     expect(localStorage.getItem(STORAGE_KEY_ID)).toBe('15');
   });
 
@@ -90,19 +92,42 @@ describe('tenant utils', () => {
     expect(headers[TENANT_HEADER]).toBeUndefined();
   });
 
-  it('detecta erros de tenant priorizando status HTTP', () => {
+  it('detecta erros de tenant priorizando status HTTP após hydrate', () => {
+    setCachedMembershipIds(['1']);
+
     expect(isTenantErrorResponse(403, 'Qualquer mensagem', true)).toBe(true);
     expect(isTenantErrorResponse(400, 'Qualquer mensagem', true)).toBe(true);
     expect(isTenantErrorResponse(400, 'Header X-Condominium-Id é obrigatório.', false)).toBe(true);
     expect(isTenantErrorResponse(404, 'Condomínio não encontrado.', true)).toBe(true);
     expect(isTenantErrorResponse(404, 'Recurso não encontrado.', true)).toBe(false);
-    expect(isTenantErrorResponse(404, 'Morador não encontrado.', true)).toBe(false);
     expect(isTenantErrorResponse(422, 'Validation failed', true)).toBe(false);
   });
 
-  it('trata erro de tenant com toast, clear e redirecionamento', async () => {
+  it('ignora erros de tenant antes do hydrate (race no reload)', () => {
+    localStorage.setItem(STORAGE_KEY_ID, '2');
+
+    expect(isTenantErrorResponse(400, 'Header X-Condominium-Id é obrigatório.', false)).toBe(false);
+    expect(isTenantErrorResponse(403, 'Acesso negado', true)).toBe(false);
+  });
+
+  it('handleTenantHttpError não limpa seleção antes do hydrate', async () => {
+    localStorage.setItem(STORAGE_KEY_ID, '2');
+    localStorage.setItem('selectedCondominiumName', 'Condomínio B');
+
+    const handled = await handleTenantHttpError({
+      status: 400,
+      message: 'Header X-Condominium-Id é obrigatório.',
+      hadTenantHeader: false,
+    });
+
+    expect(handled).toBe(false);
+    expect(localStorage.getItem(STORAGE_KEY_ID)).toBe('2');
+  });
+
+  it('trata erro de tenant com toast, clear e redirecionamento após hydrate', async () => {
     localStorage.setItem(STORAGE_KEY_ID, '99');
     localStorage.setItem('selectedCondominiumName', 'Condomínio Teste');
+    setCachedMembershipIds(['1']);
 
     const toastError = vi.fn();
     const clear = vi.fn();

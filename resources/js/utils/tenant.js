@@ -14,6 +14,8 @@ let handlingTenantError = false;
 let invalidSelectionRecoveryScheduled = false;
 let cachedMembershipIds = null;
 let membershipsKnown = false;
+let tenantHydrationPromise = null;
+let tenantHydrationResolve = null;
 
 export function getSelectedCondominiumId() {
   return localStorage.getItem(STORAGE_KEY_ID);
@@ -30,11 +32,52 @@ export function areMembershipsKnown() {
 export function setCachedMembershipIds(ids) {
   cachedMembershipIds = Array.isArray(ids) ? ids.map(String) : [];
   membershipsKnown = true;
+  resolveTenantHydration();
 }
 
 export function resetMembershipCache() {
   cachedMembershipIds = null;
   membershipsKnown = false;
+}
+
+export function isPlausibleStoredTenantId(id) {
+  if (id === null || id === undefined || id === '') {
+    return false;
+  }
+
+  const normalized = String(id).trim();
+  const numeric = Number(normalized);
+
+  return Number.isInteger(numeric) && numeric > 0 && String(numeric) === normalized;
+}
+
+export function markTenantHydrationPending() {
+  if (!tenantHydrationPromise) {
+    tenantHydrationPromise = new Promise((resolve) => {
+      tenantHydrationResolve = resolve;
+    });
+  }
+}
+
+export function resolveTenantHydration() {
+  if (tenantHydrationResolve) {
+    tenantHydrationResolve();
+  }
+
+  tenantHydrationPromise = null;
+  tenantHydrationResolve = null;
+}
+
+export function waitForTenantHydration() {
+  if (membershipsKnown) {
+    return Promise.resolve();
+  }
+
+  if (tenantHydrationPromise) {
+    return tenantHydrationPromise;
+  }
+
+  return Promise.resolve();
 }
 
 export function getMembershipIds() {
@@ -119,12 +162,12 @@ export function scheduleInvalidSelectionRecovery() {
 
 export function resolveTenantHeaderId() {
   const selectedId = getSelectedCondominiumId();
-  if (!selectedId) {
+  if (!selectedId || !isPlausibleStoredTenantId(selectedId)) {
     return null;
   }
 
   if (!membershipsKnown) {
-    return null;
+    return String(selectedId);
   }
 
   if (!isValidMembershipId(selectedId)) {
@@ -184,6 +227,10 @@ export function isCondominiumNotFoundHeuristic(message) {
 }
 
 export function isTenantErrorResponse(status, message, hadTenantHeader = false) {
+  if (!membershipsKnown) {
+    return false;
+  }
+
   if (status === 403 && hadTenantHeader) {
     return true;
   }
@@ -206,6 +253,10 @@ export function isTenantErrorResponse(status, message, hadTenantHeader = false) 
 }
 
 export async function handleTenantHttpError({ status, message, hadTenantHeader = false }) {
+  if (!membershipsKnown) {
+    return false;
+  }
+
   if (!isTenantErrorResponse(status, message, hadTenantHeader)) {
     return false;
   }
@@ -246,4 +297,5 @@ export function resetTenantErrorHandlingForTests() {
   handlingTenantError = false;
   invalidSelectionRecoveryScheduled = false;
   resetMembershipCache();
+  resolveTenantHydration();
 }

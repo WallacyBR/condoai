@@ -1,9 +1,12 @@
 import axios from 'axios';
 import router from '../router/index.js';
 import {
+  areMembershipsKnown,
   finalizeTenantHeaders,
   handleTenantHttpError,
+  isExemptRoute,
   requestHadTenantHeader,
+  waitForTenantHydration,
 } from './tenant';
 
 // Lazy import do auth para evitar dependência circular
@@ -38,7 +41,7 @@ export const api = axios.create({
   baseURL: '/api'
 });
 
-api.interceptors.request.use(config => {
+api.interceptors.request.use(async (config) => {
   const token = localStorage.getItem('token');
 
   config.url = normalizeApiUrl(config.url);
@@ -48,6 +51,11 @@ api.interceptors.request.use(config => {
   }
 
   const method = config.method || 'GET';
+
+  if (token && !isExemptRoute(config.url, method) && !areMembershipsKnown()) {
+    await waitForTenantHydration();
+  }
+
   config.headers = finalizeTenantHeaders(config.headers || {}, config.url, method);
 
   return config;
@@ -166,6 +174,10 @@ export async function apiRequest(url, options = {}) {
     normalizedUrl,
     method,
   );
+
+  if (token && !isExemptRoute(normalizedUrl, method) && !areMembershipsKnown()) {
+    await waitForTenantHydration();
+  }
 
   const executeRequest = async (headers) => {
     const response = await fetch(fullUrl, {

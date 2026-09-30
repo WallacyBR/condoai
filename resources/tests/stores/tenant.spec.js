@@ -148,6 +148,30 @@ describe('tenant store', () => {
     expect(store.hasSelection).toBe(true);
   });
 
+  it('reload multi-membership: seleção legítima sobrevive até hydrate validar', () => {
+    localStorage.setItem(STORAGE_KEY_ID, '2');
+    localStorage.setItem(STORAGE_KEY_NAME, 'Condomínio B');
+
+    const store = useTenantStore();
+
+    store.syncFromStorage();
+    expect(store.selectedId).toBe('2');
+    expect(store.hasSelection).toBe(true);
+
+    const result = store.hydrate({
+      condominium_id: 1,
+      memberships: [
+        { id: 1, name: 'Condomínio A' },
+        { id: 2, name: 'Condomínio B' },
+      ],
+    });
+
+    expect(result.needsSelection).toBe(false);
+    expect(store.selectedId).toBe('2');
+    expect(store.hasSelection).toBe(true);
+    expect(localStorage.getItem(STORAGE_KEY_ID)).toBe('2');
+  });
+
   it('limpa seleção somente após hydrate quando id não pertence às memberships', () => {
     localStorage.setItem(STORAGE_KEY_ID, '99');
     localStorage.setItem(STORAGE_KEY_NAME, 'Inválido');

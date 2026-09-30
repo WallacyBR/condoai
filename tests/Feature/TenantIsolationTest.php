@@ -18,11 +18,13 @@ use App\Models\Tower;
 use App\Models\User;
 use App\Models\Visitor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Concerns\AssignsModulePermissions;
 use Tests\Concerns\InteractsWithTenant;
 use Tests\TestCase;
 
 class TenantIsolationTest extends TestCase
 {
+    use AssignsModulePermissions;
     use InteractsWithTenant;
     use RefreshDatabase;
 
@@ -63,6 +65,13 @@ class TenantIsolationTest extends TestCase
         $this->condominiumA = Condominium::factory()->create(['name' => 'Condomínio Alpha']);
         $this->condominiumB = Condominium::factory()->create(['name' => 'Condomínio Beta']);
         $this->profile = Profile::factory()->create(['name' => 'Síndico']);
+        $this->assignModulePermissions($this->profile, 'Financeiro', [
+            'can_view' => true,
+            'can_create' => true,
+            'can_update' => true,
+            'can_delete' => true,
+            'scope' => 'condominium',
+        ]);
         $sysOpProfile = Profile::factory()->create(['name' => 'SysOp']);
 
         $this->userA = User::factory()->create([

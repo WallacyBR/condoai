@@ -15,6 +15,8 @@ class ChartAccountController extends Controller
 
     public function index(Request $request)
     {
+        $this->authorize('viewAny', ChartAccount::class);
+
         $query = ChartAccount::query();
 
         if ($request->has('type')) {
@@ -26,10 +28,15 @@ class ChartAccountController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create', ChartAccount::class);
+
         $condoId = $this->tenantCondominiumId($request);
 
         $validated = $request->validate([
-            'parent_id' => ['nullable', Rule::exists('chart_accounts', 'id')],
+            'parent_id' => [
+                'nullable',
+                Rule::exists('chart_accounts', 'id')->where('condominium_id', $condoId),
+            ],
             'name' => 'required|string|max:255',
             'type' => ['required', Rule::in(AccountType::values())],
             'account_number' => 'nullable|string|max:50',
@@ -43,13 +50,22 @@ class ChartAccountController extends Controller
 
     public function show(ChartAccount $chartAccount)
     {
+        $this->authorize('view', $chartAccount);
+
         return $chartAccount;
     }
 
     public function update(Request $request, ChartAccount $chartAccount)
     {
+        $this->authorize('update', $chartAccount);
+
+        $condoId = $this->tenantCondominiumId($request);
+
         $validated = $request->validate([
-            'parent_id' => ['nullable', Rule::exists('chart_accounts', 'id')],
+            'parent_id' => [
+                'nullable',
+                Rule::exists('chart_accounts', 'id')->where('condominium_id', $condoId),
+            ],
             'name' => 'string|max:255',
             'type' => [Rule::in(AccountType::values())],
             'account_number' => 'nullable|string|max:50',
@@ -63,6 +79,8 @@ class ChartAccountController extends Controller
 
     public function destroy(ChartAccount $chartAccount)
     {
+        $this->authorize('delete', $chartAccount);
+
         $chartAccount->delete();
 
         return response()->json(null, 204);

@@ -19,12 +19,9 @@ class ExpenseRequest extends Model
     protected $fillable = [
         'condominium_id',
         'requested_by',
-        'approved_by',
         'amount',
         'due_date',
-        'status',
         'description',
-        'approved_at',
         'paid_at',
     ];
 

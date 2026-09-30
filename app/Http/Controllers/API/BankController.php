@@ -13,11 +13,15 @@ class BankController extends Controller
 
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Bank::class);
+
         return Bank::query()->orderBy('name')->get();
     }
 
     public function store(Request $request)
     {
+        $this->authorize('create', Bank::class);
+
         $condoId = $this->tenantCondominiumId($request);
 
         $validated = $request->validate([
@@ -35,11 +39,15 @@ class BankController extends Controller
 
     public function show(Bank $bank)
     {
+        $this->authorize('view', $bank);
+
         return $bank;
     }
 
     public function update(Request $request, Bank $bank)
     {
+        $this->authorize('update', $bank);
+
         $validated = $request->validate([
             'name' => 'string|max:255',
             'agency' => 'nullable|string|max:50',
@@ -55,6 +63,8 @@ class BankController extends Controller
 
     public function destroy(Bank $bank)
     {
+        $this->authorize('delete', $bank);
+
         $bank->delete();
 
         return response()->json(null, 204);

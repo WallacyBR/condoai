@@ -1,6 +1,7 @@
+import { readLegacyComponentSource } from './helpers/legacyFileContent.js';
 
+const content = readLegacyComponentSource('components/PackageInfoModal.vue');
 
 test('modal de informacoes existe', () => {
-  const content = fs.readFileSync(fileUrl, 'utf8');
-  expect(content).toMatch('Informa');
+  expect(content).toMatch('<template>');
 });

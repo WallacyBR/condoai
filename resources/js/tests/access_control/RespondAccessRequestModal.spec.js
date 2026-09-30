@@ -1,13 +1,18 @@
 import { mount } from '@vue/test-utils';
+import { vi } from 'vitest';
 import RespondAccessRequestModal from '../../components/access_control/RespondAccessRequestModal.vue';
-import Modal from '../../components/Modal.vue'; // O componente base do Modal
+import Modal from '../../components/Modal.vue';
 import NeonButton from '../../components/NeonButton.vue';
 import api from '../../utils/api';
 
-// Mocks
-jest.mock('../../utils/api', () => ({
-  post: jest.fn(),
-  // Não precisamos de GET aqui, pois os detalhes são passados por prop
+const { mockApi } = vi.hoisted(() => ({
+  mockApi: {
+    post: vi.fn(),
+  },
+}));
+
+vi.mock('../../utils/api', () => ({
+  default: mockApi,
 }));
 
 const mockSuccessToast = jest.fn();

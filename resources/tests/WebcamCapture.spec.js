@@ -1,6 +1,7 @@
+import { readLegacyComponentSource } from './helpers/legacyFileContent.js';
 
+const content = readLegacyComponentSource('components/WebcamCapture.vue');
 
 test('componente webcam existe', () => {
-  const content = fs.readFileSync(fileUrl, 'utf8');
   expect(content).toMatch('<template>');
 });

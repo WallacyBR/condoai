@@ -1,45 +1,54 @@
 import { shallowMount, mount, flushPromises } from '@vue/test-utils';
+import { vi } from 'vitest';
 import OccurrenceView from '../../components/occurrences/OccurrenceView.vue';
 import api from '../../utils/api';
 import { useToast } from '../../composables/useToast';
-import { useAuthStore } from '../../stores/authStore'; // Importe o store
-import { jest } from '@jest/globals';
 
-// Mock vue-router
-const mockRouter = {
-  push: jest.fn(),
-};
-const mockRoute = {
-  params: { id: '1' }, // Default to viewing occurrence with ID 1
+const { mockApi } = vi.hoisted(() => ({
+  mockApi: {
+    get: vi.fn(),
+    post: vi.fn(),
+    delete: vi.fn(),
+  },
+}));
+
+const { userRef } = vi.hoisted(() => ({
+  userRef: {
+    value: {
+      id: 1,
+      name: 'Test User',
+      condominium_id: 1,
+      is_super_admin: false,
+      profile: { permissions: ['edit_occurrences'] },
+    },
+  },
+}));
+
+const mockUser = {
+  id: 1,
+  name: 'Test User',
+  condominium_id: 1,
+  is_super_admin: false,
+  profile: { permissions: ['edit_occurrences'] },
 };
 
-jest.mock('vue-router', () => ({
+const { mockRouter, mockRoute } = vi.hoisted(() => ({
+  mockRouter: { push: vi.fn() },
+  mockRoute: { params: { id: '1' } },
+}));
+
+vi.mock('vue-router', () => ({
   useRouter: () => mockRouter,
   useRoute: () => mockRoute,
-  RouterLink: { template: '<a :to="to"><slot/></a>', props: ['to'] }
+  RouterLink: { template: '<a :to="to"><slot/></a>', props: ['to'] },
 }));
 
-// Mock useToast
-vi.mock('../../composables/useToast', () => ({
-  useToast: () => ({
-    success: jest.fn(),
-    error: jest.fn(),
-  }),
+vi.mock('../../utils/api', () => ({
+  default: mockApi,
 }));
 
-// Mock api
-jest.mock('../../utils/api');
-
-// Mock do authStore
-const mockUser = { id: 1, name: 'Test User', condominium_id: 1, is_super_admin: false };
-jest.mock('../../stores/authStore', () => ({
-  useAuthStore: () => ({
-    user: mockUser,
-    hasPermission: (permission) => {
-      if (permission === 'edit_occurrences') return true; // Simula que o usuário tem essa permissão
-      return false;
-    },
-  }),
+vi.mock('../../composables/useUser', () => ({
+  useUser: () => ({ user: userRef }),
 }));
 
 
@@ -50,17 +59,18 @@ const mockOccurrence = {
   status: 'open',
   priority: 'high',
   user: { id: 1, name: 'John Doe' },
+  user_id: 1,
+  condominium_id: 1,
   condominium: { id: 1, name: 'Condo Alpha' },
   created_at: '2023-01-15T10:00:00Z',
   updated_at: '2023-01-15T10:00:00Z',
   photos: [{ id: 1, photo_path: 'photos/faucet.jpg', description: 'Leaky faucet photo' }],
-  comments: [{ id: 1, comment: 'Needs urgent fix', user: { name: 'Jane Smith' }, created_at: '2023-01-15T11:00:00Z' }],
+  comments: [{ id: 1, comment: 'Needs urgent fix', user_id: 1, user: { id: 1, name: 'Jane Smith' }, created_at: '2023-01-15T11:00:00Z' }],
 };
 
 describe('OccurrenceView.vue', () => {
   let wrapper;
   const toast = useToast();
-  const authStore = useAuthStore();
 
 
   const mountComponent = (occurrenceData = mockOccurrence) => {
@@ -82,7 +92,7 @@ describe('OccurrenceView.vue', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     // Resetar o usuário do authStore para cada teste se necessário, ou configurar especificamente
-    authStore.user = { ...mockUser, id: 1, is_super_admin: false }; // Usuário padrão para testes
+    userRef.value = { ...mockUser, id: 1, is_super_admin: false };
     wrapper = mountComponent();
     await flushPromises();
   });
@@ -150,11 +160,11 @@ describe('OccurrenceView.vue', () => {
 
   it('allows deleting a comment if user is authorized', async () => {
     // Assume que o usuário atual (ID 1) é o criador do comentário ou admin
-    authStore.user = { ...mockUser, id: mockOccurrence.comments[0].user_id || 1 }; // Garante que o usuário pode deletar
+    userRef.value = { ...mockUser, id: mockOccurrence.comments[0].user_id || 1 }; // Garante que o usuário pode deletar
     api.delete.mockResolvedValueOnce({});
     global.confirm = () => true; // Mock window.confirm
 
-    // Re-mount ou re-evaluate computed properties se necessário, ou assegure que `canDeleteComment` funcione com o novo authStore.user
+    // Re-mount ou re-evaluate computed properties se necessário, ou assegure que `canDeleteComment` funcione com o novo userRef.value
     // Neste caso, como o authStore é mockado no topo, a instância usada por `canDeleteComment` já deve ter o usuário correto.
 
     const commentToDelete = wrapper.vm.occurrence.comments[0];
@@ -174,7 +184,7 @@ describe('OccurrenceView.vue', () => {
   describe('Photo Management (with permission)', () => {
     beforeEach(async () => {
         // Garante que o usuário tem permissão para editar (e portanto, gerenciar fotos)
-        authStore.user = { ...mockUser, id: mockOccurrence.user.id, is_super_admin: false }; // User é o criador
+        userRef.value = { ...mockUser, id: mockOccurrence.user.id, is_super_admin: false }; // User é o criador
         // Força a reavaliação do computed property se necessário, ou re-mount
         wrapper = mountComponent(); // Re-mount para garantir que computed properties sejam atualizadas
         await flushPromises();
@@ -245,11 +255,16 @@ describe('OccurrenceView.vue', () => {
 
   describe('Permissions', () => {
     it('hides edit button if user is not authorized', async () => {
-        authStore.user = { ...mockUser, id: 999, is_super_admin: false }; // Usuário diferente, sem ser super admin
+        userRef.value = { ...mockUser, id: 999, is_super_admin: false }; // Usuário diferente, sem ser super admin
         // Mock para hasPermission retornar false para 'edit_occurrences' para este usuário
-        authStore.hasPermission = (permission) => permission !== 'edit_occurrences';
+        userRef.value = {
+          ...mockUser,
+          id: 999,
+          is_super_admin: false,
+          profile: { permissions: [] },
+        };
 
-        wrapper = mountComponent({ ...mockOccurrence, user: { id: 2 } }); // Ocorrência criada por outro usuário
+        wrapper = mountComponent({ ...mockOccurrence, user: { id: 2 }, user_id: 2 });
         await flushPromises();
 
         expect(wrapper.find('router-link[to*="edit"]').exists()).toBe(false); // Link de edição
@@ -257,14 +272,14 @@ describe('OccurrenceView.vue', () => {
     });
 
     it('shows edit button if user is super_admin', async () => {
-        authStore.user = { ...mockUser, is_super_admin: true };
+        userRef.value = { ...mockUser, is_super_admin: true };
         wrapper = mountComponent({ ...mockOccurrence, user: { id: 2 } }); // Ocorrência de outro user
         await flushPromises();
         expect(wrapper.find('a[to*="edit"]').exists()).toBe(true);
     });
 
     it('shows edit button if user is the creator', async () => {
-        authStore.user = { ...mockUser, id: mockOccurrence.user.id }; // Usuário é o criador
+        userRef.value = { ...mockUser, id: mockOccurrence.user.id }; // Usuário é o criador
         wrapper = mountComponent(); // mockOccurrence já tem user.id = 1
         await flushPromises();
         expect(wrapper.find('a[to*="edit"]').exists()).toBe(true);
@@ -273,7 +288,7 @@ describe('OccurrenceView.vue', () => {
     it('shows edit button if user has edit_occurrences permission for the condominium', async () => {
         // User tem condominium_id = 1, occurrence tem condominium_id = 1
         // authStore.hasPermission('edit_occurrences') já mockado para true
-        authStore.user = { ...mockUser, id: 999, condominium_id: mockOccurrence.condominium.id }; // Outro user, mesmo condomínio
+        userRef.value = { ...mockUser, id: 999, condominium_id: mockOccurrence.condominium.id }; // Outro user, mesmo condomínio
         wrapper = mountComponent();
         await flushPromises();
         expect(wrapper.find('a[to*="edit"]').exists()).toBe(true);

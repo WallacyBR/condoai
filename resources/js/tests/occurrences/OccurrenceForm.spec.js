@@ -1,33 +1,30 @@
 import { shallowMount, mount, flushPromises } from '@vue/test-utils';
+import { vi } from 'vitest';
 import OccurrenceForm from '../../components/occurrences/OccurrenceForm.vue';
 import api from '../../utils/api';
 import { useToast } from '../../composables/useToast';
-import { jest } from '@jest/globals';
 
-// Mock vue-router
-const mockRouter = {
-  push: jest.fn(),
-};
-const mockRoute = {
-  params: {}, // Default to create mode
-};
+const { mockApi } = vi.hoisted(() => ({
+  mockApi: {
+    get: vi.fn(),
+    post: vi.fn(),
+  },
+}));
 
-jest.mock('vue-router', () => ({
+const { mockRouter, mockRoute } = vi.hoisted(() => ({
+  mockRouter: { push: vi.fn() },
+  mockRoute: { params: {} },
+}));
+
+vi.mock('vue-router', () => ({
   useRouter: () => mockRouter,
   useRoute: () => mockRoute,
-  RouterLink: { template: '<a><slot/></a>' }
+  RouterLink: { template: '<a><slot/></a>' },
 }));
 
-// Mock useToast
-vi.mock('../../composables/useToast', () => ({
-  useToast: () => ({
-    success: jest.fn(),
-    error: jest.fn(),
-  }),
+vi.mock('../../utils/api', () => ({
+  default: mockApi,
 }));
-
-// Mock api
-jest.mock('../../utils/api');
 
 describe('OccurrenceForm.vue', () => {
   let wrapper;

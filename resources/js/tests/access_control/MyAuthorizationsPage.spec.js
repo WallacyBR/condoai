@@ -1,9 +1,21 @@
 import { mount } from '@vue/test-utils';
+import { vi } from 'vitest';
 import MyAuthorizationsPage from '../../pages/AccessControl/MyAuthorizationsPage.vue';
 import ResidentAccessRequestCard from '../../components/access_control/ResidentAccessRequestCard.vue';
 import RespondAccessRequestModal from '../../components/access_control/RespondAccessRequestModal.vue';
 import NeonButton from '../../components/NeonButton.vue';
 import api from '../../utils/api';
+
+const { mockApi } = vi.hoisted(() => ({
+  mockApi: {
+    get: vi.fn(),
+    post: vi.fn(),
+  },
+}));
+
+vi.mock('../../utils/api', () => ({
+  default: mockApi,
+}));
 
 const mockSuccessToast = jest.fn();
 const mockErrorToast = jest.fn();
@@ -15,12 +27,15 @@ jest.mock('../../composables/useToast', () => ({
 }));
 
 // Mock do vue-router, se necessário para HeaderCard ou outros componentes
-jest.mock('vue-router', () => ({
-  ...jest.requireActual('vue-router'),
-  useRouter: () => ({
-    push: jest.fn(),
-  }),
-}));
+vi.mock('vue-router', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    useRouter: () => ({
+      push: vi.fn(),
+    }),
+  };
+});
 
 
 describe('MyAuthorizationsPage.vue', () => {

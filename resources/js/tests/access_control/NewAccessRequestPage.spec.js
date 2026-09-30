@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils';
+import { vi } from 'vitest';
 import NewAccessRequestPage from '../../pages/AccessControl/NewAccessRequestPage.vue';
 import AuthenticatedLayout from '../../components/layouts/AuthenticatedLayout.vue';
 import HeaderCard from '../../components/layouts/HeaderCard.vue';
@@ -6,20 +7,28 @@ import NeonButton from '../../components/NeonButton.vue';
 import FileUpload from '../../components/FileUpload.vue';
 import api from '../../utils/api';
 
-// Mocks
-jest.mock('../../utils/api', () => ({
-  get: jest.fn(),
-  post: jest.fn(),
+const { mockApi } = vi.hoisted(() => ({
+  mockApi: {
+    get: vi.fn(),
+    post: vi.fn(),
+  },
+}));
+
+vi.mock('../../utils/api', () => ({
+  default: mockApi,
 }));
 
 const mockRouter = {
   push: jest.fn(),
   back: jest.fn(),
 };
-jest.mock('vue-router', () => ({
-  ...jest.requireActual('vue-router'),
-  useRouter: () => mockRouter,
-}));
+vi.mock('vue-router', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    useRouter: () => mockRouter,
+  };
+});
 
 const mockSuccessToast = jest.fn();
 const mockErrorToast = jest.fn();

@@ -1,10 +1,18 @@
 import { mount } from '@vue/test-utils';
+import { vi } from 'vitest';
 import SolicitacoesAcessoPainel from '../../components/access_control/SolicitacoesAcessoPainel.vue';
 import AccessRequestCard from '../../components/access_control/AccessRequestCard.vue';
 import NeonButton from '../../components/NeonButton.vue';
 import ConfirmActionModal from '../../components/Modal.vue';
 import RecordEntryModal from '../../components/access_control/RecordEntryModal.vue';
-import api from '../../utils/api'; // Mock para api
+import api from '../../utils/api';
+
+const { mockApi } = vi.hoisted(() => ({
+  mockApi: {
+    get: vi.fn(),
+    post: vi.fn(),
+  },
+}));
 
 // Mock do composable useToast
 const mockSuccessToast = jest.fn();
@@ -16,10 +24,8 @@ jest.mock('../../composables/useToast', () => ({
   }),
 }));
 
-// Mock do api.js
-jest.mock('../../utils/api', () => ({
-  get: jest.fn(),
-  post: jest.fn(),
+vi.mock('../../utils/api', () => ({
+  default: mockApi,
 }));
 
 // Mock para componentes filhos profundos se necessário, ou use shallowMount e stub

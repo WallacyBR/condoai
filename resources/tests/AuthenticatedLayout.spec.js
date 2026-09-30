@@ -1,9 +1,10 @@
-
+import { beforeAll } from 'vitest';
+import { readLegacyComponentSource } from './helpers/legacyFileContent.js';
 
 let content;
 
 beforeAll(() => {
-  content = fs.readFileSync(fileUrl, 'utf8');
+  content = readLegacyComponentSource('components/layouts/AuthenticatedLayout.vue');
 });
 
 test('barra superior responsiva existe', () => {

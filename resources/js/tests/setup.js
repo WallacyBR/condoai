@@ -1,5 +1,28 @@
 import { vi } from 'vitest'
 
+// Compatibilidade com specs legados escritos para Jest
+globalThis.jest = Object.assign(vi, {
+  requireActual: vi.importActual,
+})
+
+// Mock padrão de toast para specs legados (suporta APIs antigas e novas)
+vi.mock('@/composables/useToast', () => ({
+  useToast: () => ({
+    success: vi.fn(),
+    error: vi.fn(),
+    successToast: vi.fn(),
+    errorToast: vi.fn(),
+    warning: vi.fn(),
+    info: vi.fn(),
+    toasts: { value: [] },
+    addToast: vi.fn(),
+    removeToast: vi.fn(),
+    clearAllToasts: vi.fn(),
+    getToastClasses: vi.fn(),
+    getToastIcon: vi.fn(),
+  }),
+}))
+
 // Mock global do fs para evitar erros
 global.fs = {
   readFileSync: vi.fn(() => 'mock content'),

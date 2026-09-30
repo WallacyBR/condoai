@@ -1,13 +1,15 @@
-export const get = jest.fn();
-export const post = jest.fn();
-export const put = jest.fn();
-export const delete = jest.fn();
+import { vi } from 'vitest';
+
+export const get = vi.fn();
+export const post = vi.fn();
+export const put = vi.fn();
+export const deleteMethod = vi.fn();
 
 const api = {
   get,
   post,
   put,
-  delete,
+  delete: deleteMethod,
 };
 
 export default api;

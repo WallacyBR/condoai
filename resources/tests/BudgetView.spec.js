@@ -4,11 +4,35 @@ import BudgetView from '../js/finance/BudgetView.vue';
 import api from '../js/utils/api';
 import { useUser } from '../js/composables/useUser';
 import { useToast } from '../js/composables/useToast';
+import { mountOptionsWithLayoutStubs } from './helpers/mountWithLayoutStubs.js';
 
-// Mocking composables
-vi.mock('../js/utils/api');
-vi.mock('../js/composables/useUser');
-vi.mock('../js/composables/useToast');
+vi.mock('../js/utils/api', () => ({
+  default: {
+    get: vi.fn(),
+    post: vi.fn(),
+  },
+}));
+
+vi.mock('../js/composables/useUser', () => ({
+  useUser: vi.fn(() => ({
+    user: { value: { condominium_id: 1 } },
+    setUser: vi.fn(),
+  })),
+}));
+
+vi.mock('../js/composables/useToast', () => ({
+  useToast: vi.fn(() => ({
+    showToast: vi.fn(),
+  })),
+}));
+
+vi.mock('../js/services/auth', () => ({
+  default: {
+    getToken: vi.fn(() => null),
+    refreshToken: vi.fn(),
+    logout: vi.fn(),
+  },
+}));
 
 describe('BudgetView.vue', () => {
   let mockUser;
@@ -55,15 +79,14 @@ describe('BudgetView.vue', () => {
   });
 
   it('renders the component and loads initial data', async () => {
-    const wrapper = mount(BudgetView, {
+    const wrapper = mount(BudgetView, mountOptionsWithLayoutStubs({
       global: {
         stubs: {
-          AuthenticatedLayout: true,
           TopCard: true,
           NeonButton: true,
         },
       },
-    });
+    }));
 
     // Wait for the component to finish its async operations
     await wrapper.vm.$nextTick();
@@ -79,17 +102,16 @@ describe('BudgetView.vue', () => {
   });
 
   it('allows editing a budget item and saving', async () => {
-    const wrapper = mount(BudgetView, {
+    const wrapper = mount(BudgetView, mountOptionsWithLayoutStubs({
       global: {
         stubs: {
-          AuthenticatedLayout: true,
           TopCard: true,
           NeonButton: {
             template: '<button @click="$emit(\'click\')"><slot/></button>',
           },
         },
       },
-    });
+    }));
 
     // Wait for async operations
     await wrapper.vm.$nextTick();

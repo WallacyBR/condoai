@@ -1,28 +1,26 @@
 import { shallowMount, flushPromises } from '@vue/test-utils';
+import { vi } from 'vitest';
 import OccurrenceList from '../../components/occurrences/OccurrenceList.vue';
 import api from '../../utils/api';
-import { jest } from '@jest/globals';
 
-// Mock para vue-router
-const mockRouter = {
-  push: jest.fn(),
-};
+const { mockApi } = vi.hoisted(() => ({
+  mockApi: {
+    get: vi.fn(),
+  },
+}));
 
-jest.mock('vue-router', () => ({
+const { mockRouter } = vi.hoisted(() => ({
+  mockRouter: { push: vi.fn() },
+}));
+
+vi.mock('vue-router', () => ({
   useRouter: () => mockRouter,
-  RouterLink: { template: '<a><slot /></a>' } // Stub RouterLink
+  RouterLink: { template: '<a><slot /></a>' },
 }));
 
-// Mock para o composable useToast
-vi.mock('../../composables/useToast', () => ({
-  useToast: () => ({
-    success: jest.fn(),
-    error: jest.fn(),
-  }),
+vi.mock('../../utils/api', () => ({
+  default: mockApi,
 }));
-
-// Mock para o módulo API
-jest.mock('../../utils/api');
 
 const mockOccurrences = {
   data: [

@@ -234,12 +234,14 @@ class CommonAreaController extends Controller
     public function showBooking($id)
     {
         $booking = \App\Models\CommonAreaBooking::with([
-            'commonArea', 
-            'apartment.tower', 
-            'apartment.block'
-        ])->find($id);
+            'commonArea',
+            'apartment.tower',
+            'apartment.block',
+        ])
+            ->whereHas('commonArea')
+            ->find($id);
 
-        if (!$booking) {
+        if ($booking === null) {
             return response()->json(['message' => 'Reserva não encontrada'], 404);
         }
 

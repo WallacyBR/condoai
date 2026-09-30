@@ -45,6 +45,10 @@ class TenantIsolationTest extends TestCase
 
     protected Apartment $apartmentB;
 
+    protected CommonAreaBooking $bookingA;
+
+    protected CommonAreaBooking $bookingB;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -87,7 +91,7 @@ class TenantIsolationTest extends TestCase
         $this->apartmentA = Apartment::factory()->create(['condominium_id' => $this->condominiumA->id]);
         $this->apartmentB = Apartment::factory()->create(['condominium_id' => $this->condominiumB->id]);
 
-        CommonAreaBooking::query()->create([
+        $this->bookingA = CommonAreaBooking::query()->create([
             'common_area_id' => $this->commonAreaA->id,
             'apartment_id' => $this->apartmentA->id,
             'resident_id' => $this->residentA->id,
@@ -98,7 +102,7 @@ class TenantIsolationTest extends TestCase
             'duration_hours' => 2,
             'status' => 'confirmed',
         ]);
-        CommonAreaBooking::query()->create([
+        $this->bookingB = CommonAreaBooking::query()->create([
             'common_area_id' => $this->commonAreaB->id,
             'apartment_id' => $this->apartmentB->id,
             'resident_id' => $this->residentB->id,
@@ -393,6 +397,30 @@ class TenantIsolationTest extends TestCase
         $response->assertOk();
         $this->assertCount(1, $response->json());
         $this->assertSame($this->commonAreaA->id, $response->json('0.common_area_id'));
+    }
+
+    public function test_show_booking_returns_same_tenant_booking(): void
+    {
+        $this->actingAsTenant($this->userA, $this->condominiumA);
+
+        $response = $this->getJson('/api/common-area-bookings/'.$this->bookingA->id);
+
+        $response->assertOk()
+            ->assertJsonPath('id', $this->bookingA->id)
+            ->assertJsonPath('common_area_id', $this->commonAreaA->id);
+    }
+
+    public function test_show_booking_returns_404_for_cross_tenant_booking(): void
+    {
+        $this->actingAsTenant($this->userA, $this->condominiumA);
+
+        // 404 (não 403) para não vazar existência de reserva de outro condomínio — padrão do controller.
+        $response = $this->getJson('/api/common-area-bookings/'.$this->bookingB->id);
+
+        $response->assertNotFound()
+            ->assertJson([
+                'message' => 'Reserva não encontrada',
+            ]);
     }
 
     public function test_condominium_show_denies_non_member(): void

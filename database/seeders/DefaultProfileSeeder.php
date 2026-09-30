@@ -76,16 +76,16 @@ class DefaultProfileSeeder extends Seeder
             $adminProfile->modules()->sync($syncData);
         }
 
-        // Perfil Síndico - gestão do próprio condomínio
+        // Perfil Síndico - gestão do condomínio ativo; Ocorrências com escopo de condomínio
         $sindicoProfile = Profile::where('name', 'Síndico')->first();
         if ($sindicoProfile) {
             $syncData = $allModules->mapWithKeys(function ($module) {
                 return [$module->id => [
                     'can_view' => true,
-                    'can_create' => !in_array($module->name, ['Condomínios', 'Configurações']),
-                    'can_update' => !in_array($module->name, ['Condomínios', 'Configurações']),
+                    'can_create' => ! in_array($module->name, ['Condomínios', 'Configurações']),
+                    'can_update' => ! in_array($module->name, ['Condomínios', 'Configurações']),
                     'can_delete' => in_array($module->name, ['Correspondências', 'Ocorrências', 'Financeiro']),
-                    'scope' => 'own',
+                    'scope' => $module->name === 'Ocorrências' ? 'condominium' : 'own',
                 ]];
             })->toArray();
             $sindicoProfile->modules()->sync($syncData);
@@ -102,14 +102,24 @@ class DefaultProfileSeeder extends Seeder
                             'can_create' => false,
                             'can_update' => false,
                             'can_delete' => false,
-                            'scope' => 'own',
+                            'scope' => 'condominium',
+                        ]];
+                    }
+
+                    if ($module->name === 'Ocorrências') {
+                        return [$module->id => [
+                            'can_view' => true,
+                            'can_create' => false,
+                            'can_update' => false,
+                            'can_delete' => false,
+                            'scope' => 'condominium',
                         ]];
                     }
 
                     return [$module->id => [
                         'can_view' => true,
-                        'can_create' => in_array($module->name, ['Correspondências', 'Ocorrências']),
-                        'can_update' => in_array($module->name, ['Correspondências', 'Ocorrências']),
+                        'can_create' => $module->name === 'Correspondências',
+                        'can_update' => $module->name === 'Correspondências',
                         'can_delete' => false,
                         'scope' => 'own',
                     ]];

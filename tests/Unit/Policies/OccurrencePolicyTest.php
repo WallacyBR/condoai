@@ -2,21 +2,19 @@
 
 namespace Tests\Unit\Policies;
 
-use App\Enums\ModuleName;
 use App\Models\Condominium;
 use App\Models\Occurrence;
-use App\Models\Profile;
 use App\Models\User;
 use App\Policies\OccurrencePolicy;
 use App\Support\TenantContext;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\Concerns\AssignsModulePermissions;
+use Tests\Concerns\SeedsDefaultPermissionMatrix;
 use Tests\TestCase;
 
 class OccurrencePolicyTest extends TestCase
 {
-    use AssignsModulePermissions;
     use RefreshDatabase;
+    use SeedsDefaultPermissionMatrix;
 
     private OccurrencePolicy $policy;
 
@@ -24,6 +22,7 @@ class OccurrencePolicyTest extends TestCase
     {
         parent::setUp();
 
+        $this->seedDefaultPermissionMatrix();
         $this->policy = new OccurrencePolicy();
     }
 
@@ -34,49 +33,70 @@ class OccurrencePolicyTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_view_allows_module_permission_on_active_tenant_even_when_home_differs(): void
+    public function test_sindico_can_view_third_party_occurrence_with_seeded_matrix(): void
     {
         $condominiumA = Condominium::factory()->create();
         $condominiumB = Condominium::factory()->create();
-        $profile = Profile::factory()->create(['name' => 'Síndico']);
+        $sindicoProfile = $this->defaultProfile('Síndico');
 
-        $this->assignModulePermissions($profile, ModuleName::Ocorrencias->value, [
-            'can_view' => true,
-            'scope' => 'condominium',
-        ]);
-
-        $user = User::factory()->create([
+        $sindico = User::factory()->create([
             'condominium_id' => $condominiumA->id,
-            'profile_id' => $profile->id,
+            'profile_id' => $sindicoProfile->id,
         ]);
-        $user->condominiums()->sync([$condominiumA->id, $condominiumB->id]);
+        $sindico->condominiums()->sync([$condominiumA->id, $condominiumB->id]);
+
+        $otherUser = User::factory()->create([
+            'condominium_id' => $condominiumB->id,
+            'profile_id' => $this->defaultProfile('Morador')->id,
+        ]);
 
         $occurrence = Occurrence::factory()->create([
             'condominium_id' => $condominiumB->id,
-            'user_id' => $user->id,
+            'user_id' => $otherUser->id,
         ]);
 
         TenantContext::set($condominiumB);
 
-        $this->assertTrue($this->policy->view($user, $occurrence));
+        $this->assertTrue($this->policy->view($sindico, $occurrence));
+    }
+
+    public function test_sindico_can_update_third_party_occurrence_with_seeded_matrix(): void
+    {
+        $condominium = Condominium::factory()->create();
+        $sindicoProfile = $this->defaultProfile('Síndico');
+
+        $sindico = User::factory()->create([
+            'condominium_id' => $condominium->id,
+            'profile_id' => $sindicoProfile->id,
+        ]);
+        $sindico->condominiums()->sync([$condominium->id]);
+
+        $otherUser = User::factory()->create([
+            'condominium_id' => $condominium->id,
+            'profile_id' => $this->defaultProfile('Morador')->id,
+        ]);
+
+        $occurrence = Occurrence::factory()->create([
+            'condominium_id' => $condominium->id,
+            'user_id' => $otherUser->id,
+        ]);
+
+        TenantContext::set($condominium);
+
+        $this->assertTrue($this->policy->update($sindico, $occurrence));
     }
 
     public function test_view_denies_resource_from_other_tenant(): void
     {
         $condominiumA = Condominium::factory()->create();
         $condominiumB = Condominium::factory()->create();
-        $profile = Profile::factory()->create(['name' => 'Síndico']);
+        $sindicoProfile = $this->defaultProfile('Síndico');
 
-        $this->assignModulePermissions($profile, ModuleName::Ocorrencias->value, [
-            'can_view' => true,
-            'scope' => 'condominium',
-        ]);
-
-        $user = User::factory()->create([
+        $sindico = User::factory()->create([
             'condominium_id' => $condominiumA->id,
-            'profile_id' => $profile->id,
+            'profile_id' => $sindicoProfile->id,
         ]);
-        $user->condominiums()->sync([$condominiumA->id, $condominiumB->id]);
+        $sindico->condominiums()->sync([$condominiumA->id, $condominiumB->id]);
 
         $occurrence = Occurrence::factory()->create([
             'condominium_id' => $condominiumB->id,
@@ -84,22 +104,17 @@ class OccurrencePolicyTest extends TestCase
 
         TenantContext::set($condominiumA);
 
-        $this->assertFalse($this->policy->view($user, $occurrence));
+        $this->assertFalse($this->policy->view($sindico, $occurrence));
     }
 
-    public function test_update_always_allows_author_on_active_tenant(): void
+    public function test_morador_author_can_update_own_occurrence_with_seeded_matrix(): void
     {
         $condominium = Condominium::factory()->create();
-        $profile = Profile::factory()->create(['name' => 'Morador']);
-
-        $this->assignModulePermissions($profile, ModuleName::Ocorrencias->value, [
-            'can_update' => false,
-            'scope' => 'own',
-        ]);
+        $moradorProfile = $this->defaultProfile('Morador');
 
         $user = User::factory()->create([
             'condominium_id' => $condominium->id,
-            'profile_id' => $profile->id,
+            'profile_id' => $moradorProfile->id,
         ]);
         $user->condominiums()->sync([$condominium->id]);
 
@@ -111,5 +126,31 @@ class OccurrencePolicyTest extends TestCase
         TenantContext::set($condominium);
 
         $this->assertTrue($this->policy->update($user, $occurrence));
+    }
+
+    public function test_zelador_cannot_update_third_party_occurrence_with_seeded_read_only_matrix(): void
+    {
+        $condominium = Condominium::factory()->create();
+        $zeladorProfile = $this->defaultProfile('Zelador');
+
+        $zelador = User::factory()->create([
+            'condominium_id' => $condominium->id,
+            'profile_id' => $zeladorProfile->id,
+        ]);
+        $zelador->condominiums()->sync([$condominium->id]);
+
+        $otherUser = User::factory()->create([
+            'condominium_id' => $condominium->id,
+            'profile_id' => $this->defaultProfile('Morador')->id,
+        ]);
+
+        $occurrence = Occurrence::factory()->create([
+            'condominium_id' => $condominium->id,
+            'user_id' => $otherUser->id,
+        ]);
+
+        TenantContext::set($condominium);
+
+        $this->assertFalse($this->policy->update($zelador, $occurrence));
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Enums\ModuleName;
 use App\Models\Bank;
 use App\Models\ChartAccount;
 use App\Models\Condominium;
@@ -12,15 +11,15 @@ use App\Models\Profile;
 use App\Models\Receivable;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\Concerns\AssignsModulePermissions;
 use Tests\Concerns\InteractsWithTenant;
+use Tests\Concerns\SeedsDefaultPermissionMatrix;
 use Tests\TestCase;
 
 class M4PolicyAuthorizationTest extends TestCase
 {
-    use AssignsModulePermissions;
     use InteractsWithTenant;
     use RefreshDatabase;
+    use SeedsDefaultPermissionMatrix;
 
     protected Condominium $condominiumA;
 
@@ -34,24 +33,11 @@ class M4PolicyAuthorizationTest extends TestCase
     {
         parent::setUp();
 
+        $this->seedDefaultPermissionMatrix();
+
         $this->condominiumA = Condominium::factory()->create(['name' => 'Condomínio Alpha']);
         $this->condominiumB = Condominium::factory()->create(['name' => 'Condomínio Beta']);
-        $this->sindicoProfile = Profile::factory()->create(['name' => 'Síndico']);
-
-        $this->assignModulePermissions($this->sindicoProfile, ModuleName::Ocorrencias->value, [
-            'can_view' => true,
-            'can_create' => true,
-            'can_update' => true,
-            'can_delete' => true,
-            'scope' => 'condominium',
-        ]);
-        $this->assignModulePermissions($this->sindicoProfile, ModuleName::Financeiro->value, [
-            'can_view' => true,
-            'can_create' => true,
-            'can_update' => true,
-            'can_delete' => true,
-            'scope' => 'condominium',
-        ]);
+        $this->sindicoProfile = $this->defaultProfile('Síndico');
 
         $this->userWithCrossMembership = User::factory()->create([
             'condominium_id' => $this->condominiumA->id,
@@ -97,16 +83,39 @@ class M4PolicyAuthorizationTest extends TestCase
         ]);
     }
 
+    public function test_sindico_can_update_third_party_occurrence_with_seeded_matrix(): void
+    {
+        $otherUser = User::factory()->create([
+            'condominium_id' => $this->condominiumA->id,
+            'profile_id' => $this->defaultProfile('Morador')->id,
+        ]);
+        $otherUser->condominiums()->sync([$this->condominiumA->id]);
+
+        $occurrence = Occurrence::factory()->create([
+            'condominium_id' => $this->condominiumA->id,
+            'user_id' => $otherUser->id,
+            'title' => 'Ocorrência de terceiro',
+        ]);
+
+        $sindico = User::factory()->create([
+            'condominium_id' => $this->condominiumA->id,
+            'profile_id' => $this->sindicoProfile->id,
+        ]);
+        $sindico->condominiums()->sync([$this->condominiumA->id]);
+
+        $this->actingAsTenant($sindico, $this->condominiumA);
+
+        $response = $this->putJson('/api/occurrences/'.$occurrence->id, [
+            'title' => 'Atualizada pelo síndico',
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('title', 'Atualizada pelo síndico');
+    }
+
     public function test_occurrence_author_can_update_own_record_without_module_update_permission(): void
     {
-        $moradorProfile = Profile::factory()->create(['name' => 'Morador']);
-        $this->assignModulePermissions($moradorProfile, ModuleName::Ocorrencias->value, [
-            'can_view' => true,
-            'can_create' => true,
-            'can_update' => false,
-            'can_delete' => false,
-            'scope' => 'own',
-        ]);
+        $moradorProfile = $this->defaultProfile('Morador');
 
         $author = User::factory()->create([
             'condominium_id' => $this->condominiumA->id,
@@ -143,29 +152,22 @@ class M4PolicyAuthorizationTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_occurrence_comment_create_requires_create_permission(): void
+    public function test_zelador_cannot_create_occurrence_comment_with_seeded_read_only_matrix(): void
     {
-        $readOnlyProfile = Profile::factory()->create(['name' => 'Leitor']);
-        $this->assignModulePermissions($readOnlyProfile, ModuleName::Ocorrencias->value, [
-            'can_view' => true,
-            'can_create' => false,
-            'can_update' => false,
-            'can_delete' => false,
-            'scope' => 'condominium',
-        ]);
+        $zeladorProfile = $this->defaultProfile('Zelador');
 
-        $reader = User::factory()->create([
+        $zelador = User::factory()->create([
             'condominium_id' => $this->condominiumA->id,
-            'profile_id' => $readOnlyProfile->id,
+            'profile_id' => $zeladorProfile->id,
         ]);
-        $reader->condominiums()->sync([$this->condominiumA->id]);
+        $zelador->condominiums()->sync([$this->condominiumA->id]);
 
         $occurrence = Occurrence::factory()->create([
             'condominium_id' => $this->condominiumA->id,
-            'user_id' => $reader->id,
+            'user_id' => $zelador->id,
         ]);
 
-        $this->actingAsTenant($reader, $this->condominiumA);
+        $this->actingAsTenant($zelador, $this->condominiumA);
 
         $response = $this->postJson('/api/occurrences/'.$occurrence->id.'/comments', [
             'comment' => 'Comentário bloqueado',
@@ -265,17 +267,13 @@ class M4PolicyAuthorizationTest extends TestCase
             ->assertJsonValidationErrors(['bank_id']);
     }
 
-    public function test_receivable_index_denies_without_financeiro_view_permission(): void
+    public function test_morador_cannot_list_receivables_without_financeiro_permission(): void
     {
-        $readOnlyProfile = Profile::factory()->create(['name' => 'Sem Financeiro']);
-        $this->assignModulePermissions($readOnlyProfile, ModuleName::Ocorrencias->value, [
-            'can_view' => true,
-            'scope' => 'condominium',
-        ]);
+        $moradorProfile = $this->defaultProfile('Morador');
 
         $user = User::factory()->create([
             'condominium_id' => $this->condominiumA->id,
-            'profile_id' => $readOnlyProfile->id,
+            'profile_id' => $moradorProfile->id,
         ]);
         $user->condominiums()->sync([$this->condominiumA->id]);
 

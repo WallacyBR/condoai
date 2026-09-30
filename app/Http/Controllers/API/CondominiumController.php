@@ -9,9 +9,15 @@ use Illuminate\Validation\Rule;
 
 class CondominiumController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return Condominium::all();
+        $user = $request->user();
+
+        if ($user->isPlatformAdmin()) {
+            return Condominium::query()->get();
+        }
+
+        return $user->condominiums()->get();
     }
 
     public function store(Request $request)

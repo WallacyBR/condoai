@@ -62,6 +62,15 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
+    protected static function booted(): void
+    {
+        static::created(function (User $user) {
+            if ($user->condominium_id !== null) {
+                $user->condominiums()->syncWithoutDetaching([$user->condominium_id]);
+            }
+        });
+    }
+
     public function profile()
     {
         return $this->belongsTo(Profile::class);
@@ -70,6 +79,28 @@ class User extends Authenticatable implements JWTSubject
     public function condominium()
     {
         return $this->belongsTo(Condominium::class);
+    }
+
+    public function condominiums()
+    {
+        return $this->belongsToMany(Condominium::class, 'condominium_user')
+            ->withTimestamps();
+    }
+
+    public function belongsToCondominium(int $condominiumId): bool
+    {
+        if ($this->isPlatformAdmin()) {
+            return true;
+        }
+
+        return $this->condominiums()
+            ->where('condominiums.id', $condominiumId)
+            ->exists();
+    }
+
+    public function isPlatformAdmin(): bool
+    {
+        return $this->profile?->name === 'SysOp';
     }
 
     /**

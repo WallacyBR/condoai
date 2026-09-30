@@ -1,223 +1,45 @@
-# Determinação Automática de Condomínio
+# Resolução de Tenant (Multi-tenant)
 
-## Visão Geral
+## Fonte da verdade
 
-O sistema agora suporta determinação automática do condomínio em formulários, eliminando a necessidade de seleção manual quando o contexto já está definido.
+O tenant ativo é definido pelo header HTTP **`X-Condominium-Id`**, validado pelo `TenantMiddleware` com verificação de membership na pivot `condominium_user`.
 
-## Como Funciona
+- Usuário autenticado precisa pertencer ao condomínio informado (membership N:N) **ou** ter perfil **`SysOp`** (administrador de plataforma).
+- Sem header, header inválido ou condomínio inexistente → resposta **4xx** (fail-closed).
+- Cross-tenant não autorizado → **403**.
+- Não há fallback silencioso para `Condominium::first()` nem resolução por subdomínio.
 
-### 1. Contexto Multi-Tenant (Subdomínio)
-Quando você acessa `condominio1.seudominio.com`, o `TenantMiddleware` automaticamente define o condomínio baseado no subdomínio.
+## Membership
 
-### 2. Contexto de Seleção Manual
-Quando você acessa o sistema principal e seleciona um condomínio, ele fica armazenado no `localStorage`.
+- Relação N:N: tabela pivot `condominium_user`.
+- `users.condominium_id` permanece como condomínio **padrão/home** do usuário, não como único gate de tenant.
+- Backfill da pivot é feito a partir de `users.condominium_id` existente.
 
-### 3. Determinação Automática
-O sistema verifica automaticamente qual condomínio usar na seguinte ordem:
-1. Condomínio fornecido explicitamente na requisição
-2. Condomínio definido pelo tenant middleware
-3. Condomínio na requisição (atributos)
-4. Condomínio do usuário autenticado
-5. Lança exceção se nenhum estiver disponível
+## Contexto de tenant no backend
 
-## Implementação no Backend
+- `TenantMiddleware` resolve e valida o tenant, registrando em `TenantContext`.
+- Helper `tenant()` retorna o `Condominium` ativo ou `null`.
+- `CondominiumScope` aplica filtro fail-closed: sem contexto de tenant, nenhum registro é retornado.
 
-### Controller (Exemplo: ResidentController)
+## Endpoints relevantes (M1)
 
-```php
-/**
- * Determina o ID do condomínio atual baseado no contexto da requisição
- * Segue o princípio DRY para reutilização em diferentes métodos
- */
-private function getCurrentCondominiumId(Request $request): int
-{
-    // 1. Verificar se foi fornecido explicitamente na requisição
-    if ($request->has('condominium_id') && $request->condominium_id) {
-        return (int) $request->condominium_id;
-    }
-    
-    // 2. Verificar se há um condomínio definido pelo tenant middleware
-    if (app()->bound('currentCondominium')) {
-        return app('currentCondominium')->id;
-    }
-    
-    // 3. Verificar se há um condomínio na requisição (atributos)
-    if ($request->attributes->has('condominium')) {
-        return $request->attributes->get('condominium')->id;
-    }
-    
-    // 4. Fallback: usar o condomínio do usuário autenticado
-    if (auth()->check() && auth()->user()->condominium_id) {
-        return auth()->user()->condominium_id;
-    }
-    
-    // 5. Se nada estiver disponível, lançar exceção
-    throw new \InvalidArgumentException('Não foi possível determinar o condomínio atual.');
-}
+| Endpoint | Header obrigatório | Comportamento |
+|----------|-------------------|---------------|
+| Rotas com middleware `tenant` | Sim (`X-Condominium-Id`) | Valida membership ou bypass SysOp |
+| `GET /api/auth/me` | Não | Retorna `memberships[]` com condomínios do usuário |
+| `GET /api/condominiums` | Sim | SysOp vê todos; demais usuários veem apenas memberships |
+
+## Desenvolvimento local
+
+Em local/staging/produção, envie sempre o header explícito:
+
+```http
+X-Condominium-Id: 1
+Authorization: Bearer <token>
 ```
 
-### Validação
+Consulte `GET /api/auth/me` para obter a lista de `memberships` disponíveis ao usuário autenticado.
 
-```php
-$validated = $request->validate([
-    // ... outros campos ...
-    'condominium_id' => [
-        'sometimes', // Mudado de 'required' para 'sometimes'
-        'integer',
-        Rule::exists('condominiums','id')->where(function ($query) {
-            return $query->where('active', true);
-        })
-    ],
-]);
+## Frontend (M2 — fora do escopo atual)
 
-// Definir o condomínio automaticamente se não foi fornecido
-if (!isset($validated['condominium_id'])) {
-    $validated['condominium_id'] = $this->getCurrentCondominiumId($request);
-}
-```
-
-## Implementação no Frontend
-
-### Composable (useCondominiumFilter.js)
-
-```javascript
-import { ref, computed } from 'vue';
-
-export function useCondominiumFilter() {
-  const selectedCondominiumId = ref(localStorage.getItem('selectedCondominium'));
-  const selectedCondominiumName = ref(localStorage.getItem('selectedCondominiumName'));
-
-  const isCondominiumAutoDetermined = computed(() => {
-    return !!selectedCondominiumId.value;
-  });
-
-  const shouldLoadCondominiums = () => {
-    return !isCondominiumAutoDetermined.value;
-  };
-
-  const getCurrentCondominiumId = () => {
-    return selectedCondominiumId.value;
-  };
-
-  const getCurrentCondominiumName = () => {
-    return selectedCondominiumName.value;
-  };
-
-  return {
-    selectedCondominiumId,
-    selectedCondominiumName,
-    isCondominiumAutoDetermined,
-    shouldLoadCondominiums,
-    getCurrentCondominiumId,
-    getCurrentCondominiumName,
-  };
-}
-```
-
-### Componente Vue
-
-```vue
-<template>
-  <!-- Campo de condomínio (só aparece se não for determinado automaticamente) -->
-  <div v-if="!isCondominiumAutoDetermined" class="space-y-4">
-    <h3>Condomínio</h3>
-    <select v-model="form.condominium_id" required>
-      <option value="">Selecione um condomínio</option>
-      <option v-for="condo in condominiums" :key="condo.id" :value="condo.id">
-        {{ condo.name }}
-      </option>
-    </select>
-  </div>
-
-  <!-- Informação do condomínio atual (só aparece se for determinado automaticamente) -->
-  <div v-if="isCondominiumAutoDetermined" class="space-y-4">
-    <h3>Condomínio</h3>
-    <div class="bg-indigo-500/10 border border-indigo-500/30 rounded-lg p-4">
-      <span>Condomínio: {{ selectedCondominiumName }}</span>
-      <p class="text-sm text-gray-400">
-        O condomínio foi determinado automaticamente com base no seu contexto atual.
-      </p>
-    </div>
-  </div>
-</template>
-
-<script>
-import { useCondominiumFilter } from '../composables/useCondominiumFilter.js';
-
-export default {
-  setup() {
-    const {
-      selectedCondominiumId,
-      selectedCondominiumName,
-      isCondominiumAutoDetermined,
-      shouldLoadCondominiums,
-      getCurrentCondominiumId,
-    } = useCondominiumFilter();
-
-    const form = reactive({
-      // ... outros campos ...
-      condominium_id: getCurrentCondominiumId() || '',
-    });
-
-    const loadCondominiums = async () => {
-      if (!shouldLoadCondominiums()) {
-        console.log('Condomínio determinado automaticamente, pulando carregamento');
-        return;
-      }
-      
-      // Carregar lista de condomínios...
-    };
-
-    const handleSubmit = async () => {
-      const formData = new FormData();
-      
-      // Não enviar condominium_id se for determinado automaticamente
-      for (const key in cleanedForm) {
-        if (key === 'condominium_id' && isCondominiumAutoDetermined.value) {
-          continue;
-        }
-        formData.append(key, cleanedForm[key]);
-      }
-      
-      // Enviar requisição...
-    };
-
-    onMounted(async () => {
-      if (shouldLoadCondominiums()) {
-        await loadCondominiums();
-      }
-    });
-
-    return {
-      form,
-      isCondominiumAutoDetermined,
-      selectedCondominiumName,
-      // ... outros retornos
-    };
-  }
-};
-</script>
-```
-
-## Benefícios
-
-1. **Melhor UX**: Usuários não precisam selecionar condomínio repetidamente
-2. **Menos Erros**: Elimina possibilidade de selecionar condomínio errado
-3. **Código DRY**: Reutilização de lógica em diferentes componentes
-4. **Flexibilidade**: Suporta tanto multi-tenant quanto seleção manual
-5. **Segurança**: Validação automática no backend
-
-## Casos de Uso
-
-- **Formulários de Moradores**: Não precisa selecionar condomínio
-- **Formulários de Unidades**: Condomínio determinado automaticamente
-- **Formulários de Áreas Comuns**: Contexto já definido
-- **Relatórios**: Filtro automático por condomínio
-
-## Migração de Formulários Existentes
-
-1. Importar o composable `useCondominiumFilter`
-2. Usar `shouldLoadCondominiums()` para decidir se carregar lista
-3. Usar `isCondominiumAutoDetermined` para mostrar/esconder campo
-4. Não enviar `condominium_id` quando determinado automaticamente
-5. Atualizar validação no backend para aceitar `sometimes` em vez de `required` 
+O interceptor que injeta `X-Condominium-Id` automaticamente será implementado no milestone M2. Até lá, clientes de API devem enviar o header manualmente.

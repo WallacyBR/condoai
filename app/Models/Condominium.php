@@ -33,6 +33,12 @@ class Condominium extends Model
         'active' => 'boolean',
     ];
 
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'condominium_user')
+            ->withTimestamps();
+    }
+
     public function residents()
     {
         return $this->hasMany(Resident::class);

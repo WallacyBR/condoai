@@ -1,5 +1,10 @@
 import api from '../utils/api';
 import { useUser } from '../composables/useUser';
+import { useTenantStore } from '../stores/tenant';
+import {
+    markTenantHydrationPending,
+    resolveTenantHydration,
+} from '../utils/tenant';
 
 // Lazy import do router para evitar dependência circular
 let router = null;
@@ -22,8 +27,9 @@ class AuthService {
         this.setUser = setUser;
 
         if (this.token) {
+            markTenantHydrationPending();
             this.setupTokenRefresh();
-            this.fetchCurrentUser();
+            this.fetchCurrentUser().finally(() => resolveTenantHydration());
         }
     }
 
@@ -84,13 +90,17 @@ class AuthService {
                 this.token = response.data.authorization.token;
                 localStorage.setItem('token', this.token);
                 this.setupTokenRefresh();
-                await this.fetchCurrentUser();
-                
-                // Armazenar condomínio atual se fornecido na resposta
-                if (response.data.current_condominium) {
-                    localStorage.setItem('selectedCondominium', response.data.current_condominium.id);
-                    localStorage.setItem('selectedCondominiumName', response.data.current_condominium.name);
-                    console.log('Condomínio definido automaticamente:', response.data.current_condominium.name);
+                markTenantHydrationPending();
+
+                try {
+                    if (response.data.user) {
+                        this.setUser(response.data.user);
+                        this.hydrateTenant(response.data.user);
+                    } else {
+                        await this.fetchCurrentUser();
+                    }
+                } finally {
+                    resolveTenantHydration();
                 }
                 
                 return response.data;
@@ -151,12 +161,19 @@ class AuthService {
         }
     }
 
+    hydrateTenant(user) {
+        const tenantStore = useTenantStore();
+        return tenantStore.hydrate(user);
+    }
+
     async fetchCurrentUser() {
         try {
             const response = await api.get('/auth/me');
             this.setUser(response.data);
+            return this.hydrateTenant(response.data);
         } catch (error) {
             console.error('Erro ao obter dados do usuário:', error);
+            return { needsSelection: true };
         }
     }
 
@@ -170,9 +187,12 @@ class AuthService {
         this.isRefreshing = false;
         this.refreshPromise = null;
         localStorage.removeItem('token');
-        localStorage.removeItem('selectedCondominium');
-        localStorage.removeItem('selectedCondominiumName');
         this.setUser(null);
+
+        const tenantStore = useTenantStore();
+        tenantStore.clear();
+        tenantStore.resetMembershipCatalog();
+        resolveTenantHydration();
         
         const routerInstance = await getRouter();
         routerInstance.push({ name: 'login' });
@@ -212,22 +232,6 @@ class AuthService {
     getToken() {
         return this.token;
     }
-
-    async fetchCurrentCondominium() {
-        try {
-            const response = await api.get('/auth/current-condominium');
-            if (response.data && response.data.current_condominium) {
-                localStorage.setItem('selectedCondominium', response.data.current_condominium.id);
-                localStorage.setItem('selectedCondominiumName', response.data.current_condominium.name);
-                console.log('Condomínio atual obtido:', response.data.current_condominium.name);
-                return response.data.current_condominium;
-            }
-            return null;
-        } catch (error) {
-            console.error('Erro ao obter condomínio atual:', error);
-            return null;
-        }
-    }
 }
 
-export default new AuthService(); 
+export default new AuthService();

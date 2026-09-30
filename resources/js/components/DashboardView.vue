@@ -37,9 +37,11 @@
 <script>
 import AuthenticatedLayout from './layouts/AuthenticatedLayout.vue';
 import TopCard from './ui/TopCard.vue';
-import { ref, onMounted, h } from 'vue';
+import { ref, onMounted, onUnmounted, h } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '../utils/api';
+import { useTenantStore } from '../stores/tenant';
+import { CONDOMINIUM_SELECTED_EVENT } from '../utils/tenant';
 
 export default {
   name: 'DashboardView',
@@ -49,7 +51,8 @@ export default {
   },
   setup() {
     const router = useRouter();
-    const selectedCondoName = ref(localStorage.getItem('selectedCondominiumName'));
+    const tenantStore = useTenantStore();
+    const selectedCondoName = ref(tenantStore.selectedName);
     const BuildingIcon = {
       render() {
         return h('svg', { class: 'h-5 w-5', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
@@ -64,7 +67,7 @@ export default {
     });
 
     const fetchCondoStats = async () => {
-      const condoId = localStorage.getItem('selectedCondominium');
+      const condoId = tenantStore.selectedId;
       if (condoId) {
         try {
           const response = await api.get(`/condominiums/${condoId}`);
@@ -75,18 +78,20 @@ export default {
       }
     };
 
-    onMounted(fetchCondoStats);
-
     const updateSelectedCondo = () => {
-      selectedCondoName.value = localStorage.getItem('selectedCondominiumName');
+      tenantStore.syncFromStorage();
+      selectedCondoName.value = tenantStore.selectedName;
       fetchCondoStats();
     };
 
-    window.addEventListener('condominiumSelected', updateSelectedCondo);
+    onMounted(fetchCondoStats);
+    window.addEventListener(CONDOMINIUM_SELECTED_EVENT, updateSelectedCondo);
+    onUnmounted(() => {
+      window.removeEventListener(CONDOMINIUM_SELECTED_EVENT, updateSelectedCondo);
+    });
 
     const changeCondominium = () => {
-      localStorage.removeItem('selectedCondominium');
-      localStorage.removeItem('selectedCondominiumName');
+      tenantStore.clear();
       router.push('/condominium-select');
     };
 

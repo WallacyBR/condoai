@@ -565,60 +565,32 @@ const router = createRouter({
 // Navigation Guard
 router.beforeEach(async (to, from, next) => {
   const isAuthenticated = !!localStorage.getItem('token');
-  let hasCondo = !!localStorage.getItem('selectedCondominium');
+  const { useTenantStore } = await import('../stores/tenant');
+  const tenantStore = useTenantStore();
+  tenantStore.syncFromStorage();
+  const hasCondo = tenantStore.hasSelection;
 
-  console.log('=== Navigation Guard Debug ===');
-  console.log('De:', from.path);
-  console.log('Para:', to.path);
-  console.log('Autenticado:', isAuthenticated);
-  console.log('Tem condomínio:', hasCondo);
-  console.log('Meta da rota:', to.meta);
-  console.log('=============================');
-
-  // Se não está autenticado e a rota requer autenticação
   if (to.meta.requiresAuth && !isAuthenticated) {
-    console.log('Redirecionando para login - não autenticado');
     next('/login');
     return;
-  } 
+  }
 
-  // Se está autenticado mas não tem condomínio, tentar buscar do backend
-  if (isAuthenticated && !hasCondo && to.path !== '/login') {
-    console.log('Usuário autenticado sem condomínio, buscando do backend...');
-    try {
-      // Importar dinamicamente o serviço de auth para evitar dependência circular
-      const authModule = await import('../services/auth');
-      const auth = authModule.default;
-      const condominium = await auth.fetchCurrentCondominium();
-      if (condominium) {
-        hasCondo = true;
-        console.log('Condomínio obtido do backend:', condominium.name);
-      }
-    } catch (error) {
-      console.error('Erro ao buscar condomínio do backend:', error);
-    }
-  }
-  
-  // Se está na página de login e já está autenticado
   if (to.path === '/login' && isAuthenticated) {
-    console.log('Já autenticado, redirecionando...');
     next(hasCondo ? '/dashboard' : '/condominium-select');
-  } 
-  // Se a rota requer condomínio e não tem condomínio selecionado
-  else if (to.meta.requiresCondo && !hasCondo) {
-    console.log('Redirecionando para seleção de condomínio - sem condomínio');
+    return;
+  }
+
+  if (to.meta.requiresCondo && !hasCondo) {
     next('/condominium-select');
-  } 
-  // Se está indo para a raiz e está autenticado
-  else if (to.path === '/' && isAuthenticated) {
-    console.log('Redirecionando da raiz...');
+    return;
+  }
+
+  if (to.path === '/' && isAuthenticated) {
     next(hasCondo ? '/dashboard' : '/condominium-select');
+    return;
   }
-  // Caso contrário, prosseguir normalmente
-  else {
-    console.log('Prosseguindo normalmente para:', to.path);
-    next();
-  }
+
+  next();
 });
 
 export default router;

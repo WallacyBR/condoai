@@ -1,5 +1,13 @@
 import axios from 'axios';
 import router from '../router/index.js';
+import {
+  areMembershipsKnown,
+  finalizeTenantHeaders,
+  handleTenantHttpError,
+  isExemptRoute,
+  requestHadTenantHeader,
+  waitForTenantHydration,
+} from './tenant';
 
 // Lazy import do auth para evitar dependência circular
 let auth = null;
@@ -33,7 +41,7 @@ export const api = axios.create({
   baseURL: '/api'
 });
 
-api.interceptors.request.use(config => {
+api.interceptors.request.use(async (config) => {
   const token = localStorage.getItem('token');
 
   config.url = normalizeApiUrl(config.url);
@@ -42,12 +50,31 @@ api.interceptors.request.use(config => {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
+  const method = config.method || 'GET';
+
+  if (token && !isExemptRoute(config.url, method) && !areMembershipsKnown()) {
+    await waitForTenantHydration();
+  }
+
+  config.headers = finalizeTenantHeaders(config.headers || {}, config.url, method);
+
   return config;
 });
 
 api.interceptors.response.use(
   response => response,
   async error => {
+    const status = error?.response?.status;
+    const message = error?.response?.data?.message;
+    const hadTenantHeader = requestHadTenantHeader(error.config?.headers || {});
+
+    if (status && status !== 401) {
+      const handled = await handleTenantHttpError({ status, message, hadTenantHeader });
+      if (handled) {
+        return Promise.reject(error);
+      }
+    }
+
     if (error?.response?.status !== 401 || error.config?._retry) {
       return Promise.reject(error);
     }
@@ -72,6 +99,12 @@ api.interceptors.response.use(
       if (newToken) {
         retryConfig.headers.Authorization = `Bearer ${newToken}`;
       }
+
+      retryConfig.headers = finalizeTenantHeaders(
+        retryConfig.headers,
+        retryConfig.url,
+        retryConfig.method || 'GET'
+      );
 
       return api.request(retryConfig);
     } catch (refreshError) {
@@ -117,8 +150,9 @@ export async function apiRequest(url, options = {}) {
 
   const normalizedUrl = normalizeApiUrl(url);
   const fullUrl = normalizedUrl.startsWith('/api') ? normalizedUrl : `/api${normalizedUrl}`;
+  const method = options.method || 'GET';
 
-  const defaultHeaders = {
+  let defaultHeaders = {
     Accept: 'application/json'
   };
 
@@ -132,14 +166,31 @@ export async function apiRequest(url, options = {}) {
     defaultHeaders.Authorization = `Bearer ${token}`;
   }
 
-  try {
+  const buildHeaders = (overrideHeaders = {}) => finalizeTenantHeaders(
+    {
+      ...defaultHeaders,
+      ...(overrideHeaders || {}),
+    },
+    normalizedUrl,
+    method,
+  );
+
+  if (token && !isExemptRoute(normalizedUrl, method) && !areMembershipsKnown()) {
+    await waitForTenantHydration();
+  }
+
+  const executeRequest = async (headers) => {
     const response = await fetch(fullUrl, {
       ...options,
-      headers: {
-        ...defaultHeaders,
-        ...(options.headers || {})
-      }
+      headers,
     });
+
+    return response;
+  };
+
+  try {
+    let requestHeaders = buildHeaders(options.headers);
+    let response = await executeRequest(requestHeaders);
 
     if (!response.ok) {
       if (response.status === 401) {
@@ -150,26 +201,33 @@ export async function apiRequest(url, options = {}) {
             defaultHeaders.Authorization = `Bearer ${newToken}`;
           }
 
-          const retryResponse = await fetch(fullUrl, {
-            ...options,
-            headers: {
-              ...defaultHeaders,
-              ...(options.headers || {})
-            }
-          });
+          requestHeaders = buildHeaders(options.headers);
 
-          if (!retryResponse.ok) {
+          response = await executeRequest(requestHeaders);
+
+          if (!response.ok) {
             let errorMessage;
             try {
-              const errorData = await retryResponse.json();
+              const errorData = await response.json();
               errorMessage = errorData.message || 'Erro na requisição';
             } catch {
               errorMessage = 'Erro na requisição';
             }
+
+            const handled = await handleTenantHttpError({
+              status: response.status,
+              message: errorMessage,
+              hadTenantHeader: requestHadTenantHeader(requestHeaders),
+            });
+
+            if (handled) {
+              throw new Error(errorMessage);
+            }
+
             throw new Error(errorMessage);
           }
 
-          return await retryResponse.json();
+          return await response.json();
         }
         return null;
       }
@@ -180,6 +238,16 @@ export async function apiRequest(url, options = {}) {
         errorMessage = errorData.message || 'Erro na requisição';
       } catch {
         errorMessage = 'Erro na requisição';
+      }
+
+      const handled = await handleTenantHttpError({
+        status: response.status,
+        message: errorMessage,
+        hadTenantHeader: requestHadTenantHeader(requestHeaders),
+      });
+
+      if (handled) {
+        throw new Error(errorMessage);
       }
 
       throw new Error(errorMessage);

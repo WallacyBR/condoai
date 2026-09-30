@@ -7,11 +7,13 @@ use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Tests\Concerns\InteractsWithTenant;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class ProfileSettingsTest extends TestCase
 {
+    use InteractsWithTenant;
     use RefreshDatabase;
 
     protected Condominium $condominium;
@@ -35,8 +37,9 @@ class ProfileSettingsTest extends TestCase
             'notification_push' => false,
             'notification_sms' => false,
         ]);
+        $this->user->condominiums()->sync([$this->condominium->id]);
 
-        $this->actingAs($this->user, 'api');
+        $this->actingAsTenant($this->user, $this->condominium);
     }
 
     public function test_can_fetch_current_profile_settings(): void
@@ -85,6 +88,7 @@ class ProfileSettingsTest extends TestCase
         $token = JWTAuth::fromUser($this->user);
 
         $passwordResponse = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->withHeader('X-Condominium-Id', (string) $this->condominium->id)
             ->putJson('/api/profile/password', [
                 'current_password' => 'senha-atual',
                 'new_password' => 'NovaSenhaSegura123',
@@ -99,10 +103,11 @@ class ProfileSettingsTest extends TestCase
         $this->assertTrue(Hash::check('NovaSenhaSegura123', $this->user->fresh()->password));
 
         $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->withHeader('X-Condominium-Id', (string) $this->condominium->id)
             ->getJson('/api/profile')
             ->assertUnauthorized();
 
-        $this->actingAs($this->user->fresh(), 'api');
+        $this->actingAsTenant($this->user->fresh(), $this->condominium);
 
         $notificationsResponse = $this->putJson('/api/profile/notifications', [
             'email' => false,

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Concerns\AuthorizesCondominiumAccess;
 use App\Http\Controllers\Controller;
 use App\Models\Condominium;
 use Illuminate\Http\Request;
@@ -9,9 +10,16 @@ use Illuminate\Validation\Rule;
 
 class CondominiumController extends Controller
 {
-    public function index()
+    use AuthorizesCondominiumAccess;
+    public function index(Request $request)
     {
-        return Condominium::all();
+        $user = $request->user();
+
+        if ($user->isPlatformAdmin()) {
+            return Condominium::query()->get();
+        }
+
+        return $user->condominiums()->get();
     }
 
     public function store(Request $request)
@@ -33,13 +41,21 @@ class CondominiumController extends Controller
         return Condominium::create($validated);
     }
 
-    public function show(Condominium $condominium)
+    public function show(Request $request, Condominium $condominium)
     {
+        if ($response = $this->ensureCondominiumMembership($request, $condominium)) {
+            return $response;
+        }
+
         return $condominium->loadCount(['residents', 'apartments', 'parkingSpots']);
     }
 
     public function update(Request $request, Condominium $condominium)
     {
+        if ($response = $this->ensureCondominiumMembership($request, $condominium)) {
+            return $response;
+        }
+
         $validated = $request->validate([
             'name' => 'string|max:255',
             'document' => ['string', Rule::unique('condominiums')->ignore($condominium->id)],
@@ -59,16 +75,25 @@ class CondominiumController extends Controller
         return $condominium;
     }
 
-    public function destroy(Condominium $condominium)
+    public function destroy(Request $request, Condominium $condominium)
     {
+        if ($response = $this->ensureCondominiumMembership($request, $condominium)) {
+            return $response;
+        }
+
         $condominium->delete();
 
         return response()->json(null, 204);
     }
 
-    public function stats(Condominium $condominium)
+    public function stats(Request $request, Condominium $condominium)
     {
+        if ($response = $this->ensureCondominiumMembership($request, $condominium)) {
+            return $response;
+        }
+
         $blocks = $condominium->blocks()->withCount('apartments')->get();
+
         return response()->json($blocks);
     }
 }

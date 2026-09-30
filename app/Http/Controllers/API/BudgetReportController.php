@@ -25,13 +25,7 @@ class BudgetReportController extends Controller
         $user = $request->user();
         $condominiumId = (int) $request->input('condominium_id');
 
-        if (! $user?->condominium_id) {
-            return response()->json([
-                'message' => 'Usuário não possui condomínio associado.',
-            ], 403);
-        }
-
-        if ($condominiumId !== (int) $user->condominium_id) {
+        if ($user === null || ! $user->belongsToCondominium($condominiumId)) {
             return response()->json([
                 'message' => 'Acesso negado ao condomínio informado.',
             ], 403);

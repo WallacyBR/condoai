@@ -6,10 +6,12 @@ use App\Models\Condominium;
 use App\Models\User;
 use App\Models\ChartAccount;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Concerns\InteractsWithTenant;
 use Tests\TestCase;
 
 class BudgetsTest extends TestCase
 {
+    use InteractsWithTenant;
     use RefreshDatabase;
 
     protected User $user;
@@ -21,7 +23,8 @@ class BudgetsTest extends TestCase
 
         $this->condominium = Condominium::factory()->create();
         $this->user = User::factory()->create(['condominium_id' => $this->condominium->id]);
-        $this->actingAs($this->user, 'api');
+        $this->user->condominiums()->sync([$this->condominium->id]);
+        $this->actingAsTenant($this->user, $this->condominium);
     }
 
     public function test_can_bulk_update_budget_items()
@@ -108,7 +111,8 @@ class BudgetsTest extends TestCase
         $otherCondominium = Condominium::factory()->create();
         $year = 2025;
 
-        $response = $this->getJson("/api/finance/reports/budget?year={$year}&condominium_id={$otherCondominium->id}");
+        $response = $this->withHeader('X-Condominium-Id', (string) $otherCondominium->id)
+            ->getJson("/api/finance/reports/budget?year={$year}&condominium_id={$otherCondominium->id}");
 
         $response->assertForbidden()
                  ->assertJson([

@@ -64,29 +64,14 @@ class AuthController extends Controller
             ]);
         }
 
-        $user = Auth::guard('api')->user()->load('profile.modules');
-        if (app()->bound('currentCondominium') &&
-            $user->condominium_id !== app('currentCondominium')->id) {
-            Auth::guard('api')->logout();
-            throw ValidationException::withMessages([
-                'email' => ['Usuário não pertence a este condomínio.'],
-            ]);
-        }
-
-        // Obter informações do condomínio atual
-        $currentCondominium = null;
-        if (app()->bound('currentCondominium')) {
-            $currentCondominium = app('currentCondominium');
-        }
+        $user = Auth::guard('api')->user()->load(['profile.modules', 'condominiums']);
 
         return response()->json([
             'status' => 'success',
-            'user' => $user,
-            'current_condominium' => $currentCondominium ? [
-                'id' => $currentCondominium->id,
-                'name' => $currentCondominium->name,
-                'domain' => $currentCondominium->domain,
-            ] : null,
+            'user' => [
+                ...$user->toArray(),
+                'memberships' => $user->condominiums,
+            ],
             'authorization' => [
                 'token' => $token,
                 'type' => 'bearer',
@@ -120,7 +105,12 @@ class AuthController extends Controller
 
     public function me()
     {
-        return response()->json(Auth::guard('api')->user()->load('profile.modules'));
+        $user = Auth::guard('api')->user()->load(['profile.modules', 'condominiums']);
+
+        return response()->json([
+            ...$user->toArray(),
+            'memberships' => $user->condominiums,
+        ]);
     }
 
     /**
@@ -128,21 +118,21 @@ class AuthController extends Controller
      */
     public function currentCondominium()
     {
-        if (!app()->bound('currentCondominium')) {
+        $condominium = tenant();
+
+        if ($condominium === null) {
             return response()->json([
                 'current_condominium' => null,
-                'message' => 'Nenhum condomínio definido no contexto atual'
+                'message' => 'Nenhum condomínio definido no contexto atual',
             ]);
         }
 
-        $condominium = app('currentCondominium');
-        
         return response()->json([
             'current_condominium' => [
                 'id' => $condominium->id,
                 'name' => $condominium->name,
                 'domain' => $condominium->domain,
-            ]
+            ],
         ]);
     }
 }

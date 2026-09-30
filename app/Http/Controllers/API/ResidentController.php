@@ -33,10 +33,6 @@ class ResidentController extends Controller
     {
         $query = Resident::with('condominium');
 
-        if ($request->has('condominium_id')) {
-            $query->where('condominium_id', $request->condominium_id);
-        }
-
         if ($request->has('apartment_id')) {
             $query->where(function ($q) use ($request) {
                 $apartmentId = $request->apartment_id;
@@ -89,13 +85,6 @@ class ResidentController extends Controller
             'state' => 'nullable|string|max:2',
             'classification' => ['required', Rule::in([ 'proprietario', 'morador', 'inquilino' ])],
             'active' => 'boolean',
-            'condominium_id' => [
-                'sometimes', // Mudado de 'required' para 'sometimes'
-                'integer',
-                Rule::exists('condominiums','id')->where(function ($query) {
-                    return $query->where('active', true);
-                })
-            ],
             'owned_apartment_ids' => 'nullable|array',
             'owned_apartment_ids.*' => [
                 'integer',
@@ -107,11 +96,8 @@ class ResidentController extends Controller
 
         // Converter strings booleanas para booleanos se necessário
         $validated = $this->convertBooleanFields($validated);
-        
-        // Definir o condomínio automaticamente se não foi fornecido
-        if (!isset($validated['condominium_id'])) {
-            $validated['condominium_id'] = $condominiumId;
-        }
+        unset($validated['condominium_id']);
+        $validated['condominium_id'] = $condominiumId;
 
         $resident = Resident::create($validated);
 
@@ -188,13 +174,6 @@ class ResidentController extends Controller
                         return $query->where('condominium_id', $condominiumId);
                     })
                 ],
-                'condominium_id' => [
-                    'sometimes', // Mudado de 'required' para 'sometimes'
-                    'integer',
-                    Rule::exists('condominiums','id')->where(function ($query) {
-                        return $query->where('active', true);
-                    })
-                ],
             ]);
             
             \Log::info('Validação passou com sucesso!');
@@ -215,11 +194,8 @@ class ResidentController extends Controller
 
         // Converter strings booleanas para booleanos se necessário
         $validated = $this->convertBooleanFields($validated);
-        
-        // Definir o condomínio automaticamente se não foi fornecido
-        if (!isset($validated['condominium_id'])) {
-            $validated['condominium_id'] = $condominiumId;
-        }
+        unset($validated['condominium_id']);
+        $validated['condominium_id'] = $condominiumId;
 
         \Log::info('Dados finais para atualização:', $validated);
 
@@ -247,28 +223,19 @@ class ResidentController extends Controller
      */
     private function getCurrentCondominiumId(Request $request): int
     {
-        // 1. Verificar se foi fornecido explicitamente na requisição
-        if ($request->has('condominium_id') && $request->condominium_id) {
-            return (int) $request->condominium_id;
+        $condominium = tenant();
+
+        if ($condominium === null && $request->attributes->has('condominium')) {
+            $condominium = $request->attributes->get('condominium');
         }
-        
-        // 2. Verificar se há um condomínio definido pelo tenant middleware
-        if (app()->bound('currentCondominium')) {
-            return app('currentCondominium')->id;
+
+        if ($condominium === null) {
+            throw new \InvalidArgumentException(
+                'Não foi possível determinar o condomínio atual. Envie o header X-Condominium-Id.'
+            );
         }
-        
-        // 3. Verificar se há um condomínio na requisição (atributos)
-        if ($request->attributes->has('condominium')) {
-            return $request->attributes->get('condominium')->id;
-        }
-        
-        // 4. Fallback: usar o condomínio do usuário autenticado
-        if (auth()->check() && auth()->user()->condominium_id) {
-            return auth()->user()->condominium_id;
-        }
-        
-        // 5. Se nada estiver disponível, lançar exceção
-        throw new \InvalidArgumentException('Não foi possível determinar o condomínio atual. Verifique se você está logado e se um condomínio foi selecionado.');
+
+        return $condominium->id;
     }
 
     public function destroy(Resident $resident)

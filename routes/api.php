@@ -51,10 +51,8 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('auth/me', 'me');
 });
 
-// Rota para obter condomínio atual (precisa do middleware tenant)
-Route::get('auth/current-condominium', [AuthController::class, 'currentCondominium'])->middleware(['tenant']);
-
 Route::middleware(['auth:api', 'tenant'])->group(function () {
+    Route::get('auth/current-condominium', [AuthController::class, 'currentCondominium']);
     Route::get('profile', [ProfileSettingsController::class, 'show']);
     Route::put('profile', [ProfileSettingsController::class, 'update']);
     Route::put('profile/password', [ProfileSettingsController::class, 'updatePassword']);

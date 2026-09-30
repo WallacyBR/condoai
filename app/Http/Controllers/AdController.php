@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\ResolvesTenantCondominium;
 use App\Models\Ad;
 use App\Models\AdImage;
 use App\Models\AdInteraction;
@@ -13,6 +14,7 @@ use Illuminate\Validation\Rule;
 
 class AdController extends Controller
 {
+    use ResolvesTenantCondominium;
     /**
      * Display a listing of the resource.
      */
@@ -73,6 +75,7 @@ class AdController extends Controller
         try {
             $ad = Ad::create([
                 'user_id' => Auth::id(),
+                'condominium_id' => $this->tenantCondominiumId($request),
                 'title' => $request->title,
                 'description' => $request->description,
                 'price' => $request->price,

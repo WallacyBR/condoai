@@ -2,9 +2,11 @@
 
 namespace App\Exceptions;
 
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
@@ -45,6 +47,9 @@ class Handler extends ExceptionHandler
                 } elseif ($e instanceof AuthenticationException) {
                     $status = 401;
                     $response['message'] = 'Não autenticado.';
+                } elseif ($e instanceof AuthorizationException || $e instanceof AccessDeniedHttpException) {
+                    $status = 403;
+                    $response['message'] = $e->getMessage() ?: 'Acesso negado.';
                 } elseif ($e instanceof NotFoundHttpException) {
                     $status = 404;
                     $response['message'] = 'Recurso não encontrado.';

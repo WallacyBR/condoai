@@ -103,6 +103,49 @@ class User extends Authenticatable implements JWTSubject
         return $this->profile?->name === 'SysOp';
     }
 
+    public function canModule(string $moduleName, string $ability): bool
+    {
+        if ($this->isPlatformAdmin()) {
+            return true;
+        }
+
+        $pivot = $this->modulePivot($moduleName);
+
+        if ($pivot === null) {
+            return false;
+        }
+
+        return match ($ability) {
+            'view' => (bool) $pivot->can_view,
+            'create' => (bool) $pivot->can_create,
+            'update' => (bool) $pivot->can_update,
+            'delete' => (bool) $pivot->can_delete,
+            default => false,
+        };
+    }
+
+    public function moduleScope(string $moduleName): ?string
+    {
+        if ($this->isPlatformAdmin()) {
+            return 'all';
+        }
+
+        return $this->modulePivot($moduleName)?->scope;
+    }
+
+    private function modulePivot(string $moduleName): ?object
+    {
+        if ($this->profile === null) {
+            return null;
+        }
+
+        $module = $this->profile->modules()
+            ->where('modules.name', $moduleName)
+            ->first();
+
+        return $module?->pivot;
+    }
+
     /**
      * Os agendamentos de manutenção pelos quais este usuário é responsável.
      */

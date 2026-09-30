@@ -6,6 +6,7 @@ use App\Http\Controllers\Concerns\ResolvesTenantCondominium;
 use App\Http\Controllers\Controller;
 use App\Models\Receivable;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ReceivableController extends Controller
 {
@@ -13,16 +14,26 @@ class ReceivableController extends Controller
 
     public function index()
     {
+        $this->authorize('viewAny', Receivable::class);
+
         return response()->json(Receivable::all());
     }
 
     public function store(Request $request)
     {
+        $this->authorize('create', Receivable::class);
+
         $condoId = $this->tenantCondominiumId($request);
 
         $validated = $request->validate([
-            'chart_account_id' => 'required|exists:chart_accounts,id',
-            'bank_id' => 'nullable|exists:banks,id',
+            'chart_account_id' => [
+                'required',
+                Rule::exists('chart_accounts', 'id')->where('condominium_id', $condoId),
+            ],
+            'bank_id' => [
+                'nullable',
+                Rule::exists('banks', 'id')->where('condominium_id', $condoId),
+            ],
             'due_date' => 'required|date',
             'amount' => 'required|numeric',
             'status' => 'required|string',
@@ -40,14 +51,26 @@ class ReceivableController extends Controller
 
     public function show(Receivable $receivable)
     {
+        $this->authorize('view', $receivable);
+
         return response()->json($receivable);
     }
 
     public function update(Request $request, Receivable $receivable)
     {
+        $this->authorize('update', $receivable);
+
+        $condoId = $this->tenantCondominiumId($request);
+
         $validated = $request->validate([
-            'chart_account_id' => 'required|exists:chart_accounts,id',
-            'bank_id' => 'nullable|exists:banks,id',
+            'chart_account_id' => [
+                'required',
+                Rule::exists('chart_accounts', 'id')->where('condominium_id', $condoId),
+            ],
+            'bank_id' => [
+                'nullable',
+                Rule::exists('banks', 'id')->where('condominium_id', $condoId),
+            ],
             'due_date' => 'required|date',
             'amount' => 'required|numeric',
             'status' => 'required|string',
@@ -63,6 +86,8 @@ class ReceivableController extends Controller
 
     public function destroy(Receivable $receivable)
     {
+        $this->authorize('delete', $receivable);
+
         $receivable->delete();
 
         return response()->json(null, 204);

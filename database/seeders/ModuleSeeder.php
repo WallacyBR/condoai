@@ -27,6 +27,7 @@ class ModuleSeeder extends Seeder
             ['name' => 'Configurações', 'description' => 'Ajustes do sistema'],
             ['name' => 'Usuários', 'description' => 'Gestão de usuários e perfis'],
             ['name' => 'Dashboard', 'description' => 'Painel de controle e estatísticas'],
+            ['name' => 'Financeiro', 'description' => 'Gestão financeira do condomínio'],
         ];
 
         foreach ($modules as $module) {

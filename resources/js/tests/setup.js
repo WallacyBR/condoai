@@ -1,5 +1,15 @@
 import { vi } from 'vitest'
 
+// Compatibilidade com specs legados escritos para Jest
+globalThis.jest = Object.assign(vi, {
+  requireActual: vi.importActual,
+})
+
+vi.mock(import('../composables/useToast.js'), async () => {
+  const { useToast } = await import('./mocks/useToast.js')
+  return { useToast }
+})
+
 // Mock global do fs para evitar erros
 global.fs = {
   readFileSync: vi.fn(() => 'mock content'),
@@ -14,20 +24,20 @@ Object.defineProperty(global, 'HTMLCanvasElement', {
     constructor() {
       this.canvas = createCanvas(400, 200)
     }
-    
+
     getContext(type) {
       if (type === '2d') {
         return this.canvas.getContext('2d')
       }
       return null
     }
-    
+
     get width() { return this.canvas.width }
     set width(value) { this.canvas.width = value }
-    
+
     get height() { return this.canvas.height }
     set height(value) { this.canvas.height = value }
-    
+
     getBoundingClientRect() {
       return {
         width: this.canvas.width,
@@ -35,21 +45,21 @@ Object.defineProperty(global, 'HTMLCanvasElement', {
         top: 0,
         left: 0,
         right: this.canvas.width,
-        bottom: this.canvas.height
+        bottom: this.canvas.height,
       }
     }
-  }
+  },
 })
 
 // Mock do window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: vi.fn().mockImplementation(query => ({
+  value: vi.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
-    addListener: vi.fn(), // deprecated
-    removeListener: vi.fn(), // deprecated
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
@@ -75,4 +85,4 @@ global.console = {
   ...console,
   warn: vi.fn(),
   error: vi.fn(),
-} 
+}

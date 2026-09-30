@@ -1,6 +1,7 @@
+import { readLegacyComponentSource } from './helpers/legacyFileContent.js';
 
+const content = readLegacyComponentSource('components/SignaturePad.vue');
 
 test('componente de assinatura existe', () => {
-  const content = fs.readFileSync(fileUrl, 'utf8');
   expect(content).toMatch('<canvas');
 });

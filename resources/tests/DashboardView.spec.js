@@ -1,6 +1,7 @@
+import { readLegacyComponentSource } from './helpers/legacyFileContent.js';
 
+const content = readLegacyComponentSource('components/DashboardView.vue');
 
 test('exibe card de topo', () => {
-  const content = fs.readFileSync(fileUrl, 'utf8');
   expect(content).toMatch('TopCard');
 });

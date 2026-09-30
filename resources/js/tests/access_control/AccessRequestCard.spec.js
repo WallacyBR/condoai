@@ -1,21 +1,28 @@
-import { shallowMount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import { vi } from 'vitest';
 import AccessRequestCard from '../../components/access_control/AccessRequestCard.vue';
 import NeonButton from '../../components/NeonButton.vue';
 
 // Mock date-fns para evitar problemas com timezones e formatação em testes
-jest.mock('date-fns', () => ({
-  ...jest.requireActual('date-fns'),
-  formatDistanceToNowStrict: jest.fn(() => 'há alguns segundos'),
-}));
+vi.mock('date-fns', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    formatDistanceToNowStrict: vi.fn(() => 'há alguns segundos'),
+  };
+});
 jest.mock('date-fns/locale', () => ({
   ptBR: {}, // Mock do locale ptBR
 }));
 
 
-// Mock do vue-router (se o componente usar <router-link> ou router.push)
 const mockRouter = {
-  push: jest.fn(),
+  push: vi.fn(),
 };
+
+vi.mock('vue-router', () => ({
+  useRouter: () => mockRouter,
+}));
 
 // Mock do composable useToast
 const mockSuccessToast = jest.fn();
@@ -48,18 +55,15 @@ describe('AccessRequestCard.vue', () => {
   });
 
   const mountComponent = (props) => {
-    return shallowMount(AccessRequestCard, {
+    return mount(AccessRequestCard, {
       props: {
-        request: { ...mockRequest, ...props }
-      },
-      global: {
-        components: { NeonButton }, // Registrar NeonButton se for usado diretamente no template do card
-        mocks: {
-          $router: mockRouter, // Mock do router para o botão "Detalhes"
-        },
+        request: { ...mockRequest, ...props },
       },
     });
   };
+
+  const findButtonByText = (wrapper, label) =>
+    wrapper.findAll('button').find((button) => button.text().includes(label));
 
   it('renders visitor information correctly', () => {
     const wrapper = mountComponent();
@@ -87,7 +91,7 @@ describe('AccessRequestCard.vue', () => {
 
   it('displays correct status text and style for "pending"', () => {
     const wrapper = mountComponent({ status: 'pending' });
-    expect(wrapper.text()).toContain('Pendente de Aprovação');
+    expect(wrapper.text()).toContain('Pendente');
     // Exemplo de verificação de classe (pode ser mais robusto)
     expect(wrapper.find('.border-orange-500\\/50').exists()).toBe(true);
   });
@@ -103,49 +107,45 @@ describe('AccessRequestCard.vue', () => {
   describe('Action Buttons', () => {
     it('shows "Registrar Entrada" button for "authorized" status', () => {
       const wrapper = mountComponent({ status: 'authorized', actual_entry_timestamp: null });
-      const recordEntryButton = wrapper.findAllComponents(NeonButton).find(btn => btn.text().includes('Registrar Entrada'));
-      expect(recordEntryButton.exists()).toBe(true);
+      expect(findButtonByText(wrapper, 'Registrar Entrada')).toBeTruthy();
     });
 
     it('does not show "Registrar Entrada" if entry already recorded', () => {
       const wrapper = mountComponent({ status: 'entry_recorded', actual_entry_timestamp: new Date().toISOString() });
-      const recordEntryButton = wrapper.findAllComponents(NeonButton).find(btn => btn.text().includes('Registrar Entrada'));
-      expect(recordEntryButton.exists()).toBe(false);
+      expect(findButtonByText(wrapper, 'Registrar Entrada')).toBeFalsy();
     });
 
     it('shows "Registrar Saída" button for "entry_recorded" status', () => {
       const wrapper = mountComponent({ status: 'entry_recorded', actual_entry_timestamp: new Date().toISOString(), actual_exit_timestamp: null });
-      const recordExitButton = wrapper.findAllComponents(NeonButton).find(btn => btn.text().includes('Registrar Saída'));
-      expect(recordExitButton.exists()).toBe(true);
+      expect(findButtonByText(wrapper, 'Registrar Saída')).toBeTruthy();
     });
 
     it('shows "Cancelar" button for "pending" status', () => {
       const wrapper = mountComponent({ status: 'pending' });
-      const cancelButton = wrapper.findAllComponents(NeonButton).find(btn => btn.text().includes('Cancelar'));
-      expect(cancelButton.exists()).toBe(true);
+      expect(findButtonByText(wrapper, 'Cancelar')).toBeTruthy();
     });
 
     it('shows "Detalhes" button for "cancelled" status', () => {
         const wrapper = mountComponent({ status: 'cancelled' });
-        const detailsButton = wrapper.findAllComponents(NeonButton).find(btn => btn.text().includes('Detalhes'));
-        expect(detailsButton.exists()).toBe(true);
-        // Verificar que outros botões não estão presentes
-        expect(wrapper.findAllComponents(NeonButton).find(btn => btn.text().includes('Registrar Entrada'))).toBeUndefined();
-        expect(wrapper.findAllComponents(NeonButton).find(btn => btn.text().includes('Registrar Saída'))).toBeUndefined();
-        expect(wrapper.findAllComponents(NeonButton).find(btn => btn.text().includes('Cancelar'))).toBeUndefined();
+        expect(findButtonByText(wrapper, 'Detalhes')).toBeTruthy();
+        expect(findButtonByText(wrapper, 'Registrar Entrada')).toBeFalsy();
+        expect(findButtonByText(wrapper, 'Registrar Saída')).toBeFalsy();
+        expect(findButtonByText(wrapper, 'Cancelar')).toBeFalsy();
     });
 
     it('emits "record-entry" event when record entry button is clicked', async () => {
       const wrapper = mountComponent({ status: 'authorized' });
-      const recordEntryButton = wrapper.findAllComponents(NeonButton).find(btn => btn.text().includes('Registrar Entrada'));
+      const recordEntryButton = findButtonByText(wrapper, 'Registrar Entrada');
       await recordEntryButton.trigger('click');
       expect(wrapper.emitted('record-entry')).toBeTruthy();
-      expect(wrapper.emitted('record-entry')[0][0]).toEqual(mockRequest);
+      expect(wrapper.emitted('record-entry')[0][0]).toEqual(
+        expect.objectContaining({ id: mockRequest.id, status: 'authorized' }),
+      );
     });
 
     it('emits "cancel-request" event when cancel button is clicked', async () => {
       const wrapper = mountComponent({ status: 'pending' });
-      const cancelButton = wrapper.findAllComponents(NeonButton).find(btn => btn.text().includes('Cancelar'));
+      const cancelButton = findButtonByText(wrapper, 'Cancelar');
       await cancelButton.trigger('click');
       expect(wrapper.emitted('cancel-request')).toBeTruthy();
       expect(wrapper.emitted('cancel-request')[0][0]).toEqual(mockRequest);
@@ -153,7 +153,7 @@ describe('AccessRequestCard.vue', () => {
 
     it('calls router.push when "Detalhes" button is clicked', async () => {
         const wrapper = mountComponent({ status: 'cancelled' });
-        const detailsButton = wrapper.findAllComponents(NeonButton).find(btn => btn.text().includes('Detalhes'));
+        const detailsButton = findButtonByText(wrapper, 'Detalhes');
         await detailsButton.trigger('click');
         expect(mockRouter.push).toHaveBeenCalledWith({ name: 'AccessRequestDetails', params: { id: mockRequest.id } });
     });

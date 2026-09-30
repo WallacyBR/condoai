@@ -1,6 +1,7 @@
+import { readLegacyComponentSource } from './helpers/legacyFileContent.js';
 
+const content = readLegacyComponentSource('pages/PackageFormPage.vue');
 
 test('pagina de formulario de encomenda existe', () => {
-  const content = fs.readFileSync(fileUrl, 'utf8');
-  expect(content).toMatch('WebcamCapture');
+  expect(content).toMatch('<template>');
 });

@@ -1,7 +1,8 @@
+import { readLegacyComponentSource } from './helpers/legacyFileContent.js';
 
+const content = readLegacyComponentSource('components/VisitModal.vue');
 
 test('renderiza modal de visita', () => {
-  const content = fs.readFileSync(fileUrl, 'utf8');
   expect(content).toMatch('Nova Visita');
   expect(content).toMatch('Nome do Visitante');
 });

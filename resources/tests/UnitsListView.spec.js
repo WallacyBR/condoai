@@ -1,7 +1,8 @@
+import { readLegacyComponentSource } from './helpers/legacyFileContent.js';
 
+const content = readLegacyComponentSource('components/UnitsListView.vue');
 
 test('exibe filtros principais', () => {
-  const content = fs.readFileSync(fileUrl, 'utf8');
   expect(content).toMatch('Buscar unidades');
   expect(content).toMatch('Gerenciar Unidades');
 });

@@ -2,52 +2,41 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Concerns\ResolvesTenantCondominium;
 use App\Http\Controllers\Controller;
 use App\Models\NoticeAttachment;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class DocumentController extends Controller
 {
-    /**
-     * Display a listing of document attachments.
-     */
+    use ResolvesTenantCondominium;
+
     public function index(Request $request)
     {
-        $user = Auth::user();
-        if (!$user || !$user->condominium_id) {
-            return response()->json(['message' => 'Usuário não autenticado ou sem condomínio associado.'], 403);
-        }
+        $condominiumId = $this->tenantCondominiumId($request);
 
-        // Tipos de arquivo considerados como 'documento' para esta listagem
-        $documentFileTypes = ['document', 'pdf', 'text', 'spreadsheet', 'presentation']; // Pode ser configurável
+        $documentFileTypes = ['document', 'pdf', 'text', 'spreadsheet', 'presentation'];
 
         $query = NoticeAttachment::query()
             ->join('notices', 'notice_attachments.notice_id', '=', 'notices.id')
-            ->where('notices.condominium_id', $user->condominium_id)
+            ->where('notices.condominium_id', $condominiumId)
             ->whereIn('notice_attachments.file_type', $documentFileTypes)
             ->select('notice_attachments.*', 'notices.title as notice_title', 'notices.created_at as notice_created_at')
             ->orderBy('notices.created_at', 'desc')
             ->orderBy('notice_attachments.original_name', 'asc');
 
-        // Filtro por nome do arquivo
         if ($request->has('file_name')) {
-            $query->where('notice_attachments.original_name', 'like', '%' . $request->input('file_name') . '%');
+            $query->where('notice_attachments.original_name', 'like', '%'.$request->input('file_name').'%');
         }
 
-        // Filtro por título do aviso
         if ($request->has('notice_title')) {
-            $query->where('notices.title', 'like', '%' . $request->input('notice_title') . '%');
+            $query->where('notices.title', 'like', '%'.$request->input('notice_title').'%');
         }
 
-        // Filtro por data do aviso (ex: YYYY-MM-DD)
         if ($request->has('notice_date')) {
             $query->whereDate('notices.created_at', $request->input('notice_date'));
         }
 
-
-        $documents = $query->paginate($request->input('per_page', 15));
-
-        return response()->json($documents);
+        return response()->json($query->paginate($request->input('per_page', 15)));
     }
 }

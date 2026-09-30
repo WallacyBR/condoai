@@ -2,15 +2,21 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\CondominiumScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes; // Adicionado
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class VisitorVehicle extends Model
 {
-    use HasFactory, SoftDeletes; // Adicionado SoftDeletes
+    use HasFactory, SoftDeletes;
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new CondominiumScope());
+    }
 
     protected $fillable = [
         'visitor_id',

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Concerns\ResolvesTenantCondominium;
 use App\Http\Controllers\Controller;
 use App\Models\AccessRequest;
 use App\Models\Apartment;
@@ -22,6 +23,8 @@ use Illuminate\Validation\Rule;
  */
 class AccessRequestController extends Controller
 {
+    use ResolvesTenantCondominium;
+
     public function __construct()
     {
         $this->middleware('auth:api');
@@ -40,9 +43,9 @@ class AccessRequestController extends Controller
      */
     public function index(Request $request)
     {
-        $condominiumId = auth()->user()->condominium_id;
+        $condominiumId = $this->tenantCondominiumId($request);
 
-        $query = AccessRequest::condominium($condominiumId)
+        $query = AccessRequest::query()
             ->with(['visitor', 'visitorVehicle', 'resident.user', 'apartment', 'parkingSpot']);
 
         if ($request->has('status') && $request->status !== '') {
@@ -80,7 +83,7 @@ class AccessRequestController extends Controller
      */
     public function store(Request $request)
     {
-        $condominiumId = auth()->user()->condominium_id;
+        $condominiumId = $this->tenantCondominiumId($request);
 
         $validated = $request->validate([
             'visitor_name' => 'required|string|max:255',
@@ -184,7 +187,7 @@ class AccessRequestController extends Controller
      */
     public function update(Request $request, AccessRequest $accessRequest)
     {
-        $condominiumId = auth()->user()->condominium_id;
+        $condominiumId = $this->tenantCondominiumId($request);
 
         $validated = $request->validate([
             'visitor_name' => 'sometimes|required|string|max:255',
@@ -220,6 +223,7 @@ class AccessRequestController extends Controller
 
         DB::beginTransaction();
         try {
+            unset($validated['condominium_id']);
             $accessRequest->update($validated);
 
             // Update Visitor if necessary
@@ -276,9 +280,9 @@ class AccessRequestController extends Controller
      */
     public function listForGatehouse(Request $request)
     {
-        $condominiumId = auth()->user()->condominium_id;
+        $condominiumId = $this->tenantCondominiumId($request);
 
-        $accessRequests = AccessRequest::condominium($condominiumId)
+        $accessRequests = AccessRequest::query()
             ->whereIn('status', ['pending', 'authorized', 'entry_recorded'])
             ->with(['visitor', 'visitorVehicle', 'resident.user', 'apartment', 'parkingSpot'])
             ->orderByDesc('request_timestamp')
@@ -289,7 +293,12 @@ class AccessRequestController extends Controller
 
         if ($visitorIds->isNotEmpty()) {
             // Encontre todas as medidas protetivas ativas para esses visitantes em uma única consulta
-            $protectiveMeasures = ProtectiveMeasure::where('is_active', true)
+            $protectiveMeasures = ProtectiveMeasure::withoutGlobalScopes()
+                ->where('is_active', true)
+                ->where(function ($q) use ($condominiumId) {
+                    $q->whereNull('condominium_id')
+                        ->orWhere('condominium_id', $condominiumId);
+                })
                 ->whereIn('aggressor_visitor_id', $visitorIds)
                 ->with('protectedResident:id,name') // Carregue as informações do residente protegido
                 ->get()
@@ -322,10 +331,10 @@ class AccessRequestController extends Controller
      */
     public function listMyRequestsAsResident(Request $request)
     {
-        $condominiumId = auth()->user()->condominium_id;
-        $residentId = auth()->user()->resident->id; // Assuming authenticated user is a resident
+        $condominiumId = $this->tenantCondominiumId($request);
+        $residentId = auth()->user()->resident->id;
 
-        $accessRequests = AccessRequest::condominium($condominiumId)
+        $accessRequests = AccessRequest::query()
             ->where('resident_id', $residentId)
             ->whereIn('status', ['pending', 'authorized'])
             ->with(['visitor', 'visitorVehicle', 'resident.user', 'apartment'])
@@ -444,9 +453,9 @@ class AccessRequestController extends Controller
      */
     public function history(Request $request)
     {
-        $condominiumId = auth()->user()->condominium_id;
+        $condominiumId = $this->tenantCondominiumId($request);
 
-        $query = AccessRequest::condominium($condominiumId)
+        $query = AccessRequest::query()
             ->with(['visitor', 'visitorVehicle', 'resident.user', 'apartment', 'parkingSpot']);
 
         if ($request->has('status') && $request->status !== '') {
@@ -469,7 +478,7 @@ class AccessRequestController extends Controller
      */
     public function checkProtectiveMeasure(Request $request)
     {
-        $condominiumId = auth()->user()->condominium_id;
+        $condominiumId = $this->tenantCondominiumId($request);
 
         $request->validate([
             'visitor_document' => 'nullable|string',
@@ -505,10 +514,11 @@ class AccessRequestController extends Controller
      */
     private function _checkProtectiveMeasures(?int $condominiumId, ?string $visitorDocument, ?string $vehiclePlate)
     {
-        $query = ProtectiveMeasure::where('is_active', true)
+        $query = ProtectiveMeasure::withoutGlobalScopes()
+            ->where('is_active', true)
             ->where(function ($q) use ($condominiumId) {
-                $q->whereNull('condominium_id') // Global measure
-                    ->orWhere('condominium_id', $condominiumId); // Condominium specific measure
+                $q->whereNull('condominium_id')
+                    ->orWhere('condominium_id', $condominiumId);
             })
             ->where(function ($q) use ($visitorDocument, $vehiclePlate) {
                 if ($visitorDocument) {

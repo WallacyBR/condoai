@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Enums\ResidentClassification;
+use App\Http\Controllers\Concerns\ResolvesTenantCondominium;
 use App\Http\Controllers\Controller;
 use App\Models\Resident;
 use Illuminate\Http\Request;
@@ -11,6 +12,8 @@ use Illuminate\Support\Facades\Log;
 
 class ResidentController extends Controller
 {
+    use ResolvesTenantCondominium;
+
     /**
      * Converte strings booleanas e números para booleanos reais
      */
@@ -55,7 +58,7 @@ class ResidentController extends Controller
     public function store(Request $request)
     {
         // Determinar o condomínio automaticamente
-        $condominiumId = $this->getCurrentCondominiumId($request);
+        $condominiumId = $this->tenantCondominiumId($request);
         
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -137,7 +140,7 @@ class ResidentController extends Controller
             \Log::info('Iniciando validação...');
             
             // Determinar o condomínio automaticamente
-            $condominiumId = $this->getCurrentCondominiumId($request);
+            $condominiumId = $this->tenantCondominiumId($request);
             
             $validated = $request->validate([
                 'name' => 'sometimes|string|max:255',
@@ -215,27 +218,6 @@ class ResidentController extends Controller
 
         \Log::info('=== FIM UPDATE RESIDENT ===');
         return $resident->load(['condominium', 'ownedApartments'])->append('raw_classification');
-    }
-
-    /**
-     * Determina o ID do condomínio atual baseado no contexto da requisição
-     * Segue o princípio DRY para reutilização em diferentes métodos
-     */
-    private function getCurrentCondominiumId(Request $request): int
-    {
-        $condominium = tenant();
-
-        if ($condominium === null && $request->attributes->has('condominium')) {
-            $condominium = $request->attributes->get('condominium');
-        }
-
-        if ($condominium === null) {
-            throw new \InvalidArgumentException(
-                'Não foi possível determinar o condomínio atual. Envie o header X-Condominium-Id.'
-            );
-        }
-
-        return $condominium->id;
     }
 
     public function destroy(Resident $resident)

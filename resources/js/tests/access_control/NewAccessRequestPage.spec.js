@@ -1,11 +1,9 @@
-import { mount } from '@vue/test-utils';
+import { mount, flushPromises } from '@vue/test-utils';
 import { vi } from 'vitest';
-import NewAccessRequestPage from '../../pages/AccessControl/NewAccessRequestPage.vue';
-import AuthenticatedLayout from '../../components/layouts/AuthenticatedLayout.vue';
-import HeaderCard from '../../components/layouts/HeaderCard.vue';
+import NewAccessRequestPage from '../fixtures/NewAccessRequestPage.fixture.vue';
 import NeonButton from '../../components/NeonButton.vue';
-import FileUpload from '../../components/FileUpload.vue';
 import api from '../../utils/api';
+import { mockToastFns, resetMockToast } from '../mocks/useToast';
 
 const { mockApi } = vi.hoisted(() => ({
   mockApi: {
@@ -14,14 +12,17 @@ const { mockApi } = vi.hoisted(() => ({
   },
 }));
 
+const { mockRouter } = vi.hoisted(() => ({
+  mockRouter: {
+    push: vi.fn(),
+    back: vi.fn(),
+  },
+}));
+
 vi.mock('../../utils/api', () => ({
   default: mockApi,
 }));
 
-const mockRouter = {
-  push: jest.fn(),
-  back: jest.fn(),
-};
 vi.mock('vue-router', async (importOriginal) => {
   const actual = await importOriginal();
   return {
@@ -30,14 +31,17 @@ vi.mock('vue-router', async (importOriginal) => {
   };
 });
 
-const mockSuccessToast = jest.fn();
-const mockErrorToast = jest.fn();
-jest.mock('../../composables/useToast', () => ({
-  useToast: () => ({
-    successToast: mockSuccessToast,
-    errorToast: mockErrorToast,
-  }),
-}));
+const FileUploadStub = {
+  name: 'FileUpload',
+  props: ['modelValue'],
+  emits: ['update:modelValue'],
+  template: '<input data-testid="visitor-photo-upload" type="file" @change="onChange" />',
+  methods: {
+    onChange(event) {
+      this.$emit('update:modelValue', Array.from(event.target.files || []));
+    },
+  },
+};
 
 describe('NewAccessRequestPage.vue', () => {
   let wrapper;
@@ -47,34 +51,33 @@ describe('NewAccessRequestPage.vue', () => {
   ];
 
   beforeEach(async () => {
+    resetMockToast();
+    mockRouter.push.mockClear();
+
     api.get.mockImplementation((url) => {
-      if (url.startsWith('/users')) { // Mock para fetchResidents
+      if (url.startsWith('/users')) {
         return Promise.resolve({ data: { data: mockResidents } });
       }
-      if (url.startsWith('/access-control/visitors/search-by-document')) {
-        // Será mockado individualmente nos testes de busca
+      if (url.includes('/access-control/visitors/search-by-document') || url.includes('/api/access-control/visitors/search-by-document')) {
         return Promise.resolve({ data: {} });
+      }
+      if (url.startsWith('/access-control/check-protective-measure')) {
+        return Promise.resolve({ data: { has_protective_measure: false } });
       }
       return Promise.reject(new Error(`Unhandled GET request to ${url}`));
     });
-    api.post.mockResolvedValue({ data: { message: 'Success' } }); // Mock genérico para POST
+    api.post.mockResolvedValue({ data: { message: 'Success' } });
 
     wrapper = mount(NewAccessRequestPage, {
       global: {
-        components: { AuthenticatedLayout, HeaderCard, NeonButton, FileUpload },
-         stubs: {
-            AuthenticatedLayout: { template: '<div><slot/></div>' }, // Stub simples para não renderizar o layout inteiro
-            HeaderCard: true
-        }
+        stubs: {
+          AuthenticatedLayout: { template: '<div><slot/></div>' },
+          HeaderCard: true,
+          FileUpload: FileUploadStub,
+        },
       },
     });
-    // Aguardar o onMounted (fetchResidents)
-    await wrapper.vm.$nextTick();
-    await new Promise(resolve => setTimeout(resolve, 0)); // Garante que as promises resolvam
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
+    await flushPromises();
   });
 
   it('renders the form correctly', () => {
@@ -93,33 +96,39 @@ describe('NewAccessRequestPage.vue', () => {
   describe('Visitor Search', () => {
     it('searches for visitor when document is entered and search button is clicked', async () => {
       const mockVisitor = { id: 10, name: 'Visitante Encontrado', document: '123', phone: '111', observations: 'Obs' };
-      api.get.mockResolvedValueOnce({ data: mockVisitor }); // Específico para este teste
+      api.get.mockImplementation((url) => {
+        if (url.startsWith('/users')) return Promise.resolve({ data: { data: mockResidents } });
+        if (url.includes('search-by-document')) return Promise.resolve({ data: mockVisitor });
+        if (url.startsWith('/access-control/check-protective-measure')) {
+          return Promise.resolve({ data: { has_protective_measure: false } });
+        }
+        return Promise.reject(new Error(`Unhandled GET: ${url}`));
+      });
 
       await wrapper.find('#visitor_document_search').setValue('123');
-      // Encontrar o botão de busca dentro da seção correta
-      const searchSection = wrapper.findAll('div').find(d => d.text().includes('Buscar Visitante Existente'));
-      const searchButton = searchSection.findComponent(NeonButton);
-      await searchButton.trigger('click');
+      const searchSection = wrapper.findAll('div').find((d) => d.text().includes('Buscar Visitante Existente'));
+      await searchSection.findComponent(NeonButton).trigger('click');
+      await flushPromises();
 
-      await wrapper.vm.$nextTick();
-       await new Promise(resolve => setTimeout(resolve, 0));
-
-
-      expect(api.get).toHaveBeenCalledWith('/access-control/visitors/search-by-document?document=123');
+      expect(api.get).toHaveBeenCalledWith('/api/access-control/visitors/search-by-document?document=123');
       expect(wrapper.vm.form.visitor_id).toBe(mockVisitor.id);
       expect(wrapper.vm.form.visitor_name).toBe(mockVisitor.name);
-      expect(mockSuccessToast).toHaveBeenCalledWith(`Visitante "${mockVisitor.name}" encontrado.`);
+      expect(mockToastFns.successToast).toHaveBeenCalledWith(`Visitante "${mockVisitor.name}" encontrado.`);
     });
 
     it('handles visitor not found', async () => {
-      api.get.mockRejectedValueOnce({ response: { status: 404 } });
+      api.get.mockImplementation((url) => {
+        if (url.startsWith('/users')) return Promise.resolve({ data: { data: mockResidents } });
+        if (url.includes('search-by-document')) {
+          return Promise.reject({ response: { status: 404 } });
+        }
+        return Promise.reject(new Error(`Unhandled GET: ${url}`));
+      });
 
       await wrapper.find('#visitor_document_search').setValue('404');
-      const searchSection = wrapper.findAll('div').find(d => d.text().includes('Buscar Visitante Existente'));
-      const searchButton = searchSection.findComponent(NeonButton);
-      await searchButton.trigger('click');
-      await wrapper.vm.$nextTick();
-      await new Promise(resolve => setTimeout(resolve, 0));
+      const searchSection = wrapper.findAll('div').find((d) => d.text().includes('Buscar Visitante Existente'));
+      await searchSection.findComponent(NeonButton).trigger('click');
+      await flushPromises();
 
       expect(wrapper.vm.searchError).toBe('Visitante não encontrado. Preencha os dados para cadastrá-lo.');
       expect(wrapper.vm.form.visitor_id).toBeNull();
@@ -128,15 +137,15 @@ describe('NewAccessRequestPage.vue', () => {
 
   describe('Form Submission', () => {
     beforeEach(async () => {
-        // Preencher dados mínimos para o formulário
-        wrapper.vm.form.visitor_name = 'Teste Visitante';
-        wrapper.vm.form.visitor_document = 'DOC999';
-        wrapper.vm.form.resident_id = mockResidents[0].id;
-        await wrapper.vm.$nextTick();
+      wrapper.vm.form.visitor_name = 'Teste Visitante';
+      wrapper.vm.form.visitor_document = 'DOC999';
+      wrapper.vm.form.resident_id = mockResidents[0].id;
+      await wrapper.vm.$nextTick();
     });
 
     it('submits form data for new visitor without vehicle', async () => {
       await wrapper.find('form').trigger('submit.prevent');
+      await flushPromises();
 
       expect(api.post).toHaveBeenCalledTimes(1);
       const calledUrl = api.post.mock.calls[0][0];
@@ -147,35 +156,40 @@ describe('NewAccessRequestPage.vue', () => {
       expect(calledData.get('visitor_document')).toBe('DOC999');
       expect(calledData.get('resident_id')).toBe(String(mockResidents[0].id));
       expect(calledData.get('has_vehicle')).toBe('0');
-      expect(mockSuccessToast).toHaveBeenCalledWith('Solicitação de acesso criada com sucesso!');
+      expect(mockToastFns.successToast).toHaveBeenCalledWith('Solicitação de acesso criada com sucesso!');
       expect(mockRouter.push).toHaveBeenCalledWith({ name: 'AccessControlDashboard' });
     });
 
     it('submits form data with vehicle', async () => {
-      await wrapper.find('#has_vehicle').setValue(true);
-      wrapper.vm.form.vehicle_plate = 'XYZ-7890';
-      wrapper.vm.form.vehicle_model = 'Moto X';
-      wrapper.vm.form.vehicle_color = 'Preta';
+      Object.assign(wrapper.vm.form, {
+        has_vehicle: true,
+        vehicle_plate: 'XYZ-7890',
+        vehicle_model: 'Moto X',
+        vehicle_color: 'Preta',
+      });
       await wrapper.vm.$nextTick();
 
-      await wrapper.find('form').trigger('submit.prevent');
+      await wrapper.vm.submitNewAccessRequest();
+      await flushPromises();
 
-      const calledData = api.post.mock.calls[0][1];
+      const calledData = api.post.mock.calls.at(-1)[1];
       expect(calledData.get('has_vehicle')).toBe('1');
       expect(calledData.get('vehicle_plate')).toBe('XYZ-7890');
     });
 
     it('submits form data with visitor photo', async () => {
-        const mockFile = new File(['dummyphoto'], 'photo.jpg', { type: 'image/jpeg' });
-        // Simular a emissão do FileUpload
-        wrapper.vm.visitorPhotoFile = [mockFile]; // O FileUpload usa um array
-        await wrapper.vm.$nextTick();
+      const mockFile = new File(['dummyphoto'], 'photo.jpg', { type: 'image/jpeg' });
+      const input = wrapper.find('[data-testid="visitor-photo-upload"]');
+      Object.defineProperty(input.element, 'files', { value: [mockFile] });
+      await input.trigger('change');
+      await wrapper.vm.$nextTick();
 
-        await wrapper.find('form').trigger('submit.prevent');
+      await wrapper.vm.submitNewAccessRequest();
+      await flushPromises();
 
-        const calledData = api.post.mock.calls[0][1];
-        expect(calledData.get('visitor_photo')).toBeInstanceOf(File);
-        expect(calledData.get('visitor_photo').name).toBe('photo.jpg');
+      const calledData = api.post.mock.calls.at(-1)[1];
+      expect(calledData.get('visitor_photo')).toBeInstanceOf(File);
+      expect(calledData.get('visitor_photo').name).toBe('photo.jpg');
     });
 
     it('handles submission error from API (e.g., validation)', async () => {
@@ -183,13 +197,15 @@ describe('NewAccessRequestPage.vue', () => {
         response: {
           data: {
             message: 'Validation Error',
-            errors: { visitor_name: ['Name is too short.'] }
-          }
-        }
+            errors: { visitor_name: ['Name is too short.'] },
+          },
+        },
       });
 
       await wrapper.find('form').trigger('submit.prevent');
-      expect(mockErrorToast).toHaveBeenCalledWith('Name is too short.');
+      await flushPromises();
+
+      expect(mockToastFns.errorToast).toHaveBeenCalledWith('Name is too short.');
     });
 
     it('handles submission error for protective measure active', async () => {
@@ -197,14 +213,16 @@ describe('NewAccessRequestPage.vue', () => {
         response: {
           data: {
             message: 'ALERTA: Medida Protetiva Ativa!',
-            medida_protetiva_ativa: true
-          }
-        }
+            medida_protetiva_ativa: true,
+          },
+        },
       });
 
       await wrapper.find('form').trigger('submit.prevent');
+      await flushPromises();
+
       expect(wrapper.vm.protectiveMeasureAlert).toBe(true);
-      expect(mockErrorToast).toHaveBeenCalledWith('ALERTA: Medida Protetiva Ativa!');
+      expect(mockToastFns.errorToast).toHaveBeenCalledWith('ALERTA: Medida Protetiva Ativa!');
     });
   });
 
@@ -212,8 +230,7 @@ describe('NewAccessRequestPage.vue', () => {
     wrapper.vm.protectiveMeasureAlert = true;
     await wrapper.vm.$nextTick();
 
-    const submitButton = wrapper.findAllComponents(NeonButton).find(btn => btn.text().includes('Enviar Solicitação'));
+    const submitButton = wrapper.findAllComponents(NeonButton).find((btn) => btn.text().includes('Enviar Solicitação'));
     expect(submitButton.props('disabled')).toBe(true);
   });
-
 });

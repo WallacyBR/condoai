@@ -54,6 +54,8 @@ class TenantIsolationTest extends TestCase
 
     protected CommonAreaBooking $bookingB;
 
+    protected Tower $towerB;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -160,7 +162,7 @@ class TenantIsolationTest extends TestCase
             'condominium_id' => $this->condominiumA->id,
             'name' => 'Torre Alpha',
         ]);
-        Tower::factory()->create([
+        $this->towerB = Tower::factory()->create([
             'condominium_id' => $this->condominiumB->id,
             'name' => 'Torre Beta',
         ]);
@@ -594,11 +596,9 @@ class TenantIsolationTest extends TestCase
 
     public function test_show_tower_returns_404_for_cross_tenant_resource(): void
     {
-        $towerB = Tower::where('condominium_id', $this->condominiumB->id)->first();
-
         $this->actingAsTenant($this->userA, $this->condominiumA);
 
-        $response = $this->getJson('/api/towers/'.$towerB->id);
+        $response = $this->getJson('/api/towers/'.$this->towerB->id);
 
         $response->assertNotFound();
     }

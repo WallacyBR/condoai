@@ -6,10 +6,13 @@ use App\Models\Bank;
 use App\Models\ChartAccount;
 use App\Models\Condominium;
 use App\Models\ExpenseRequest;
+use App\Models\ExpenseRequestAttachment;
 use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Storage;
 use Tests\Concerns\InteractsWithTenant;
 use Tests\Concerns\SeedsDefaultPermissionMatrix;
 use Tests\TestCase;
@@ -191,6 +194,118 @@ class M5PolicyAuthorizationTest extends TestCase
         $response = $this->postJson('/api/finance/expense-requests/'.$expenseRequest->id.'/approve');
 
         $response->assertForbidden();
+    }
+
+    public function test_expense_request_update_ignores_status_in_body(): void
+    {
+        $expenseRequest = ExpenseRequest::factory()->create([
+            'condominium_id' => $this->condominiumA->id,
+            'requested_by' => $this->userWithCrossMembership->id,
+            'status' => 'pendente',
+        ]);
+
+        $this->actingAsTenant($this->userWithCrossMembership, $this->condominiumA);
+
+        $response = $this->putJson('/api/finance/expense-requests/'.$expenseRequest->id, [
+            'status' => 'aprovado',
+            'amount' => 600.00,
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('status', 'pendente');
+
+        $this->assertDatabaseHas('expense_requests', [
+            'id' => $expenseRequest->id,
+            'status' => 'pendente',
+            'amount' => 600.00,
+        ]);
+    }
+
+    public function test_expense_request_attachment_index_allows_financeiro_member_on_tenant(): void
+    {
+        $expenseRequest = ExpenseRequest::factory()->create([
+            'condominium_id' => $this->condominiumA->id,
+            'requested_by' => $this->userWithCrossMembership->id,
+        ]);
+
+        ExpenseRequestAttachment::factory()->create([
+            'condominium_id' => $this->condominiumA->id,
+            'expense_request_id' => $expenseRequest->id,
+        ]);
+
+        $this->actingAsTenant($this->userWithCrossMembership, $this->condominiumA);
+
+        $response = $this->getJson('/api/finance/expense-requests/'.$expenseRequest->id.'/attachments');
+
+        $response->assertOk();
+        $this->assertCount(1, $response->json());
+    }
+
+    public function test_expense_request_attachment_show_denies_cross_tenant_attachment(): void
+    {
+        $expenseRequestA = ExpenseRequest::factory()->create([
+            'condominium_id' => $this->condominiumA->id,
+            'requested_by' => $this->userWithCrossMembership->id,
+        ]);
+
+        $expenseRequestB = ExpenseRequest::factory()->create([
+            'condominium_id' => $this->condominiumB->id,
+            'requested_by' => $this->userWithCrossMembership->id,
+        ]);
+
+        $attachmentB = ExpenseRequestAttachment::factory()->create([
+            'condominium_id' => $this->condominiumB->id,
+            'expense_request_id' => $expenseRequestB->id,
+        ]);
+
+        $this->actingAsTenant($this->userWithCrossMembership, $this->condominiumA);
+
+        $response = $this->getJson(
+            '/api/finance/expense-requests/'.$expenseRequestA->id.'/attachments/'.$attachmentB->id
+        );
+
+        $response->assertNotFound();
+    }
+
+    public function test_morador_cannot_list_expense_request_attachments_without_financeiro_permission(): void
+    {
+        $moradorProfile = $this->defaultProfile('Morador');
+
+        $user = User::factory()->create([
+            'condominium_id' => $this->condominiumA->id,
+            'profile_id' => $moradorProfile->id,
+        ]);
+        $user->condominiums()->sync([$this->condominiumA->id]);
+
+        $expenseRequest = ExpenseRequest::factory()->create([
+            'condominium_id' => $this->condominiumA->id,
+            'requested_by' => $user->id,
+        ]);
+
+        $this->actingAsTenant($user, $this->condominiumA);
+
+        $response = $this->getJson('/api/finance/expense-requests/'.$expenseRequest->id.'/attachments');
+
+        $response->assertForbidden();
+    }
+
+    public function test_expense_request_attachment_store_requires_financeiro_update_permission(): void
+    {
+        Storage::fake('public');
+
+        $expenseRequest = ExpenseRequest::factory()->create([
+            'condominium_id' => $this->condominiumA->id,
+            'requested_by' => $this->userWithCrossMembership->id,
+        ]);
+
+        $this->actingAsTenant($this->userWithCrossMembership, $this->condominiumA);
+
+        $response = $this->postJson(
+            '/api/finance/expense-requests/'.$expenseRequest->id.'/attachments',
+            ['file' => UploadedFile::fake()->create('comprovante.pdf', 100, 'application/pdf')]
+        );
+
+        $response->assertCreated();
     }
 
     public function test_expense_request_approve_allows_sindico_for_third_party_request(): void

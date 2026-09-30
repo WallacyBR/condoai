@@ -57,10 +57,15 @@ class ExpenseRequestController extends Controller
             'amount' => 'sometimes|numeric|min:0.01',
             'due_date' => 'sometimes|date',
             'description' => 'nullable|string',
-            'status' => 'sometimes|string',
         ]);
 
-        unset($validated['condominium_id'], $validated['requested_by']);
+        unset(
+            $validated['condominium_id'],
+            $validated['requested_by'],
+            $validated['status'],
+            $validated['approved_by'],
+            $validated['approved_at']
+        );
         $expenseRequest->update($validated);
 
         return response()->json($expenseRequest);
@@ -79,11 +84,11 @@ class ExpenseRequestController extends Controller
     {
         $this->authorize('approve', $expenseRequest);
 
-        $expenseRequest->update([
+        $expenseRequest->forceFill([
             'approved_by' => auth()->id(),
             'approved_at' => now(),
             'status' => 'aprovado',
-        ]);
+        ])->save();
 
         $expenseRequest->requester->notify(new ExpenseRequestApproved($expenseRequest));
 

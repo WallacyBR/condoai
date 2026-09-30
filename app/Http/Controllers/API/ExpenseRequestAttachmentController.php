@@ -15,6 +15,8 @@ class ExpenseRequestAttachmentController extends Controller
      */
     public function index(ExpenseRequest $expenseRequest)
     {
+        $this->authorize('viewAny', [ExpenseRequestAttachment::class, $expenseRequest]);
+
         return response()->json($expenseRequest->attachments);
     }
 
@@ -23,6 +25,8 @@ class ExpenseRequestAttachmentController extends Controller
      */
     public function store(Request $request, ExpenseRequest $expenseRequest)
     {
+        $this->authorize('create', [ExpenseRequestAttachment::class, $expenseRequest]);
+
         $request->validate([
             'file' => 'required|file|max:10240', // Max 10MB
         ]);
@@ -47,9 +51,12 @@ class ExpenseRequestAttachmentController extends Controller
      */
     public function show(ExpenseRequest $expenseRequest, ExpenseRequestAttachment $attachment)
     {
+        $this->authorize('view', $attachment);
+
         if ($expenseRequest->id !== $attachment->expense_request_id) {
             return response()->json(['message' => 'Attachment not found for this expense request.'], 404);
         }
+
         return response()->json($attachment);
     }
 
@@ -58,6 +65,8 @@ class ExpenseRequestAttachmentController extends Controller
      */
     public function destroy(ExpenseRequest $expenseRequest, ExpenseRequestAttachment $attachment)
     {
+        $this->authorize('delete', $attachment);
+
         if ($expenseRequest->id !== $attachment->expense_request_id) {
             return response()->json(['message' => 'Attachment not found for this expense request.'], 404);
         }

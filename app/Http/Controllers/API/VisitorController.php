@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Concerns\ResolvesTenantCondominium;
 use App\Http\Controllers\Controller;
 use App\Models\Visitor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use App\Models\Condominium;
 
 class VisitorController extends Controller
 {
+    use ResolvesTenantCondominium;
+
     /**
      * Display a listing of the resource.
      */
@@ -26,15 +28,11 @@ class VisitorController extends Controller
      */
     public function store(Request $request)
     {
-        $user = auth()->user();
-        if (!$user || !$user->condominium_id) {
-            return response()->json(['message' => 'User not authenticated or not associated with a condominium.'], 403);
-        }
-        $condominiumId = $user->condominium_id;
+        $condominiumId = $this->tenantCondominiumId($request);
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'document' => 'required|string|max:100|unique:visitors,document,NULL,id,condominium_id,' . $condominiumId,
+            'document' => 'required|string|max:100|unique:visitors,document,NULL,id,condominium_id,'.$condominiumId,
             'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'phone' => 'nullable|string|max:20',
             'notes' => 'nullable|string',
@@ -46,6 +44,7 @@ class VisitorController extends Controller
         }
 
         $data = $validator->validated();
+        unset($data['condominium_id']);
         $data['condominium_id'] = $condominiumId;
 
         if ($request->hasFile('photo')) {
@@ -65,20 +64,12 @@ class VisitorController extends Controller
      */
     public function show(Request $request, string $id)
     {
-        $condominiumId = $request->query('condominium_id');
-        if (!$condominiumId) {
-            $user = auth()->user();
-            if (!$user || !$user->condominium_id) {
-                return response()->json(['message' => 'Condominium not specified.'], 400);
-            }
-            $condominiumId = $user->condominium_id;
-        }
+        $visitor = Visitor::with('vehicles')->find($id);
 
-        $visitor = Visitor::where('condominium_id', $condominiumId)->with('vehicles')->find($id);
-
-        if (!$visitor) {
+        if (! $visitor) {
             return response()->json(['message' => 'Visitor not found.'], 404);
         }
+
         return response()->json($visitor);
     }
 
@@ -87,21 +78,16 @@ class VisitorController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $user = auth()->user();
-        if (!$user || !$user->condominium_id) {
-            return response()->json(['message' => 'User not authenticated or not associated with a condominium.'], 403);
-        }
-        $condominiumId = $user->condominium_id;
+        $condominiumId = $this->tenantCondominiumId($request);
+        $visitor = Visitor::find($id);
 
-        $visitor = Visitor::where('condominium_id', $condominiumId)->find($id);
-
-        if (!$visitor) {
+        if (! $visitor) {
             return response()->json(['message' => 'Visitor not found.'], 404);
         }
 
         $validator = Validator::make($request->all(), [
             'name' => 'sometimes|required|string|max:255',
-            'document' => 'sometimes|required|string|max:100|unique:visitors,document,' . $visitor->id . ',id,condominium_id,' . $condominiumId,
+            'document' => 'sometimes|required|string|max:100|unique:visitors,document,'.$visitor->id.',id,condominium_id,'.$condominiumId,
             'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'phone' => 'nullable|string|max:20',
             'notes' => 'nullable|string',
@@ -114,6 +100,7 @@ class VisitorController extends Controller
         }
 
         $data = $validator->validated();
+        unset($data['condominium_id']);
 
         if ($request->hasFile('photo')) {
             if ($visitor->photo_url) {
@@ -144,12 +131,9 @@ class VisitorController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
-        $user = auth()->user();
-        $condominiumId = $user->condominium_id;
+        $visitor = Visitor::find($id);
 
-        $visitor = Visitor::where('condominium_id', $condominiumId)->find($id);
-
-        if (!$visitor) {
+        if (! $visitor) {
             return response()->json(['message' => 'Visitor not found.'], 404);
         }
 
@@ -170,12 +154,6 @@ class VisitorController extends Controller
      */
     public function searchByDocument(Request $request)
     {
-        $user = auth()->user();
-        if (!$user || !$user->condominium_id) {
-            return response()->json(['message' => 'User not authenticated or not associated with a condominium.'], 403);
-        }
-        $condominiumId = $user->condominium_id;
-
         $validator = Validator::make($request->all(), [
             'document' => 'required|string|max:100',
         ]);
@@ -184,16 +162,14 @@ class VisitorController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        $document = $request->input('document');
-        $visitor = Visitor::where('condominium_id', $condominiumId)
-            ->where('document', $document)
+        $visitor = Visitor::where('document', $request->input('document'))
             ->with('vehicles')
             ->first();
 
-        if (!$visitor) {
+        if (! $visitor) {
             return response()->json(['message' => 'Visitor not found.'], 404);
         }
 
         return response()->json($visitor);
     }
-} 
+}

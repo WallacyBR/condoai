@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Ad;
 use App\Models\Apartment;
 use App\Models\CommonArea;
+use App\Models\CommonAreaBooking;
 use App\Models\Condominium;
 use App\Models\Package;
 use App\Models\Profile;
@@ -34,6 +35,16 @@ class TenantIsolationTest extends TestCase
 
     protected Resident $residentA;
 
+    protected Resident $residentB;
+
+    protected CommonArea $commonAreaA;
+
+    protected CommonArea $commonAreaB;
+
+    protected Apartment $apartmentA;
+
+    protected Apartment $apartmentB;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -62,28 +73,51 @@ class TenantIsolationTest extends TestCase
         $this->sysOpUser->condominiums()->sync([$this->condominiumA->id]);
 
         $this->residentA = Resident::factory()->create(['condominium_id' => $this->condominiumA->id]);
-        Resident::factory()->create(['condominium_id' => $this->condominiumB->id]);
+        $this->residentB = Resident::factory()->create(['condominium_id' => $this->condominiumB->id]);
 
-        CommonArea::factory()->create([
+        $this->commonAreaA = CommonArea::factory()->create([
             'condominium_id' => $this->condominiumA->id,
             'name' => 'Salão Alpha',
         ]);
-        CommonArea::factory()->create([
+        $this->commonAreaB = CommonArea::factory()->create([
             'condominium_id' => $this->condominiumB->id,
             'name' => 'Salão Beta',
         ]);
 
-        $apartmentA = Apartment::factory()->create(['condominium_id' => $this->condominiumA->id]);
-        $apartmentB = Apartment::factory()->create(['condominium_id' => $this->condominiumB->id]);
+        $this->apartmentA = Apartment::factory()->create(['condominium_id' => $this->condominiumA->id]);
+        $this->apartmentB = Apartment::factory()->create(['condominium_id' => $this->condominiumB->id]);
+
+        CommonAreaBooking::query()->create([
+            'common_area_id' => $this->commonAreaA->id,
+            'apartment_id' => $this->apartmentA->id,
+            'resident_id' => $this->residentA->id,
+            'condominium_id' => $this->condominiumA->id,
+            'booking_date' => now()->addDay()->toDateString(),
+            'start_time' => '10:00:00',
+            'end_time' => '12:00:00',
+            'duration_hours' => 2,
+            'status' => 'confirmed',
+        ]);
+        CommonAreaBooking::query()->create([
+            'common_area_id' => $this->commonAreaB->id,
+            'apartment_id' => $this->apartmentB->id,
+            'resident_id' => $this->residentB->id,
+            'condominium_id' => $this->condominiumB->id,
+            'booking_date' => now()->addDay()->toDateString(),
+            'start_time' => '14:00:00',
+            'end_time' => '16:00:00',
+            'duration_hours' => 2,
+            'status' => 'confirmed',
+        ]);
 
         Package::factory()->create([
             'condominium_id' => $this->condominiumA->id,
-            'apartment_id' => $apartmentA->id,
+            'apartment_id' => $this->apartmentA->id,
             'user_id' => $this->userA->id,
         ]);
         Package::factory()->create([
             'condominium_id' => $this->condominiumB->id,
-            'apartment_id' => $apartmentB->id,
+            'apartment_id' => $this->apartmentB->id,
             'user_id' => $this->userB->id,
         ]);
 
@@ -292,5 +326,125 @@ class TenantIsolationTest extends TestCase
             'visitors' => ['/api/access-control/visitors', 'document', '11111111111'],
             'ads' => ['/api/ads', 'title', 'Anúncio Alpha'],
         ];
+    }
+
+    public function test_common_area_create_ignores_cross_tenant_condominium_id_in_body(): void
+    {
+        $this->actingAsTenant($this->userA, $this->condominiumA);
+
+        $response = $this->postJson('/api/common-areas', [
+            'name' => 'Área Cross Tenant',
+            'capacity' => 30,
+            'condominium_id' => $this->condominiumB->id,
+        ]);
+
+        $response->assertCreated()
+            ->assertJsonPath('condominium_id', $this->condominiumA->id);
+
+        $this->assertDatabaseHas('common_areas', [
+            'name' => 'Área Cross Tenant',
+            'condominium_id' => $this->condominiumA->id,
+        ]);
+    }
+
+    public function test_visitor_create_uses_tenant_context_instead_of_user_home_condominium(): void
+    {
+        $this->actingAsTenant($this->userA, $this->condominiumA);
+
+        $response = $this->postJson('/api/access-control/visitors', [
+            'name' => 'Visitante Tenant Context',
+            'document' => '44444444444',
+        ]);
+
+        $response->assertCreated()
+            ->assertJsonPath('condominium_id', $this->condominiumA->id);
+
+        $this->assertDatabaseHas('visitors', [
+            'document' => '44444444444',
+            'condominium_id' => $this->condominiumA->id,
+        ]);
+    }
+
+    public function test_ad_create_uses_tenant_context_for_condominium_id(): void
+    {
+        $this->actingAsTenant($this->userA, $this->condominiumA);
+
+        $response = $this->postJson('/api/ads', [
+            'title' => 'Anúncio Tenant Context',
+            'category' => 'Geral',
+            'condition' => 'Novo',
+        ]);
+
+        $response->assertCreated()
+            ->assertJsonPath('condominium_id', $this->condominiumA->id);
+
+        $this->assertDatabaseHas('ads', [
+            'title' => 'Anúncio Tenant Context',
+            'condominium_id' => $this->condominiumA->id,
+        ]);
+    }
+
+    public function test_all_bookings_are_isolated_by_tenant_context(): void
+    {
+        $this->actingAsTenant($this->userA, $this->condominiumA);
+
+        $response = $this->getJson('/api/common-area-bookings?condominium_id='.$this->condominiumB->id);
+
+        $response->assertOk();
+        $this->assertCount(1, $response->json());
+        $this->assertSame($this->commonAreaA->id, $response->json('0.common_area_id'));
+    }
+
+    public function test_condominium_show_denies_non_member(): void
+    {
+        $this->actingAsTenant($this->userA, $this->condominiumA);
+
+        $response = $this->getJson('/api/condominiums/'.$this->condominiumB->id);
+
+        $response->assertForbidden()
+            ->assertJson([
+                'message' => 'Acesso negado ao condomínio informado.',
+            ]);
+    }
+
+    public function test_sysop_can_show_any_condominium(): void
+    {
+        $this->actingAsTenant($this->sysOpUser, $this->condominiumB);
+
+        $response = $this->getJson('/api/condominiums/'.$this->condominiumB->id);
+
+        $response->assertOk()
+            ->assertJsonPath('id', $this->condominiumB->id);
+    }
+
+    public function test_current_condominium_requires_authentication(): void
+    {
+        $response = $this->withHeader('X-Condominium-Id', (string) $this->condominiumA->id)
+            ->getJson('/api/auth/current-condominium');
+
+        $response->assertUnauthorized();
+    }
+
+    public function test_current_condominium_denies_cross_tenant_membership(): void
+    {
+        $this->actingAs($this->userA, 'api');
+
+        $response = $this->withHeader('X-Condominium-Id', (string) $this->condominiumB->id)
+            ->getJson('/api/auth/current-condominium');
+
+        $response->assertForbidden()
+            ->assertJson([
+                'message' => 'Acesso negado ao condomínio informado.',
+            ]);
+    }
+
+    public function test_current_condominium_returns_tenant_for_member(): void
+    {
+        $this->actingAsTenant($this->userA, $this->condominiumA);
+
+        $response = $this->getJson('/api/auth/current-condominium');
+
+        $response->assertOk()
+            ->assertJsonPath('current_condominium.id', $this->condominiumA->id);
     }
 }

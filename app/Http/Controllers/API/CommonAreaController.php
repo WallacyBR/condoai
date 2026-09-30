@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Concerns\ResolvesTenantCondominium;
 use App\Http\Controllers\Controller;
 use App\Models\CommonArea;
 use App\Models\CommonAreaBooking;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 
 class CommonAreaController extends Controller
 {
+    use ResolvesTenantCondominium;
     public function index(Request $request)
     {
         $query = CommonArea::query();
@@ -26,17 +28,13 @@ class CommonAreaController extends Controller
 
     public function store(Request $request)
     {
-        $condoId = $request->condominium_id;
+        $condoId = $this->tenantCondominiumId($request);
         $validated = $request->validate([
             'name' => [
                 'required', 'string', 'max:255',
                 Rule::unique('common_areas')->where(fn ($q) => $q->where('condominium_id', $condoId)),
             ],
             'description' => 'nullable|string',
-            'condominium_id' => [
-                'required',
-                Rule::exists('condominiums', 'id')->where(fn ($q) => $q->where('active', true)),
-            ],
             'capacity' => 'required|integer|min:1',
             'main_photo' => 'nullable|string', // Base64 encoded image
             'additional_photos' => 'nullable|array',
@@ -93,6 +91,9 @@ class CommonAreaController extends Controller
         if (isset($validated['booking_periods']) && $validated['price_per_hour']) {
             $validated['booking_periods'] = $this->calculatePeriodPrices($validated['booking_periods'], $validated['price_per_hour']);
         }
+
+        unset($validated['condominium_id']);
+        $validated['condominium_id'] = $condoId;
 
         $commonArea = CommonArea::create($validated);
 
@@ -220,22 +221,14 @@ class CommonAreaController extends Controller
 
     public function allBookings(Request $request)
     {
-        $condominiumId = $request->get('condominium_id');
-        
-        if (!$condominiumId) {
-            return response()->json(['message' => 'Condominium ID is required'], 400);
-        }
-
         return \App\Models\CommonAreaBooking::with([
-            'commonArea', 
-            'apartment.tower', 
-            'apartment.block'
+            'commonArea',
+            'apartment.tower',
+            'apartment.block',
         ])
-        ->whereHas('commonArea', function ($query) use ($condominiumId) {
-            $query->where('condominium_id', $condominiumId);
-        })
-        ->orderBy('start_time', 'desc')
-        ->get();
+            ->whereHas('commonArea')
+            ->orderBy('start_time', 'desc')
+            ->get();
     }
 
     public function showBooking($id)

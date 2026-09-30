@@ -3,8 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Apartment;
+use App\Models\Block;
 use App\Models\Condominium;
-use App\Models\Resident;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -22,9 +22,28 @@ class ApartmentFactory extends Factory
             'condominium_id' => Condominium::factory(),
             'tower_id' => null,
             'block_id' => null,
-            'owner_id' => Resident::factory(),
+            'owner_id' => null,
             'tenant_id' => null,
             'active' => true,
         ];
+    }
+
+    public function configure(): static
+    {
+        return $this->afterMaking(function (Apartment $apartment) {
+            if ($apartment->block_id !== null) {
+                return;
+            }
+
+            $condominiumId = $apartment->condominium_id;
+
+            if ($condominiumId instanceof Condominium) {
+                $condominiumId = $condominiumId->getKey();
+            }
+
+            $apartment->block_id = Block::factory()->create([
+                'condominium_id' => $condominiumId,
+            ])->id;
+        });
     }
 }

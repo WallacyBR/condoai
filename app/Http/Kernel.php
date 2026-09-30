@@ -66,4 +66,17 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'tenant' => \App\Http\Middleware\TenantMiddleware::class,
     ];
+
+    /**
+     * Middleware executados nesta ordem quando presentes na rota.
+     * Tenant deve rodar antes de SubstituteBindings para que CondominiumScope
+     * resolva model binding com o contexto correto.
+     *
+     * @var array<int, class-string|string>
+     */
+    protected $middlewarePriority = [
+        \App\Http\Middleware\Authenticate::class,
+        \App\Http\Middleware\TenantMiddleware::class,
+        \Illuminate\Routing\Middleware\SubstituteBindings::class,
+    ];
 }

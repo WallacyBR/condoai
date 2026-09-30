@@ -3,10 +3,12 @@ import {
   TENANT_HEADER,
   STORAGE_KEY_ID,
   applyTenantHeader,
+  finalizeTenantHeaders,
   isExemptRoute,
   isTenantErrorResponse,
   handleTenantHttpError,
   resetTenantErrorHandlingForTests,
+  setCachedMembershipIds,
 } from '../js/utils/tenant';
 
 describe('tenant utils', () => {
@@ -26,34 +28,67 @@ describe('tenant utils', () => {
     expect(isExemptRoute('/residents', 'GET')).toBe(false);
   });
 
-  it('aplica X-Condominium-Id quando há condomínio selecionado', () => {
+  it('aplica X-Condominium-Id apenas quando id pertence às memberships', () => {
     localStorage.setItem(STORAGE_KEY_ID, '15');
+    setCachedMembershipIds(['15', '16']);
 
     const headers = applyTenantHeader({}, '/residents', 'GET');
 
     expect(headers[TENANT_HEADER]).toBe('15');
   });
 
+  it('não envia header para id fora das memberships', () => {
+    localStorage.setItem(STORAGE_KEY_ID, '99');
+    setCachedMembershipIds(['15', '16']);
+
+    const headers = applyTenantHeader({}, '/residents', 'GET');
+
+    expect(headers[TENANT_HEADER]).toBeUndefined();
+  });
+
   it('não aplica header em rotas isentas', () => {
     localStorage.setItem(STORAGE_KEY_ID, '15');
+    setCachedMembershipIds(['15']);
 
     const headers = applyTenantHeader({}, '/auth/me', 'GET');
 
     expect(headers[TENANT_HEADER]).toBeUndefined();
   });
 
-  it('não inventa header quando não há seleção', () => {
-    const headers = applyTenantHeader({}, '/residents', 'GET');
+  it('finalizeTenantHeaders impede override malicioso do header de tenant', () => {
+    localStorage.setItem(STORAGE_KEY_ID, '10');
+    setCachedMembershipIds(['10']);
+
+    const headers = finalizeTenantHeaders(
+      { [TENANT_HEADER]: '999' },
+      '/residents',
+      'GET',
+    );
+
+    expect(headers[TENANT_HEADER]).toBe('10');
+  });
+
+  it('finalizeTenantHeaders remove header em rotas isentas mesmo com override', () => {
+    localStorage.setItem(STORAGE_KEY_ID, '10');
+    setCachedMembershipIds(['10']);
+
+    const headers = finalizeTenantHeaders(
+      { [TENANT_HEADER]: '10' },
+      '/auth/me',
+      'GET',
+    );
 
     expect(headers[TENANT_HEADER]).toBeUndefined();
   });
 
-  it('detecta erros de tenant por status e mensagem', () => {
-    expect(isTenantErrorResponse(403, 'Acesso negado ao condomínio informado.', true)).toBe(true);
-    expect(isTenantErrorResponse(400, 'Header X-Condominium-Id inválido.', true)).toBe(true);
+  it('detecta erros de tenant priorizando status HTTP', () => {
+    expect(isTenantErrorResponse(403, 'Qualquer mensagem', true)).toBe(true);
+    expect(isTenantErrorResponse(400, 'Qualquer mensagem', true)).toBe(true);
+    expect(isTenantErrorResponse(400, 'Header X-Condominium-Id é obrigatório.', false)).toBe(true);
     expect(isTenantErrorResponse(404, 'Condomínio não encontrado.', true)).toBe(true);
-    expect(isTenantErrorResponse(404, 'Condomínio não encontrado.', false)).toBe(false);
     expect(isTenantErrorResponse(404, 'Recurso não encontrado.', true)).toBe(false);
+    expect(isTenantErrorResponse(404, 'Morador não encontrado.', true)).toBe(false);
+    expect(isTenantErrorResponse(422, 'Validation failed', true)).toBe(false);
   });
 
   it('trata erro de tenant com toast, clear e redirecionamento', async () => {

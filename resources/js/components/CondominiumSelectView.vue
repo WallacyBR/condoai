@@ -68,8 +68,10 @@ export default {
     const tenantStore = useTenantStore();
 
     const selectCondominium = (condo) => {
-      tenantStore.select(condo);
-      router.push('/dashboard');
+      const result = tenantStore.select(condo);
+      if (result.ok) {
+        router.push('/dashboard');
+      }
     };
 
     const handleImageError = () => {

@@ -4,6 +4,7 @@ import {
   CONDOMINIUM_SELECTED_EVENT,
   getSelectedCondominiumId,
   getSelectedCondominiumName,
+  setCachedMembershipIds,
   STORAGE_KEY_ID,
   STORAGE_KEY_NAME,
 } from '../utils/tenant';
@@ -13,15 +14,26 @@ export const useTenantStore = defineStore('tenant', () => {
   const selectedName = ref(getSelectedCondominiumName());
   const memberships = ref([]);
 
-  const hasSelection = computed(() => !!selectedId.value);
+  const hasSelection = computed(() => {
+    if (!selectedId.value) {
+      return false;
+    }
+
+    return membershipIds().includes(String(selectedId.value));
+  });
 
   function syncFromStorage() {
     selectedId.value = getSelectedCondominiumId();
     selectedName.value = getSelectedCondominiumName();
+
+    if (selectedId.value && !membershipIds().includes(String(selectedId.value))) {
+      clear();
+    }
   }
 
   function setMemberships(list) {
     memberships.value = Array.isArray(list) ? list : [];
+    setCachedMembershipIds(memberships.value.map((membership) => membership.id));
   }
 
   function membershipIds() {
@@ -30,10 +42,16 @@ export const useTenantStore = defineStore('tenant', () => {
 
   function select(condominium) {
     if (!condominium?.id) {
-      return;
+      return { ok: false, reason: 'invalid' };
     }
 
     const id = String(condominium.id);
+
+    if (!membershipIds().includes(id)) {
+      clear();
+      return { ok: false, reason: 'not_member', needsSelection: true };
+    }
+
     const name = condominium.name || '';
 
     localStorage.setItem(STORAGE_KEY_ID, id);
@@ -41,6 +59,8 @@ export const useTenantStore = defineStore('tenant', () => {
     selectedId.value = id;
     selectedName.value = name;
     window.dispatchEvent(new CustomEvent(CONDOMINIUM_SELECTED_EVENT));
+
+    return { ok: true };
   }
 
   function clear() {

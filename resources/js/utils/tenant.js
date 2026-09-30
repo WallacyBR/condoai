@@ -11,6 +11,8 @@ export const TENANT_ERROR_MESSAGES = [
 ];
 
 let handlingTenantError = false;
+let invalidSelectionRecoveryScheduled = false;
+let cachedMembershipIds = null;
 
 export function getSelectedCondominiumId() {
   return localStorage.getItem(STORAGE_KEY_ID);
@@ -18,6 +20,46 @@ export function getSelectedCondominiumId() {
 
 export function getSelectedCondominiumName() {
   return localStorage.getItem(STORAGE_KEY_NAME);
+}
+
+export function setCachedMembershipIds(ids) {
+  cachedMembershipIds = Array.isArray(ids) ? ids.map(String) : [];
+}
+
+export function getMembershipIds() {
+  if (cachedMembershipIds !== null) {
+    return cachedMembershipIds;
+  }
+
+  try {
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
+      return [];
+    }
+
+    const user = JSON.parse(storedUser);
+    if (Array.isArray(user?.memberships)) {
+      cachedMembershipIds = user.memberships.map((membership) => String(membership.id));
+      return cachedMembershipIds;
+    }
+  } catch {
+    return [];
+  }
+
+  return [];
+}
+
+export function isValidMembershipId(id) {
+  if (id === null || id === undefined || id === '') {
+    return false;
+  }
+
+  const membershipIds = getMembershipIds();
+  if (membershipIds.length === 0) {
+    return false;
+  }
+
+  return membershipIds.includes(String(id));
 }
 
 function normalizeRequestPath(url = '') {
@@ -45,20 +87,72 @@ export function isExemptRoute(url, method = 'GET') {
   return false;
 }
 
-export function applyTenantHeader(headers = {}, url, method = 'GET') {
-  if (isExemptRoute(url, method)) {
-    return headers;
+function stripTenantHeaderKeys(headers = {}) {
+  const sanitized = { ...headers };
+  delete sanitized[TENANT_HEADER];
+  delete sanitized['x-condominium-id'];
+  return sanitized;
+}
+
+export function scheduleInvalidSelectionRecovery() {
+  if (invalidSelectionRecoveryScheduled) {
+    return;
   }
 
+  invalidSelectionRecoveryScheduled = true;
+
+  queueMicrotask(async () => {
+    invalidSelectionRecoveryScheduled = false;
+
+    try {
+      const { useTenantStore } = await import('../stores/tenant');
+      const routerModule = await import('../router/index.js');
+      const tenantStore = useTenantStore();
+
+      tenantStore.clear();
+
+      const router = routerModule.default;
+      if (router.currentRoute.value.path !== '/condominium-select') {
+        await router.push('/condominium-select');
+      }
+    } catch {
+      localStorage.removeItem(STORAGE_KEY_ID);
+      localStorage.removeItem(STORAGE_KEY_NAME);
+    }
+  });
+}
+
+export function resolveTenantHeaderId() {
   const selectedId = getSelectedCondominiumId();
   if (!selectedId) {
-    return headers;
+    return null;
   }
 
-  return {
-    ...headers,
-    [TENANT_HEADER]: String(selectedId),
-  };
+  if (!isValidMembershipId(selectedId)) {
+    scheduleInvalidSelectionRecovery();
+    return null;
+  }
+
+  return String(selectedId);
+}
+
+export function finalizeTenantHeaders(headers = {}, url, method = 'GET') {
+  const merged = stripTenantHeaderKeys(headers);
+
+  if (isExemptRoute(url, method)) {
+    return merged;
+  }
+
+  const tenantId = resolveTenantHeaderId();
+  if (tenantId) {
+    merged[TENANT_HEADER] = tenantId;
+  }
+
+  return merged;
+}
+
+export function applyTenantHeader(headers = {}, url, method = 'GET') {
+  return finalizeTenantHeaders(headers, url, method);
 }
 
 export function requestHadTenantHeader(headers = {}) {
@@ -74,17 +168,39 @@ export function isTenantErrorMessage(message) {
   return TENANT_ERROR_MESSAGES.some((tenantMessage) => message.includes(tenantMessage));
 }
 
-export function isTenantErrorResponse(status, message, hadTenantHeader = false) {
-  if (!isTenantErrorMessage(message)) {
+export function isTenantHeaderMessage(message) {
+  if (!message || typeof message !== 'string') {
     return false;
   }
 
-  if (status === 400 || status === 403) {
+  return /X-Condominium-Id/i.test(message);
+}
+
+export function isCondominiumNotFoundHeuristic(message) {
+  if (!message || typeof message !== 'string') {
+    return false;
+  }
+
+  return /condom[ií]nio/i.test(message);
+}
+
+export function isTenantErrorResponse(status, message, hadTenantHeader = false) {
+  if (status === 403 && hadTenantHeader) {
     return true;
   }
 
+  if (status === 400) {
+    if (hadTenantHeader) {
+      return true;
+    }
+
+    if (isTenantHeaderMessage(message) || isTenantErrorMessage(message)) {
+      return true;
+    }
+  }
+
   if (status === 404 && hadTenantHeader) {
-    return true;
+    return isTenantErrorMessage(message) || isCondominiumNotFoundHeuristic(message);
   }
 
   return false;
@@ -129,4 +245,6 @@ export async function handleTenantHttpError({ status, message, hadTenantHeader =
 
 export function resetTenantErrorHandlingForTests() {
   handlingTenantError = false;
+  invalidSelectionRecoveryScheduled = false;
+  cachedMembershipIds = null;
 }

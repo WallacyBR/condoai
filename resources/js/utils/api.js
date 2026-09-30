@@ -1,7 +1,7 @@
 import axios from 'axios';
 import router from '../router/index.js';
 import {
-  applyTenantHeader,
+  finalizeTenantHeaders,
   handleTenantHttpError,
   requestHadTenantHeader,
 } from './tenant';
@@ -48,7 +48,7 @@ api.interceptors.request.use(config => {
   }
 
   const method = config.method || 'GET';
-  config.headers = applyTenantHeader(config.headers || {}, config.url, method);
+  config.headers = finalizeTenantHeaders(config.headers || {}, config.url, method);
 
   return config;
 });
@@ -92,7 +92,7 @@ api.interceptors.response.use(
         retryConfig.headers.Authorization = `Bearer ${newToken}`;
       }
 
-      retryConfig.headers = applyTenantHeader(
+      retryConfig.headers = finalizeTenantHeaders(
         retryConfig.headers,
         retryConfig.url,
         retryConfig.method || 'GET'
@@ -158,22 +158,27 @@ export async function apiRequest(url, options = {}) {
     defaultHeaders.Authorization = `Bearer ${token}`;
   }
 
-  defaultHeaders = applyTenantHeader(defaultHeaders, normalizedUrl, method);
+  const buildHeaders = (overrideHeaders = {}) => finalizeTenantHeaders(
+    {
+      ...defaultHeaders,
+      ...(overrideHeaders || {}),
+    },
+    normalizedUrl,
+    method,
+  );
 
   const executeRequest = async (headers) => {
     const response = await fetch(fullUrl, {
       ...options,
-      headers: {
-        ...headers,
-        ...(options.headers || {})
-      }
+      headers,
     });
 
     return response;
   };
 
   try {
-    let response = await executeRequest(defaultHeaders);
+    let requestHeaders = buildHeaders(options.headers);
+    let response = await executeRequest(requestHeaders);
 
     if (!response.ok) {
       if (response.status === 401) {
@@ -184,9 +189,9 @@ export async function apiRequest(url, options = {}) {
             defaultHeaders.Authorization = `Bearer ${newToken}`;
           }
 
-          defaultHeaders = applyTenantHeader(defaultHeaders, normalizedUrl, method);
+          requestHeaders = buildHeaders(options.headers);
 
-          response = await executeRequest(defaultHeaders);
+          response = await executeRequest(requestHeaders);
 
           if (!response.ok) {
             let errorMessage;
@@ -200,7 +205,7 @@ export async function apiRequest(url, options = {}) {
             const handled = await handleTenantHttpError({
               status: response.status,
               message: errorMessage,
-              hadTenantHeader: requestHadTenantHeader(defaultHeaders),
+              hadTenantHeader: requestHadTenantHeader(requestHeaders),
             });
 
             if (handled) {
@@ -226,7 +231,7 @@ export async function apiRequest(url, options = {}) {
       const handled = await handleTenantHttpError({
         status: response.status,
         message: errorMessage,
-        hadTenantHeader: requestHadTenantHeader(defaultHeaders),
+        hadTenantHeader: requestHadTenantHeader(requestHeaders),
       });
 
       if (handled) {

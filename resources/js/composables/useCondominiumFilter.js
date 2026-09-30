@@ -10,6 +10,8 @@ export function useCondominiumFilter() {
   const tenantStore = useTenantStore();
   const selectedCondominiumId = ref(tenantStore.selectedId);
   const selectedCondominiumName = ref(tenantStore.selectedName);
+  let onCondominiumChanged = null;
+  let onStorageChanged = null;
 
   const isCondominiumAutoDetermined = computed(() => {
     return !!selectedCondominiumId.value;
@@ -39,25 +41,33 @@ export function useCondominiumFilter() {
   };
 
   const setupCondominiumListeners = (callback) => {
-    const onCondominiumChanged = () => {
+    onCondominiumChanged = () => {
       updateSelectedCondominium();
       if (callback) {
         callback();
       }
     };
 
-    window.addEventListener(CONDOMINIUM_SELECTED_EVENT, onCondominiumChanged);
-
-    window.addEventListener('storage', (event) => {
+    onStorageChanged = (event) => {
       if (event.key === 'selectedCondominium' || event.key === 'selectedCondominiumName') {
         onCondominiumChanged();
       }
-    });
+    };
+
+    window.addEventListener(CONDOMINIUM_SELECTED_EVENT, onCondominiumChanged);
+    window.addEventListener('storage', onStorageChanged);
   };
 
   const cleanupCondominiumListeners = () => {
-    window.removeEventListener(CONDOMINIUM_SELECTED_EVENT, updateSelectedCondominium);
-    window.removeEventListener('storage', updateSelectedCondominium);
+    if (onCondominiumChanged) {
+      window.removeEventListener(CONDOMINIUM_SELECTED_EVENT, onCondominiumChanged);
+      onCondominiumChanged = null;
+    }
+
+    if (onStorageChanged) {
+      window.removeEventListener('storage', onStorageChanged);
+      onStorageChanged = null;
+    }
   };
 
   onMounted(updateSelectedCondominium);

@@ -19,7 +19,12 @@ vi.mock('../js/utils/tenant', async (importOriginal) => {
 });
 
 import { api, apiRequest } from '../js/utils/api';
-import { TENANT_HEADER, STORAGE_KEY_ID, resetTenantErrorHandlingForTests } from '../js/utils/tenant';
+import {
+  TENANT_HEADER,
+  STORAGE_KEY_ID,
+  resetTenantErrorHandlingForTests,
+  setCachedMembershipIds,
+} from '../js/utils/tenant';
 
 describe('api tenant integration', () => {
   beforeEach(() => {
@@ -29,9 +34,10 @@ describe('api tenant integration', () => {
     vi.restoreAllMocks();
   });
 
-  it('interceptor axios injeta X-Condominium-Id em requests autenticadas', () => {
+  it('interceptor axios injeta X-Condominium-Id apenas para membership válida', () => {
     localStorage.setItem('token', 'fake-token');
     localStorage.setItem(STORAGE_KEY_ID, '42');
+    setCachedMembershipIds(['42']);
 
     const handlers = api.interceptors.request.handlers;
     const requestHandler = handlers[handlers.length - 1].fulfilled;
@@ -45,9 +51,26 @@ describe('api tenant integration', () => {
     expect(config.headers[TENANT_HEADER]).toBe('42');
   });
 
+  it('interceptor axios não injeta header para id inválido', () => {
+    localStorage.setItem('token', 'fake-token');
+    localStorage.setItem(STORAGE_KEY_ID, '99');
+    setCachedMembershipIds(['42']);
+
+    const handlers = api.interceptors.request.handlers;
+    const requestHandler = handlers[handlers.length - 1].fulfilled;
+    const config = requestHandler({
+      url: '/residents',
+      method: 'get',
+      headers: {},
+    });
+
+    expect(config.headers[TENANT_HEADER]).toBeUndefined();
+  });
+
   it('interceptor axios não injeta header em rotas isentas', () => {
     localStorage.setItem('token', 'fake-token');
     localStorage.setItem(STORAGE_KEY_ID, '42');
+    setCachedMembershipIds(['42']);
 
     const handlers = api.interceptors.request.handlers;
     const requestHandler = handlers[handlers.length - 1].fulfilled;
@@ -60,9 +83,10 @@ describe('api tenant integration', () => {
     expect(config.headers[TENANT_HEADER]).toBeUndefined();
   });
 
-  it('apiRequest aplica header de tenant nas requests autenticadas', async () => {
+  it('apiRequest aplica header de tenant e ignora override inseguro', async () => {
     localStorage.setItem('token', 'fake-token');
     localStorage.setItem(STORAGE_KEY_ID, '10');
+    setCachedMembershipIds(['10']);
 
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
@@ -70,7 +94,11 @@ describe('api tenant integration', () => {
     });
     global.fetch = fetchMock;
 
-    await apiRequest('/residents');
+    await apiRequest('/residents', {
+      headers: {
+        [TENANT_HEADER]: '999',
+      },
+    });
 
     expect(fetchMock).toHaveBeenCalledWith(
       '/api/residents',
@@ -83,6 +111,27 @@ describe('api tenant integration', () => {
     );
   });
 
+  it('apiRequest não envia header inválido mesmo com override', async () => {
+    localStorage.setItem('token', 'fake-token');
+    localStorage.setItem(STORAGE_KEY_ID, '99');
+    setCachedMembershipIds(['10']);
+
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true }),
+    });
+    global.fetch = fetchMock;
+
+    await apiRequest('/residents', {
+      headers: {
+        [TENANT_HEADER]: '99',
+      },
+    });
+
+    const requestHeaders = fetchMock.mock.calls[0][1].headers;
+    expect(requestHeaders[TENANT_HEADER]).toBeUndefined();
+  });
+
   it('interceptor de resposta delega 403 de tenant ao handler centralizado', async () => {
     const handlers = api.interceptors.response.handlers;
     const responseHandler = handlers[handlers.length - 1].rejected;
@@ -90,7 +139,7 @@ describe('api tenant integration', () => {
     await expect(responseHandler({
       response: {
         status: 403,
-        data: { message: 'Acesso negado ao condomínio informado.' },
+        data: { message: 'Qualquer mensagem' },
       },
       config: {
         headers: { [TENANT_HEADER]: '5' },
@@ -99,7 +148,7 @@ describe('api tenant integration', () => {
 
     expect(handleTenantHttpErrorMock).toHaveBeenCalledWith({
       status: 403,
-      message: 'Acesso negado ao condomínio informado.',
+      message: 'Qualquer mensagem',
       hadTenantHeader: true,
     });
   });

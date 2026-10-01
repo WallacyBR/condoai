@@ -1,23 +1,21 @@
-name: 'Manutenção - Equipamentos'
+name: 'Manutenção - Áreas'
 description: |-
 
-  APIs para gerenciar equipamentos de manutenção.
+  APIs para gerenciar áreas de manutenção.
 endpoints:
   -
     httpMethods:
       - GET
-    uri: api/maintenance/equipments
+    uri: api/maintenance/areas
     metadata:
-      groupName: 'Manutenção - Equipamentos'
+      groupName: 'Manutenção - Áreas'
       groupDescription: |-
 
-        APIs para gerenciar equipamentos de manutenção.
+        APIs para gerenciar áreas de manutenção.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Listar todos os equipamentos de manutenção.'
-      description: |-
-        Retorna uma lista paginada dos equipamentos de manutenção do condomínio autenticado.
-        Pode ser filtrado por `maintenance_area_id`.
+      title: 'Listar todas as áreas de manutenção.'
+      description: 'Retorna uma lista paginada das áreas de manutenção do condomínio autenticado.'
       authenticated: true
       custom: []
     headers:
@@ -46,20 +44,9 @@ endpoints:
         exampleWasSpecified: true
         nullable: false
         custom: []
-      maintenance_area_id:
-        name: maintenance_area_id
-        description: 'ID da área de manutenção para filtrar equipamentos.'
-        required: false
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        custom: []
     cleanQueryParameters:
       page: 1
       per_page: 15
-      maintenance_area_id: 1
     bodyParameters: []
     cleanBodyParameters: []
     fileParameters: []
@@ -73,42 +60,26 @@ endpoints:
                   {
                       "id": 1,
                       "condominium_id": 1,
-                      "maintenance_area_id": 1,
-                      "name": "Bomba Piscina Bloco A",
-                      "description": "Bomba responsável pela filtragem da piscina do Bloco A.",
-                      "location_details": "Casa de máquinas, subsolo.",
-                      "qr_code_hash": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4",
-                      "qr_code_access_level": "internal_users",
-                      "created_at": "2024-07-15T11:00:00.000000Z",
-                      "updated_at": "2024-07-15T11:00:00.000000Z",
-                      "deleted_at": null,
-                      "maintenance_area": {
-                          "id": 1,
-                          "name": "Elétrica Geral"
-                      }
+                      "name": "Elétrica Geral",
+                      "description": "Todas as instalações elétricas do prédio A.",
+                      "created_at": "2024-07-15T10:00:00.000000Z",
+                      "updated_at": "2024-07-15T10:00:00.000000Z",
+                      "deleted_at": null
                   },
                   {
                       "id": 2,
                       "condominium_id": 1,
-                      "maintenance_area_id": 1,
-                      "name": "Elevador Social Torre 1",
-                      "description": "Elevador social da Torre 1.",
-                      "location_details": "Hall Torre 1",
-                      "qr_code_hash": "f6e5d4c3b2a1f6e5d4c3b2a1f6e5d4c3",
-                      "qr_code_access_level": "public",
-                      "created_at": "2024-07-15T11:05:00.000000Z",
-                      "updated_at": "2024-07-15T11:05:00.000000Z",
-                      "deleted_at": null,
-                      "maintenance_area": {
-                          "id": 1,
-                          "name": "Elétrica Geral"
-                      }
+                      "name": "Hidráulica - Bombas",
+                      "description": "Sistema de bombas de água potável e esgoto.",
+                      "created_at": "2024-07-15T10:05:00.000000Z",
+                      "updated_at": "2024-07-15T10:05:00.000000Z",
+                      "deleted_at": null
                   }
               ],
-              "first_page_url": "/api/maintenance/equipments?page=1",
+              "first_page_url": "/api/maintenance/areas?page=1",
               "from": 1,
               "last_page": 1,
-              "last_page_url": "/api/maintenance/equipments?page=1",
+              "last_page_url": "/api/maintenance/areas?page=1",
               "links": [
                   {
                       "url": null,
@@ -116,7 +87,7 @@ endpoints:
                       "active": false
                   },
                   {
-                      "url": "/api/maintenance/equipments?page=1",
+                      "url": "/api/maintenance/areas?page=1",
                       "label": "1",
                       "active": true
                   },
@@ -127,7 +98,7 @@ endpoints:
                   }
               ],
               "next_page_url": null,
-              "path": "/api/maintenance/equipments",
+              "path": "/api/maintenance/areas",
               "per_page": 15,
               "prev_page_url": null,
               "to": 2,
@@ -154,15 +125,15 @@ endpoints:
   -
     httpMethods:
       - POST
-    uri: api/maintenance/equipments
+    uri: api/maintenance/areas
     metadata:
-      groupName: 'Manutenção - Equipamentos'
+      groupName: 'Manutenção - Áreas'
       groupDescription: |-
 
-        APIs para gerenciar equipamentos de manutenção.
+        APIs para gerenciar áreas de manutenção.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Criar um novo equipamento de manutenção.'
+      title: 'Criar uma nova área de manutenção.'
       description: ''
       authenticated: true
       custom: []
@@ -176,60 +147,27 @@ endpoints:
     bodyParameters:
       name:
         name: name
-        description: 'Nome do equipamento.'
+        description: 'Nome da área de manutenção.'
         required: true
-        example: '"Bomba Piscina Bloco A"'
+        example: '"Elétrica Geral"'
         type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        custom: []
-      maintenance_area_id:
-        name: maintenance_area_id
-        description: 'ID da área de manutenção à qual o equipamento pertence.'
-        required: true
-        example: 1
-        type: integer
         enumValues: []
         exampleWasSpecified: true
         nullable: false
         custom: []
       description:
         name: description
-        description: 'Descrição do equipamento.'
+        description: 'Descrição da área.'
         required: false
-        example: '"Bomba responsável pela filtragem da piscina do Bloco A."'
+        example: '"Todas as instalações elétricas do prédio A."'
         type: string
         enumValues: []
         exampleWasSpecified: true
         nullable: true
-        custom: []
-      location_details:
-        name: location_details
-        description: 'Detalhes da localização do equipamento.'
-        required: false
-        example: '"Casa de máquinas, subsolo."'
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: true
-        custom: []
-      qr_code_access_level:
-        name: qr_code_access_level
-        description: 'Nível de acesso ao QR Code. Valores: `public`, `internal_users`, `specific_users`. Default: `internal_users`.'
-        required: false
-        example: '"internal_users"'
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
         custom: []
     cleanBodyParameters:
-      name: '"Bomba Piscina Bloco A"'
-      maintenance_area_id: 1
-      description: '"Bomba responsável pela filtragem da piscina do Bloco A."'
-      location_details: '"Casa de máquinas, subsolo."'
-      qr_code_access_level: '"internal_users"'
+      name: '"Elétrica Geral"'
+      description: '"Todas as instalações elétricas do prédio A."'
     fileParameters: []
     responses:
       -
@@ -238,14 +176,10 @@ endpoints:
           {
               "id": 1,
               "condominium_id": 1,
-              "maintenance_area_id": 1,
-              "name": "Bomba Piscina Bloco A",
-              "description": "Bomba responsável pela filtragem da piscina do Bloco A.",
-              "location_details": "Casa de máquinas, subsolo.",
-              "qr_code_hash": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4",
-              "qr_code_access_level": "internal_users",
-              "created_at": "2024-07-15T11:00:00.000000Z",
-              "updated_at": "2024-07-15T11:00:00.000000Z"
+              "name": "Elétrica Geral",
+              "description": "Todas as instalações elétricas do prédio A.",
+              "created_at": "2024-07-15T10:00:00.000000Z",
+              "updated_at": "2024-07-15T10:00:00.000000Z"
           }
         headers: []
         description: 'Criado com sucesso'
@@ -286,15 +220,15 @@ endpoints:
   -
     httpMethods:
       - GET
-    uri: 'api/maintenance/equipments/{id}'
+    uri: 'api/maintenance/areas/{id}'
     metadata:
-      groupName: 'Manutenção - Equipamentos'
+      groupName: 'Manutenção - Áreas'
       groupDescription: |-
 
-        APIs para gerenciar equipamentos de manutenção.
+        APIs para gerenciar áreas de manutenção.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Exibir um equipamento de manutenção específico.'
+      title: 'Exibir uma área de manutenção específica.'
       description: ''
       authenticated: true
       custom: []
@@ -304,7 +238,7 @@ endpoints:
     urlParameters:
       id:
         name: id
-        description: 'The ID of the equipment.'
+        description: 'The ID of the area.'
         required: true
         example: 16
         type: integer
@@ -312,9 +246,9 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         custom: []
-      equipment:
-        name: equipment
-        description: 'O ID do equipamento.'
+      area:
+        name: area
+        description: 'O ID da área de manutenção.'
         required: true
         example: 1
         type: integer
@@ -324,7 +258,7 @@ endpoints:
         custom: []
     cleanUrlParameters:
       id: 16
-      equipment: 1
+      area: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -337,19 +271,11 @@ endpoints:
           {
               "id": 1,
               "condominium_id": 1,
-              "maintenance_area_id": 1,
-              "name": "Bomba Piscina Bloco A",
-              "description": "Bomba responsável pela filtragem da piscina do Bloco A.",
-              "location_details": "Casa de máquinas, subsolo.",
-              "qr_code_hash": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4",
-              "qr_code_access_level": "internal_users",
-              "created_at": "2024-07-15T11:00:00.000000Z",
-              "updated_at": "2024-07-15T11:00:00.000000Z",
-              "deleted_at": null,
-              "maintenance_area": {
-                  "id": 1,
-                  "name": "Elétrica Geral"
-              }
+              "name": "Elétrica Geral",
+              "description": "Todas as instalações elétricas do prédio A.",
+              "created_at": "2024-07-15T10:00:00.000000Z",
+              "updated_at": "2024-07-15T10:00:00.000000Z",
+              "deleted_at": null
           }
         headers: []
         description: Sucesso
@@ -382,15 +308,15 @@ endpoints:
     httpMethods:
       - PUT
       - PATCH
-    uri: 'api/maintenance/equipments/{id}'
+    uri: 'api/maintenance/areas/{id}'
     metadata:
-      groupName: 'Manutenção - Equipamentos'
+      groupName: 'Manutenção - Áreas'
       groupDescription: |-
 
-        APIs para gerenciar equipamentos de manutenção.
+        APIs para gerenciar áreas de manutenção.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Atualizar um equipamento de manutenção.'
+      title: 'Atualizar uma área de manutenção.'
       description: ''
       authenticated: true
       custom: []
@@ -400,7 +326,7 @@ endpoints:
     urlParameters:
       id:
         name: id
-        description: 'The ID of the equipment.'
+        description: 'The ID of the area.'
         required: true
         example: 16
         type: integer
@@ -408,9 +334,9 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         custom: []
-      equipment:
-        name: equipment
-        description: 'O ID do equipamento.'
+      area:
+        name: area
+        description: 'O ID da área de manutenção.'
         required: true
         example: 1
         type: integer
@@ -420,66 +346,33 @@ endpoints:
         custom: []
     cleanUrlParameters:
       id: 16
-      equipment: 1
+      area: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
       name:
         name: name
-        description: 'Nome do equipamento.'
+        description: 'Nome da área de manutenção.'
         required: false
-        example: '"Bomba Piscina Bloco B"'
+        example: '"Elétrica Prédio B"'
         type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        custom: []
-      maintenance_area_id:
-        name: maintenance_area_id
-        description: 'ID da área de manutenção.'
-        required: false
-        example: 2
-        type: integer
         enumValues: []
         exampleWasSpecified: true
         nullable: false
         custom: []
       description:
         name: description
-        description: 'Descrição do equipamento.'
+        description: 'Descrição da área.'
         required: false
-        example: 'Eius et animi quos velit et.'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        custom: []
-      location_details:
-        name: location_details
-        description: 'Detalhes da localização.'
-        required: false
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        custom: []
-      qr_code_access_level:
-        name: qr_code_access_level
-        description: 'Nível de acesso ao QR Code. Valores: `public`, `internal_users`, `specific_users`.'
-        required: false
-        example: '"public"'
+        example: '"Instalações elétricas atualizadas do prédio B."'
         type: string
         enumValues: []
         exampleWasSpecified: true
-        nullable: false
+        nullable: true
         custom: []
     cleanBodyParameters:
-      name: '"Bomba Piscina Bloco B"'
-      maintenance_area_id: 2
-      description: 'Eius et animi quos velit et.'
-      location_details: architecto
-      qr_code_access_level: '"public"'
+      name: '"Elétrica Prédio B"'
+      description: '"Instalações elétricas atualizadas do prédio B."'
     fileParameters: []
     responses:
       -
@@ -488,14 +381,10 @@ endpoints:
           {
               "id": 1,
               "condominium_id": 1,
-              "maintenance_area_id": 2,
-              "name": "Bomba Piscina Bloco B",
-              "description": "Bomba da piscina do Bloco B - Atualizada.",
-              "location_details": "Casa de máquinas B, próximo ao gerador.",
-              "qr_code_hash": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4",
-              "qr_code_access_level": "public",
-              "created_at": "2024-07-15T11:00:00.000000Z",
-              "updated_at": "2024-07-15T11:20:00.000000Z",
+              "name": "Elétrica Prédio B",
+              "description": "Instalações elétricas atualizadas do prédio B.",
+              "created_at": "2024-07-15T10:00:00.000000Z",
+              "updated_at": "2024-07-15T10:15:00.000000Z",
               "deleted_at": null
           }
         headers: []
@@ -520,6 +409,15 @@ endpoints:
         description: 'Dados inválidos'
         custom: []
       -
+        status: 401
+        content: |
+          {
+              "message": "Unauthenticated."
+          }
+        headers: []
+        description: 'Não autenticado'
+        custom: []
+      -
         status: 404
         content: |
           {
@@ -537,15 +435,15 @@ endpoints:
   -
     httpMethods:
       - DELETE
-    uri: 'api/maintenance/equipments/{id}'
+    uri: 'api/maintenance/areas/{id}'
     metadata:
-      groupName: 'Manutenção - Equipamentos'
+      groupName: 'Manutenção - Áreas'
       groupDescription: |-
 
-        APIs para gerenciar equipamentos de manutenção.
+        APIs para gerenciar áreas de manutenção.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Excluir um equipamento de manutenção.'
+      title: 'Excluir uma área de manutenção.'
       description: ''
       authenticated: true
       custom: []
@@ -555,7 +453,7 @@ endpoints:
     urlParameters:
       id:
         name: id
-        description: 'The ID of the equipment.'
+        description: 'The ID of the area.'
         required: true
         example: 16
         type: integer
@@ -563,9 +461,9 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         custom: []
-      equipment:
-        name: equipment
-        description: 'O ID do equipamento.'
+      area:
+        name: area
+        description: 'O ID da área de manutenção.'
         required: true
         example: 1
         type: integer
@@ -575,7 +473,7 @@ endpoints:
         custom: []
     cleanUrlParameters:
       id: 16
-      equipment: 1
+      area: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -589,6 +487,15 @@ endpoints:
         description: 'Excluído com sucesso'
         custom: []
       -
+        status: 401
+        content: |
+          {
+              "message": "Unauthenticated."
+          }
+        headers: []
+        description: 'Não autenticado'
+        custom: []
+      -
         status: 403
         content: |
           {
@@ -605,131 +512,6 @@ endpoints:
           }
         headers: []
         description: 'Não encontrado'
-        custom: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - POST
-    uri: 'api/maintenance/equipments/{equipment_id}/sync-qr-access-users'
-    metadata:
-      groupName: 'Manutenção - Equipamentos'
-      groupDescription: |-
-
-        APIs para gerenciar equipamentos de manutenção.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Gerenciar usuários com acesso ao QR Code.'
-      description: |-
-        Usado quando `qr_code_access_level` é `specific_users`.
-        Sincroniza a lista de usuários que podem acessar o relatório do QR Code.
-      authenticated: true
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      equipment_id:
-        name: equipment_id
-        description: 'The ID of the equipment.'
-        required: true
-        example: 16
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-      equipment:
-        name: equipment
-        description: 'O ID do equipamento.'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        custom: []
-    cleanUrlParameters:
-      equipment_id: 16
-      equipment: 1
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      user_ids:
-        name: user_ids
-        description: 'Array de IDs de usuários.'
-        required: true
-        example:
-          - 1
-          - 2
-          - 3
-        type: 'string[]'
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        custom: []
-      'user_ids.*':
-        name: 'user_ids.*'
-        description: 'ID de um usuário.'
-        required: false
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        custom: []
-    cleanBodyParameters:
-      user_ids:
-        - 1
-        - 2
-        - 3
-    fileParameters: []
-    responses:
-      -
-        status: 200
-        content: 'body={"message"="Usuários com acesso ao QR Code atualizados com sucesso."}'
-        headers: []
-        description: 'Usuários atualizados'
-        custom: []
-      -
-        status: 400
-        content: |
-          {
-              "message": "The given data was invalid.",
-              "errors": {
-                  "field_name": [
-                      "The field_name field is required.",
-                      "Another validation error for this field."
-                  ],
-                  "another_field": [
-                      "This field has an error."
-                  ]
-              }
-          }
-        headers: []
-        description: 'Dados inválidos'
-        custom: []
-      -
-        status: 403
-        content: |
-          {
-              "message": "This action is unauthorized."
-          }
-        headers: []
-        description: Proibido
-        custom: []
-      -
-        status: 404
-        content: |
-          {
-              "message": "Resource not found."
-          }
-        headers: []
-        description: 'Equipamento não encontrado'
         custom: []
     responseFields: []
     auth: []

@@ -27,7 +27,7 @@ endpoints:
     responses:
       -
         status: 200
-        content: '{"status":"ok","timestamp":"2026-10-01T12:29:42.034061Z","version":"1.0.0"}'
+        content: '{"status":"ok","timestamp":"2026-10-01T13:55:41.393502Z","version":"1.0.0"}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
@@ -672,7 +672,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '996'
+          x-ratelimit-remaining: '995'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -713,7 +713,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '995'
+          x-ratelimit-remaining: '994'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -942,7 +942,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '994'
+          x-ratelimit-remaining: '993'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -983,7 +983,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '993'
+          x-ratelimit-remaining: '992'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -1186,7 +1186,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '992'
+          x-ratelimit-remaining: '991'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -1431,7 +1431,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '991'
+          x-ratelimit-remaining: '990'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -1769,7 +1769,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '990'
+          x-ratelimit-remaining: '989'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -1893,7 +1893,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '989'
+          x-ratelimit-remaining: '988'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -1997,7 +1997,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '988'
+          x-ratelimit-remaining: '987'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -2143,7 +2143,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '987'
+          x-ratelimit-remaining: '986'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -2257,7 +2257,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '986'
+          x-ratelimit-remaining: '985'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -2413,7 +2413,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '985'
+          x-ratelimit-remaining: '984'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -2568,7 +2568,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '984'
+          x-ratelimit-remaining: '983'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -2765,7 +2765,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '983'
+          x-ratelimit-remaining: '982'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -2949,7 +2949,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '982'
+          x-ratelimit-remaining: '981'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -3175,7 +3175,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '981'
+          x-ratelimit-remaining: '980'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -3279,7 +3279,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '980'
+          x-ratelimit-remaining: '979'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -3425,7 +3425,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '978'
+          x-ratelimit-remaining: '977'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -3605,7 +3605,7 @@ endpoints:
         name: start_date
         description: 'Must be a valid date.'
         required: false
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:41'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3615,7 +3615,7 @@ endpoints:
         name: end_date
         description: 'Must be a valid date.'
         required: false
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:41'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3672,8 +3672,8 @@ endpoints:
         nullable: true
         custom: []
     cleanBodyParameters:
-      start_date: '2026-10-01T09:29:42'
-      end_date: '2026-10-01T09:29:42'
+      start_date: '2026-10-01T10:55:41'
+      end_date: '2026-10-01T10:55:41'
       status: b
       method: 'n'
       user_id: 16
@@ -3688,7 +3688,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '977'
+          x-ratelimit-remaining: '976'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -3740,7 +3740,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '976'
+          x-ratelimit-remaining: '975'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -3833,7 +3833,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '975'
+          x-ratelimit-remaining: '974'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -4264,7 +4264,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '974'
+          x-ratelimit-remaining: '973'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -4305,7 +4305,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '973'
+          x-ratelimit-remaining: '972'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -4346,7 +4346,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '972'
+          x-ratelimit-remaining: '971'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -4387,7 +4387,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '971'
+          x-ratelimit-remaining: '970'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -4501,7 +4501,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '970'
+          x-ratelimit-remaining: '969'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -4656,7 +4656,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '969'
+          x-ratelimit-remaining: '968'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -4792,7 +4792,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '968'
+          x-ratelimit-remaining: '967'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -4969,7 +4969,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '967'
+          x-ratelimit-remaining: '966'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -5106,7 +5106,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '966'
+          x-ratelimit-remaining: '965'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -5284,7 +5284,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '965'
+          x-ratelimit-remaining: '964'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -5480,7 +5480,7 @@ endpoints:
         name: booking_periods.morning.start_time
         description: 'This field is required when <code>booking_periods.morning.enabled</code> is <code>true</code>. Must be a valid date in the format <code>H:i</code>.'
         required: false
-        example: '09:29'
+        example: '10:55'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -5530,7 +5530,7 @@ endpoints:
         name: booking_periods.afternoon.start_time
         description: 'This field is required when <code>booking_periods.afternoon.enabled</code> is <code>true</code>. Must be a valid date in the format <code>H:i</code>.'
         required: false
-        example: '09:29'
+        example: '10:55'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -5580,7 +5580,7 @@ endpoints:
         name: booking_periods.evening.start_time
         description: 'This field is required when <code>booking_periods.evening.enabled</code> is <code>true</code>. Must be a valid date in the format <code>H:i</code>.'
         required: false
-        example: '09:29'
+        example: '10:55'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -5630,7 +5630,7 @@ endpoints:
         name: booking_periods.full_day.start_time
         description: 'This field is required when <code>booking_periods.full_day.enabled</code> is <code>true</code>. Must be a valid date in the format <code>H:i</code>.'
         required: false
-        example: '09:29'
+        example: '10:55'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -5744,22 +5744,22 @@ endpoints:
       booking_periods:
         morning:
           enabled: true
-          start_time: '09:29'
+          start_time: '10:55'
           end_time: '2052-10-24'
           price: 39
         afternoon:
           enabled: true
-          start_time: '09:29'
+          start_time: '10:55'
           end_time: '2052-10-24'
           price: 39
         evening:
           enabled: true
-          start_time: '09:29'
+          start_time: '10:55'
           end_time: '2052-10-24'
           price: 39
         full_day:
           enabled: true
-          start_time: '09:29'
+          start_time: '10:55'
           end_time: '2052-10-24'
           price: 39
       allow_custom_periods: true
@@ -5820,7 +5820,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '964'
+          x-ratelimit-remaining: '963'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -6028,7 +6028,7 @@ endpoints:
         name: booking_periods.morning.start_time
         description: 'This field is required when <code>booking_periods.morning.enabled</code> is <code>true</code>. Must be a valid date in the format <code>H:i</code>.'
         required: false
-        example: '09:29'
+        example: '10:55'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -6078,7 +6078,7 @@ endpoints:
         name: booking_periods.afternoon.start_time
         description: 'This field is required when <code>booking_periods.afternoon.enabled</code> is <code>true</code>. Must be a valid date in the format <code>H:i</code>.'
         required: false
-        example: '09:29'
+        example: '10:55'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -6128,7 +6128,7 @@ endpoints:
         name: booking_periods.evening.start_time
         description: 'This field is required when <code>booking_periods.evening.enabled</code> is <code>true</code>. Must be a valid date in the format <code>H:i</code>.'
         required: false
-        example: '09:29'
+        example: '10:55'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -6178,7 +6178,7 @@ endpoints:
         name: booking_periods.full_day.start_time
         description: 'This field is required when <code>booking_periods.full_day.enabled</code> is <code>true</code>. Must be a valid date in the format <code>H:i</code>.'
         required: false
-        example: '09:29'
+        example: '10:55'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -6262,22 +6262,22 @@ endpoints:
       booking_periods:
         morning:
           enabled: true
-          start_time: '09:29'
+          start_time: '10:55'
           end_time: '2052-10-24'
           price: 39
         afternoon:
           enabled: true
-          start_time: '09:29'
+          start_time: '10:55'
           end_time: '2052-10-24'
           price: 39
         evening:
           enabled: true
-          start_time: '09:29'
+          start_time: '10:55'
           end_time: '2052-10-24'
           price: 39
         full_day:
           enabled: true
-          start_time: '09:29'
+          start_time: '10:55'
           end_time: '2052-10-24'
           price: 39
       allow_custom_periods: true
@@ -6365,7 +6365,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '963'
+          x-ratelimit-remaining: '962'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -6546,7 +6546,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '962'
+          x-ratelimit-remaining: '961'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -6802,7 +6802,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '961'
+          x-ratelimit-remaining: '960'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -6876,7 +6876,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '960'
+          x-ratelimit-remaining: '959'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -6917,7 +6917,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '959'
+          x-ratelimit-remaining: '958'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -7082,7 +7082,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '958'
+          x-ratelimit-remaining: '957'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -7239,7 +7239,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '957'
+          x-ratelimit-remaining: '956'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -7280,7 +7280,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '956'
+          x-ratelimit-remaining: '955'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -7332,7 +7332,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '955'
+          x-ratelimit-remaining: '954'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -7384,7 +7384,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '954'
+          x-ratelimit-remaining: '953'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -7549,6 +7549,121 @@ endpoints:
     custom: []
   -
     httpMethods:
+      - PATCH
+    uri: 'api/common-areas/{common_area_id}/bookings/{booking_id}/approve'
+    metadata:
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      common_area_id:
+        name: common_area_id
+        description: 'The ID of the common area.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      booking_id:
+        name: booking_id
+        description: 'The ID of the booking.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      common_area_id: 16
+      booking_id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - PATCH
+    uri: 'api/common-areas/{common_area_id}/bookings/{booking_id}/reject'
+    metadata:
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      common_area_id:
+        name: common_area_id
+        description: 'The ID of the common area.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      booking_id:
+        name: booking_id
+        description: 'The ID of the booking.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      common_area_id: 16
+      booking_id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      reason:
+        name: reason
+        description: 'Must not be greater than 500 characters.'
+        required: false
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+    cleanBodyParameters:
+      reason: b
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
       - GET
     uri: 'api/common-areas/{common_area_id}/available-slots'
     metadata:
@@ -7600,7 +7715,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '953'
+          x-ratelimit-remaining: '952'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -7696,6 +7811,58 @@ endpoints:
     cleanBodyParameters: []
     fileParameters: []
     responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - GET
+    uri: 'api/packages/by-code/{code}'
+    metadata:
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Busca rápida de encomenda pelo código de retirada para portaria e morador.'
+      description: ''
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      code:
+        name: code
+        description: ''
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      code: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        status: 401
+        content: '{"message":"N\u00e3o autenticado."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-ratelimit-limit: '1000'
+          x-ratelimit-remaining: '951'
+          access-control-allow-origin: '*'
+        description: null
+        custom: []
     responseFields: []
     auth: []
     controller: null
@@ -8008,7 +8175,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '952'
+          x-ratelimit-remaining: '950'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -8202,7 +8369,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '951'
+          x-ratelimit-remaining: '949'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -8626,7 +8793,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '950'
+          x-ratelimit-remaining: '948'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -8678,7 +8845,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '949'
+          x-ratelimit-remaining: '947'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -8719,7 +8886,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '942'
+          x-ratelimit-remaining: '940'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -8771,7 +8938,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '941'
+          x-ratelimit-remaining: '939'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -8812,7 +8979,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '940'
+          x-ratelimit-remaining: '938'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -8959,7 +9126,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '939'
+          x-ratelimit-remaining: '937'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -9172,7 +9339,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '938'
+          x-ratelimit-remaining: '936'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -9297,7 +9464,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '937'
+          x-ratelimit-remaining: '935'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -9453,7 +9620,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '936'
+          x-ratelimit-remaining: '934'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -9538,7 +9705,7 @@ endpoints:
         name: validity_start_date
         description: 'Must be a valid date.'
         required: true
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:41'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -9569,7 +9736,7 @@ endpoints:
       aggressor_visitor_id: architecto
       process_number: 'n'
       measure_description: architecto
-      validity_start_date: '2026-10-01T09:29:42'
+      validity_start_date: '2026-10-01T10:55:41'
       validity_end_date: '2052-10-24'
       is_active: false
     fileParameters:
@@ -9623,7 +9790,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '935'
+          x-ratelimit-remaining: '933'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -9720,7 +9887,7 @@ endpoints:
         name: validity_start_date
         description: 'Must be a valid date.'
         required: true
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:41'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -9763,7 +9930,7 @@ endpoints:
       aggressor_visitor_id: architecto
       process_number: 'n'
       measure_description: architecto
-      validity_start_date: '2026-10-01T09:29:42'
+      validity_start_date: '2026-10-01T10:55:41'
       validity_end_date: '2052-10-24'
       is_active: false
       _method: PUT
@@ -9848,7 +10015,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '934'
+          x-ratelimit-remaining: '928'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -9974,7 +10141,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '933'
+          x-ratelimit-remaining: '927'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -10142,7 +10309,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '932'
+          x-ratelimit-remaining: '926'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -10267,7 +10434,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '931'
+          x-ratelimit-remaining: '925'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -10449,7 +10616,7 @@ endpoints:
         name: start_date
         description: 'Must be a valid date.'
         required: false
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:41'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -10459,7 +10626,7 @@ endpoints:
         name: end_date
         description: 'Must be a valid date.'
         required: false
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:41'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -10468,8 +10635,8 @@ endpoints:
     cleanBodyParameters:
       type: receivable
       query: architecto
-      start_date: '2026-10-01T09:29:42'
-      end_date: '2026-10-01T09:29:42'
+      start_date: '2026-10-01T10:55:41'
+      end_date: '2026-10-01T10:55:41'
     fileParameters: []
     responses:
       -
@@ -10479,7 +10646,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '930'
+          x-ratelimit-remaining: '924'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -10546,7 +10713,7 @@ endpoints:
         name: due_date
         description: 'Must be a valid date.'
         required: true
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:41'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -10556,7 +10723,7 @@ endpoints:
         name: competence_date
         description: 'Must be a valid date.'
         required: false
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:41'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -10616,7 +10783,7 @@ endpoints:
         name: paid_at
         description: 'Must be a valid date.'
         required: false
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:41'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -10626,7 +10793,7 @@ endpoints:
         name: received_at
         description: 'Must be a valid date.'
         required: false
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:41'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -10636,15 +10803,15 @@ endpoints:
       type: receivable
       chart_account_id: 16
       bank_id: 16
-      due_date: '2026-10-01T09:29:42'
-      competence_date: '2026-10-01T09:29:42'
+      due_date: '2026-10-01T10:55:41'
+      competence_date: '2026-10-01T10:55:41'
       amount: 39
       status: architecto
       description: 'Et animi quos velit et fugiat.'
       counterpart_name: d
       reference: l
-      paid_at: '2026-10-01T09:29:42'
-      received_at: '2026-10-01T09:29:42'
+      paid_at: '2026-10-01T10:55:41'
+      received_at: '2026-10-01T10:55:41'
     fileParameters: []
     responses: []
     responseFields: []
@@ -10684,7 +10851,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '929'
+          x-ratelimit-remaining: '923'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -10739,7 +10906,7 @@ endpoints:
         name: due_date
         description: 'Must be a valid date.'
         required: true
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:41'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -10749,7 +10916,7 @@ endpoints:
         name: competence_date
         description: 'Must be a valid date.'
         required: false
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:41'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -10809,7 +10976,7 @@ endpoints:
         name: paid_at
         description: 'Must be a valid date.'
         required: false
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:41'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -10818,14 +10985,14 @@ endpoints:
     cleanBodyParameters:
       chart_account_id: 16
       bank_id: 16
-      due_date: '2026-10-01T09:29:42'
-      competence_date: '2026-10-01T09:29:42'
+      due_date: '2026-10-01T10:55:41'
+      competence_date: '2026-10-01T10:55:41'
       amount: 39
       status: architecto
       description: 'Et animi quos velit et fugiat.'
       counterpart_name: d
       reference: l
-      paid_at: '2026-10-01T09:29:42'
+      paid_at: '2026-10-01T10:55:41'
     fileParameters: []
     responses: []
     responseFields: []
@@ -10876,7 +11043,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '928'
+          x-ratelimit-remaining: '922'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -10943,7 +11110,7 @@ endpoints:
         name: due_date
         description: 'Must be a valid date.'
         required: true
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:41'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -10953,7 +11120,7 @@ endpoints:
         name: competence_date
         description: 'Must be a valid date.'
         required: false
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:41'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -11013,7 +11180,7 @@ endpoints:
         name: paid_at
         description: 'Must be a valid date.'
         required: false
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:41'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -11022,14 +11189,14 @@ endpoints:
     cleanBodyParameters:
       chart_account_id: 16
       bank_id: 16
-      due_date: '2026-10-01T09:29:42'
-      competence_date: '2026-10-01T09:29:42'
+      due_date: '2026-10-01T10:55:41'
+      competence_date: '2026-10-01T10:55:41'
       amount: 39
       status: architecto
       description: 'Et animi quos velit et fugiat.'
       counterpart_name: d
       reference: l
-      paid_at: '2026-10-01T09:29:42'
+      paid_at: '2026-10-01T10:55:41'
     fileParameters: []
     responses: []
     responseFields: []
@@ -11121,7 +11288,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '927'
+          x-ratelimit-remaining: '921'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -11236,7 +11403,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '926'
+          x-ratelimit-remaining: '920'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -11329,7 +11496,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '925'
+          x-ratelimit-remaining: '919'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -11384,7 +11551,7 @@ endpoints:
         name: due_date
         description: 'Must be a valid date.'
         required: true
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:42'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -11394,7 +11561,7 @@ endpoints:
         name: competence_date
         description: 'Must be a valid date.'
         required: false
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:42'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -11454,7 +11621,7 @@ endpoints:
         name: received_at
         description: 'Must be a valid date.'
         required: false
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:42'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -11463,14 +11630,14 @@ endpoints:
     cleanBodyParameters:
       chart_account_id: 16
       bank_id: 16
-      due_date: '2026-10-01T09:29:42'
-      competence_date: '2026-10-01T09:29:42'
+      due_date: '2026-10-01T10:55:42'
+      competence_date: '2026-10-01T10:55:42'
       amount: 39
       status: architecto
       description: 'Et animi quos velit et fugiat.'
       counterpart_name: d
       reference: l
-      received_at: '2026-10-01T09:29:42'
+      received_at: '2026-10-01T10:55:42'
     fileParameters: []
     responses: []
     responseFields: []
@@ -11521,7 +11688,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '924'
+          x-ratelimit-remaining: '918'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -11588,7 +11755,7 @@ endpoints:
         name: due_date
         description: 'Must be a valid date.'
         required: true
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:42'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -11598,7 +11765,7 @@ endpoints:
         name: competence_date
         description: 'Must be a valid date.'
         required: false
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:42'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -11658,7 +11825,7 @@ endpoints:
         name: received_at
         description: 'Must be a valid date.'
         required: false
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:42'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -11667,14 +11834,14 @@ endpoints:
     cleanBodyParameters:
       chart_account_id: 16
       bank_id: 16
-      due_date: '2026-10-01T09:29:42'
-      competence_date: '2026-10-01T09:29:42'
+      due_date: '2026-10-01T10:55:42'
+      competence_date: '2026-10-01T10:55:42'
       amount: 39
       status: architecto
       description: 'Et animi quos velit et fugiat.'
       counterpart_name: d
       reference: l
-      received_at: '2026-10-01T09:29:42'
+      received_at: '2026-10-01T10:55:42'
     fileParameters: []
     responses: []
     responseFields: []
@@ -11766,7 +11933,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '923'
+          x-ratelimit-remaining: '917'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -11881,7 +12048,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '922'
+          x-ratelimit-remaining: '916'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -11974,7 +12141,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '921'
+          x-ratelimit-remaining: '915'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -12029,7 +12196,7 @@ endpoints:
         name: date
         description: 'Must be a valid date.'
         required: true
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:42'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -12066,7 +12233,7 @@ endpoints:
         nullable: true
         custom: []
     cleanBodyParameters:
-      date: '2026-10-01T09:29:42'
+      date: '2026-10-01T10:55:42'
       amount: 27
       type: architecto
       description: 'Eius et animi quos velit et.'
@@ -12120,7 +12287,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '920'
+          x-ratelimit-remaining: '914'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -12187,7 +12354,7 @@ endpoints:
         name: date
         description: 'Must be a valid date.'
         required: false
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:42'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -12224,7 +12391,7 @@ endpoints:
         nullable: true
         custom: []
     cleanBodyParameters:
-      date: '2026-10-01T09:29:42'
+      date: '2026-10-01T10:55:42'
       amount: 27
       description: 'Eius et animi quos velit et.'
     fileParameters: []
@@ -12405,7 +12572,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '919'
+          x-ratelimit-remaining: '913'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -12531,7 +12698,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '918'
+          x-ratelimit-remaining: '912'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -12807,7 +12974,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '917'
+          x-ratelimit-remaining: '911'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -12848,7 +13015,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '916'
+          x-ratelimit-remaining: '910'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -12913,7 +13080,7 @@ endpoints:
         name: due_date
         description: 'Must be a valid date.'
         required: true
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:42'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -12943,7 +13110,7 @@ endpoints:
       title: b
       description: 'Et animi quos velit et fugiat.'
       amount: 42
-      due_date: '2026-10-01T09:29:42'
+      due_date: '2026-10-01T10:55:42'
       chart_account_id: 16
       reference: 'n'
     fileParameters: []
@@ -12996,7 +13163,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '915'
+          x-ratelimit-remaining: '909'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -13073,7 +13240,7 @@ endpoints:
         name: due_date
         description: 'Must be a valid date.'
         required: false
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:42'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -13103,7 +13270,7 @@ endpoints:
       title: b
       description: 'Et animi quos velit et fugiat.'
       amount: 42
-      due_date: '2026-10-01T09:29:42'
+      due_date: '2026-10-01T10:55:42'
       chart_account_id: 16
       reference: 'n'
     fileParameters: []
@@ -13197,7 +13364,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '914'
+          x-ratelimit-remaining: '908'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -13312,7 +13479,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '913'
+          x-ratelimit-remaining: '907'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -13615,7 +13782,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '912'
+          x-ratelimit-remaining: '906'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -13867,7 +14034,7 @@ endpoints:
         name: as_of_date
         description: 'Must be a valid date.'
         required: false
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:42'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -13884,7 +14051,7 @@ endpoints:
         nullable: true
         custom: []
     cleanBodyParameters:
-      as_of_date: '2026-10-01T09:29:42'
+      as_of_date: '2026-10-01T10:55:42'
       horizon_days: 1
     fileParameters: []
     responses:
@@ -13895,7 +14062,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '911'
+          x-ratelimit-remaining: '905'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -13952,7 +14119,7 @@ endpoints:
         name: as_of_date
         description: 'Must be a valid date.'
         required: false
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:42'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -13969,7 +14136,7 @@ endpoints:
         nullable: true
         custom: []
     cleanBodyParameters:
-      as_of_date: '2026-10-01T09:29:42'
+      as_of_date: '2026-10-01T10:55:42'
       horizon_days: 1
     fileParameters: []
     responses:
@@ -13980,7 +14147,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '910'
+          x-ratelimit-remaining: '904'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -14021,7 +14188,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '909'
+          x-ratelimit-remaining: '903'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -14193,7 +14360,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '908'
+          x-ratelimit-remaining: '902'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -14478,7 +14645,7 @@ endpoints:
         name: due_date
         description: 'Must be a valid date.'
         required: true
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:42'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -14495,7 +14662,7 @@ endpoints:
         nullable: true
         custom: []
     cleanBodyParameters:
-      due_date: '2026-10-01T09:29:42'
+      due_date: '2026-10-01T10:55:42'
       chart_account_id: 16
     fileParameters: []
     responses: []
@@ -14653,7 +14820,7 @@ endpoints:
         name: start_date
         description: 'Must be a valid date.'
         required: true
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:42'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -14682,7 +14849,7 @@ endpoints:
         nullable: true
         custom: []
     cleanBodyParameters:
-      start_date: '2026-10-01T09:29:42'
+      start_date: '2026-10-01T10:55:42'
       end_date: '2052-10-24'
       format: pdf
     fileParameters: []
@@ -14694,7 +14861,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '907'
+          x-ratelimit-remaining: '901'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -14751,7 +14918,7 @@ endpoints:
         name: as_of_date
         description: 'Must be a valid date.'
         required: true
-        example: '2026-10-01T09:29:42'
+        example: '2026-10-01T10:55:42'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -14770,7 +14937,7 @@ endpoints:
         nullable: true
         custom: []
     cleanBodyParameters:
-      as_of_date: '2026-10-01T09:29:42'
+      as_of_date: '2026-10-01T10:55:42'
       format: json
     fileParameters: []
     responses:
@@ -14781,7 +14948,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '906'
+          x-ratelimit-remaining: '900'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -14844,7 +15011,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '1000'
-          x-ratelimit-remaining: '905'
+          x-ratelimit-remaining: '899'
           access-control-allow-origin: '*'
         description: null
         custom: []

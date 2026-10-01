@@ -66,12 +66,58 @@
                     <a href="#authenticating-requests">Authenticating requests</a>
                 </li>
                             </ul>
+                    <ul id="tocify-header-assembleias-virtuais" class="tocify-header">
+                <li class="tocify-item level-1" data-unique="assembleias-virtuais">
+                    <a href="#assembleias-virtuais">Assembleias Virtuais</a>
+                </li>
+                                    <ul id="tocify-subheader-assembleias-virtuais" class="tocify-subheader">
+                                                    <li class="tocify-item level-2" data-unique="assembleias-virtuais-GETapi-assemblies">
+                                <a href="#assembleias-virtuais-GETapi-assemblies">Listar assembleias do condomínio autenticado.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="assembleias-virtuais-POSTapi-assemblies">
+                                <a href="#assembleias-virtuais-POSTapi-assemblies">Criar uma nova assembleia com pautas iniciais.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="assembleias-virtuais-GETapi-assemblies--id-">
+                                <a href="#assembleias-virtuais-GETapi-assemblies--id-">Exibir detalhes da assembleia, pautas e resultados.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="assembleias-virtuais-PUTapi-assemblies--id-">
+                                <a href="#assembleias-virtuais-PUTapi-assemblies--id-">Atualizar dados da assembleia.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="assembleias-virtuais-DELETEapi-assemblies--id-">
+                                <a href="#assembleias-virtuais-DELETEapi-assemblies--id-">Excluir ou cancelar assembleia.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="assembleias-virtuais-POSTapi-assemblies--assembly_id--start">
+                                <a href="#assembleias-virtuais-POSTapi-assemblies--assembly_id--start">Iniciar assembleia.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="assembleias-virtuais-POSTapi-assemblies--assembly_id--close">
+                                <a href="#assembleias-virtuais-POSTapi-assemblies--assembly_id--close">Encerrar assembleia e compilar ata preliminar.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="assembleias-virtuais-POSTapi-assemblies--assembly_id--agendas">
+                                <a href="#assembleias-virtuais-POSTapi-assemblies--assembly_id--agendas">Adicionar uma nova pauta à assembleia.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="assembleias-virtuais-POSTapi-assemblies--assembly_id--agendas--agenda_id--open">
+                                <a href="#assembleias-virtuais-POSTapi-assemblies--assembly_id--agendas--agenda_id--open">Abrir votação de uma pauta.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="assembleias-virtuais-POSTapi-assemblies--assembly_id--agendas--agenda_id--close">
+                                <a href="#assembleias-virtuais-POSTapi-assemblies--assembly_id--agendas--agenda_id--close">Encerrar votação de uma pauta.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="assembleias-virtuais-POSTapi-assemblies--assembly_id--agendas--agenda_id--vote">
+                                <a href="#assembleias-virtuais-POSTapi-assemblies--assembly_id--agendas--agenda_id--vote">Registrar voto digital em uma pauta.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="assembleias-virtuais-GETapi-assemblies--assembly_id--agendas--agenda_id--results">
+                                <a href="#assembleias-virtuais-GETapi-assemblies--assembly_id--agendas--agenda_id--results">Obter resultado apurado da pauta.</a>
+                            </li>
+                                                                        </ul>
+                            </ul>
                     <ul id="tocify-header-controle-de-acessos" class="tocify-header">
                 <li class="tocify-item level-1" data-unique="controle-de-acessos">
                     <a href="#controle-de-acessos">Controle de Acessos</a>
                 </li>
                                     <ul id="tocify-subheader-controle-de-acessos" class="tocify-subheader">
-                                                    <li class="tocify-item level-2" data-unique="controle-de-acessos-GETapi-access-control-check-protective-measure">
+                                                    <li class="tocify-item level-2" data-unique="controle-de-acessos-GETapi-public-invites--token-">
+                                <a href="#controle-de-acessos-GETapi-public-invites--token-">Consulta pública de convite digital de visitante via token para portaria ou convidado (QR Code).</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="controle-de-acessos-GETapi-access-control-check-protective-measure">
                                 <a href="#controle-de-acessos-GETapi-access-control-check-protective-measure">Verifica se há medida protetiva ativa para um visitante ou veículo.</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="controle-de-acessos-GETapi-access-control-access-requests">
@@ -88,6 +134,9 @@
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="controle-de-acessos-GETapi-access-control-access-requests-my-requests">
                                 <a href="#controle-de-acessos-GETapi-access-control-access-requests-my-requests">Solicitações do morador autenticado.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="controle-de-acessos-GETapi-access-control-access-requests-by-token--token-">
+                                <a href="#controle-de-acessos-GETapi-access-control-access-requests-by-token--token-">GET api/access-control/access-requests/by-token/{token}</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="controle-de-acessos-GETapi-access-control-access-requests--id-">
                                 <a href="#controle-de-acessos-GETapi-access-control-access-requests--id-">Exibir detalhes de uma solicitação de acesso.</a>
@@ -426,6 +475,12 @@
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-PATCHapi-common-areas--common_area_id--bookings--booking_id--cancel">
                                 <a href="#endpoints-PATCHapi-common-areas--common_area_id--bookings--booking_id--cancel">PATCH api/common-areas/{common_area_id}/bookings/{booking_id}/cancel</a>
                             </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-PATCHapi-common-areas--common_area_id--bookings--booking_id--approve">
+                                <a href="#endpoints-PATCHapi-common-areas--common_area_id--bookings--booking_id--approve">PATCH api/common-areas/{common_area_id}/bookings/{booking_id}/approve</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-PATCHapi-common-areas--common_area_id--bookings--booking_id--reject">
+                                <a href="#endpoints-PATCHapi-common-areas--common_area_id--bookings--booking_id--reject">PATCH api/common-areas/{common_area_id}/bookings/{booking_id}/reject</a>
+                            </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-common-areas--common_area_id--available-slots">
                                 <a href="#endpoints-GETapi-common-areas--common_area_id--available-slots">GET api/common-areas/{common_area_id}/available-slots</a>
                             </li>
@@ -434,6 +489,9 @@
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-POSTapi-parking-spots--parking_spot_id--rent">
                                 <a href="#endpoints-POSTapi-parking-spots--parking_spot_id--rent">POST api/parking-spots/{parking_spot_id}/rent</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-packages-by-code--code-">
+                                <a href="#endpoints-GETapi-packages-by-code--code-">Busca rápida de encomenda pelo código de retirada para portaria e morador.</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-POSTapi-packages--package_id--withdraw">
                                 <a href="#endpoints-POSTapi-packages--package_id--withdraw">POST api/packages/{package_id}/withdraw</a>
@@ -953,6 +1011,9 @@
                                                                                 <li class="tocify-item level-2" data-unique="ocorrencias-DELETEapi-occurrences--occurrence_id--comments--comment_id-">
                                 <a href="#ocorrencias-DELETEapi-occurrences--occurrence_id--comments--comment_id-">DELETE api/occurrences/{occurrence_id}/comments/{comment_id}</a>
                             </li>
+                                                                                <li class="tocify-item level-2" data-unique="ocorrencias-POSTapi-occurrences--occurrence_id--convert-to-maintenance">
+                                <a href="#ocorrencias-POSTapi-occurrences--occurrence_id--convert-to-maintenance">POST api/occurrences/{occurrence_id}/convert-to-maintenance</a>
+                            </li>
                                                                         </ul>
                             </ul>
             </div>
@@ -983,11 +1044,2200 @@ You can switch the language used with the tabs at the top right (or from the nav
         <h1 id="authenticating-requests">Authenticating requests</h1>
 <p>This API is not authenticated.</p>
 
-        <h1 id="controle-de-acessos">Controle de Acessos</h1>
+        <h1 id="assembleias-virtuais">Assembleias Virtuais</h1>
+
+    <p>APIs para convocação, deliberação, votação digital e atas de assembleias condominiais.</p>
+
+                                <h2 id="assembleias-virtuais-GETapi-assemblies">Listar assembleias do condomínio autenticado.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-GETapi-assemblies">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/assemblies" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/assemblies"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-assemblies">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+x-ratelimit-limit: 1000
+x-ratelimit-remaining: 931
+access-control-allow-origin: *
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;N&atilde;o autenticado.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-assemblies" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-assemblies"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-assemblies"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-assemblies" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-assemblies">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-assemblies" data-method="GET"
+      data-path="api/assemblies"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-assemblies', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-assemblies"
+                    onclick="tryItOut('GETapi-assemblies');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-assemblies"
+                    onclick="cancelTryOut('GETapi-assemblies');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-assemblies"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/assemblies</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-assemblies"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-assemblies"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="assembleias-virtuais-POSTapi-assemblies">Criar uma nova assembleia com pautas iniciais.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-POSTapi-assemblies">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost/api/assemblies" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"title\": \"b\",
+    \"description\": \"Eius et animi quos velit et.\",
+    \"type\": \"extraordinaria\",
+    \"modality\": \"virtual\",
+    \"first_call_at\": \"2026-10-01T10:55:41\",
+    \"second_call_at\": \"2052-10-24\",
+    \"meeting_link\": \"n\",
+    \"location\": \"g\",
+    \"quorum_minimum\": 16,
+    \"agendas\": [
+        {
+            \"title\": \"m\",
+            \"description\": \"Eius et animi quos velit et.\",
+            \"voting_type\": \"sim_nao_abstencao\",
+            \"weight_type\": \"fracao_ideal\"
+        }
+    ]
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/assemblies"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "title": "b",
+    "description": "Eius et animi quos velit et.",
+    "type": "extraordinaria",
+    "modality": "virtual",
+    "first_call_at": "2026-10-01T10:55:41",
+    "second_call_at": "2052-10-24",
+    "meeting_link": "n",
+    "location": "g",
+    "quorum_minimum": 16,
+    "agendas": [
+        {
+            "title": "m",
+            "description": "Eius et animi quos velit et.",
+            "voting_type": "sim_nao_abstencao",
+            "weight_type": "fracao_ideal"
+        }
+    ]
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-assemblies">
+</span>
+<span id="execution-results-POSTapi-assemblies" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-assemblies"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-assemblies"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-assemblies" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-assemblies">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-assemblies" data-method="POST"
+      data-path="api/assemblies"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-assemblies', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-assemblies"
+                    onclick="tryItOut('POSTapi-assemblies');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-assemblies"
+                    onclick="cancelTryOut('POSTapi-assemblies');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-assemblies"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/assemblies</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-assemblies"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-assemblies"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>title</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="title"                data-endpoint="POSTapi-assemblies"
+               value="b"
+               data-component="body">
+    <br>
+<p>Must not be greater than 255 characters. Example: <code>b</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>description</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="description"                data-endpoint="POSTapi-assemblies"
+               value="Eius et animi quos velit et."
+               data-component="body">
+    <br>
+<p>Example: <code>Eius et animi quos velit et.</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>type</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="type"                data-endpoint="POSTapi-assemblies"
+               value="extraordinaria"
+               data-component="body">
+    <br>
+<p>Example: <code>extraordinaria</code></p>
+Must be one of:
+<ul style="list-style-type: square;"><li><code>ordinaria</code></li> <li><code>extraordinaria</code></li></ul>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>modality</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="modality"                data-endpoint="POSTapi-assemblies"
+               value="virtual"
+               data-component="body">
+    <br>
+<p>Example: <code>virtual</code></p>
+Must be one of:
+<ul style="list-style-type: square;"><li><code>presencial</code></li> <li><code>virtual</code></li> <li><code>hibrida</code></li></ul>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>first_call_at</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="first_call_at"                data-endpoint="POSTapi-assemblies"
+               value="2026-10-01T10:55:41"
+               data-component="body">
+    <br>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:41</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>second_call_at</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="second_call_at"                data-endpoint="POSTapi-assemblies"
+               value="2052-10-24"
+               data-component="body">
+    <br>
+<p>Must be a valid date. Must be a date after or equal to <code>first_call_at</code>. Example: <code>2052-10-24</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>meeting_link</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="meeting_link"                data-endpoint="POSTapi-assemblies"
+               value="n"
+               data-component="body">
+    <br>
+<p>Must be a valid URL. Must not be greater than 500 characters. Example: <code>n</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>location</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="location"                data-endpoint="POSTapi-assemblies"
+               value="g"
+               data-component="body">
+    <br>
+<p>Must not be greater than 255 characters. Example: <code>g</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>quorum_minimum</code></b>&nbsp;&nbsp;
+<small>number</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="quorum_minimum"                data-endpoint="POSTapi-assemblies"
+               value="16"
+               data-component="body">
+    <br>
+<p>Must be at least 0. Must not be greater than 100. Example: <code>16</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+        <details>
+            <summary style="padding-bottom: 10px;">
+                <b style="line-height: 2;"><code>agendas</code></b>&nbsp;&nbsp;
+<small>object[]</small>&nbsp;
+<i>optional</i> &nbsp;
+<br>
+
+            </summary>
+                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>title</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="agendas.0.title"                data-endpoint="POSTapi-assemblies"
+               value="m"
+               data-component="body">
+    <br>
+<p>Must not be greater than 255 characters. Example: <code>m</code></p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>description</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="agendas.0.description"                data-endpoint="POSTapi-assemblies"
+               value="Eius et animi quos velit et."
+               data-component="body">
+    <br>
+<p>Example: <code>Eius et animi quos velit et.</code></p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>voting_type</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="agendas.0.voting_type"                data-endpoint="POSTapi-assemblies"
+               value="sim_nao_abstencao"
+               data-component="body">
+    <br>
+<p>Example: <code>sim_nao_abstencao</code></p>
+Must be one of:
+<ul style="list-style-type: square;"><li><code>sim_nao_abstencao</code></li> <li><code>multipla_escolha</code></li> <li><code>eleicao</code></li></ul>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>options</code></b>&nbsp;&nbsp;
+<small>object</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="agendas.0.options"                data-endpoint="POSTapi-assemblies"
+               value=""
+               data-component="body">
+    <br>
+
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>weight_type</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="agendas.0.weight_type"                data-endpoint="POSTapi-assemblies"
+               value="fracao_ideal"
+               data-component="body">
+    <br>
+<p>Example: <code>fracao_ideal</code></p>
+Must be one of:
+<ul style="list-style-type: square;"><li><code>unitario</code></li> <li><code>fracao_ideal</code></li></ul>
+                    </div>
+                                    </details>
+        </div>
+        </form>
+
+                    <h2 id="assembleias-virtuais-GETapi-assemblies--id-">Exibir detalhes da assembleia, pautas e resultados.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-GETapi-assemblies--id-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/assemblies/16" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/assemblies/16"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-assemblies--id-">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+x-ratelimit-limit: 1000
+x-ratelimit-remaining: 930
+access-control-allow-origin: *
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;N&atilde;o autenticado.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-assemblies--id-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-assemblies--id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-assemblies--id-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-assemblies--id-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-assemblies--id-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-assemblies--id-" data-method="GET"
+      data-path="api/assemblies/{id}"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-assemblies--id-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-assemblies--id-"
+                    onclick="tryItOut('GETapi-assemblies--id-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-assemblies--id-"
+                    onclick="cancelTryOut('GETapi-assemblies--id-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-assemblies--id-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/assemblies/{id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-assemblies--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-assemblies--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="id"                data-endpoint="GETapi-assemblies--id-"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the assembly. Example: <code>16</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="assembleias-virtuais-PUTapi-assemblies--id-">Atualizar dados da assembleia.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-PUTapi-assemblies--id-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request PUT \
+    "http://localhost/api/assemblies/16" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"title\": \"b\",
+    \"description\": \"Eius et animi quos velit et.\",
+    \"type\": \"extraordinaria\",
+    \"modality\": \"virtual\",
+    \"status\": \"em_andamento\",
+    \"first_call_at\": \"2026-10-01T10:55:41\",
+    \"second_call_at\": \"2026-10-01T10:55:41\",
+    \"meeting_link\": \"j\",
+    \"location\": \"n\",
+    \"quorum_minimum\": 5,
+    \"minutes\": \"architecto\"
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/assemblies/16"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "title": "b",
+    "description": "Eius et animi quos velit et.",
+    "type": "extraordinaria",
+    "modality": "virtual",
+    "status": "em_andamento",
+    "first_call_at": "2026-10-01T10:55:41",
+    "second_call_at": "2026-10-01T10:55:41",
+    "meeting_link": "j",
+    "location": "n",
+    "quorum_minimum": 5,
+    "minutes": "architecto"
+};
+
+fetch(url, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-PUTapi-assemblies--id-">
+</span>
+<span id="execution-results-PUTapi-assemblies--id-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-PUTapi-assemblies--id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-PUTapi-assemblies--id-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-PUTapi-assemblies--id-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-PUTapi-assemblies--id-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-PUTapi-assemblies--id-" data-method="PUT"
+      data-path="api/assemblies/{id}"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('PUTapi-assemblies--id-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-PUTapi-assemblies--id-"
+                    onclick="tryItOut('PUTapi-assemblies--id-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-PUTapi-assemblies--id-"
+                    onclick="cancelTryOut('PUTapi-assemblies--id-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-PUTapi-assemblies--id-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-darkblue">PUT</small>
+            <b><code>api/assemblies/{id}</code></b>
+        </p>
+            <p>
+            <small class="badge badge-purple">PATCH</small>
+            <b><code>api/assemblies/{id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="PUTapi-assemblies--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="PUTapi-assemblies--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="id"                data-endpoint="PUTapi-assemblies--id-"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the assembly. Example: <code>16</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>title</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="title"                data-endpoint="PUTapi-assemblies--id-"
+               value="b"
+               data-component="body">
+    <br>
+<p>Must not be greater than 255 characters. Example: <code>b</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>description</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="description"                data-endpoint="PUTapi-assemblies--id-"
+               value="Eius et animi quos velit et."
+               data-component="body">
+    <br>
+<p>Example: <code>Eius et animi quos velit et.</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>type</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="type"                data-endpoint="PUTapi-assemblies--id-"
+               value="extraordinaria"
+               data-component="body">
+    <br>
+<p>Example: <code>extraordinaria</code></p>
+Must be one of:
+<ul style="list-style-type: square;"><li><code>ordinaria</code></li> <li><code>extraordinaria</code></li></ul>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>modality</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="modality"                data-endpoint="PUTapi-assemblies--id-"
+               value="virtual"
+               data-component="body">
+    <br>
+<p>Example: <code>virtual</code></p>
+Must be one of:
+<ul style="list-style-type: square;"><li><code>presencial</code></li> <li><code>virtual</code></li> <li><code>hibrida</code></li></ul>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>status</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="status"                data-endpoint="PUTapi-assemblies--id-"
+               value="em_andamento"
+               data-component="body">
+    <br>
+<p>Example: <code>em_andamento</code></p>
+Must be one of:
+<ul style="list-style-type: square;"><li><code>agendada</code></li> <li><code>em_andamento</code></li> <li><code>encerrada</code></li> <li><code>cancelada</code></li></ul>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>first_call_at</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="first_call_at"                data-endpoint="PUTapi-assemblies--id-"
+               value="2026-10-01T10:55:41"
+               data-component="body">
+    <br>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:41</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>second_call_at</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="second_call_at"                data-endpoint="PUTapi-assemblies--id-"
+               value="2026-10-01T10:55:41"
+               data-component="body">
+    <br>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:41</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>meeting_link</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="meeting_link"                data-endpoint="PUTapi-assemblies--id-"
+               value="j"
+               data-component="body">
+    <br>
+<p>Must be a valid URL. Must not be greater than 500 characters. Example: <code>j</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>location</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="location"                data-endpoint="PUTapi-assemblies--id-"
+               value="n"
+               data-component="body">
+    <br>
+<p>Must not be greater than 255 characters. Example: <code>n</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>quorum_minimum</code></b>&nbsp;&nbsp;
+<small>number</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="quorum_minimum"                data-endpoint="PUTapi-assemblies--id-"
+               value="5"
+               data-component="body">
+    <br>
+<p>Must be at least 0. Must not be greater than 100. Example: <code>5</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>minutes</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="minutes"                data-endpoint="PUTapi-assemblies--id-"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+        </div>
+        </form>
+
+                    <h2 id="assembleias-virtuais-DELETEapi-assemblies--id-">Excluir ou cancelar assembleia.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-DELETEapi-assemblies--id-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request DELETE \
+    "http://localhost/api/assemblies/16" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/assemblies/16"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "DELETE",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-DELETEapi-assemblies--id-">
+</span>
+<span id="execution-results-DELETEapi-assemblies--id-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-DELETEapi-assemblies--id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-DELETEapi-assemblies--id-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-DELETEapi-assemblies--id-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-DELETEapi-assemblies--id-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-DELETEapi-assemblies--id-" data-method="DELETE"
+      data-path="api/assemblies/{id}"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('DELETEapi-assemblies--id-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-DELETEapi-assemblies--id-"
+                    onclick="tryItOut('DELETEapi-assemblies--id-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-DELETEapi-assemblies--id-"
+                    onclick="cancelTryOut('DELETEapi-assemblies--id-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-DELETEapi-assemblies--id-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-red">DELETE</small>
+            <b><code>api/assemblies/{id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="DELETEapi-assemblies--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="DELETEapi-assemblies--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="id"                data-endpoint="DELETEapi-assemblies--id-"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the assembly. Example: <code>16</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="assembleias-virtuais-POSTapi-assemblies--assembly_id--start">Iniciar assembleia.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-POSTapi-assemblies--assembly_id--start">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost/api/assemblies/16/start" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/assemblies/16/start"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-assemblies--assembly_id--start">
+</span>
+<span id="execution-results-POSTapi-assemblies--assembly_id--start" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-assemblies--assembly_id--start"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-assemblies--assembly_id--start"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-assemblies--assembly_id--start" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-assemblies--assembly_id--start">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-assemblies--assembly_id--start" data-method="POST"
+      data-path="api/assemblies/{assembly_id}/start"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-assemblies--assembly_id--start', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-assemblies--assembly_id--start"
+                    onclick="tryItOut('POSTapi-assemblies--assembly_id--start');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-assemblies--assembly_id--start"
+                    onclick="cancelTryOut('POSTapi-assemblies--assembly_id--start');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-assemblies--assembly_id--start"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/assemblies/{assembly_id}/start</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-assemblies--assembly_id--start"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-assemblies--assembly_id--start"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>assembly_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="assembly_id"                data-endpoint="POSTapi-assemblies--assembly_id--start"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the assembly. Example: <code>16</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="assembleias-virtuais-POSTapi-assemblies--assembly_id--close">Encerrar assembleia e compilar ata preliminar.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-POSTapi-assemblies--assembly_id--close">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost/api/assemblies/16/close" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/assemblies/16/close"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-assemblies--assembly_id--close">
+</span>
+<span id="execution-results-POSTapi-assemblies--assembly_id--close" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-assemblies--assembly_id--close"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-assemblies--assembly_id--close"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-assemblies--assembly_id--close" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-assemblies--assembly_id--close">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-assemblies--assembly_id--close" data-method="POST"
+      data-path="api/assemblies/{assembly_id}/close"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-assemblies--assembly_id--close', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-assemblies--assembly_id--close"
+                    onclick="tryItOut('POSTapi-assemblies--assembly_id--close');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-assemblies--assembly_id--close"
+                    onclick="cancelTryOut('POSTapi-assemblies--assembly_id--close');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-assemblies--assembly_id--close"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/assemblies/{assembly_id}/close</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-assemblies--assembly_id--close"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-assemblies--assembly_id--close"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>assembly_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="assembly_id"                data-endpoint="POSTapi-assemblies--assembly_id--close"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the assembly. Example: <code>16</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="assembleias-virtuais-POSTapi-assemblies--assembly_id--agendas">Adicionar uma nova pauta à assembleia.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-POSTapi-assemblies--assembly_id--agendas">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost/api/assemblies/16/agendas" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"title\": \"b\",
+    \"description\": \"Eius et animi quos velit et.\",
+    \"voting_type\": \"sim_nao_abstencao\",
+    \"weight_type\": \"fracao_ideal\"
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/assemblies/16/agendas"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "title": "b",
+    "description": "Eius et animi quos velit et.",
+    "voting_type": "sim_nao_abstencao",
+    "weight_type": "fracao_ideal"
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-assemblies--assembly_id--agendas">
+</span>
+<span id="execution-results-POSTapi-assemblies--assembly_id--agendas" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-assemblies--assembly_id--agendas"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-assemblies--assembly_id--agendas"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-assemblies--assembly_id--agendas" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-assemblies--assembly_id--agendas">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-assemblies--assembly_id--agendas" data-method="POST"
+      data-path="api/assemblies/{assembly_id}/agendas"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-assemblies--assembly_id--agendas', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-assemblies--assembly_id--agendas"
+                    onclick="tryItOut('POSTapi-assemblies--assembly_id--agendas');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-assemblies--assembly_id--agendas"
+                    onclick="cancelTryOut('POSTapi-assemblies--assembly_id--agendas');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-assemblies--assembly_id--agendas"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/assemblies/{assembly_id}/agendas</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-assemblies--assembly_id--agendas"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-assemblies--assembly_id--agendas"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>assembly_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="assembly_id"                data-endpoint="POSTapi-assemblies--assembly_id--agendas"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the assembly. Example: <code>16</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>title</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="title"                data-endpoint="POSTapi-assemblies--assembly_id--agendas"
+               value="b"
+               data-component="body">
+    <br>
+<p>Must not be greater than 255 characters. Example: <code>b</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>description</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="description"                data-endpoint="POSTapi-assemblies--assembly_id--agendas"
+               value="Eius et animi quos velit et."
+               data-component="body">
+    <br>
+<p>Example: <code>Eius et animi quos velit et.</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>voting_type</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="voting_type"                data-endpoint="POSTapi-assemblies--assembly_id--agendas"
+               value="sim_nao_abstencao"
+               data-component="body">
+    <br>
+<p>Example: <code>sim_nao_abstencao</code></p>
+Must be one of:
+<ul style="list-style-type: square;"><li><code>sim_nao_abstencao</code></li> <li><code>multipla_escolha</code></li> <li><code>eleicao</code></li></ul>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>options</code></b>&nbsp;&nbsp;
+<small>object</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="options"                data-endpoint="POSTapi-assemblies--assembly_id--agendas"
+               value=""
+               data-component="body">
+    <br>
+
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>weight_type</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="weight_type"                data-endpoint="POSTapi-assemblies--assembly_id--agendas"
+               value="fracao_ideal"
+               data-component="body">
+    <br>
+<p>Example: <code>fracao_ideal</code></p>
+Must be one of:
+<ul style="list-style-type: square;"><li><code>unitario</code></li> <li><code>fracao_ideal</code></li></ul>
+        </div>
+        </form>
+
+                    <h2 id="assembleias-virtuais-POSTapi-assemblies--assembly_id--agendas--agenda_id--open">Abrir votação de uma pauta.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-POSTapi-assemblies--assembly_id--agendas--agenda_id--open">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost/api/assemblies/16/agendas/16/open" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/assemblies/16/agendas/16/open"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-assemblies--assembly_id--agendas--agenda_id--open">
+</span>
+<span id="execution-results-POSTapi-assemblies--assembly_id--agendas--agenda_id--open" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-assemblies--assembly_id--agendas--agenda_id--open"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-assemblies--assembly_id--agendas--agenda_id--open"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-assemblies--assembly_id--agendas--agenda_id--open" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-assemblies--assembly_id--agendas--agenda_id--open">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-assemblies--assembly_id--agendas--agenda_id--open" data-method="POST"
+      data-path="api/assemblies/{assembly_id}/agendas/{agenda_id}/open"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-assemblies--assembly_id--agendas--agenda_id--open', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-assemblies--assembly_id--agendas--agenda_id--open"
+                    onclick="tryItOut('POSTapi-assemblies--assembly_id--agendas--agenda_id--open');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-assemblies--assembly_id--agendas--agenda_id--open"
+                    onclick="cancelTryOut('POSTapi-assemblies--assembly_id--agendas--agenda_id--open');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-assemblies--assembly_id--agendas--agenda_id--open"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/assemblies/{assembly_id}/agendas/{agenda_id}/open</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-assemblies--assembly_id--agendas--agenda_id--open"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-assemblies--assembly_id--agendas--agenda_id--open"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>assembly_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="assembly_id"                data-endpoint="POSTapi-assemblies--assembly_id--agendas--agenda_id--open"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the assembly. Example: <code>16</code></p>
+            </div>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>agenda_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="agenda_id"                data-endpoint="POSTapi-assemblies--assembly_id--agendas--agenda_id--open"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the agenda. Example: <code>16</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="assembleias-virtuais-POSTapi-assemblies--assembly_id--agendas--agenda_id--close">Encerrar votação de uma pauta.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-POSTapi-assemblies--assembly_id--agendas--agenda_id--close">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost/api/assemblies/16/agendas/16/close" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/assemblies/16/agendas/16/close"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-assemblies--assembly_id--agendas--agenda_id--close">
+</span>
+<span id="execution-results-POSTapi-assemblies--assembly_id--agendas--agenda_id--close" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-assemblies--assembly_id--agendas--agenda_id--close"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-assemblies--assembly_id--agendas--agenda_id--close"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-assemblies--assembly_id--agendas--agenda_id--close" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-assemblies--assembly_id--agendas--agenda_id--close">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-assemblies--assembly_id--agendas--agenda_id--close" data-method="POST"
+      data-path="api/assemblies/{assembly_id}/agendas/{agenda_id}/close"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-assemblies--assembly_id--agendas--agenda_id--close', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-assemblies--assembly_id--agendas--agenda_id--close"
+                    onclick="tryItOut('POSTapi-assemblies--assembly_id--agendas--agenda_id--close');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-assemblies--assembly_id--agendas--agenda_id--close"
+                    onclick="cancelTryOut('POSTapi-assemblies--assembly_id--agendas--agenda_id--close');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-assemblies--assembly_id--agendas--agenda_id--close"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/assemblies/{assembly_id}/agendas/{agenda_id}/close</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-assemblies--assembly_id--agendas--agenda_id--close"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-assemblies--assembly_id--agendas--agenda_id--close"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>assembly_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="assembly_id"                data-endpoint="POSTapi-assemblies--assembly_id--agendas--agenda_id--close"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the assembly. Example: <code>16</code></p>
+            </div>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>agenda_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="agenda_id"                data-endpoint="POSTapi-assemblies--assembly_id--agendas--agenda_id--close"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the agenda. Example: <code>16</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="assembleias-virtuais-POSTapi-assemblies--assembly_id--agendas--agenda_id--vote">Registrar voto digital em uma pauta.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-POSTapi-assemblies--assembly_id--agendas--agenda_id--vote">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost/api/assemblies/16/agendas/16/vote" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"apartment_id\": 16,
+    \"chosen_option\": \"architecto\",
+    \"is_proxy\": false,
+    \"proxy_document\": \"architecto\"
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/assemblies/16/agendas/16/vote"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "apartment_id": 16,
+    "chosen_option": "architecto",
+    "is_proxy": false,
+    "proxy_document": "architecto"
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-assemblies--assembly_id--agendas--agenda_id--vote">
+</span>
+<span id="execution-results-POSTapi-assemblies--assembly_id--agendas--agenda_id--vote" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-assemblies--assembly_id--agendas--agenda_id--vote"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-assemblies--assembly_id--agendas--agenda_id--vote"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-assemblies--assembly_id--agendas--agenda_id--vote" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-assemblies--assembly_id--agendas--agenda_id--vote">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-assemblies--assembly_id--agendas--agenda_id--vote" data-method="POST"
+      data-path="api/assemblies/{assembly_id}/agendas/{agenda_id}/vote"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-assemblies--assembly_id--agendas--agenda_id--vote', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-assemblies--assembly_id--agendas--agenda_id--vote"
+                    onclick="tryItOut('POSTapi-assemblies--assembly_id--agendas--agenda_id--vote');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-assemblies--assembly_id--agendas--agenda_id--vote"
+                    onclick="cancelTryOut('POSTapi-assemblies--assembly_id--agendas--agenda_id--vote');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-assemblies--assembly_id--agendas--agenda_id--vote"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/assemblies/{assembly_id}/agendas/{agenda_id}/vote</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-assemblies--assembly_id--agendas--agenda_id--vote"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-assemblies--assembly_id--agendas--agenda_id--vote"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>assembly_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="assembly_id"                data-endpoint="POSTapi-assemblies--assembly_id--agendas--agenda_id--vote"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the assembly. Example: <code>16</code></p>
+            </div>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>agenda_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="agenda_id"                data-endpoint="POSTapi-assemblies--assembly_id--agendas--agenda_id--vote"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the agenda. Example: <code>16</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>apartment_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="apartment_id"                data-endpoint="POSTapi-assemblies--assembly_id--agendas--agenda_id--vote"
+               value="16"
+               data-component="body">
+    <br>
+<p>Example: <code>16</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>chosen_option</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="chosen_option"                data-endpoint="POSTapi-assemblies--assembly_id--agendas--agenda_id--vote"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>is_proxy</code></b>&nbsp;&nbsp;
+<small>boolean</small>&nbsp;
+<i>optional</i> &nbsp;
+                <label data-endpoint="POSTapi-assemblies--assembly_id--agendas--agenda_id--vote" style="display: none">
+            <input type="radio" name="is_proxy"
+                   value="true"
+                   data-endpoint="POSTapi-assemblies--assembly_id--agendas--agenda_id--vote"
+                   data-component="body"             >
+            <code>true</code>
+        </label>
+        <label data-endpoint="POSTapi-assemblies--assembly_id--agendas--agenda_id--vote" style="display: none">
+            <input type="radio" name="is_proxy"
+                   value="false"
+                   data-endpoint="POSTapi-assemblies--assembly_id--agendas--agenda_id--vote"
+                   data-component="body"             >
+            <code>false</code>
+        </label>
+    <br>
+<p>Example: <code>false</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>proxy_document</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="proxy_document"                data-endpoint="POSTapi-assemblies--assembly_id--agendas--agenda_id--vote"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+        </div>
+        </form>
+
+                    <h2 id="assembleias-virtuais-GETapi-assemblies--assembly_id--agendas--agenda_id--results">Obter resultado apurado da pauta.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-GETapi-assemblies--assembly_id--agendas--agenda_id--results">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/assemblies/16/agendas/16/results" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/assemblies/16/agendas/16/results"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-assemblies--assembly_id--agendas--agenda_id--results">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+x-ratelimit-limit: 1000
+x-ratelimit-remaining: 929
+access-control-allow-origin: *
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;N&atilde;o autenticado.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-assemblies--assembly_id--agendas--agenda_id--results" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-assemblies--assembly_id--agendas--agenda_id--results"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-assemblies--assembly_id--agendas--agenda_id--results"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-assemblies--assembly_id--agendas--agenda_id--results" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-assemblies--assembly_id--agendas--agenda_id--results">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-assemblies--assembly_id--agendas--agenda_id--results" data-method="GET"
+      data-path="api/assemblies/{assembly_id}/agendas/{agenda_id}/results"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-assemblies--assembly_id--agendas--agenda_id--results', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-assemblies--assembly_id--agendas--agenda_id--results"
+                    onclick="tryItOut('GETapi-assemblies--assembly_id--agendas--agenda_id--results');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-assemblies--assembly_id--agendas--agenda_id--results"
+                    onclick="cancelTryOut('GETapi-assemblies--assembly_id--agendas--agenda_id--results');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-assemblies--assembly_id--agendas--agenda_id--results"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/assemblies/{assembly_id}/agendas/{agenda_id}/results</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-assemblies--assembly_id--agendas--agenda_id--results"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-assemblies--assembly_id--agendas--agenda_id--results"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>assembly_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="assembly_id"                data-endpoint="GETapi-assemblies--assembly_id--agendas--agenda_id--results"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the assembly. Example: <code>16</code></p>
+            </div>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>agenda_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="agenda_id"                data-endpoint="GETapi-assemblies--assembly_id--agendas--agenda_id--results"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the agenda. Example: <code>16</code></p>
+            </div>
+                    </form>
+
+                <h1 id="controle-de-acessos">Controle de Acessos</h1>
 
     <p>Endpoints para gerenciar solicitações de acesso de visitantes.</p>
 
-                                <h2 id="controle-de-acessos-GETapi-access-control-check-protective-measure">Verifica se há medida protetiva ativa para um visitante ou veículo.</h2>
+                                <h2 id="controle-de-acessos-GETapi-public-invites--token-">Consulta pública de convite digital de visitante via token para portaria ou convidado (QR Code).</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-public-invites--token-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/public/invites/4fa6791e847c28..." \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/public/invites/4fa6791e847c28..."
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-public-invites--token-">
+            <blockquote>
+            <p>Example response (404):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+x-ratelimit-limit: 60
+x-ratelimit-remaining: 58
+access-control-allow-origin: *
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Recurso n&atilde;o encontrado.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-public-invites--token-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-public-invites--token-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-public-invites--token-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-public-invites--token-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-public-invites--token-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-public-invites--token-" data-method="GET"
+      data-path="api/public/invites/{token}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-public-invites--token-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-public-invites--token-"
+                    onclick="tryItOut('GETapi-public-invites--token-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-public-invites--token-"
+                    onclick="cancelTryOut('GETapi-public-invites--token-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-public-invites--token-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/public/invites/{token}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-public-invites--token-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-public-invites--token-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>token</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="token"                data-endpoint="GETapi-public-invites--token-"
+               value="4fa6791e847c28..."
+               data-component="url">
+    <br>
+<p>Token seguro do convite. Example: <code>4fa6791e847c28...</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="controle-de-acessos-GETapi-access-control-check-protective-measure">Verifica se há medida protetiva ativa para um visitante ou veículo.</h2>
 
 <p>
 </p>
@@ -1358,7 +3608,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --form "vehicle[plate]=cqldzsnrwtujwvlx"\
     --form "vehicle[model]=j"\
     --form "vehicle[color]=k"\
-    --form "visitor_photo=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpb1btikq1dgpcfBsl6wA" </code></pre></div>
+    --form "visitor_photo=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phph5bcekm1niudfcAS9UM" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -1547,7 +3797,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value=""
                data-component="body">
     <br>
-<p>Must be an image. Must not be greater than 2048 kilobytes. Example: <code>/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpb1btikq1dgpcfBsl6wA</code></p>
+<p>Must be an image. Must not be greater than 2048 kilobytes. Example: <code>/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phph5bcekm1niudfcAS9UM</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>visitor_photo_url</code></b>&nbsp;&nbsp;
@@ -2178,6 +4428,145 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>Example: <code>application/json</code></p>
             </div>
                         </form>
+
+                    <h2 id="controle-de-acessos-GETapi-access-control-access-requests-by-token--token-">GET api/access-control/access-requests/by-token/{token}</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-GETapi-access-control-access-requests-by-token--token-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/access-control/access-requests/by-token/4fa6791e847c28..." \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/access-control/access-requests/by-token/4fa6791e847c28..."
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-access-control-access-requests-by-token--token-">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+x-ratelimit-limit: 1000
+x-ratelimit-remaining: 932
+access-control-allow-origin: *
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;N&atilde;o autenticado.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-access-control-access-requests-by-token--token-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-access-control-access-requests-by-token--token-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-access-control-access-requests-by-token--token-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-access-control-access-requests-by-token--token-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-access-control-access-requests-by-token--token-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-access-control-access-requests-by-token--token-" data-method="GET"
+      data-path="api/access-control/access-requests/by-token/{token}"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-access-control-access-requests-by-token--token-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-access-control-access-requests-by-token--token-"
+                    onclick="tryItOut('GETapi-access-control-access-requests-by-token--token-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-access-control-access-requests-by-token--token-"
+                    onclick="cancelTryOut('GETapi-access-control-access-requests-by-token--token-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-access-control-access-requests-by-token--token-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/access-control/access-requests/by-token/{token}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-access-control-access-requests-by-token--token-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-access-control-access-requests-by-token--token-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>token</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="token"                data-endpoint="GETapi-access-control-access-requests-by-token--token-"
+               value="4fa6791e847c28..."
+               data-component="url">
+    <br>
+<p>Token seguro do convite. Example: <code>4fa6791e847c28...</code></p>
+            </div>
+                    </form>
 
                     <h2 id="controle-de-acessos-GETapi-access-control-access-requests--id-">Exibir detalhes de uma solicitação de acesso.</h2>
 
@@ -3043,7 +5432,7 @@ access-control-allow-origin: *
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;status&quot;: &quot;ok&quot;,
-    &quot;timestamp&quot;: &quot;2026-10-01T12:29:42.034061Z&quot;,
+    &quot;timestamp&quot;: &quot;2026-10-01T13:55:41.393502Z&quot;,
     &quot;version&quot;: &quot;1.0.0&quot;
 }</code>
  </pre>
@@ -4496,7 +6885,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     "http://localhost/api/public/supplier-quotes/architecto/attachments" \
     --header "Content-Type: multipart/form-data" \
     --header "Accept: application/json" \
-    --form "file=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpdr2s7v5agsn4bf2TEV5" </code></pre></div>
+    --form "file=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpcuti944sjd23418Jq2z" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -4613,7 +7002,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value=""
                data-component="body">
     <br>
-<p>Must be a file. Must not be greater than 10240 kilobytes. Example: <code>/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpdr2s7v5agsn4bf2TEV5</code></p>
+<p>Must be a file. Must not be greater than 10240 kilobytes. Example: <code>/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpcuti944sjd23418Jq2z</code></p>
         </div>
         </form>
 
@@ -4663,7 +7052,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 996
+x-ratelimit-remaining: 995
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -4789,7 +7178,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 995
+x-ratelimit-remaining: 994
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -5395,7 +7784,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 994
+x-ratelimit-remaining: 993
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -5533,7 +7922,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 993
+x-ratelimit-remaining: 992
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -5928,7 +8317,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 992
+x-ratelimit-remaining: 991
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -6471,7 +8860,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 991
+x-ratelimit-remaining: 990
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -7058,7 +9447,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 990
+x-ratelimit-remaining: 989
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -7440,7 +9829,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 989
+x-ratelimit-remaining: 988
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -7718,7 +10107,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 988
+x-ratelimit-remaining: 987
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -8144,7 +10533,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 987
+x-ratelimit-remaining: 986
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -8433,7 +10822,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 986
+x-ratelimit-remaining: 985
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -8870,7 +11259,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 985
+x-ratelimit-remaining: 984
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -9205,7 +11594,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 984
+x-ratelimit-remaining: 983
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -9688,7 +12077,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 983
+x-ratelimit-remaining: 982
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -10093,7 +12482,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 982
+x-ratelimit-remaining: 981
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -10646,7 +13035,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 981
+x-ratelimit-remaining: 980
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -10914,7 +13303,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 980
+x-ratelimit-remaining: 979
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -11330,7 +13719,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 978
+x-ratelimit-remaining: 977
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -11831,8 +14220,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"start_date\": \"2026-10-01T09:29:42\",
-    \"end_date\": \"2026-10-01T09:29:42\",
+    \"start_date\": \"2026-10-01T10:55:41\",
+    \"end_date\": \"2026-10-01T10:55:41\",
     \"status\": \"b\",
     \"method\": \"n\",
     \"user_id\": 16,
@@ -11853,8 +14242,8 @@ const headers = {
 };
 
 let body = {
-    "start_date": "2026-10-01T09:29:42",
-    "end_date": "2026-10-01T09:29:42",
+    "start_date": "2026-10-01T10:55:41",
+    "end_date": "2026-10-01T10:55:41",
     "status": "b",
     "method": "n",
     "user_id": 16,
@@ -11881,7 +14270,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 977
+x-ratelimit-remaining: 976
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -11966,10 +14355,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="start_date"                data-endpoint="GETapi-security-access-logs"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:41"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:41</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_date</code></b>&nbsp;&nbsp;
@@ -11977,10 +14366,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="end_date"                data-endpoint="GETapi-security-access-logs"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:41"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:41</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>status</code></b>&nbsp;&nbsp;
@@ -12085,7 +14474,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 976
+x-ratelimit-remaining: 975
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -12354,7 +14743,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 975
+x-ratelimit-remaining: 974
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -13324,7 +15713,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 974
+x-ratelimit-remaining: 973
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -13462,7 +15851,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 973
+x-ratelimit-remaining: 972
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -13588,7 +15977,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 972
+x-ratelimit-remaining: 971
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -13714,7 +16103,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 971
+x-ratelimit-remaining: 970
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -13993,7 +16382,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 970
+x-ratelimit-remaining: 969
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -14418,7 +16807,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 969
+x-ratelimit-remaining: 968
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -14723,7 +17112,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 968
+x-ratelimit-remaining: 967
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -15174,7 +17563,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 967
+x-ratelimit-remaining: 966
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -15481,7 +17870,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 966
+x-ratelimit-remaining: 965
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -15934,7 +18323,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 965
+x-ratelimit-remaining: 964
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -16047,25 +18436,25 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"booking_periods\": {
         \"morning\": {
             \"enabled\": true,
-            \"start_time\": \"09:29\",
+            \"start_time\": \"10:55\",
             \"end_time\": \"2052-10-24\",
             \"price\": 39
         },
         \"afternoon\": {
             \"enabled\": true,
-            \"start_time\": \"09:29\",
+            \"start_time\": \"10:55\",
             \"end_time\": \"2052-10-24\",
             \"price\": 39
         },
         \"evening\": {
             \"enabled\": true,
-            \"start_time\": \"09:29\",
+            \"start_time\": \"10:55\",
             \"end_time\": \"2052-10-24\",
             \"price\": 39
         },
         \"full_day\": {
             \"enabled\": true,
-            \"start_time\": \"09:29\",
+            \"start_time\": \"10:55\",
             \"end_time\": \"2052-10-24\",
             \"price\": 39
         }
@@ -16111,25 +18500,25 @@ let body = {
     "booking_periods": {
         "morning": {
             "enabled": true,
-            "start_time": "09:29",
+            "start_time": "10:55",
             "end_time": "2052-10-24",
             "price": 39
         },
         "afternoon": {
             "enabled": true,
-            "start_time": "09:29",
+            "start_time": "10:55",
             "end_time": "2052-10-24",
             "price": 39
         },
         "evening": {
             "enabled": true,
-            "start_time": "09:29",
+            "start_time": "10:55",
             "end_time": "2052-10-24",
             "price": 39
         },
         "full_day": {
             "enabled": true,
-            "start_time": "09:29",
+            "start_time": "10:55",
             "end_time": "2052-10-24",
             "price": 39
         }
@@ -16436,10 +18825,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="booking_periods.morning.start_time"                data-endpoint="POSTapi-common-areas"
-               value="09:29"
+               value="10:55"
                data-component="body">
     <br>
-<p>This field is required when <code>booking_periods.morning.enabled</code> is <code>true</code>. Must be a valid date in the format <code>H:i</code>. Example: <code>09:29</code></p>
+<p>This field is required when <code>booking_periods.morning.enabled</code> is <code>true</code>. Must be a valid date in the format <code>H:i</code>. Example: <code>10:55</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>end_time</code></b>&nbsp;&nbsp;
@@ -16501,10 +18890,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="booking_periods.afternoon.start_time"                data-endpoint="POSTapi-common-areas"
-               value="09:29"
+               value="10:55"
                data-component="body">
     <br>
-<p>This field is required when <code>booking_periods.afternoon.enabled</code> is <code>true</code>. Must be a valid date in the format <code>H:i</code>. Example: <code>09:29</code></p>
+<p>This field is required when <code>booking_periods.afternoon.enabled</code> is <code>true</code>. Must be a valid date in the format <code>H:i</code>. Example: <code>10:55</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>end_time</code></b>&nbsp;&nbsp;
@@ -16566,10 +18955,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="booking_periods.evening.start_time"                data-endpoint="POSTapi-common-areas"
-               value="09:29"
+               value="10:55"
                data-component="body">
     <br>
-<p>This field is required when <code>booking_periods.evening.enabled</code> is <code>true</code>. Must be a valid date in the format <code>H:i</code>. Example: <code>09:29</code></p>
+<p>This field is required when <code>booking_periods.evening.enabled</code> is <code>true</code>. Must be a valid date in the format <code>H:i</code>. Example: <code>10:55</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>end_time</code></b>&nbsp;&nbsp;
@@ -16631,10 +19020,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="booking_periods.full_day.start_time"                data-endpoint="POSTapi-common-areas"
-               value="09:29"
+               value="10:55"
                data-component="body">
     <br>
-<p>This field is required when <code>booking_periods.full_day.enabled</code> is <code>true</code>. Must be a valid date in the format <code>H:i</code>. Example: <code>09:29</code></p>
+<p>This field is required when <code>booking_periods.full_day.enabled</code> is <code>true</code>. Must be a valid date in the format <code>H:i</code>. Example: <code>10:55</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>end_time</code></b>&nbsp;&nbsp;
@@ -16809,7 +19198,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 964
+x-ratelimit-remaining: 963
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -16934,25 +19323,25 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"booking_periods\": {
         \"morning\": {
             \"enabled\": true,
-            \"start_time\": \"09:29\",
+            \"start_time\": \"10:55\",
             \"end_time\": \"2052-10-24\",
             \"price\": 39
         },
         \"afternoon\": {
             \"enabled\": true,
-            \"start_time\": \"09:29\",
+            \"start_time\": \"10:55\",
             \"end_time\": \"2052-10-24\",
             \"price\": 39
         },
         \"evening\": {
             \"enabled\": true,
-            \"start_time\": \"09:29\",
+            \"start_time\": \"10:55\",
             \"end_time\": \"2052-10-24\",
             \"price\": 39
         },
         \"full_day\": {
             \"enabled\": true,
-            \"start_time\": \"09:29\",
+            \"start_time\": \"10:55\",
             \"end_time\": \"2052-10-24\",
             \"price\": 39
         }
@@ -16995,25 +19384,25 @@ let body = {
     "booking_periods": {
         "morning": {
             "enabled": true,
-            "start_time": "09:29",
+            "start_time": "10:55",
             "end_time": "2052-10-24",
             "price": 39
         },
         "afternoon": {
             "enabled": true,
-            "start_time": "09:29",
+            "start_time": "10:55",
             "end_time": "2052-10-24",
             "price": 39
         },
         "evening": {
             "enabled": true,
-            "start_time": "09:29",
+            "start_time": "10:55",
             "end_time": "2052-10-24",
             "price": 39
         },
         "full_day": {
             "enabled": true,
-            "start_time": "09:29",
+            "start_time": "10:55",
             "end_time": "2052-10-24",
             "price": 39
         }
@@ -17333,10 +19722,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="booking_periods.morning.start_time"                data-endpoint="PUTapi-common-areas--id-"
-               value="09:29"
+               value="10:55"
                data-component="body">
     <br>
-<p>This field is required when <code>booking_periods.morning.enabled</code> is <code>true</code>. Must be a valid date in the format <code>H:i</code>. Example: <code>09:29</code></p>
+<p>This field is required when <code>booking_periods.morning.enabled</code> is <code>true</code>. Must be a valid date in the format <code>H:i</code>. Example: <code>10:55</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>end_time</code></b>&nbsp;&nbsp;
@@ -17398,10 +19787,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="booking_periods.afternoon.start_time"                data-endpoint="PUTapi-common-areas--id-"
-               value="09:29"
+               value="10:55"
                data-component="body">
     <br>
-<p>This field is required when <code>booking_periods.afternoon.enabled</code> is <code>true</code>. Must be a valid date in the format <code>H:i</code>. Example: <code>09:29</code></p>
+<p>This field is required when <code>booking_periods.afternoon.enabled</code> is <code>true</code>. Must be a valid date in the format <code>H:i</code>. Example: <code>10:55</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>end_time</code></b>&nbsp;&nbsp;
@@ -17463,10 +19852,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="booking_periods.evening.start_time"                data-endpoint="PUTapi-common-areas--id-"
-               value="09:29"
+               value="10:55"
                data-component="body">
     <br>
-<p>This field is required when <code>booking_periods.evening.enabled</code> is <code>true</code>. Must be a valid date in the format <code>H:i</code>. Example: <code>09:29</code></p>
+<p>This field is required when <code>booking_periods.evening.enabled</code> is <code>true</code>. Must be a valid date in the format <code>H:i</code>. Example: <code>10:55</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>end_time</code></b>&nbsp;&nbsp;
@@ -17528,10 +19917,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="booking_periods.full_day.start_time"                data-endpoint="PUTapi-common-areas--id-"
-               value="09:29"
+               value="10:55"
                data-component="body">
     <br>
-<p>This field is required when <code>booking_periods.full_day.enabled</code> is <code>true</code>. Must be a valid date in the format <code>H:i</code>. Example: <code>09:29</code></p>
+<p>This field is required when <code>booking_periods.full_day.enabled</code> is <code>true</code>. Must be a valid date in the format <code>H:i</code>. Example: <code>10:55</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>end_time</code></b>&nbsp;&nbsp;
@@ -17793,7 +20182,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 963
+x-ratelimit-remaining: 962
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -18152,7 +20541,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 962
+x-ratelimit-remaining: 961
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -18667,7 +21056,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 961
+x-ratelimit-remaining: 960
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -18835,7 +21224,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 960
+x-ratelimit-remaining: 959
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -18995,7 +21384,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 959
+x-ratelimit-remaining: 958
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -19096,7 +21485,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --form "send_to_all="\
     --form "targets[][type]=tower"\
     --form "targets[][id]=66"\
-    --form "attachments[]=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpu8aomhs7qusq0Vi9lDb" </code></pre></div>
+    --form "attachments[]=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/php1l06sb77j6321JCpZHO" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -19336,7 +21725,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 958
+x-ratelimit-remaining: 957
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -19775,7 +22164,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 957
+x-ratelimit-remaining: 956
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -19901,7 +22290,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 956
+x-ratelimit-remaining: 955
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -20027,7 +22416,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 955
+x-ratelimit-remaining: 954
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -20165,7 +22554,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 954
+x-ratelimit-remaining: 953
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -20583,6 +22972,289 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                     </form>
 
+                    <h2 id="endpoints-PATCHapi-common-areas--common_area_id--bookings--booking_id--approve">PATCH api/common-areas/{common_area_id}/bookings/{booking_id}/approve</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-PATCHapi-common-areas--common_area_id--bookings--booking_id--approve">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request PATCH \
+    "http://localhost/api/common-areas/16/bookings/16/approve" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/common-areas/16/bookings/16/approve"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "PATCH",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-PATCHapi-common-areas--common_area_id--bookings--booking_id--approve">
+</span>
+<span id="execution-results-PATCHapi-common-areas--common_area_id--bookings--booking_id--approve" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-PATCHapi-common-areas--common_area_id--bookings--booking_id--approve"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-PATCHapi-common-areas--common_area_id--bookings--booking_id--approve"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-PATCHapi-common-areas--common_area_id--bookings--booking_id--approve" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-PATCHapi-common-areas--common_area_id--bookings--booking_id--approve">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-PATCHapi-common-areas--common_area_id--bookings--booking_id--approve" data-method="PATCH"
+      data-path="api/common-areas/{common_area_id}/bookings/{booking_id}/approve"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('PATCHapi-common-areas--common_area_id--bookings--booking_id--approve', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-PATCHapi-common-areas--common_area_id--bookings--booking_id--approve"
+                    onclick="tryItOut('PATCHapi-common-areas--common_area_id--bookings--booking_id--approve');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-PATCHapi-common-areas--common_area_id--bookings--booking_id--approve"
+                    onclick="cancelTryOut('PATCHapi-common-areas--common_area_id--bookings--booking_id--approve');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-PATCHapi-common-areas--common_area_id--bookings--booking_id--approve"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-purple">PATCH</small>
+            <b><code>api/common-areas/{common_area_id}/bookings/{booking_id}/approve</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="PATCHapi-common-areas--common_area_id--bookings--booking_id--approve"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="PATCHapi-common-areas--common_area_id--bookings--booking_id--approve"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>common_area_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="common_area_id"                data-endpoint="PATCHapi-common-areas--common_area_id--bookings--booking_id--approve"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the common area. Example: <code>16</code></p>
+            </div>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>booking_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="booking_id"                data-endpoint="PATCHapi-common-areas--common_area_id--bookings--booking_id--approve"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the booking. Example: <code>16</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="endpoints-PATCHapi-common-areas--common_area_id--bookings--booking_id--reject">PATCH api/common-areas/{common_area_id}/bookings/{booking_id}/reject</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-PATCHapi-common-areas--common_area_id--bookings--booking_id--reject">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request PATCH \
+    "http://localhost/api/common-areas/16/bookings/16/reject" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"reason\": \"b\"
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/common-areas/16/bookings/16/reject"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "reason": "b"
+};
+
+fetch(url, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-PATCHapi-common-areas--common_area_id--bookings--booking_id--reject">
+</span>
+<span id="execution-results-PATCHapi-common-areas--common_area_id--bookings--booking_id--reject" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-PATCHapi-common-areas--common_area_id--bookings--booking_id--reject"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-PATCHapi-common-areas--common_area_id--bookings--booking_id--reject"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-PATCHapi-common-areas--common_area_id--bookings--booking_id--reject" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-PATCHapi-common-areas--common_area_id--bookings--booking_id--reject">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-PATCHapi-common-areas--common_area_id--bookings--booking_id--reject" data-method="PATCH"
+      data-path="api/common-areas/{common_area_id}/bookings/{booking_id}/reject"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('PATCHapi-common-areas--common_area_id--bookings--booking_id--reject', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-PATCHapi-common-areas--common_area_id--bookings--booking_id--reject"
+                    onclick="tryItOut('PATCHapi-common-areas--common_area_id--bookings--booking_id--reject');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-PATCHapi-common-areas--common_area_id--bookings--booking_id--reject"
+                    onclick="cancelTryOut('PATCHapi-common-areas--common_area_id--bookings--booking_id--reject');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-PATCHapi-common-areas--common_area_id--bookings--booking_id--reject"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-purple">PATCH</small>
+            <b><code>api/common-areas/{common_area_id}/bookings/{booking_id}/reject</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="PATCHapi-common-areas--common_area_id--bookings--booking_id--reject"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="PATCHapi-common-areas--common_area_id--bookings--booking_id--reject"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>common_area_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="common_area_id"                data-endpoint="PATCHapi-common-areas--common_area_id--bookings--booking_id--reject"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the common area. Example: <code>16</code></p>
+            </div>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>booking_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="booking_id"                data-endpoint="PATCHapi-common-areas--common_area_id--bookings--booking_id--reject"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the booking. Example: <code>16</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>reason</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="reason"                data-endpoint="PATCHapi-common-areas--common_area_id--bookings--booking_id--reject"
+               value="b"
+               data-component="body">
+    <br>
+<p>Must not be greater than 500 characters. Example: <code>b</code></p>
+        </div>
+        </form>
+
                     <h2 id="endpoints-GETapi-common-areas--common_area_id--available-slots">GET api/common-areas/{common_area_id}/available-slots</h2>
 
 <p>
@@ -20638,7 +23310,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 953
+x-ratelimit-remaining: 952
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -21003,6 +23675,144 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
         </div>
         </form>
+
+                    <h2 id="endpoints-GETapi-packages-by-code--code-">Busca rápida de encomenda pelo código de retirada para portaria e morador.</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-packages-by-code--code-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/packages/by-code/architecto" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/packages/by-code/architecto"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-packages-by-code--code-">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+x-ratelimit-limit: 1000
+x-ratelimit-remaining: 951
+access-control-allow-origin: *
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;N&atilde;o autenticado.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-packages-by-code--code-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-packages-by-code--code-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-packages-by-code--code-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-packages-by-code--code-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-packages-by-code--code-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-packages-by-code--code-" data-method="GET"
+      data-path="api/packages/by-code/{code}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-packages-by-code--code-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-packages-by-code--code-"
+                    onclick="tryItOut('GETapi-packages-by-code--code-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-packages-by-code--code-"
+                    onclick="cancelTryOut('GETapi-packages-by-code--code-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-packages-by-code--code-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/packages/by-code/{code}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-packages-by-code--code-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-packages-by-code--code-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>code</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="code"                data-endpoint="GETapi-packages-by-code--code-"
+               value="architecto"
+               data-component="url">
+    <br>
+<p>Example: <code>architecto</code></p>
+            </div>
+                    </form>
 
                     <h2 id="endpoints-POSTapi-packages--package_id--withdraw">POST api/packages/{package_id}/withdraw</h2>
 
@@ -21772,7 +24582,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 952
+x-ratelimit-remaining: 950
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -21877,7 +24687,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --form "location=n"\
     --form "contact_info=i"\
     --form "expires_at=2052-10-24"\
-    --form "images[]=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpdbccoibrvv1s5pBz2sB" </code></pre></div>
+    --form "images[]=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpnl38g29dmoua1mUB3yd" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -22142,7 +24952,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 951
+x-ratelimit-remaining: 949
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -22260,7 +25070,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --form "contact_info=i"\
     --form "expires_at=2052-10-24"\
     --form "existing_image_ids[]=a4855dc5-0acb-33c3-b921-f4291f719ca0"\
-    --form "images[]=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpuadc2buqlnuh39ddlHJ" </code></pre></div>
+    --form "images[]=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/php5plomnsfr5klbGMmwA2" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -23176,7 +25986,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 950
+x-ratelimit-remaining: 948
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -23302,7 +26112,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 949
+x-ratelimit-remaining: 947
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -23440,7 +26250,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 942
+x-ratelimit-remaining: 940
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -23575,7 +26385,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 941
+x-ratelimit-remaining: 939
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -23713,7 +26523,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 940
+x-ratelimit-remaining: 938
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -23813,7 +26623,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --form "phone=ngzmiyvdljnikhwa"\
     --form "notes=architecto"\
     --form "is_blocked="\
-    --form "photo=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/php9f63jvf0gi6c4Q51rSo" </code></pre></div>
+    --form "photo=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phppnrn0dkmlgid1aZIWPX" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -23944,7 +26754,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value=""
                data-component="body">
     <br>
-<p>Must be an image. Must not be greater than 2048 kilobytes. Example: <code>/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/php9f63jvf0gi6c4Q51rSo</code></p>
+<p>Must be an image. Must not be greater than 2048 kilobytes. Example: <code>/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phppnrn0dkmlgid1aZIWPX</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>phone</code></b>&nbsp;&nbsp;
@@ -24037,7 +26847,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 939
+x-ratelimit-remaining: 937
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -24150,7 +26960,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --form "notes=architecto"\
     --form "is_blocked="\
     --form "_method=PUT"\
-    --form "photo=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/php9f1oi283abs0aLXL8bW" </code></pre></div>
+    --form "photo=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpnjjjfboen2hq25hqCHn" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -24298,7 +27108,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value=""
                data-component="body">
     <br>
-<p>Must be an image. Must not be greater than 2048 kilobytes. Example: <code>/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/php9f1oi283abs0aLXL8bW</code></p>
+<p>Must be an image. Must not be greater than 2048 kilobytes. Example: <code>/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpnjjjfboen2hq25hqCHn</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>phone</code></b>&nbsp;&nbsp;
@@ -24524,7 +27334,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 938
+x-ratelimit-remaining: 936
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -24827,7 +27637,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 937
+x-ratelimit-remaining: 935
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -25254,7 +28064,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 936
+x-ratelimit-remaining: 934
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -25354,10 +28164,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --form "aggressor_visitor_id=architecto"\
     --form "process_number=n"\
     --form "measure_description=architecto"\
-    --form "validity_start_date=2026-10-01T09:29:42"\
+    --form "validity_start_date=2026-10-01T10:55:41"\
     --form "validity_end_date=2052-10-24"\
     --form "is_active="\
-    --form "document=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpbsi7jor90it49arIuXT" </code></pre></div>
+    --form "document=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/php32bd6o8fn0bgcZ0oaKr" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -25375,7 +28185,7 @@ body.append('protected_resident_id', 'architecto');
 body.append('aggressor_visitor_id', 'architecto');
 body.append('process_number', 'n');
 body.append('measure_description', 'architecto');
-body.append('validity_start_date', '2026-10-01T09:29:42');
+body.append('validity_start_date', '2026-10-01T10:55:41');
 body.append('validity_end_date', '2052-10-24');
 body.append('is_active', '');
 body.append('document', document.querySelector('input[name="document"]').files[0]);
@@ -25513,7 +28323,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value=""
                data-component="body">
     <br>
-<p>Must be a file. Must not be greater than 5120 kilobytes. Example: <code>/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpbsi7jor90it49arIuXT</code></p>
+<p>Must be a file. Must not be greater than 5120 kilobytes. Example: <code>/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/php32bd6o8fn0bgcZ0oaKr</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>validity_start_date</code></b>&nbsp;&nbsp;
@@ -25521,10 +28331,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="validity_start_date"                data-endpoint="POSTapi-access-control-protective-measures"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:41"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:41</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>validity_end_date</code></b>&nbsp;&nbsp;
@@ -25606,7 +28416,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 935
+x-ratelimit-remaining: 933
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -25718,11 +28528,11 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --form "aggressor_visitor_id=architecto"\
     --form "process_number=n"\
     --form "measure_description=architecto"\
-    --form "validity_start_date=2026-10-01T09:29:42"\
+    --form "validity_start_date=2026-10-01T10:55:41"\
     --form "validity_end_date=2052-10-24"\
     --form "is_active="\
     --form "_method=PUT"\
-    --form "document=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/php19v9pfv3rssu7S6UINF" </code></pre></div>
+    --form "document=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/php0nt5ufiha9886MOPZEN" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -25740,7 +28550,7 @@ body.append('protected_resident_id', 'architecto');
 body.append('aggressor_visitor_id', 'architecto');
 body.append('process_number', 'n');
 body.append('measure_description', 'architecto');
-body.append('validity_start_date', '2026-10-01T09:29:42');
+body.append('validity_start_date', '2026-10-01T10:55:41');
 body.append('validity_end_date', '2052-10-24');
 body.append('is_active', '');
 body.append('_method', 'PUT');
@@ -25895,7 +28705,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value=""
                data-component="body">
     <br>
-<p>Must be a file. Must not be greater than 5120 kilobytes. Example: <code>/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/php19v9pfv3rssu7S6UINF</code></p>
+<p>Must be a file. Must not be greater than 5120 kilobytes. Example: <code>/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/php0nt5ufiha9886MOPZEN</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>validity_start_date</code></b>&nbsp;&nbsp;
@@ -25903,10 +28713,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="validity_start_date"                data-endpoint="PUTapi-access-control-protective-measures--id-"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:41"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:41</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>validity_end_date</code></b>&nbsp;&nbsp;
@@ -26121,7 +28931,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 934
+x-ratelimit-remaining: 928
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -26415,7 +29225,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 933
+x-ratelimit-remaining: 927
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -26857,7 +29667,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 932
+x-ratelimit-remaining: 926
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -27149,7 +29959,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 931
+x-ratelimit-remaining: 925
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -27560,8 +30370,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"type\": \"receivable\",
     \"query\": \"architecto\",
-    \"start_date\": \"2026-10-01T09:29:42\",
-    \"end_date\": \"2026-10-01T09:29:42\"
+    \"start_date\": \"2026-10-01T10:55:41\",
+    \"end_date\": \"2026-10-01T10:55:41\"
 }"
 </code></pre></div>
 
@@ -27579,8 +30389,8 @@ const headers = {
 let body = {
     "type": "receivable",
     "query": "architecto",
-    "start_date": "2026-10-01T09:29:42",
-    "end_date": "2026-10-01T09:29:42"
+    "start_date": "2026-10-01T10:55:41",
+    "end_date": "2026-10-01T10:55:41"
 };
 
 fetch(url, {
@@ -27602,7 +30412,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 930
+x-ratelimit-remaining: 924
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -27711,10 +30521,10 @@ Must be one of:
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="start_date"                data-endpoint="GETapi-finance-transactions"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:41"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:41</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_date</code></b>&nbsp;&nbsp;
@@ -27722,10 +30532,10 @@ Must be one of:
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="end_date"                data-endpoint="GETapi-finance-transactions"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:41"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:41</code></p>
         </div>
         </form>
 
@@ -27749,15 +30559,15 @@ Must be one of:
     \"type\": \"receivable\",
     \"chart_account_id\": 16,
     \"bank_id\": 16,
-    \"due_date\": \"2026-10-01T09:29:42\",
-    \"competence_date\": \"2026-10-01T09:29:42\",
+    \"due_date\": \"2026-10-01T10:55:41\",
+    \"competence_date\": \"2026-10-01T10:55:41\",
     \"amount\": 39,
     \"status\": \"architecto\",
     \"description\": \"Et animi quos velit et fugiat.\",
     \"counterpart_name\": \"d\",
     \"reference\": \"l\",
-    \"paid_at\": \"2026-10-01T09:29:42\",
-    \"received_at\": \"2026-10-01T09:29:42\"
+    \"paid_at\": \"2026-10-01T10:55:41\",
+    \"received_at\": \"2026-10-01T10:55:41\"
 }"
 </code></pre></div>
 
@@ -27776,15 +30586,15 @@ let body = {
     "type": "receivable",
     "chart_account_id": 16,
     "bank_id": 16,
-    "due_date": "2026-10-01T09:29:42",
-    "competence_date": "2026-10-01T09:29:42",
+    "due_date": "2026-10-01T10:55:41",
+    "competence_date": "2026-10-01T10:55:41",
     "amount": 39,
     "status": "architecto",
     "description": "Et animi quos velit et fugiat.",
     "counterpart_name": "d",
     "reference": "l",
-    "paid_at": "2026-10-01T09:29:42",
-    "received_at": "2026-10-01T09:29:42"
+    "paid_at": "2026-10-01T10:55:41",
+    "received_at": "2026-10-01T10:55:41"
 };
 
 fetch(url, {
@@ -27908,10 +30718,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="due_date"                data-endpoint="POSTapi-finance-transactions"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:41"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:41</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>competence_date</code></b>&nbsp;&nbsp;
@@ -27919,10 +30729,10 @@ Must be one of:
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="competence_date"                data-endpoint="POSTapi-finance-transactions"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:41"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:41</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>amount</code></b>&nbsp;&nbsp;
@@ -27985,10 +30795,10 @@ Must be one of:
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="paid_at"                data-endpoint="POSTapi-finance-transactions"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:41"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:41</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>received_at</code></b>&nbsp;&nbsp;
@@ -27996,10 +30806,10 @@ Must be one of:
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="received_at"                data-endpoint="POSTapi-finance-transactions"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:41"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:41</code></p>
         </div>
         </form>
 
@@ -28049,7 +30859,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 929
+x-ratelimit-remaining: 923
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -28148,14 +30958,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"chart_account_id\": 16,
     \"bank_id\": 16,
-    \"due_date\": \"2026-10-01T09:29:42\",
-    \"competence_date\": \"2026-10-01T09:29:42\",
+    \"due_date\": \"2026-10-01T10:55:41\",
+    \"competence_date\": \"2026-10-01T10:55:41\",
     \"amount\": 39,
     \"status\": \"architecto\",
     \"description\": \"Et animi quos velit et fugiat.\",
     \"counterpart_name\": \"d\",
     \"reference\": \"l\",
-    \"paid_at\": \"2026-10-01T09:29:42\"
+    \"paid_at\": \"2026-10-01T10:55:41\"
 }"
 </code></pre></div>
 
@@ -28173,14 +30983,14 @@ const headers = {
 let body = {
     "chart_account_id": 16,
     "bank_id": 16,
-    "due_date": "2026-10-01T09:29:42",
-    "competence_date": "2026-10-01T09:29:42",
+    "due_date": "2026-10-01T10:55:41",
+    "competence_date": "2026-10-01T10:55:41",
     "amount": 39,
     "status": "architecto",
     "description": "Et animi quos velit et fugiat.",
     "counterpart_name": "d",
     "reference": "l",
-    "paid_at": "2026-10-01T09:29:42"
+    "paid_at": "2026-10-01T10:55:41"
 };
 
 fetch(url, {
@@ -28291,10 +31101,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="due_date"                data-endpoint="POSTapi-finance-payables"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:41"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:41</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>competence_date</code></b>&nbsp;&nbsp;
@@ -28302,10 +31112,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="competence_date"                data-endpoint="POSTapi-finance-payables"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:41"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:41</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>amount</code></b>&nbsp;&nbsp;
@@ -28368,10 +31178,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="paid_at"                data-endpoint="POSTapi-finance-payables"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:41"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:41</code></p>
         </div>
         </form>
 
@@ -28421,7 +31231,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 928
+x-ratelimit-remaining: 922
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -28532,14 +31342,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"chart_account_id\": 16,
     \"bank_id\": 16,
-    \"due_date\": \"2026-10-01T09:29:42\",
-    \"competence_date\": \"2026-10-01T09:29:42\",
+    \"due_date\": \"2026-10-01T10:55:41\",
+    \"competence_date\": \"2026-10-01T10:55:41\",
     \"amount\": 39,
     \"status\": \"architecto\",
     \"description\": \"Et animi quos velit et fugiat.\",
     \"counterpart_name\": \"d\",
     \"reference\": \"l\",
-    \"paid_at\": \"2026-10-01T09:29:42\"
+    \"paid_at\": \"2026-10-01T10:55:41\"
 }"
 </code></pre></div>
 
@@ -28557,14 +31367,14 @@ const headers = {
 let body = {
     "chart_account_id": 16,
     "bank_id": 16,
-    "due_date": "2026-10-01T09:29:42",
-    "competence_date": "2026-10-01T09:29:42",
+    "due_date": "2026-10-01T10:55:41",
+    "competence_date": "2026-10-01T10:55:41",
     "amount": 39,
     "status": "architecto",
     "description": "Et animi quos velit et fugiat.",
     "counterpart_name": "d",
     "reference": "l",
-    "paid_at": "2026-10-01T09:29:42"
+    "paid_at": "2026-10-01T10:55:41"
 };
 
 fetch(url, {
@@ -28691,10 +31501,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="due_date"                data-endpoint="PUTapi-finance-payables--id-"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:41"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:41</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>competence_date</code></b>&nbsp;&nbsp;
@@ -28702,10 +31512,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="competence_date"                data-endpoint="PUTapi-finance-payables--id-"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:41"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:41</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>amount</code></b>&nbsp;&nbsp;
@@ -28768,10 +31578,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="paid_at"                data-endpoint="PUTapi-finance-payables--id-"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:41"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:41</code></p>
         </div>
         </form>
 
@@ -28941,7 +31751,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 927
+x-ratelimit-remaining: 921
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -29049,7 +31859,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     "http://localhost/api/finance/payables/16/attachments" \
     --header "Content-Type: multipart/form-data" \
     --header "Accept: application/json" \
-    --form "file=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpb52uhsmel48dbLxI94n" </code></pre></div>
+    --form "file=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpug0s2nr3cbhlalLxegu" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -29166,7 +31976,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value=""
                data-component="body">
     <br>
-<p>Must be a file. Must not be greater than 10240 kilobytes. Example: <code>/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpb52uhsmel48dbLxI94n</code></p>
+<p>Must be a file. Must not be greater than 10240 kilobytes. Example: <code>/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpug0s2nr3cbhlalLxegu</code></p>
         </div>
         </form>
 
@@ -29216,7 +32026,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 926
+x-ratelimit-remaining: 920
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -29496,7 +32306,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 925
+x-ratelimit-remaining: 919
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -29595,14 +32405,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"chart_account_id\": 16,
     \"bank_id\": 16,
-    \"due_date\": \"2026-10-01T09:29:42\",
-    \"competence_date\": \"2026-10-01T09:29:42\",
+    \"due_date\": \"2026-10-01T10:55:42\",
+    \"competence_date\": \"2026-10-01T10:55:42\",
     \"amount\": 39,
     \"status\": \"architecto\",
     \"description\": \"Et animi quos velit et fugiat.\",
     \"counterpart_name\": \"d\",
     \"reference\": \"l\",
-    \"received_at\": \"2026-10-01T09:29:42\"
+    \"received_at\": \"2026-10-01T10:55:42\"
 }"
 </code></pre></div>
 
@@ -29620,14 +32430,14 @@ const headers = {
 let body = {
     "chart_account_id": 16,
     "bank_id": 16,
-    "due_date": "2026-10-01T09:29:42",
-    "competence_date": "2026-10-01T09:29:42",
+    "due_date": "2026-10-01T10:55:42",
+    "competence_date": "2026-10-01T10:55:42",
     "amount": 39,
     "status": "architecto",
     "description": "Et animi quos velit et fugiat.",
     "counterpart_name": "d",
     "reference": "l",
-    "received_at": "2026-10-01T09:29:42"
+    "received_at": "2026-10-01T10:55:42"
 };
 
 fetch(url, {
@@ -29738,10 +32548,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="due_date"                data-endpoint="POSTapi-finance-receivables"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:42"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:42</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>competence_date</code></b>&nbsp;&nbsp;
@@ -29749,10 +32559,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="competence_date"                data-endpoint="POSTapi-finance-receivables"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:42"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:42</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>amount</code></b>&nbsp;&nbsp;
@@ -29815,10 +32625,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="received_at"                data-endpoint="POSTapi-finance-receivables"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:42"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:42</code></p>
         </div>
         </form>
 
@@ -29868,7 +32678,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 924
+x-ratelimit-remaining: 918
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -29979,14 +32789,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"chart_account_id\": 16,
     \"bank_id\": 16,
-    \"due_date\": \"2026-10-01T09:29:42\",
-    \"competence_date\": \"2026-10-01T09:29:42\",
+    \"due_date\": \"2026-10-01T10:55:42\",
+    \"competence_date\": \"2026-10-01T10:55:42\",
     \"amount\": 39,
     \"status\": \"architecto\",
     \"description\": \"Et animi quos velit et fugiat.\",
     \"counterpart_name\": \"d\",
     \"reference\": \"l\",
-    \"received_at\": \"2026-10-01T09:29:42\"
+    \"received_at\": \"2026-10-01T10:55:42\"
 }"
 </code></pre></div>
 
@@ -30004,14 +32814,14 @@ const headers = {
 let body = {
     "chart_account_id": 16,
     "bank_id": 16,
-    "due_date": "2026-10-01T09:29:42",
-    "competence_date": "2026-10-01T09:29:42",
+    "due_date": "2026-10-01T10:55:42",
+    "competence_date": "2026-10-01T10:55:42",
     "amount": 39,
     "status": "architecto",
     "description": "Et animi quos velit et fugiat.",
     "counterpart_name": "d",
     "reference": "l",
-    "received_at": "2026-10-01T09:29:42"
+    "received_at": "2026-10-01T10:55:42"
 };
 
 fetch(url, {
@@ -30138,10 +32948,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="due_date"                data-endpoint="PUTapi-finance-receivables--id-"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:42"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:42</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>competence_date</code></b>&nbsp;&nbsp;
@@ -30149,10 +32959,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="competence_date"                data-endpoint="PUTapi-finance-receivables--id-"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:42"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:42</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>amount</code></b>&nbsp;&nbsp;
@@ -30215,10 +33025,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="received_at"                data-endpoint="PUTapi-finance-receivables--id-"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:42"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:42</code></p>
         </div>
         </form>
 
@@ -30388,7 +33198,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 923
+x-ratelimit-remaining: 917
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -30496,7 +33306,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     "http://localhost/api/finance/receivables/16/attachments" \
     --header "Content-Type: multipart/form-data" \
     --header "Accept: application/json" \
-    --form "file=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpc04pigu8ld911AqvbPu" </code></pre></div>
+    --form "file=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/php5qbal5s3tlur7aefzLg" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -30613,7 +33423,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value=""
                data-component="body">
     <br>
-<p>Must be a file. Must not be greater than 10240 kilobytes. Example: <code>/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpc04pigu8ld911AqvbPu</code></p>
+<p>Must be a file. Must not be greater than 10240 kilobytes. Example: <code>/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/php5qbal5s3tlur7aefzLg</code></p>
         </div>
         </form>
 
@@ -30663,7 +33473,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 922
+x-ratelimit-remaining: 916
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -30943,7 +33753,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 921
+x-ratelimit-remaining: 915
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -31040,7 +33850,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"date\": \"2026-10-01T09:29:42\",
+    \"date\": \"2026-10-01T10:55:42\",
     \"amount\": 27,
     \"type\": \"architecto\",
     \"description\": \"Eius et animi quos velit et.\"
@@ -31059,7 +33869,7 @@ const headers = {
 };
 
 let body = {
-    "date": "2026-10-01T09:29:42",
+    "date": "2026-10-01T10:55:42",
     "amount": 27,
     "type": "architecto",
     "description": "Eius et animi quos velit et."
@@ -31173,10 +33983,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="date"                data-endpoint="POSTapi-finance-cash-flows"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:42"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:42</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>amount</code></b>&nbsp;&nbsp;
@@ -31259,7 +34069,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 920
+x-ratelimit-remaining: 914
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -31368,7 +34178,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"date\": \"2026-10-01T09:29:42\",
+    \"date\": \"2026-10-01T10:55:42\",
     \"amount\": 27,
     \"description\": \"Eius et animi quos velit et.\"
 }"
@@ -31386,7 +34196,7 @@ const headers = {
 };
 
 let body = {
-    "date": "2026-10-01T09:29:42",
+    "date": "2026-10-01T10:55:42",
     "amount": 27,
     "description": "Eius et animi quos velit et."
 };
@@ -31515,10 +34325,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="date"                data-endpoint="PUTapi-finance-cash-flows--id-"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:42"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:42</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>amount</code></b>&nbsp;&nbsp;
@@ -31917,7 +34727,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 919
+x-ratelimit-remaining: 913
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -32223,7 +35033,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 918
+x-ratelimit-remaining: 912
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -32597,7 +35407,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: multipart/form-data" \
     --header "Accept: application/json" \
     --form "bank_id=architecto"\
-    --form "file=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpvj2vsl2n8gv84pYJk4r" </code></pre></div>
+    --form "file=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/php9cjmhqh5irrddshXa0M" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -32714,7 +35524,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value=""
                data-component="body">
     <br>
-<p>Must be a file. Example: <code>/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpvj2vsl2n8gv84pYJk4r</code></p>
+<p>Must be a file. Example: <code>/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/php9cjmhqh5irrddshXa0M</code></p>
         </div>
         </form>
 
@@ -32953,7 +35763,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 917
+x-ratelimit-remaining: 911
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -33091,7 +35901,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 916
+x-ratelimit-remaining: 910
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -33191,7 +36001,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"title\": \"b\",
     \"description\": \"Et animi quos velit et fugiat.\",
     \"amount\": 42,
-    \"due_date\": \"2026-10-01T09:29:42\",
+    \"due_date\": \"2026-10-01T10:55:42\",
     \"chart_account_id\": 16,
     \"reference\": \"n\"
 }"
@@ -33212,7 +36022,7 @@ let body = {
     "title": "b",
     "description": "Et animi quos velit et fugiat.",
     "amount": 42,
-    "due_date": "2026-10-01T09:29:42",
+    "due_date": "2026-10-01T10:55:42",
     "chart_account_id": 16,
     "reference": "n"
 };
@@ -33336,10 +36146,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="due_date"                data-endpoint="POSTapi-finance-expense-requests"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:42"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:42</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>chart_account_id</code></b>&nbsp;&nbsp;
@@ -33411,7 +36221,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 915
+x-ratelimit-remaining: 909
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -33523,7 +36333,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"title\": \"b\",
     \"description\": \"Et animi quos velit et fugiat.\",
     \"amount\": 42,
-    \"due_date\": \"2026-10-01T09:29:42\",
+    \"due_date\": \"2026-10-01T10:55:42\",
     \"chart_account_id\": 16,
     \"reference\": \"n\"
 }"
@@ -33544,7 +36354,7 @@ let body = {
     "title": "b",
     "description": "Et animi quos velit et fugiat.",
     "amount": 42,
-    "due_date": "2026-10-01T09:29:42",
+    "due_date": "2026-10-01T10:55:42",
     "chart_account_id": 16,
     "reference": "n"
 };
@@ -33684,10 +36494,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="due_date"                data-endpoint="PUTapi-finance-expense-requests--id-"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:42"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:42</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>chart_account_id</code></b>&nbsp;&nbsp;
@@ -33879,7 +36689,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 914
+x-ratelimit-remaining: 908
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -33987,7 +36797,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     "http://localhost/api/finance/expense-requests/16/attachments" \
     --header "Content-Type: multipart/form-data" \
     --header "Accept: application/json" \
-    --form "file=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpuve9mc3ec8r54QezaZj" </code></pre></div>
+    --form "file=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpi84uij0qfnggbsb4xXJ" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -34104,7 +36914,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value=""
                data-component="body">
     <br>
-<p>Must be a file. Must not be greater than 10240 kilobytes. Example: <code>/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpuve9mc3ec8r54QezaZj</code></p>
+<p>Must be a file. Must not be greater than 10240 kilobytes. Example: <code>/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpi84uij0qfnggbsb4xXJ</code></p>
         </div>
         </form>
 
@@ -34154,7 +36964,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 913
+x-ratelimit-remaining: 907
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -34984,7 +37794,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 912
+x-ratelimit-remaining: 906
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -35673,7 +38483,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"as_of_date\": \"2026-10-01T09:29:42\",
+    \"as_of_date\": \"2026-10-01T10:55:42\",
     \"horizon_days\": 1
 }"
 </code></pre></div>
@@ -35697,7 +38507,7 @@ const headers = {
 };
 
 let body = {
-    "as_of_date": "2026-10-01T09:29:42",
+    "as_of_date": "2026-10-01T10:55:42",
     "horizon_days": 1
 };
 
@@ -35720,7 +38530,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 911
+x-ratelimit-remaining: 905
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -35828,10 +38638,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="as_of_date"                data-endpoint="GETapi-finance-dashboard"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:42"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:42</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>horizon_days</code></b>&nbsp;&nbsp;
@@ -35863,7 +38673,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"as_of_date\": \"2026-10-01T09:29:42\",
+    \"as_of_date\": \"2026-10-01T10:55:42\",
     \"horizon_days\": 1
 }"
 </code></pre></div>
@@ -35887,7 +38697,7 @@ const headers = {
 };
 
 let body = {
-    "as_of_date": "2026-10-01T09:29:42",
+    "as_of_date": "2026-10-01T10:55:42",
     "horizon_days": 1
 };
 
@@ -35910,7 +38720,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 910
+x-ratelimit-remaining: 904
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -36018,10 +38828,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="as_of_date"                data-endpoint="GETapi-finance-dashboard-forecast"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:42"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:42</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>horizon_days</code></b>&nbsp;&nbsp;
@@ -36082,7 +38892,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 909
+x-ratelimit-remaining: 903
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -36434,7 +39244,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 908
+x-ratelimit-remaining: 902
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -37067,7 +39877,7 @@ Must be one of:
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"due_date\": \"2026-10-01T09:29:42\",
+    \"due_date\": \"2026-10-01T10:55:42\",
     \"chart_account_id\": 16
 }"
 </code></pre></div>
@@ -37084,7 +39894,7 @@ const headers = {
 };
 
 let body = {
-    "due_date": "2026-10-01T09:29:42",
+    "due_date": "2026-10-01T10:55:42",
     "chart_account_id": 16
 };
 
@@ -37186,10 +39996,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="due_date"                data-endpoint="POSTapi-finance-procurements--procurement_request_id--expense-requests"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:42"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:42</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>chart_account_id</code></b>&nbsp;&nbsp;
@@ -37545,7 +40355,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"start_date\": \"2026-10-01T09:29:42\",
+    \"start_date\": \"2026-10-01T10:55:42\",
     \"end_date\": \"2052-10-24\",
     \"format\": \"pdf\"
 }"
@@ -37571,7 +40381,7 @@ const headers = {
 };
 
 let body = {
-    "start_date": "2026-10-01T09:29:42",
+    "start_date": "2026-10-01T10:55:42",
     "end_date": "2052-10-24",
     "format": "pdf"
 };
@@ -37595,7 +40405,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 907
+x-ratelimit-remaining: 901
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -37714,10 +40524,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_date"                data-endpoint="GETapi-finance-reports-dre"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:42"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:42</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_date</code></b>&nbsp;&nbsp;
@@ -37762,7 +40572,7 @@ Must be one of:
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"as_of_date\": \"2026-10-01T09:29:42\",
+    \"as_of_date\": \"2026-10-01T10:55:42\",
     \"format\": \"json\"
 }"
 </code></pre></div>
@@ -37786,7 +40596,7 @@ const headers = {
 };
 
 let body = {
-    "as_of_date": "2026-10-01T09:29:42",
+    "as_of_date": "2026-10-01T10:55:42",
     "format": "json"
 };
 
@@ -37809,7 +40619,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 906
+x-ratelimit-remaining: 900
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -37917,10 +40727,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="as_of_date"                data-endpoint="GETapi-finance-reports-balancete"
-               value="2026-10-01T09:29:42"
+               value="2026-10-01T10:55:42"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-10-01T09:29:42</code></p>
+<p>Must be a valid date. Example: <code>2026-10-01T10:55:42</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>format</code></b>&nbsp;&nbsp;
@@ -37994,7 +40804,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 905
+x-ratelimit-remaining: 899
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -38569,7 +41379,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 979
+x-ratelimit-remaining: 978
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -39024,7 +41834,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 946
+x-ratelimit-remaining: 944
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -39258,7 +42068,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 945
+x-ratelimit-remaining: 943
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -39384,7 +42194,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 944
+x-ratelimit-remaining: 942
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -39487,7 +42297,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"type\": \"architecto\",
     \"start_date\": \"2026-10-01\",
     \"end_date\": \"2052-10-24\",
-    \"due_time\": \"09:29\",
+    \"due_time\": \"10:55\",
     \"is_recurring\": false,
     \"specific_days_of_week\": [
         0
@@ -39518,7 +42328,7 @@ let body = {
     "type": "architecto",
     "start_date": "2026-10-01",
     "end_date": "2052-10-24",
-    "due_time": "09:29",
+    "due_time": "10:55",
     "is_recurring": false,
     "specific_days_of_week": [
         0
@@ -39682,10 +42492,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="due_time"                data-endpoint="POSTapi-maintenance-schedules"
-               value="09:29"
+               value="10:55"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>H:i</code>. Example: <code>09:29</code></p>
+<p>Must be a valid date in the format <code>H:i</code>. Example: <code>10:55</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>is_recurring</code></b>&nbsp;&nbsp;
@@ -39804,7 +42614,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 943
+x-ratelimit-remaining: 941
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -39919,7 +42729,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"type\": \"architecto\",
     \"start_date\": \"2026-10-01\",
     \"end_date\": \"2052-10-24\",
-    \"due_time\": \"09:29\",
+    \"due_time\": \"10:55\",
     \"is_recurring\": false,
     \"specific_days_of_week\": [
         0
@@ -39950,7 +42760,7 @@ let body = {
     "type": "architecto",
     "start_date": "2026-10-01",
     "end_date": "2052-10-24",
-    "due_time": "09:29",
+    "due_time": "10:55",
     "is_recurring": false,
     "specific_days_of_week": [
         0
@@ -40130,10 +42940,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="due_time"                data-endpoint="PUTapi-maintenance-schedules--id-"
-               value="09:29"
+               value="10:55"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>H:i</code>. Example: <code>09:29</code></p>
+<p>Must be a valid date in the format <code>H:i</code>. Example: <code>10:55</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>is_recurring</code></b>&nbsp;&nbsp;
@@ -42311,7 +45121,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --form "notes=architecto"\
     --form "status="completed""\
     --form "signature=architecto"\
-    --form "photos[]=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phppvnu5ce9l3ateZF0353" </code></pre></div>
+    --form "cost=39"\
+    --form "invoice_number=g"\
+    --form "create_expense_request="\
+    --form "photos[]=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpg6s6lndi899v7i1LcEg" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -42331,6 +45144,9 @@ body.append('performed_at', '"2024-07-15 14:00:00"');
 body.append('notes', 'architecto');
 body.append('status', '"completed"');
 body.append('signature', 'architecto');
+body.append('cost', '39');
+body.append('invoice_number', 'g');
+body.append('create_expense_request', '');
 body.append('photos[]', document.querySelector('input[name="photos[]"]').files[0]);
 
 fetch(url, {
@@ -42552,6 +45368,49 @@ You can check the Dev Tools console for debugging information.</code></pre>
                data-component="body">
     <br>
 <p>Imagem da assinatura em base64. Example: <code>architecto</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>cost</code></b>&nbsp;&nbsp;
+<small>number</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="cost"                data-endpoint="POSTapi-maintenance-records"
+               value="39"
+               data-component="body">
+    <br>
+<p>Base64 encoded image. Must be at least 0. Example: <code>39</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>invoice_number</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="invoice_number"                data-endpoint="POSTapi-maintenance-records"
+               value="g"
+               data-component="body">
+    <br>
+<p>Must not be greater than 100 characters. Example: <code>g</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>create_expense_request</code></b>&nbsp;&nbsp;
+<small>boolean</small>&nbsp;
+<i>optional</i> &nbsp;
+                <label data-endpoint="POSTapi-maintenance-records" style="display: none">
+            <input type="radio" name="create_expense_request"
+                   value="true"
+                   data-endpoint="POSTapi-maintenance-records"
+                   data-component="body"             >
+            <code>true</code>
+        </label>
+        <label data-endpoint="POSTapi-maintenance-records" style="display: none">
+            <input type="radio" name="create_expense_request"
+                   value="false"
+                   data-endpoint="POSTapi-maintenance-records"
+                   data-component="body"             >
+            <code>false</code>
+        </label>
+    <br>
+<p>Example: <code>false</code></p>
         </div>
         </form>
 
@@ -44560,7 +47419,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 948
+x-ratelimit-remaining: 946
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -44797,7 +47656,7 @@ Must be one of:
     --form "description=A lâmpada do corredor do primeiro andar do bloco A está queimada."\
     --form "priority=medium"\
     --form "photo_descriptions[]=Foto da lâmpada queimada"\
-    --form "photos[]=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phps2hr5i440voodJGhNeV" </code></pre></div>
+    --form "photos[]=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpl7qeot03ggce6a12l5V" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -44948,7 +47807,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value=""
                data-component="body">
     <br>
-<p>A photo for the occurrence. Example: <code>/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpmma503q62eteb5OpUwb</code></p>
+<p>A photo for the occurrence. Example: <code>/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/phpdrpqddutc0c785r3dQq</code></p>
                     </div>
                                     </details>
         </div>
@@ -45014,7 +47873,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 1000
-x-ratelimit-remaining: 947
+x-ratelimit-remaining: 945
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -45463,7 +48322,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: multipart/form-data" \
     --header "Accept: application/json" \
     --form "description=Eius et animi quos velit et."\
-    --form "photo=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/php40d995chmh6g3te9UeD" </code></pre></div>
+    --form "photo=@/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/php6u82hdpvlspdbj5Ov4G" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -45592,7 +48451,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value=""
                data-component="body">
     <br>
-<p>The photo file to upload. Example: <code>/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/php40d995chmh6g3te9UeD</code></p>
+<p>The photo file to upload. Example: <code>/private/var/folders/m6/1rpjlk0j0l3b1db7xjpphzt80000gn/T/php6u82hdpvlspdbj5Ov4G</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>description</code></b>&nbsp;&nbsp;
@@ -46067,6 +48926,245 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>The ID of the comment to delete. Example: <code>1</code></p>
             </div>
                     </form>
+
+                    <h2 id="ocorrencias-POSTapi-occurrences--occurrence_id--convert-to-maintenance">POST api/occurrences/{occurrence_id}/convert-to-maintenance</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-POSTapi-occurrences--occurrence_id--convert-to-maintenance">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost/api/occurrences/16/convert-to-maintenance" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"type\": \"corretiva\",
+    \"start_date\": \"2026-10-02\",
+    \"end_date\": \"2026-10-04\",
+    \"due_time\": \"14:00\",
+    \"maintenance_equipment_id\": 2,
+    \"assigned_user_ids\": [
+        1,
+        2
+    ],
+    \"notes\": \"Verificar vazamento no 3º andar\"
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/occurrences/16/convert-to-maintenance"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "type": "corretiva",
+    "start_date": "2026-10-02",
+    "end_date": "2026-10-04",
+    "due_time": "14:00",
+    "maintenance_equipment_id": 2,
+    "assigned_user_ids": [
+        1,
+        2
+    ],
+    "notes": "Verificar vazamento no 3º andar"
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-occurrences--occurrence_id--convert-to-maintenance">
+</span>
+<span id="execution-results-POSTapi-occurrences--occurrence_id--convert-to-maintenance" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-occurrences--occurrence_id--convert-to-maintenance"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-occurrences--occurrence_id--convert-to-maintenance"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-occurrences--occurrence_id--convert-to-maintenance" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-occurrences--occurrence_id--convert-to-maintenance">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-occurrences--occurrence_id--convert-to-maintenance" data-method="POST"
+      data-path="api/occurrences/{occurrence_id}/convert-to-maintenance"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-occurrences--occurrence_id--convert-to-maintenance', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-occurrences--occurrence_id--convert-to-maintenance"
+                    onclick="tryItOut('POSTapi-occurrences--occurrence_id--convert-to-maintenance');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-occurrences--occurrence_id--convert-to-maintenance"
+                    onclick="cancelTryOut('POSTapi-occurrences--occurrence_id--convert-to-maintenance');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-occurrences--occurrence_id--convert-to-maintenance"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/occurrences/{occurrence_id}/convert-to-maintenance</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-occurrences--occurrence_id--convert-to-maintenance"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-occurrences--occurrence_id--convert-to-maintenance"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>occurrence_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="occurrence_id"                data-endpoint="POSTapi-occurrences--occurrence_id--convert-to-maintenance"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the occurrence. Example: <code>16</code></p>
+            </div>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>occurrence</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="occurrence"                data-endpoint="POSTapi-occurrences--occurrence_id--convert-to-maintenance"
+               value="1"
+               data-component="url">
+    <br>
+<p>ID da ocorrência. Example: <code>1</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>type</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="type"                data-endpoint="POSTapi-occurrences--occurrence_id--convert-to-maintenance"
+               value="corretiva"
+               data-component="body">
+    <br>
+<p>Tipo de manutenção (preventiva, corretiva, emergencial). Example: <code>corretiva</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>start_date</code></b>&nbsp;&nbsp;
+<small>date</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="start_date"                data-endpoint="POSTapi-occurrences--occurrence_id--convert-to-maintenance"
+               value="2026-10-02"
+               data-component="body">
+    <br>
+<p>Data de início prevista. Example: <code>2026-10-02</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>end_date</code></b>&nbsp;&nbsp;
+<small>date</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="end_date"                data-endpoint="POSTapi-occurrences--occurrence_id--convert-to-maintenance"
+               value="2026-10-04"
+               data-component="body">
+    <br>
+<p>Data de conclusão prevista. Example: <code>2026-10-04</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>due_time</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="due_time"                data-endpoint="POSTapi-occurrences--occurrence_id--convert-to-maintenance"
+               value="14:00"
+               data-component="body">
+    <br>
+<p>Horário previsto. Example: <code>14:00</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>maintenance_equipment_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="maintenance_equipment_id"                data-endpoint="POSTapi-occurrences--occurrence_id--convert-to-maintenance"
+               value="2"
+               data-component="body">
+    <br>
+<p>ID do equipamento vinculado (opcional). Example: <code>2</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>assigned_user_ids</code></b>&nbsp;&nbsp;
+<small>integer[]</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="assigned_user_ids[0]"                data-endpoint="POSTapi-occurrences--occurrence_id--convert-to-maintenance"
+               data-component="body">
+        <input type="number" style="display: none"
+               name="assigned_user_ids[1]"                data-endpoint="POSTapi-occurrences--occurrence_id--convert-to-maintenance"
+               data-component="body">
+    <br>
+<p>IDs dos usuários técnicos/manutencistas atribuídos.</p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>notes</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="notes"                data-endpoint="POSTapi-occurrences--occurrence_id--convert-to-maintenance"
+               value="Verificar vazamento no 3º andar"
+               data-component="body">
+    <br>
+<p>Observações adicionais para a equipe técnica. Example: <code>Verificar vazamento no 3º andar</code></p>
+        </div>
+        </form>
 
             
 

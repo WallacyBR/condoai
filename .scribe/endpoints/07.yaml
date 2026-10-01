@@ -1,21 +1,23 @@
-name: 'Manutenção - Dashboard'
+name: 'Manutenção - Registros'
 description: |-
 
-  APIs para buscar dados para o dashboard de manutenção.
+  APIs para gerenciar registros de realização de manutenções.
 endpoints:
   -
     httpMethods:
       - GET
-    uri: api/maintenance/dashboard/general-stats
+    uri: api/maintenance/records
     metadata:
-      groupName: 'Manutenção - Dashboard'
+      groupName: 'Manutenção - Registros'
       groupDescription: |-
 
-        APIs para buscar dados para o dashboard de manutenção.
+        APIs para gerenciar registros de realização de manutenções.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Estatísticas Gerais do Dashboard de Manutenção.'
-      description: 'Retorna contagens de manutenções vencidas, realizadas e pendentes (a realizar).'
+      title: 'Listar todos os registros de manutenção.'
+      description: |-
+        Retorna uma lista paginada dos registros para o condomínio autenticado.
+        Pode ser filtrado por `maintenance_schedule_id` ou `maintenance_equipment_id`.
       authenticated: true
       custom: []
     headers:
@@ -23,8 +25,63 @@ endpoints:
       Accept: application/json
     urlParameters: []
     cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
+    queryParameters:
+      page:
+        name: page
+        description: 'A página a ser retornada.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+      per_page:
+        name: per_page
+        description: 'Número de itens por página.'
+        required: false
+        example: 15
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+      maintenance_schedule_id:
+        name: maintenance_schedule_id
+        description: 'ID do agendamento para filtrar registros.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+      maintenance_equipment_id:
+        name: maintenance_equipment_id
+        description: 'ID do equipamento para filtrar registros.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+      status:
+        name: status
+        description: 'Status do registro para filtrar.'
+        required: false
+        example: '"pending"'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+    cleanQueryParameters:
+      page: 1
+      per_page: 15
+      maintenance_schedule_id: 1
+      maintenance_equipment_id: 1
+      status: '"pending"'
     bodyParameters: []
     cleanBodyParameters: []
     fileParameters: []
@@ -33,100 +90,73 @@ endpoints:
         status: 200
         content: |
           {
-              "overdue_maintenance": 5,
-              "completed_maintenance": 120,
-              "pending_maintenance": 15,
-              "total_equipment": 55,
-              "under_review_maintenance": 2
-          }
-        headers: []
-        description: Sucesso
-        custom: []
-      -
-        status: 401
-        content: |
-          {
-              "message": "Unauthenticated."
-          }
-        headers: []
-        description: 'Não autenticado'
-        custom: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - GET
-    uri: api/maintenance/dashboard/by-equipment
-    metadata:
-      groupName: 'Manutenção - Dashboard'
-      groupDescription: |-
-
-        APIs para buscar dados para o dashboard de manutenção.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Estatísticas de Manutenção por Equipamento.'
-      description: 'Retorna contagens de manutenções vencidas, realizadas e pendentes, agrupadas por equipamento.'
-      authenticated: true
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        status: 200
-        content: |
-          [
-              {
-                  "id": 1,
-                  "name": "Bomba Piscina Bloco A",
-                  "maintenance_area_id": 1,
-                  "total_schedules_count": 5,
-                  "pending_schedules_count": 1,
-                  "completed_schedules_count": 3,
-                  "overdue_schedules_count": 1,
-                  "maintenance_area": {
+              "current_page": 1,
+              "data": [
+                  {
                       "id": 1,
-                      "name": "Hidráulica"
-                  }
-              },
-              {
-                  "id": 2,
-                  "name": "Elevador Social Torre 1",
-                  "maintenance_area_id": 2,
-                  "total_schedules_count": 2,
-                  "pending_schedules_count": 0,
-                  "completed_schedules_count": 1,
-                  "overdue_schedules_count": 1,
-                  "maintenance_area": {
+                      "condominium_id": 1,
+                      "maintenance_schedule_id": 1,
+                      "user_id": 2,
+                      "performed_at": "2024-07-15T14:05:00.000000Z",
+                      "notes": "Manutenção realizada com sucesso. Pressão da bomba normalizada.",
+                      "status": "completed",
+                      "reviewed_by_user_id": null,
+                      "reviewed_at": null,
+                      "created_at": "2024-07-15T14:05:00.000000Z",
+                      "updated_at": "2024-07-15T14:05:00.000000Z",
+                      "deleted_at": null,
+                      "schedule": {
+                          "id": 1,
+                          "title": "Verificação Semanal da Bomba X"
+                      },
+                      "user": {
+                          "id": 2,
+                          "name": "Técnico João Silva"
+                      },
+                      "reviewer": null,
+                      "equipment_name": "Bomba Piscina Bloco A"
+                  },
+                  {
                       "id": 2,
-                      "name": "Elétrica"
+                      "condominium_id": 1,
+                      "maintenance_schedule_id": 2,
+                      "user_id": 3,
+                      "performed_at": null,
+                      "notes": "Aguardando peça para substituição.",
+                      "status": "pending",
+                      "reviewed_by_user_id": null,
+                      "reviewed_at": null,
+                      "created_at": "2024-07-14T10:00:00.000000Z",
+                      "updated_at": "2024-07-14T10:00:00.000000Z",
+                      "deleted_at": null,
+                      "schedule": {
+                          "id": 2,
+                          "title": "Lubrificação Anual Elevador T1"
+                      },
+                      "user": {
+                          "id": 3,
+                          "name": "Técnica Maria Oliveira"
+                      },
+                      "reviewer": null,
+                      "equipment_name": "Elevador Social Torre 1"
                   }
-              },
-              {
-                  "id": 3,
-                  "name": "Portão Garagem Principal",
-                  "maintenance_area_id": 2,
-                  "total_schedules_count": 3,
-                  "pending_schedules_count": 1,
-                  "completed_schedules_count": 2,
-                  "overdue_schedules_count": 0,
-                  "maintenance_area": {
-                      "id": 2,
-                      "name": "Elétrica"
-                  }
-              }
-          ]
+              ],
+              "first_page_url": "/api/maintenance/records?page=1",
+              "from": 1,
+              "last_page": 1,
+              "last_page_url": "/api/maintenance/records?page=1",
+              "links": [
+                  {"url": null, "label": "&laquo; Previous", "active": false},
+                  {"url": "/api/maintenance/records?page=1", "label": "1", "active": true},
+                  {"url": null, "label": "Next &raquo;", "active": false}
+              ],
+              "next_page_url": null,
+              "path": "/api/maintenance/records",
+              "per_page": 15,
+              "prev_page_url": null,
+              "to": 2,
+              "total": 2
+          }
         headers: []
         description: Sucesso
         custom: []
@@ -138,24 +168,251 @@ endpoints:
     custom: []
   -
     httpMethods:
-      - GET
-    uri: api/maintenance/dashboard/by-area
+      - POST
+    uri: api/maintenance/records
     metadata:
-      groupName: 'Manutenção - Dashboard'
+      groupName: 'Manutenção - Registros'
       groupDescription: |-
 
-        APIs para buscar dados para o dashboard de manutenção.
+        APIs para gerenciar registros de realização de manutenções.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Estatísticas de Manutenção por Área.'
-      description: 'Retorna contagens de manutenções vencidas, realizadas e pendentes, agrupadas por área de manutenção.'
+      title: 'Criar um novo registro de manutenção.'
+      description: ''
+      authenticated: true
+      custom: []
+    headers:
+      Content-Type: multipart/form-data
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      maintenance_schedule_id:
+        name: maintenance_schedule_id
+        description: 'ID do agendamento.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+      user_id:
+        name: user_id
+        description: 'ID do usuário que realizou (se diferente do autenticado, requer permissão).'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+      performed_at:
+        name: performed_at
+        description: 'Data e hora da realização.'
+        required: true
+        example: '"2024-07-15 14:00:00"'
+        type: datetime
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+      notes:
+        name: notes
+        description: 'Notas sobre a manutenção.'
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      status:
+        name: status
+        description: 'Status do registro. Valores: `pending`, `completed`, `overdue`, `under_review`, `reopened`, `archived`. Default: `pending`.'
+        required: false
+        example: '"completed"'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+      photos:
+        name: photos
+        description: 'Array de fotos da manutenção. Max 5MB cada.'
+        required: false
+        example:
+          - null
+        type: 'file[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      signature:
+        name: signature
+        description: 'Imagem da assinatura em base64.'
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      cost:
+        name: cost
+        description: 'Base64 encoded image. Must be at least 0.'
+        required: false
+        example: 39
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      invoice_number:
+        name: invoice_number
+        description: 'Must not be greater than 100 characters.'
+        required: false
+        example: g
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      create_expense_request:
+        name: create_expense_request
+        description: ''
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+    cleanBodyParameters:
+      maintenance_schedule_id: 1
+      user_id: 1
+      performed_at: '"2024-07-15 14:00:00"'
+      notes: architecto
+      status: '"completed"'
+      signature: architecto
+      cost: 39
+      invoice_number: g
+      create_expense_request: false
+    fileParameters:
+      photos:
+        - null
+    responses:
+      -
+        status: 201
+        content: |
+          {
+              "id": 1,
+              "condominium_id": 1,
+              "maintenance_schedule_id": 1,
+              "user_id": 2,
+              "performed_at": "2024-07-15T14:05:00.000000Z",
+              "notes": "Manutenção realizada com sucesso. Pressão da bomba normalizada.",
+              "status": "completed",
+              "reviewed_by_user_id": null,
+              "reviewed_at": null,
+              "created_at": "2024-07-15T14:05:00.000000Z",
+              "updated_at": "2024-07-15T14:05:00.000000Z",
+              "photos": [
+                  {
+                      "id": 1,
+                      "maintenance_record_id": 1,
+                      "file_path": "maintenance_photos/condo_1/record_1/photo1.jpg",
+                      "uploaded_at": "2024-07-15T14:05:00.000000Z",
+                      "condominium_id": 1
+                  }
+              ],
+              "signature": {
+                  "id": 1,
+                  "maintenance_record_id": 1,
+                  "signature_path": "maintenance_signatures/condo_1/signature_record_1_1626350700.png",
+                  "signed_at": "2024-07-15T14:05:00.000000Z",
+                  "condominium_id": 1
+              },
+              "user": {
+                  "id": 2,
+                  "name": "Técnico João Silva"
+              },
+              "schedule": {
+                  "id": 1,
+                  "title": "Verificação Semanal da Bomba X"
+              }
+          }
+        headers: []
+        description: 'Criado com sucesso'
+        custom: []
+      -
+        status: 400
+        content: |
+          {
+              "message": "The given data was invalid.",
+              "errors": {
+                  "field_name": [
+                      "The field_name field is required.",
+                      "Another validation error for this field."
+                  ],
+                  "another_field": [
+                      "This field has an error."
+                  ]
+              }
+          }
+        headers: []
+        description: 'Dados inválidos'
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - GET
+    uri: 'api/maintenance/records/{id}'
+    metadata:
+      groupName: 'Manutenção - Registros'
+      groupDescription: |-
+
+        APIs para gerenciar registros de realização de manutenções.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Exibir um registro de manutenção específico.'
+      description: ''
       authenticated: true
       custom: []
     headers:
       Content-Type: application/json
       Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
+    urlParameters:
+      id:
+        name: id
+        description: 'The ID of the record.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      record:
+        name: record
+        description: 'O ID do registro.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      id: 16
+      record: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -165,34 +422,390 @@ endpoints:
       -
         status: 200
         content: |
-          [
-              {
+          {
+              "id": 1,
+              "condominium_id": 1,
+              "maintenance_schedule_id": 1,
+              "user_id": 2,
+              "performed_at": "2024-07-15T14:05:00.000000Z",
+              "notes": "Manutenção realizada com sucesso. Pressão da bomba normalizada.",
+              "status": "completed",
+              "reviewed_by_user_id": null,
+              "reviewed_at": null,
+              "created_at": "2024-07-15T14:05:00.000000Z",
+              "updated_at": "2024-07-15T14:05:00.000000Z",
+              "deleted_at": null,
+              "schedule": {
                   "id": 1,
-                  "name": "Hidráulica",
-                  "equipments_count": 10,
-                  "pending_schedules_count": 5,
-                  "completed_schedules_count": 25,
-                  "overdue_schedules_count": 2
+                  "title": "Verificação Semanal da Bomba X",
+                  "maintenance_equipment_id": 1,
+                  "equipment": {
+                      "id": 1,
+                      "name": "Bomba Piscina Bloco A"
+                  }
               },
-              {
+              "user": {
                   "id": 2,
-                  "name": "Elétrica",
-                  "equipments_count": 15,
-                  "pending_schedules_count": 8,
-                  "completed_schedules_count": 40,
-                  "overdue_schedules_count": 3
+                  "name": "Técnico João Silva"
               },
-              {
-                  "id": 3,
-                  "name": "Jardinagem",
-                  "equipments_count": 5,
-                  "pending_schedules_count": 2,
-                  "completed_schedules_count": 10,
-                  "overdue_schedules_count": 0
+              "reviewer": null,
+              "photos": [
+                  {
+                      "id": 1,
+                      "condominium_id": 1,
+                      "maintenance_record_id": 1,
+                      "file_path": "maintenance_photos/condo_1/record_1/photo1.jpg",
+                      "uploaded_at": "2024-07-15T14:05:00.000000Z",
+                      "created_at": "2024-07-15T14:05:00.000000Z",
+                      "updated_at": "2024-07-15T14:05:00.000000Z"
+                  }
+              ],
+              "signature": {
+                  "id": 1,
+                  "condominium_id": 1,
+                  "maintenance_record_id": 1,
+                  "signature_path": "maintenance_signatures/condo_1/signature_record_1_1626350700.png",
+                  "signed_at": "2024-07-15T14:05:00.000000Z",
+                  "created_at": "2024-07-15T14:05:00.000000Z",
+                  "updated_at": "2024-07-15T14:05:00.000000Z"
               }
-          ]
+          }
         headers: []
         description: Sucesso
+        custom: []
+      -
+        status: 404
+        content: |
+          {
+              "message": "Resource not found."
+          }
+        headers: []
+        description: 'Não encontrado'
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'api/maintenance/records/{id}'
+    metadata:
+      groupName: 'Manutenção - Registros'
+      groupDescription: |-
+
+        APIs para gerenciar registros de realização de manutenções.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Atualizar um registro de manutenção (principalmente status ou notas).'
+      description: ''
+      authenticated: true
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        name: id
+        description: 'The ID of the record.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      record:
+        name: record
+        description: 'O ID do registro.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      id: 16
+      record: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      notes:
+        name: notes
+        description: 'Notas sobre a manutenção.'
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      status:
+        name: status
+        description: 'Status do registro.'
+        required: false
+        example: '"completed"'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+      performed_at:
+        name: performed_at
+        description: 'Data e hora da realização.'
+        required: false
+        example: '"2024-07-15 14:30:00"'
+        type: datetime
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        custom: []
+    cleanBodyParameters:
+      notes: architecto
+      status: '"completed"'
+      performed_at: '"2024-07-15 14:30:00"'
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |
+          {
+              "id": 1,
+              "condominium_id": 1,
+              "maintenance_schedule_id": 1,
+              "user_id": 2,
+              "performed_at": "2024-07-15T14:05:00.000000Z",
+              "notes": "Manutenção realizada com sucesso. Pressão da bomba normalizada.\nNota de Revisão/Status (Admin em 15/07/2024 15:00): Revisão concluída, tudo OK.",
+              "status": "under_review",
+              "reviewed_by_user_id": 1,
+              "reviewed_at": "2024-07-15T15:00:00.000000Z",
+              "created_at": "2024-07-15T14:05:00.000000Z",
+              "updated_at": "2024-07-15T15:00:00.000000Z",
+              "photos": [],
+              "signature": null,
+              "user": {
+                  "id": 2,
+                  "name": "Técnico João Silva"
+              },
+              "schedule": {
+                  "id": 1,
+                  "title": "Verificação Semanal da Bomba X"
+              }
+          }
+        headers: []
+        description: 'Atualizado com sucesso'
+        custom: []
+      -
+        status: 400
+        content: |
+          {
+              "message": "The given data was invalid.",
+              "errors": {
+                  "field_name": [
+                      "The field_name field is required.",
+                      "Another validation error for this field."
+                  ],
+                  "another_field": [
+                      "This field has an error."
+                  ]
+              }
+          }
+        headers: []
+        description: 'Dados inválidos'
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - DELETE
+    uri: 'api/maintenance/records/{id}'
+    metadata:
+      groupName: 'Manutenção - Registros'
+      groupDescription: |-
+
+        APIs para gerenciar registros de realização de manutenções.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Excluir um registro de manutenção.'
+      description: |-
+        Normalmente, registros são arquivados, não excluídos.
+        Considere se esta rota é realmente necessária ou se deve apenas permitir arquivamento.
+      authenticated: true
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        name: id
+        description: 'The ID of the record.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      record:
+        name: record
+        description: 'O ID do registro.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      id: 16
+      record: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        status: 204
+        content: ''
+        headers: []
+        description: 'Excluído com sucesso'
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - POST
+    uri: 'api/maintenance/records/{record_id}/update-status'
+    metadata:
+      groupName: 'Manutenção - Registros'
+      groupDescription: |-
+
+        APIs para gerenciar registros de realização de manutenções.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Atualizar o status de um registro de manutenção (conferência, reabertura, etc.).'
+      description: ''
+      authenticated: true
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      record_id:
+        name: record_id
+        description: 'The ID of the record.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      record:
+        name: record
+        description: 'O ID do registro.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      record_id: 16
+      record: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      status:
+        name: status
+        description: 'Novo status. Valores: `under_review`, `reopened`, `archived`, `completed`.'
+        required: true
+        example: '"under_review"'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+      review_notes:
+        name: review_notes
+        description: 'Notas da revisão (opcional).'
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+    cleanBodyParameters:
+      status: '"under_review"'
+      review_notes: architecto
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |
+          {
+              "id": 1,
+              "condominium_id": 1,
+              "maintenance_schedule_id": 1,
+              "user_id": 2,
+              "performed_at": "2024-07-15T14:05:00.000000Z",
+              "notes": "Manutenção realizada com sucesso. Pressão da bomba normalizada.\nNota de Revisão/Status (Admin em 15/07/2024 15:10): Colocado em revisão para checagem adicional.",
+              "status": "under_review",
+              "reviewed_by_user_id": 1,
+              "reviewed_at": "2024-07-15T15:10:00.000000Z",
+              "created_at": "2024-07-15T14:05:00.000000Z",
+              "updated_at": "2024-07-15T15:10:00.000000Z",
+              "deleted_at": null,
+              "photos": [],
+              "signature": null,
+              "user": {
+                  "id": 2,
+                  "name": "Técnico João Silva"
+              },
+              "reviewer": {
+                  "id": 1,
+                  "name": "Admin CondoAI"
+              },
+              "schedule": {
+                  "id": 1,
+                  "title": "Verificação Semanal da Bomba X"
+              }
+          }
+        headers: []
+        description: 'Status atualizado'
+        custom: []
+      -
+        status: 400
+        content: |
+          {
+              "message": "The given data was invalid.",
+              "errors": {
+                  "field_name": [
+                      "The field_name field is required.",
+                      "Another validation error for this field."
+                  ],
+                  "another_field": [
+                      "This field has an error."
+                  ]
+              }
+          }
+        headers: []
+        description: 'Dados inválidos'
         custom: []
     responseFields: []
     auth: []

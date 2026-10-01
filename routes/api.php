@@ -10,6 +10,7 @@ use App\Http\Controllers\API\CommonAreaController;
 use App\Http\Controllers\API\CondominiumController;
 use App\Http\Controllers\API\ImageUploadController;
 use App\Http\Controllers\API\ModuleController;
+use App\Http\Controllers\API\NotificationInboxController;
 use App\Http\Controllers\API\OccurrenceController;
 use App\Http\Controllers\API\OperationalReportController;
 use App\Http\Controllers\API\ParkingSpotController;
@@ -65,6 +66,11 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
     Route::put('profile', [ProfileSettingsController::class, 'update']);
     Route::put('profile/password', [ProfileSettingsController::class, 'updatePassword']);
     Route::put('profile/notifications', [ProfileSettingsController::class, 'updateNotifications']);
+
+    Route::get('notifications/unread-count', [NotificationInboxController::class, 'unreadCount']);
+    Route::post('notifications/read-all', [NotificationInboxController::class, 'readAll']);
+    Route::post('notifications/{id}/read', [NotificationInboxController::class, 'markRead']);
+    Route::get('notifications', [NotificationInboxController::class, 'index']);
 
     Route::get('condominiums/{condominium}/stats', [CondominiumController::class, 'stats']);
     Route::apiResource('condominiums', CondominiumController::class);

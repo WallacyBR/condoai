@@ -67,10 +67,10 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
           </svg>
           <span
-            v-if="totalNotifications > 0"
+            v-if="inboxUnreadCount > 0"
             class="absolute top-1.5 right-1.5 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white shadow-sm"
           >
-            {{ totalNotifications > 99 ? '99+' : totalNotifications }}
+            {{ inboxUnreadCount > 99 ? '99+' : inboxUnreadCount }}
           </span>
         </button>
 
@@ -83,15 +83,15 @@
             <div class="flex items-center space-x-2">
               <h3 class="font-semibold text-slate-900 dark:text-slate-100">Notificações</h3>
               <span
-                v-if="totalNotifications > 0"
+                v-if="inboxUnreadCount > 0"
                 class="rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-300"
               >
-                {{ totalNotifications }} novas
+                {{ inboxUnreadCount }} novas
               </span>
             </div>
             <button
-              v-if="totalNotifications > 0"
-              @click="clearAllNotifications"
+              v-if="inboxUnreadCount > 0"
+              @click="handleMarkAllInboxAsRead"
               class="text-xs text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400"
             >
               Limpar todas
@@ -100,7 +100,7 @@
 
           <div class="mt-3 space-y-2 max-h-72 overflow-y-auto">
             <div
-              v-if="totalNotifications === 0"
+              v-if="inboxUnreadCount === 0"
               class="py-8 text-center text-sm text-slate-500 dark:text-slate-400"
             >
               <svg class="mx-auto h-8 w-8 text-slate-300 dark:text-slate-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -109,68 +109,24 @@
               Nenhuma notificação pendente no momento.
             </div>
 
-            <!-- Encomendas -->
-            <router-link
-              v-if="notifications.packages > 0"
-              to="/packages"
-              @click="isNotificationOpen = false"
-              class="flex items-center justify-between rounded-xl p-2.5 transition hover:bg-slate-50 dark:hover:bg-slate-800/60"
+            <component
+              v-for="item in inboxItems"
+              :key="item.id"
+              :is="item.action_url ? 'router-link' : 'div'"
+              :to="item.action_url || undefined"
+              @click="handleInboxItemClick(item)"
+              class="flex items-start justify-between rounded-xl p-2.5 transition hover:bg-slate-50 dark:hover:bg-slate-800/60 cursor-pointer"
             >
-              <div class="flex items-center space-x-3">
-                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400">
-                  📦
+              <div class="flex items-start space-x-3 min-w-0">
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+                  🔔
                 </div>
-                <div>
-                  <p class="text-xs font-semibold text-slate-800 dark:text-slate-200">Encomendas Pendentes</p>
-                  <p class="text-[11px] text-slate-500 dark:text-slate-400">Aguardando retirada de moradores</p>
+                <div class="min-w-0">
+                  <p class="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">{{ item.title }}</p>
+                  <p class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2">{{ item.body }}</p>
                 </div>
               </div>
-              <span class="rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-bold text-amber-600 dark:text-amber-300">
-                {{ notifications.packages }}
-              </span>
-            </router-link>
-
-            <!-- Manutenção -->
-            <router-link
-              v-if="notifications.maintenance > 0 || notifications.maintenanceTasks > 0"
-              to="/maintenance/schedules"
-              @click="isNotificationOpen = false"
-              class="flex items-center justify-between rounded-xl p-2.5 transition hover:bg-slate-50 dark:hover:bg-slate-800/60"
-            >
-              <div class="flex items-center space-x-3">
-                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400">
-                  🔧
-                </div>
-                <div>
-                  <p class="text-xs font-semibold text-slate-800 dark:text-slate-200">Tarefas de Manutenção</p>
-                  <p class="text-[11px] text-slate-500 dark:text-slate-400">Pendências e manutenções abertas</p>
-                </div>
-              </div>
-              <span class="rounded-full bg-rose-500/20 px-2 py-0.5 text-xs font-bold text-rose-600 dark:text-rose-300">
-                {{ notifications.maintenance + notifications.maintenanceTasks }}
-              </span>
-            </router-link>
-
-            <!-- Comunicados -->
-            <router-link
-              v-if="notifications.notices > 0"
-              to="/notices"
-              @click="isNotificationOpen = false"
-              class="flex items-center justify-between rounded-xl p-2.5 transition hover:bg-slate-50 dark:hover:bg-slate-800/60"
-            >
-              <div class="flex items-center space-x-3">
-                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
-                  📢
-                </div>
-                <div>
-                  <p class="text-xs font-semibold text-slate-800 dark:text-slate-200">Novos Comunicados</p>
-                  <p class="text-[11px] text-slate-500 dark:text-slate-400">Avisos gerais do condomínio</p>
-                </div>
-              </div>
-              <span class="rounded-full bg-blue-500/20 px-2 py-0.5 text-xs font-bold text-blue-600 dark:text-blue-300">
-                {{ notifications.notices }}
-              </span>
-            </router-link>
+            </component>
           </div>
         </div>
       </div>
@@ -302,7 +258,13 @@ const props = defineProps({
 
 const emit = defineEmits(['toggle-sidebar', 'toggle-collapse', 'logout']);
 
-const { notifications, totalNotifications, clearAllNotifications } = useNotifications();
+const {
+  inboxUnreadCount,
+  inboxItems,
+  markInboxNotificationRead,
+  markAllInboxAsRead,
+  loadInboxFromServer,
+} = useNotifications();
 const { theme, setTheme } = useTheme();
 
 const isNotificationOpen = ref(false);
@@ -327,10 +289,25 @@ const handleToggleSidebar = () => {
   }
 };
 
-const toggleNotificationDropdown = () => {
+const toggleNotificationDropdown = async () => {
   isNotificationOpen.value = !isNotificationOpen.value;
   isThemeOpen.value = false;
   isUserOpen.value = false;
+
+  if (isNotificationOpen.value) {
+    await loadInboxFromServer();
+  }
+};
+
+const handleMarkAllInboxAsRead = async () => {
+  await markAllInboxAsRead();
+};
+
+const handleInboxItemClick = async (item) => {
+  if (!item.read_at) {
+    await markInboxNotificationRead(item.id);
+  }
+  isNotificationOpen.value = false;
 };
 
 const toggleThemeDropdown = () => {

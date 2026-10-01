@@ -42,6 +42,7 @@ class Resident extends Model
         'classification',
         'active',
         'condominium_id',
+        'user_id',
     ];
 
     protected $casts = [
@@ -56,6 +57,11 @@ class Resident extends Model
     public function condominium()
     {
         return $this->belongsTo(Condominium::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function ownedApartments()

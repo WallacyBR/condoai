@@ -60,6 +60,7 @@ Route::prefix('public/supplier-quotes')->middleware('throttle:30,1')->group(func
 Route::get('public/invites/{token}', [AccessRequestController::class, 'publicInvite'])->middleware('throttle:60,1');
 Route::middleware(['auth:api', 'tenant'])->group(function () {
     Route::get('auth/current-condominium', [AuthController::class, 'currentCondominium']);
+    Route::get('my-apartments', [AuthController::class, 'myApartments']);
     Route::get('profile', [ProfileSettingsController::class, 'show']);
     Route::put('profile', [ProfileSettingsController::class, 'update']);
     Route::put('profile/password', [ProfileSettingsController::class, 'updatePassword']);
@@ -68,6 +69,7 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
     Route::get('condominiums/{condominium}/stats', [CondominiumController::class, 'stats']);
     Route::apiResource('condominiums', CondominiumController::class);
     Route::apiResource('residents', ResidentController::class);
+    Route::put('residents/{resident}/link-user', [ResidentController::class, 'linkUser']);
     Route::apiResource('towers', TowerController::class);
     Route::apiResource('blocks', BlockController::class);
     Route::apiResource('apartments', ApartmentController::class);
@@ -182,6 +184,16 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
         Route::get('dashboard/by-area', [\App\Http\Controllers\API\MaintenanceDashboardController::class, 'getStatsByArea'])
             ->name('dashboard.byArea');
     });
+
+    // Módulo de Assembleias Virtuais e Votações Digitais
+    Route::apiResource('assemblies', AssemblyController::class);
+    Route::post('assemblies/{assembly}/start', [AssemblyController::class, 'start']);
+    Route::post('assemblies/{assembly}/close', [AssemblyController::class, 'close']);
+    Route::post('assemblies/{assembly}/agendas', [AssemblyController::class, 'addAgenda']);
+    Route::post('assemblies/{assembly}/agendas/{agenda}/open', [AssemblyController::class, 'openAgendaVoting']);
+    Route::post('assemblies/{assembly}/agendas/{agenda}/close', [AssemblyController::class, 'closeAgendaVoting']);
+    Route::post('assemblies/{assembly}/agendas/{agenda}/vote', [AssemblyController::class, 'vote']);
+    Route::get('assemblies/{assembly}/agendas/{agenda}/results', [AssemblyController::class, 'results']);
 
     // Access Control Module Routes
     Route::prefix('access-control')->name('access-control.')->group(function () {

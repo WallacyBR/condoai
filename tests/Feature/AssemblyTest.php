@@ -16,7 +16,8 @@ use Tests\TestCase;
 
 class AssemblyTest extends TestCase
 {
-    use InteractsWithTenant, RefreshDatabase;
+    use InteractsWithTenant;
+    use RefreshDatabase;
 
     private Condominium $condominium;
 
@@ -54,12 +55,9 @@ class AssemblyTest extends TestCase
             'floor' => 2,
         ]);
 
-        $this->resident = Resident::create([
+        $this->resident = Resident::factory()->morador()->create([
             'condominium_id' => $this->condominium->id,
             'user_id' => $this->morador->id,
-            'name' => 'Morador Votante',
-            'email' => 'votante@teste.com',
-            'phone' => '11988888888',
             'apartment_id' => $this->apartment->id,
         ]);
 
@@ -134,12 +132,10 @@ class AssemblyTest extends TestCase
             'order' => 1,
         ]);
 
-        // Iniciar assembleia
         $startResponse = $this->postJson("/api/assemblies/{$assembly->id}/start");
         $startResponse->assertOk()
             ->assertJsonPath('assembly.status', 'em_andamento');
 
-        // Abrir votação da pauta
         $openResponse = $this->postJson("/api/assemblies/{$assembly->id}/agendas/{$agenda->id}/open");
         $openResponse->assertOk()
             ->assertJsonPath('agenda.status', 'aberta');
@@ -168,15 +164,13 @@ class AssemblyTest extends TestCase
             'weight_type' => 'unitario',
         ]);
 
-        // Morador autenticado vota
         $this->actingAsTenant($this->morador, $this->condominium);
 
-        $voteData = [
+        $voteResponse = $this->postJson("/api/assemblies/{$assembly->id}/agendas/{$agenda->id}/vote", [
             'apartment_id' => $this->apartment->id,
             'chosen_option' => 'A favor',
-        ];
+        ]);
 
-        $voteResponse = $this->postJson("/api/assemblies/{$assembly->id}/agendas/{$agenda->id}/vote", $voteData);
         $voteResponse->assertStatus(201)
             ->assertJsonPath('tally.total_votes', 1)
             ->assertJsonPath('tally.breakdown.A favor.count', 1)

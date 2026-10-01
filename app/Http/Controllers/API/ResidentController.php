@@ -6,12 +6,20 @@ use App\Enums\ResidentClassification;
 use App\Http\Controllers\Concerns\ResolvesTenantCondominium;
 use App\Http\Controllers\Controller;
 use App\Models\Resident;
+use App\Services\ResidentUserLinkService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
+use InvalidArgumentException;
 
 class ResidentController extends Controller
 {
     use ResolvesTenantCondominium;
+
+    public function __construct(
+        private readonly ResidentUserLinkService $residentUserLinkService
+    ) {
+    }
 
     /**
      * Converte strings booleanas e números para booleanos reais
@@ -226,5 +234,37 @@ class ResidentController extends Controller
         $resident->delete();
 
         return response()->json(null, 204);
+    }
+
+    /**
+     * Vincula ou desvincula um usuário autenticável ao registro de morador (ADR-002 Q1).
+     *
+     * @authenticated
+     */
+    public function linkUser(Request $request, Resident $resident)
+    {
+        Gate::authorize('linkUser', $resident);
+
+        $condominiumId = $this->tenantCondominiumId($request);
+
+        $validated = $request->validate([
+            'user_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('users', 'id'),
+            ],
+        ]);
+
+        try {
+            $updated = $this->residentUserLinkService->link(
+                $resident,
+                $validated['user_id'] ?? null,
+                $condominiumId
+            );
+        } catch (InvalidArgumentException $exception) {
+            return response()->json(['message' => $exception->getMessage()], 422);
+        }
+
+        return response()->json($updated->load('user'));
     }
 }

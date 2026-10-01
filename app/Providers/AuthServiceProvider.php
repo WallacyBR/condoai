@@ -11,6 +11,7 @@ use App\Models\Occurrence;
 use App\Models\OccurrenceComment;
 use App\Models\Payable;
 use App\Models\Receivable;
+use App\Models\Resident;
 use App\Policies\BankPolicy;
 use App\Policies\ChartAccountPolicy;
 use App\Policies\ExpenseRequestAttachmentPolicy;
@@ -19,6 +20,7 @@ use App\Policies\OccurrenceCommentPolicy;
 use App\Policies\OccurrencePolicy;
 use App\Policies\PayablePolicy;
 use App\Policies\ReceivablePolicy;
+use App\Policies\ResidentPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -37,6 +39,7 @@ class AuthServiceProvider extends ServiceProvider
         ChartAccount::class => ChartAccountPolicy::class,
         ExpenseRequest::class => ExpenseRequestPolicy::class,
         ExpenseRequestAttachment::class => ExpenseRequestAttachmentPolicy::class,
+        Resident::class => ResidentPolicy::class,
     ];
 
     /**

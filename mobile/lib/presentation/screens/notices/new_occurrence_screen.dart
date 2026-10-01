@@ -7,10 +7,11 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/media_picker_helper.dart';
 import '../../../core/widgets/bokeh_scaffold.dart';
 import '../../../core/widgets/frosted_glass_card.dart';
+import '../../../data/models/occurrence_model.dart';
 
 /// Tela completa de Nova Ocorrência com suporte a fotos, vídeos e níveis de gravidade.
 class NewOccurrenceScreen extends StatefulWidget {
-  final Function(String protocol, String title, String category, String date, String status)? onOccurrenceCreated;
+  final void Function(OccurrenceItem item)? onOccurrenceCreated;
 
   const NewOccurrenceScreen({
     super.key,
@@ -57,6 +58,23 @@ class _NewOccurrenceScreenState extends State<NewOccurrenceScreen> {
     );
   }
 
+  OccurrenceItem _buildItem() {
+    final protocol = 'OC-${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}';
+    return OccurrenceItem(
+      protocol: protocol,
+      title: _titleController.text.trim(),
+      category: _selectedCategory,
+      date: 'Hoje às ${TimeOfDay.now().format(context)}',
+      status: 'Em Análise',
+      description: _descController.text.trim(),
+      location: _locationController.text.trim(),
+      urgency: _selectedUrgency,
+      attachments: _attachments
+          .map((a) => OccurrenceAttachment(path: a.path, isVideo: a.isVideo))
+          .toList(),
+    );
+  }
+
   void _submit() {
     if (_titleController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -66,18 +84,12 @@ class _NewOccurrenceScreenState extends State<NewOccurrenceScreen> {
     }
 
     HapticFeedback.heavyImpact();
-    final protocol = 'OC-${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}';
-    widget.onOccurrenceCreated?.call(
-      protocol,
-      _titleController.text.trim(),
-      _selectedCategory,
-      'Hoje às ${TimeOfDay.now().format(context)}',
-      'Em Análise',
-    );
-    Navigator.pop(context);
+    final item = _buildItem();
+    widget.onOccurrenceCreated?.call(item);
+    Navigator.pop(context, item);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Ocorrência #$protocol enviada à administração!'),
+        content: Text('Ocorrência #${item.protocol} enviada à administração!'),
         backgroundColor: AppColors.success,
       ),
     );

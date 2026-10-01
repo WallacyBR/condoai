@@ -23,15 +23,28 @@ class _ResidentFormScreenState extends State<ResidentFormScreen> {
   final _rgCtrl = TextEditingController();
   final _cpfCtrl = TextEditingController();
   final _cellPhoneCtrl = TextEditingController();
+  final _commercialPhoneCtrl = TextEditingController();
   final _whatsappCtrl = TextEditingController();
+  final _cepCtrl = TextEditingController();
   final _addressCtrl = TextEditingController();
+  final _neighborhoodCtrl = TextEditingController();
+  final _cityCtrl = TextEditingController();
+  final _stateCtrl = TextEditingController();
   final _notesCtrl = TextEditingController();
 
   String _personType = 'fisica';
+  String _classification = 'morador';
   String _relationship = 'Morador';
+  String _billingAddressType = 'condominium';
   String? _photoPath;
   bool _facialAccess = true;
   bool _visitorAccess = true;
+
+  static const _ufOptions = [
+    'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
+    'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN',
+    'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO',
+  ];
 
   @override
   void initState() {
@@ -43,11 +56,18 @@ class _ResidentFormScreenState extends State<ResidentFormScreen> {
       _rgCtrl.text = r.rg;
       _cpfCtrl.text = r.cpf;
       _cellPhoneCtrl.text = r.cellPhone;
+      _commercialPhoneCtrl.text = r.commercialPhone;
       _whatsappCtrl.text = r.whatsapp;
+      _cepCtrl.text = r.cep;
       _addressCtrl.text = r.address;
+      _neighborhoodCtrl.text = r.neighborhood;
+      _cityCtrl.text = r.city;
+      _stateCtrl.text = r.state;
       _notesCtrl.text = r.notes;
       _personType = r.personType;
+      _classification = r.classification;
       _relationship = r.relationship;
+      _billingAddressType = r.billingAddressType;
       _photoPath = r.photoPath;
       _facialAccess = r.hasFacialAccess;
       _visitorAccess = r.canAuthorizeVisitors;
@@ -61,17 +81,28 @@ class _ResidentFormScreenState extends State<ResidentFormScreen> {
     _rgCtrl.dispose();
     _cpfCtrl.dispose();
     _cellPhoneCtrl.dispose();
+    _commercialPhoneCtrl.dispose();
     _whatsappCtrl.dispose();
+    _cepCtrl.dispose();
     _addressCtrl.dispose();
+    _neighborhoodCtrl.dispose();
+    _cityCtrl.dispose();
+    _stateCtrl.dispose();
     _notesCtrl.dispose();
     super.dispose();
   }
 
   void _submit() {
     if (_nameCtrl.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Informe o nome completo.'), backgroundColor: AppColors.danger),
-      );
+      _showError('Informe o nome completo.');
+      return;
+    }
+    if (_cpfCtrl.text.trim().isEmpty) {
+      _showError('Informe o CPF (campo obrigatório).');
+      return;
+    }
+    if (_classification.isEmpty) {
+      _showError('Selecione a classificação.');
       return;
     }
 
@@ -84,16 +115,29 @@ class _ResidentFormScreenState extends State<ResidentFormScreen> {
       cpf: _cpfCtrl.text.trim(),
       personType: _personType,
       cellPhone: _cellPhoneCtrl.text.trim(),
+      commercialPhone: _commercialPhoneCtrl.text.trim(),
       whatsapp: _whatsappCtrl.text.trim(),
+      billingAddressType: _billingAddressType,
+      cep: _cepCtrl.text.trim(),
       address: _addressCtrl.text.trim(),
+      neighborhood: _neighborhoodCtrl.text.trim(),
+      city: _cityCtrl.text.trim(),
+      state: _stateCtrl.text.trim(),
       notes: _notesCtrl.text.trim(),
       photoPath: _photoPath,
+      classification: _classification,
       relationship: _relationship,
       hasFacialAccess: _facialAccess,
       canAuthorizeVisitors: _visitorAccess,
-      isOwner: widget.existing?.isOwner ?? false,
+      isOwner: _classification == 'proprietario' || (widget.existing?.isOwner ?? false),
     );
     Navigator.pop(context, resident);
+  }
+
+  void _showError(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(msg), backgroundColor: AppColors.danger),
+    );
   }
 
   @override
@@ -122,6 +166,8 @@ class _ResidentFormScreenState extends State<ResidentFormScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Text('Dados Básicos', style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 12),
               PhotoPickerField(
                 photoPath: _photoPath,
                 onChanged: (path) => setState(() => _photoPath = path),
@@ -176,7 +222,7 @@ class _ResidentFormScreenState extends State<ResidentFormScreen> {
                       controller: _cpfCtrl,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        labelText: 'CPF',
+                        labelText: 'CPF *',
                         hintText: '000.000.000-00',
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
                       ),
@@ -196,6 +242,16 @@ class _ResidentFormScreenState extends State<ResidentFormScreen> {
               ),
               const SizedBox(height: 12),
               TextField(
+                controller: _commercialPhoneCtrl,
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(
+                  labelText: 'Telefone Comercial',
+                  hintText: '(11) 3444-5555',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
                 controller: _whatsappCtrl,
                 keyboardType: TextInputType.phone,
                 decoration: InputDecoration(
@@ -204,32 +260,109 @@ class _ResidentFormScreenState extends State<ResidentFormScreen> {
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
                 ),
               ),
+              const SizedBox(height: 16),
+              Text('Classificação & Parentesco', style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.bold)),
               const SizedBox(height: 12),
-              TextField(
-                controller: _addressCtrl,
+              DropdownButtonFormField<String>(
+                initialValue: _classification,
                 decoration: InputDecoration(
-                  labelText: 'Endereço',
-                  hintText: 'Rua, número, bairro, cidade',
-                  prefixIcon: const Icon(Icons.home_outlined),
+                  labelText: 'Classificação *',
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
                 ),
+                items: const [
+                  DropdownMenuItem(value: 'proprietario', child: Text('Proprietário')),
+                  DropdownMenuItem(value: 'morador', child: Text('Morador')),
+                  DropdownMenuItem(value: 'inquilino', child: Text('Inquilino')),
+                ],
+                onChanged: (v) => setState(() => _classification = v!),
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 initialValue: _relationship,
                 decoration: InputDecoration(
-                  labelText: 'Parentesco / Classificação',
+                  labelText: 'Parentesco na Unidade',
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
                 ),
                 items: const [
                   DropdownMenuItem(value: 'Morador', child: Text('Morador')),
                   DropdownMenuItem(value: 'Cônjuge', child: Text('Cônjuge')),
                   DropdownMenuItem(value: 'Filho(a)', child: Text('Filho(a)')),
-                  DropdownMenuItem(value: 'Inquilino', child: Text('Inquilino')),
+                  DropdownMenuItem(value: 'Titular', child: Text('Titular')),
                   DropdownMenuItem(value: 'Prestador', child: Text('Funcionário')),
                 ],
                 onChanged: (v) => setState(() => _relationship = v!),
               ),
+              const SizedBox(height: 16),
+              Text('Endereço para Recebimento de Boletos', style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 12),
+              RadioListTile<String>(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Usar endereço do condomínio', style: TextStyle(fontSize: 13)),
+                value: 'condominium',
+                groupValue: _billingAddressType,
+                onChanged: (v) => setState(() => _billingAddressType = v!),
+              ),
+              RadioListTile<String>(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Usar endereço personalizado', style: TextStyle(fontSize: 13)),
+                value: 'custom',
+                groupValue: _billingAddressType,
+                onChanged: (v) => setState(() => _billingAddressType = v!),
+              ),
+              if (_billingAddressType == 'custom') ...[
+                const SizedBox(height: 8),
+                TextField(
+                  controller: _cepCtrl,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'CEP',
+                    hintText: '00000-000',
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _addressCtrl,
+                  decoration: InputDecoration(
+                    labelText: 'Endereço',
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _neighborhoodCtrl,
+                        decoration: InputDecoration(
+                          labelText: 'Bairro',
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: TextField(
+                        controller: _cityCtrl,
+                        decoration: InputDecoration(
+                          labelText: 'Cidade',
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<String>(
+                  initialValue: _stateCtrl.text.isEmpty ? null : _stateCtrl.text,
+                  decoration: InputDecoration(
+                    labelText: 'UF',
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                  items: _ufOptions.map((uf) => DropdownMenuItem(value: uf, child: Text(uf))).toList(),
+                  onChanged: (v) => setState(() => _stateCtrl.text = v ?? ''),
+                ),
+              ],
               const SizedBox(height: 12),
               TextField(
                 controller: _notesCtrl,

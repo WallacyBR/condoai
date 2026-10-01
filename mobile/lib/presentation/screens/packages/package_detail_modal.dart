@@ -7,6 +7,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/frosted_glass_card.dart';
 import '../../../core/widgets/info_row.dart';
+import '../../../core/widgets/optional_network_image.dart';
 import '../../../data/models/package_item_model.dart';
 import '../../blocs/packages/packages_cubit.dart';
 
@@ -153,15 +154,10 @@ class _PackageDetailModalState extends State<PackageDetailModal> {
                 children: [
                   AspectRatio(
                     aspectRatio: 16 / 10,
-                    child: Image.network(
-                      widget.package.photoUrl,
+                    child: OptionalNetworkImage(
+                      url: widget.package.photoUrl,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
-                        color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
-                        child: const Center(
-                          child: Icon(Icons.broken_image_rounded, size: 48, color: Colors.grey),
-                        ),
-                      ),
+                      placeholderIcon: Icons.inventory_2_outlined,
                     ),
                   ),
                   Container(

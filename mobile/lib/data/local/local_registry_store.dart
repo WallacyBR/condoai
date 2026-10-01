@@ -3,21 +3,26 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/registry_models.dart';
+import 'tenant_scope.dart';
 
 /// Persistência local dos cadastros enquanto a API não está integrada.
+///
+/// PII (CPF, telefones, endereço) fica em SharedPreferences **escopado por
+/// condomínio + unidade** — mock local apenas; substituir por API autenticada (P1).
 class LocalRegistryStore {
-  static const _residentsKey = 'registry_residents_v1';
-  static const _petsKey = 'registry_pets_v1';
-  static const _vehiclesKey = 'registry_vehicles_v1';
-  static const _seededKey = 'registry_seeded_v1';
-
   final SharedPreferences _prefs;
+  final TenantScope scope;
 
-  LocalRegistryStore(this._prefs);
+  LocalRegistryStore(this._prefs, this.scope);
 
-  static Future<LocalRegistryStore> create() async {
+  String get _residentsKey => '${scope.storageKey}_registry_residents_v2';
+  String get _petsKey => '${scope.storageKey}_registry_pets_v2';
+  String get _vehiclesKey => '${scope.storageKey}_registry_vehicles_v2';
+  String get _seededKey => '${scope.storageKey}_registry_seeded_v2';
+
+  static Future<LocalRegistryStore> create({required TenantScope scope}) async {
     final prefs = await SharedPreferences.getInstance();
-    final store = LocalRegistryStore(prefs);
+    final store = LocalRegistryStore(prefs, scope);
     await store._seedIfNeeded();
     return store;
   }
@@ -30,32 +35,30 @@ class LocalRegistryStore {
         id: 'seed-1',
         name: 'Wallacy Silva',
         email: 'wallacy@condoai.com',
-        cpf: '412.***.***-89',
+        cpf: '412.000.000-89',
         rg: '12.345.678-9',
         cellPhone: '(11) 98765-4321',
+        commercialPhone: '(11) 3444-5555',
         whatsapp: '(11) 98765-4321',
-        address: 'Unidade 402 - Torre A',
-        relationship: 'Titular / Proprietário',
-        photoPath:
-            'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80',
+        billingAddressType: 'condominium',
+        classification: 'proprietario',
+        relationship: 'Titular',
         isOwner: true,
       ),
       ResidentRegistry(
         id: 'seed-2',
         name: 'Larissa Silva',
         email: 'larissa@condoai.com',
-        cpf: '389.***.***-20',
+        cpf: '389.000.000-20',
         cellPhone: '(11) 97654-3210',
         whatsapp: '(11) 97654-3210',
-        address: 'Unidade 402 - Torre A',
+        classification: 'morador',
         relationship: 'Cônjuge',
-        photoPath:
-            'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&auto=format&fit=crop&q=80',
       ),
     ]);
 
     await savePets([
-      PetRegistry(
+      const PetRegistry(
         id: 'pet-1',
         name: 'Thor',
         species: 'Cão',
@@ -64,13 +67,11 @@ class LocalRegistryStore {
         age: '3 anos',
         weight: '32 kg',
         healthInfo: 'Vacinas V8/V10 e antirrábica em dia.',
-        photoPath:
-            'https://images.unsplash.com/photo-1552053831-71594a27632d?w=400&auto=format&fit=crop&q=80',
       ),
     ]);
 
     await saveVehicles([
-      VehicleRegistry(
+      const VehicleRegistry(
         id: 'veh-1',
         licensePlate: 'BRA-4X91',
         model: 'Jeep Compass Limited',
@@ -79,7 +80,7 @@ class LocalRegistryStore {
         parkingSpot: 'Vaga G1 - 42 (Coberta)',
         notes: 'Tag LPR ativa na cancela de veículos.',
       ),
-      VehicleRegistry(
+      const VehicleRegistry(
         id: 'veh-2',
         licensePlate: 'SP-9912',
         model: 'Honda CB 500F',

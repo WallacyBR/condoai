@@ -5,6 +5,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/bokeh_scaffold.dart';
 import '../../../core/widgets/frosted_glass_card.dart';
+import '../../../core/widgets/optional_network_image.dart';
 import 'booking_detail_modal.dart';
 
 /// Modelo simples para gerenciar as reservas ativas
@@ -43,7 +44,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
       amenityName: 'Espaço Gourmet & Churrasqueira',
       date: DateTime.now().add(const Duration(days: 3)),
       period: 'Noite (18:00 às 23:00)',
-      photoUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop&q=80',
+      photoUrl: '',
     ),
   ];
 
@@ -53,7 +54,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
       'name': 'Espaço Gourmet & Churrasqueira',
       'capacity': 'Até 30 convidados',
       'price': 'Taxa de limpeza: R\$ 80,00',
-      'imageUrl': 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop&q=80',
+      'imageUrl': '',
       'rules': 'Proibido som automotivo após as 22h. Entregar limpo e sem resíduos nos ralos.',
     },
     {
@@ -61,7 +62,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
       'name': 'Salão de Festas Principal',
       'capacity': 'Até 80 convidados',
       'price': 'Taxa de limpeza: R\$ 150,00',
-      'imageUrl': 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=600&auto=format&fit=crop&q=80',
+      'imageUrl': '',
       'rules': 'Uso exclusivo para confraternizações sociais. Vistoria obrigatória antes e após o evento.',
     },
     {
@@ -69,7 +70,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
       'name': 'Quadra Poliesportiva',
       'capacity': 'Reserva por hora (Máx 2h/dia)',
       'price': 'Gratuito',
-      'imageUrl': 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=600&auto=format&fit=crop&q=80',
+      'imageUrl': '',
       'rules': 'Uso obrigatório de calçado apropriado para quadra. Luzes apagadas às 22h.',
     },
   ];
@@ -380,13 +381,10 @@ class _BookingsScreenState extends State<BookingsScreen> {
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
                     child: AspectRatio(
                       aspectRatio: 16 / 9,
-                      child: Image.network(
-                        item['imageUrl']!,
+                      child: OptionalNetworkImage(
+                        url: item['imageUrl'] ?? '',
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          color: Colors.grey.shade800,
-                          child: const Icon(Icons.apartment_rounded, size: 50, color: Colors.white54),
-                        ),
+                        placeholderIcon: Icons.apartment_rounded,
                       ),
                     ),
                   ),

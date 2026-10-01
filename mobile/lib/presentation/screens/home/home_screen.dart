@@ -4,6 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/frosted_glass_card.dart';
+import '../../../data/local/occurrence_local_store.dart';
+import '../../../data/local/tenant_scope.dart';
+import '../../../data/models/occurrence_model.dart';
 import '../../../data/models/unit_model.dart';
 import '../../blocs/packages/packages_cubit.dart';
 import '../../blocs/packages/packages_state.dart';
@@ -348,12 +351,17 @@ class HomeScreen extends StatelessWidget {
                     label: 'Ocorrência',
                     color: AppColors.warning,
                     isDark: isDark,
-                    onTap: () {
+                    onTap: () async {
                       HapticFeedback.lightImpact();
-                      Navigator.push(
+                      if (unitState is! UnitLoaded) return;
+                      final scope = TenantScope.fromUnit(unitState.activeUnit);
+                      final item = await Navigator.push<OccurrenceItem>(
                         context,
                         MaterialPageRoute(builder: (_) => const NewOccurrenceScreen()),
                       );
+                      if (item != null) {
+                        OccurrenceLocalStore.add(scope, item);
+                      }
                     },
                   ),
                 ),
@@ -504,7 +512,7 @@ class HomeScreen extends StatelessWidget {
                   date: DateTime.now().add(const Duration(days: 3)),
                   period: 'Tarde (12:00 às 18:00)',
                   status: 'Confirmada',
-                  photoUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop&q=80',
+                  photoUrl: '',
                 );
                 BookingDetailModal.show(context, mockActiveBooking, () {});
               },
@@ -704,14 +712,22 @@ class HomeScreen extends StatelessWidget {
               borderRadius: 20,
               onTap: () {
                 HapticFeedback.lightImpact();
-                OccurrenceDetailModal.show(
-                  context,
-                  protocol: '2026-0891',
-                  title: 'Infiltração na vaga de garagem G2',
-                  category: 'MANUTENÇÃO PREDIAL',
-                  date: 'Criado em 28/Set/2026',
-                  status: 'Em Atendimento',
-                );
+                if (unitState is! UnitLoaded) return;
+                final scope = TenantScope.fromUnit(unitState.activeUnit);
+                final occurrences = OccurrenceLocalStore.load(scope);
+                final recent = occurrences.isNotEmpty
+                    ? occurrences.first
+                    : const OccurrenceItem(
+                        protocol: '2026-0891',
+                        title: 'Infiltração na vaga de garagem G2',
+                        category: 'MANUTENÇÃO PREDIAL',
+                        date: 'Criado em 28/Set/2026',
+                        status: 'Em Atendimento',
+                        description: 'Infiltração identificada na laje da garagem G2.',
+                        location: 'Garagem G2 — Subsolo',
+                        urgency: 'Alta / Urgente',
+                      );
+                OccurrenceDetailModal.show(context, recent);
               },
               child: Row(
                 children: [

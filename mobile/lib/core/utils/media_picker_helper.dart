@@ -9,6 +9,14 @@ class MediaAttachment {
   const MediaAttachment({required this.path, this.isVideo = false});
 }
 
+/// Resultado tipado do sheet de seleção — evita confundir cancelamento com vídeo.
+enum MediaPickerChoice {
+  gallery,
+  camera,
+  video,
+  cancelled,
+}
+
 /// Utilitário reutilizável para seleção de fotos e vídeos via image_picker.
 class MediaPickerHelper {
   static final ImagePicker _picker = ImagePicker();
@@ -25,18 +33,13 @@ class MediaPickerHelper {
     return MediaAttachment(path: file.path, isVideo: true);
   }
 
-  static Future<void> showPhotoVideoPickerSheet(
-    BuildContext context, {
-    required void Function(MediaAttachment attachment) onSelected,
-    int? maxItems,
-    int currentCount = 0,
-  }) async {
-    if (maxItems != null && currentCount >= maxItems) return;
-
-    final source = await showModalBottomSheet<ImageSource?>(
+  static Future<MediaPickerChoice?> showPickerSheet(BuildContext context) {
+    return showModalBottomSheet<MediaPickerChoice>(
       context: context,
       backgroundColor: Colors.transparent,
       useSafeArea: true,
+      isDismissible: true,
+      enableDrag: true,
       builder: (ctx) {
         final isDark = Theme.of(ctx).brightness == Brightness.dark;
         return Container(
@@ -53,17 +56,17 @@ class MediaPickerHelper {
                 ListTile(
                   leading: const Icon(Icons.photo_library_outlined),
                   title: const Text('Galeria de fotos'),
-                  onTap: () => Navigator.pop(ctx, ImageSource.gallery),
+                  onTap: () => Navigator.pop(ctx, MediaPickerChoice.gallery),
                 ),
                 ListTile(
                   leading: const Icon(Icons.photo_camera_outlined),
                   title: const Text('Tirar foto'),
-                  onTap: () => Navigator.pop(ctx, ImageSource.camera),
+                  onTap: () => Navigator.pop(ctx, MediaPickerChoice.camera),
                 ),
                 ListTile(
                   leading: const Icon(Icons.videocam_outlined),
                   title: const Text('Anexar vídeo'),
-                  onTap: () => Navigator.pop(ctx, null),
+                  onTap: () => Navigator.pop(ctx, MediaPickerChoice.video),
                 ),
               ],
             ),
@@ -71,14 +74,29 @@ class MediaPickerHelper {
         );
       },
     );
+  }
 
-    if (!context.mounted) return;
+  static Future<void> showPhotoVideoPickerSheet(
+    BuildContext context, {
+    required void Function(MediaAttachment attachment) onSelected,
+    int? maxItems,
+    int currentCount = 0,
+  }) async {
+    if (maxItems != null && currentCount >= maxItems) return;
+
+    final choice = await showPickerSheet(context);
+    if (!context.mounted || choice == null || choice == MediaPickerChoice.cancelled) return;
 
     MediaAttachment? attachment;
-    if (source == null) {
-      attachment = await pickVideo();
-    } else {
-      attachment = await pickPhoto(source: source);
+    switch (choice) {
+      case MediaPickerChoice.gallery:
+        attachment = await pickPhoto(source: ImageSource.gallery);
+      case MediaPickerChoice.camera:
+        attachment = await pickPhoto(source: ImageSource.camera);
+      case MediaPickerChoice.video:
+        attachment = await pickVideo();
+      case MediaPickerChoice.cancelled:
+        return;
     }
 
     if (attachment != null) {

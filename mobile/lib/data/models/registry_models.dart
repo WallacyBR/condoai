@@ -8,10 +8,19 @@ class ResidentRegistry {
   final String cpf;
   final String personType;
   final String cellPhone;
+  final String commercialPhone;
   final String whatsapp;
+  final String billingAddressType;
+  final String cep;
   final String address;
+  final String neighborhood;
+  final String city;
+  final String state;
   final String notes;
   final String? photoPath;
+  /// Classificação web: proprietario | morador | inquilino
+  final String classification;
+  /// Parentesco na unidade (distinto de classification)
   final String relationship;
   final bool hasFacialAccess;
   final bool canAuthorizeVisitors;
@@ -25,15 +34,33 @@ class ResidentRegistry {
     this.cpf = '',
     this.personType = 'fisica',
     this.cellPhone = '',
+    this.commercialPhone = '',
     this.whatsapp = '',
+    this.billingAddressType = 'condominium',
+    this.cep = '',
     this.address = '',
+    this.neighborhood = '',
+    this.city = '',
+    this.state = '',
     this.notes = '',
     this.photoPath,
+    this.classification = 'morador',
     this.relationship = 'Morador',
     this.hasFacialAccess = true,
     this.canAuthorizeVisitors = true,
     this.isOwner = false,
   });
+
+  String get classificationLabel {
+    switch (classification) {
+      case 'proprietario':
+        return 'Proprietário';
+      case 'inquilino':
+        return 'Inquilino';
+      default:
+        return 'Morador';
+    }
+  }
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -43,10 +70,17 @@ class ResidentRegistry {
         'cpf': cpf,
         'person_type': personType,
         'cell_phone': cellPhone,
+        'commercial_phone': commercialPhone,
         'whatsapp': whatsapp,
+        'billing_address_type': billingAddressType,
+        'cep': cep,
         'address': address,
+        'neighborhood': neighborhood,
+        'city': city,
+        'state': state,
         'notes': notes,
         'photo_path': photoPath,
+        'classification': classification,
         'relationship': relationship,
         'has_facial_access': hasFacialAccess,
         'can_authorize_visitors': canAuthorizeVisitors,
@@ -61,10 +95,17 @@ class ResidentRegistry {
         cpf: json['cpf'] as String? ?? '',
         personType: json['person_type'] as String? ?? 'fisica',
         cellPhone: json['cell_phone'] as String? ?? '',
+        commercialPhone: json['commercial_phone'] as String? ?? '',
         whatsapp: json['whatsapp'] as String? ?? '',
+        billingAddressType: json['billing_address_type'] as String? ?? 'condominium',
+        cep: json['cep'] as String? ?? '',
         address: json['address'] as String? ?? '',
+        neighborhood: json['neighborhood'] as String? ?? '',
+        city: json['city'] as String? ?? '',
+        state: json['state'] as String? ?? '',
         notes: json['notes'] as String? ?? '',
         photoPath: json['photo_path'] as String?,
+        classification: json['classification'] as String? ?? 'morador',
         relationship: json['relationship'] as String? ?? 'Morador',
         hasFacialAccess: json['has_facial_access'] as bool? ?? true,
         canAuthorizeVisitors: json['can_authorize_visitors'] as bool? ?? true,
@@ -78,10 +119,17 @@ class ResidentRegistry {
     String? cpf,
     String? personType,
     String? cellPhone,
+    String? commercialPhone,
     String? whatsapp,
+    String? billingAddressType,
+    String? cep,
     String? address,
+    String? neighborhood,
+    String? city,
+    String? state,
     String? notes,
     String? photoPath,
+    String? classification,
     String? relationship,
     bool? hasFacialAccess,
     bool? canAuthorizeVisitors,
@@ -95,10 +143,17 @@ class ResidentRegistry {
         cpf: cpf ?? this.cpf,
         personType: personType ?? this.personType,
         cellPhone: cellPhone ?? this.cellPhone,
+        commercialPhone: commercialPhone ?? this.commercialPhone,
         whatsapp: whatsapp ?? this.whatsapp,
+        billingAddressType: billingAddressType ?? this.billingAddressType,
+        cep: cep ?? this.cep,
         address: address ?? this.address,
+        neighborhood: neighborhood ?? this.neighborhood,
+        city: city ?? this.city,
+        state: state ?? this.state,
         notes: notes ?? this.notes,
         photoPath: photoPath ?? this.photoPath,
+        classification: classification ?? this.classification,
         relationship: relationship ?? this.relationship,
         hasFacialAccess: hasFacialAccess ?? this.hasFacialAccess,
         canAuthorizeVisitors: canAuthorizeVisitors ?? this.canAuthorizeVisitors,

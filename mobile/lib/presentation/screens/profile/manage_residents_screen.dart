@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/bokeh_scaffold.dart';
 import '../../../core/widgets/frosted_glass_card.dart';
 import '../../../core/widgets/registry_avatar.dart';
 import '../../../data/local/local_registry_store.dart';
+import '../../../data/local/tenant_scope.dart';
 import '../../../data/models/registry_models.dart';
+import '../../blocs/unit/unit_cubit.dart';
+import '../../blocs/unit/unit_state.dart';
 import 'resident_form_screen.dart';
 
 /// Gestão de moradores/dependentes com formulário completo e persistência local.
@@ -28,8 +32,16 @@ class _ManageResidentsScreenState extends State<ManageResidentsScreen> {
     _load();
   }
 
+  TenantScope? _scopeFromContext() {
+    final unitState = context.read<UnitCubit>().state;
+    if (unitState is! UnitLoaded) return null;
+    return TenantScope.fromUnit(unitState.activeUnit);
+  }
+
   Future<void> _load() async {
-    final store = await LocalRegistryStore.create();
+    final scope = _scopeFromContext();
+    if (scope == null) return;
+    final store = await LocalRegistryStore.create(scope: scope);
     final items = await store.loadResidents();
     if (mounted) {
       setState(() {
@@ -146,13 +158,22 @@ class _ManageResidentsScreenState extends State<ManageResidentsScreen> {
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  '${resident.relationship} • ${resident.cpf.isNotEmpty ? resident.cpf : resident.rg}',
+                                  '${resident.classificationLabel} • ${resident.relationship}',
                                   style: AppTextStyles.labelSmall.copyWith(
                                     color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
+                                if (resident.cpf.isNotEmpty) ...[
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    'CPF: ${resident.cpf}',
+                                    style: AppTextStyles.labelSmall,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
                                 if (resident.whatsapp.isNotEmpty) ...[
                                   const SizedBox(height: 4),
                                   Text(

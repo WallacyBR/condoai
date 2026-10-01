@@ -6,6 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/bokeh_scaffold.dart';
 import '../../../core/widgets/frosted_glass_card.dart';
+import '../../../core/widgets/optional_network_image.dart';
 import '../../../data/models/package_item_model.dart';
 import '../../blocs/packages/packages_cubit.dart';
 import '../../blocs/packages/packages_state.dart';
@@ -233,13 +234,10 @@ class _PackageCard extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.network(
-                    package.photoUrl,
+                  OptionalNetworkImage(
+                    url: package.photoUrl,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
-                      child: const Icon(Icons.inventory_2_outlined, size: 48),
-                    ),
+                    placeholderIcon: Icons.inventory_2_outlined,
                   ),
                   Positioned(
                     top: 12,

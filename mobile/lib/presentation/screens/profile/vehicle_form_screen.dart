@@ -166,10 +166,11 @@ class _VehicleFormScreenState extends State<VehicleFormScreen> {
                 ],
               ),
               const SizedBox(height: 12),
+              // Vagas mock locais — API /parking-spots será integrada em P1.
               DropdownButtonFormField<String>(
                 initialValue: _parkingSpot,
                 decoration: InputDecoration(
-                  labelText: 'Vaga de Estacionamento',
+                  labelText: 'Vaga de Estacionamento (mock local)',
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
                 ),
                 items: _mockParkingSpots

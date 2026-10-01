@@ -15,7 +15,7 @@ class VisitorCallCubit extends Cubit<VisitorCallState> {
       visitorType: 'Entrega Encomenda',
       company: 'Mercado Livre',
       visitorDocument: '384.920.118-22',
-      visitorPhotoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80',
+      visitorPhotoUrl: null,
       vehiclePlate: 'BRA2E19',
       vehicleModel: 'Fiat Fiorino Branca',
       requestTime: DateTime.now(),

@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/bokeh_scaffold.dart';
 import '../../../core/widgets/frosted_glass_card.dart';
 import '../../../core/widgets/registry_avatar.dart';
 import '../../../data/local/local_registry_store.dart';
+import '../../../data/local/tenant_scope.dart';
 import '../../../data/models/registry_models.dart';
+import '../../blocs/unit/unit_cubit.dart';
+import '../../blocs/unit/unit_state.dart';
 import 'pet_form_screen.dart';
 
 /// Gestão de pets com formulário completo e persistência local.
@@ -29,7 +33,10 @@ class _ManagePetsScreenState extends State<ManagePetsScreen> {
   }
 
   Future<void> _load() async {
-    final store = await LocalRegistryStore.create();
+    final unitState = context.read<UnitCubit>().state;
+    if (unitState is! UnitLoaded) return;
+    final scope = TenantScope.fromUnit(unitState.activeUnit);
+    final store = await LocalRegistryStore.create(scope: scope);
     final items = await store.loadPets();
     if (mounted) {
       setState(() {

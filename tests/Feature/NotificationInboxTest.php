@@ -181,9 +181,10 @@ class NotificationInboxTest extends TestCase
     public function test_denies_access_without_tenant_membership(): void
     {
         $outsider = User::factory()->create([
-            'condominium_id' => null,
+            'condominium_id' => $this->condominiumB->id,
             'profile_id' => $this->profile->id,
         ]);
+        $outsider->condominiums()->sync([$this->condominiumB->id]);
 
         $response = $this->actingAs($outsider, 'api')
             ->withTenantHeader($this->condominiumA)

@@ -255,6 +255,7 @@ export default {
     const updateSelected = () => {
       selectedCondoId.value = localStorage.getItem('selectedCondominium');
       selectedCondoName.value = localStorage.getItem('selectedCondominiumName');
+      loadNotificationsFromServer();
     };
     
     // Escutar mudanças no localStorage

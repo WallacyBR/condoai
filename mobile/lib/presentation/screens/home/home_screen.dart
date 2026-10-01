@@ -4,12 +4,26 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/frosted_glass_card.dart';
+import '../../../data/local/occurrence_local_store.dart';
+import '../../../data/local/tenant_scope.dart';
+import '../../../data/models/occurrence_model.dart';
 import '../../../data/models/unit_model.dart';
+import '../../blocs/packages/packages_cubit.dart';
+import '../../blocs/packages/packages_state.dart';
 import '../../blocs/unit/unit_cubit.dart';
 import '../../blocs/unit/unit_state.dart';
 import '../../blocs/visitor_call/visitor_call_cubit.dart';
+import '../bookings/booking_detail_modal.dart';
+import '../bookings/bookings_screen.dart';
+import '../gates/remote_gate_modal.dart';
+import '../invites/create_invite_screen.dart';
+import '../notices/new_occurrence_screen.dart';
+import '../notices/notice_detail_modal.dart';
+import '../notices/occurrence_detail_modal.dart';
+import '../notifications/notifications_screen.dart';
+import '../packages/packages_screen.dart';
 
-/// Tela Inicial do Morador (Airbnb Style com Glassmorphism & Bokeh)
+/// Tela Inicial do Morador (Airbnb Style com Glassmorphism, Bokeh e Resumo da Vida Condominial)
 class HomeScreen extends StatelessWidget {
   final VoidCallback onOpenQuickAction;
 
@@ -104,7 +118,7 @@ class HomeScreen extends StatelessWidget {
         return ListView(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 120),
           children: [
-            // 1. Cabeçalho de Boas-Vindas
+            // 1. Cabeçalho de Boas-Vindas & Central de Notificações
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -145,7 +159,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                   ],
                 ),
-                // Badge de Papel + Botão de Notificação
+                // Badge de Papel + Botão do Sino Funcional
                 Row(
                   children: [
                     Container(
@@ -164,21 +178,49 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    Container(
-                      width: 42,
-                      height: 42,
-                      decoration: BoxDecoration(
-                        color: isDark ? const Color(0x33FFFFFF) : Colors.white,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: isDark ? AppColors.darkCardBorder : AppColors.lightCardBorder,
+                    const SizedBox(width: 10),
+                    GestureDetector(
+                      onTap: () {
+                        HapticFeedback.lightImpact();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const NotificationsScreen(),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: isDark ? const Color(0x33FFFFFF) : Colors.white,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: isDark ? AppColors.darkCardBorder : AppColors.lightCardBorder,
+                          ),
                         ),
-                      ),
-                      child: Icon(
-                        Icons.notifications_none_rounded,
-                        color: isDark ? Colors.white : AppColors.lightTextPrimary,
-                        size: 22,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Icon(
+                              Icons.notifications_none_rounded,
+                              color: isDark ? Colors.white : AppColors.lightTextPrimary,
+                              size: 22,
+                            ),
+                            Positioned(
+                              top: 9,
+                              right: 9,
+                              child: Container(
+                                width: 8,
+                                height: 8,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.danger,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -230,7 +272,7 @@ class HomeScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Simule a chegada de um visitante na portaria agora',
+                          'Simule a chegada de um visitante com vídeo ao vivo',
                           style: AppTextStyles.labelSmall.copyWith(
                             color: isDark
                                 ? AppColors.darkTextSecondary
@@ -249,203 +291,525 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 22),
 
-            // 3. Grid de Cartões Rápidos Estilo Airbnb
+            // 3. Atalhos Rápidos da Unidade (Acesso Direto)
             Text(
-              'Acesso & Serviços',
+              'Ações Rápidas',
               style: AppTextStyles.titleSmall.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 12),
-
-            // Card 1: Liberação Rápida de Visitante
-            FrostedGlassCard(
-              onTap: onOpenQuickAction,
-              child: Row(
-                children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: isDark ? const Color(0x336366F1) : AppColors.primarySoft,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: const Icon(
-                      Icons.person_add_alt_1_rounded,
-                      color: AppColors.primary,
-                      size: 26,
-                    ),
+            Row(
+              children: [
+                Expanded(
+                  child: _QuickActionButton(
+                    icon: Icons.person_add_alt_1_rounded,
+                    label: 'Convidar',
+                    color: AppColors.primary,
+                    isDark: isDark,
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const CreateInviteScreen()),
+                      );
+                    },
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Liberação Rápida de Visitante',
-                          style: AppTextStyles.titleSmall,
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          'Gere QR Code de acesso ou passe expresso',
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            color: isDark
-                                ? AppColors.darkTextSecondary
-                                : AppColors.lightTextSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _QuickActionButton(
+                    icon: Icons.lock_open_rounded,
+                    label: 'Portão',
+                    color: AppColors.success,
+                    isDark: isDark,
+                    onTap: () => RemoteGateModal.show(context),
                   ),
-                  const Icon(Icons.arrow_forward_ios_rounded, size: 14),
-                ],
-              ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _QuickActionButton(
+                    icon: Icons.calendar_month_rounded,
+                    label: 'Reservar',
+                    color: AppColors.info,
+                    isDark: isDark,
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const BookingsScreen()),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _QuickActionButton(
+                    icon: Icons.report_problem_outlined,
+                    label: 'Ocorrência',
+                    color: AppColors.warning,
+                    isDark: isDark,
+                    onTap: () async {
+                      HapticFeedback.lightImpact();
+                      if (unitState is! UnitLoaded) return;
+                      final scope = TenantScope.fromUnit(unitState.activeUnit);
+                      final item = await Navigator.push<OccurrenceItem>(
+                        context,
+                        MaterialPageRoute(builder: (_) => const NewOccurrenceScreen()),
+                      );
+                      if (item != null) {
+                        OccurrenceLocalStore.add(scope, item);
+                      }
+                    },
+                  ),
+                ),
+              ],
             ),
 
+            const SizedBox(height: 26),
+
+            // 4. Seção Resumo da Vida Condominial
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Resumo do Condomínio',
+                  style: AppTextStyles.titleSmall.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'Atualizado agora',
+                  style: AppTextStyles.labelSmall.copyWith(
+                    color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 12),
 
-            // Card 2: Encomendas
+            // Item 1: Encomendas
+            BlocBuilder<PackagesCubit, PackagesState>(
+              builder: (context, packageState) {
+                final pendingCount = packageState is PackagesLoaded
+                    ? packageState.pendingCount
+                    : 2;
+
+                return FrostedGlassCard(
+                  borderRadius: 20,
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const PackagesScreen()),
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: isDark ? const Color(0x22FFFFFF) : const Color(0xFFF1F5F9),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Icon(
+                          Icons.inventory_2_outlined,
+                          color: isDark ? Colors.white70 : const Color(0xFF334155),
+                          size: 22,
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    pendingCount > 0
+                                        ? '$pendingCount ${pendingCount > 1 ? 'Encomendas' : 'Encomenda'} na Portaria'
+                                        : 'Nenhuma Encomenda',
+                                    style: AppTextStyles.titleSmall.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                if (pendingCount > 0)
+                                  Flexible(
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Container(
+                                          width: 6,
+                                          height: 6,
+                                          decoration: const BoxDecoration(
+                                            color: AppColors.warning,
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 5),
+                                        Flexible(
+                                          child: Text(
+                                            'Aguardando',
+                                            style: TextStyle(
+                                              fontSize: 11,
+                                              color: isDark ? Colors.white70 : AppColors.lightTextSecondary,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(height: 3),
+                            Text(
+                              pendingCount > 0
+                                  ? 'Fotos da entrega e QR Code de liberação'
+                                  : 'Histórico de entregas recebidas',
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                                fontSize: 12,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Icon(
+                        Icons.chevron_right_rounded,
+                        color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                        size: 20,
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+
+            const SizedBox(height: 10),
+
+            // Item 2: Próxima Reserva
             FrostedGlassCard(
+              borderRadius: 20,
+              onTap: () {
+                HapticFeedback.lightImpact();
+                final mockActiveBooking = BookingItem(
+                  id: 'RES-9981',
+                  amenityName: 'Espaço Gourmet & Churrasqueira 02',
+                  date: DateTime.now().add(const Duration(days: 3)),
+                  period: 'Tarde (12:00 às 18:00)',
+                  status: 'Confirmada',
+                  photoUrl: '',
+                );
+                BookingDetailModal.show(context, mockActiveBooking, () {});
+              },
               child: Row(
                 children: [
                   Container(
-                    width: 48,
-                    height: 48,
+                    width: 44,
+                    height: 44,
                     decoration: BoxDecoration(
-                      color: isDark ? const Color(0x33F59E0B) : AppColors.warningLight,
-                      borderRadius: BorderRadius.circular(16),
+                      color: isDark ? const Color(0x22FFFFFF) : const Color(0xFFF1F5F9),
+                      borderRadius: BorderRadius.circular(14),
                     ),
-                    child: const Icon(
-                      Icons.inventory_2_outlined,
-                      color: AppColors.warning,
-                      size: 26,
+                    child: Icon(
+                      Icons.calendar_today_outlined,
+                      color: isDark ? Colors.white70 : const Color(0xFF334155),
+                      size: 22,
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 14),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
-                            Text(
-                              '2 Encomendas na Portaria',
-                              style: AppTextStyles.titleSmall,
-                            ),
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: AppColors.warning,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: const Text(
-                                'Aguardando',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.bold,
+                            Expanded(
+                              child: Text(
+                                'Espaço Gourmet & Churrasqueira',
+                                style: AppTextStyles.titleSmall.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
                                 ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Flexible(
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: 6,
+                                    height: 6,
+                                    decoration: const BoxDecoration(
+                                      color: AppColors.success,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Flexible(
+                                    child: Text(
+                                      'Confirmada',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: isDark ? Colors.white70 : AppColors.lightTextSecondary,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 2),
+                        const SizedBox(height: 3),
                         Text(
-                          'Código de retirada: #4029-A (Amazon & Mercado Livre)',
+                          'Sábado, 12:00 às 18:00 • Voucher e QR Code',
                           style: AppTextStyles.bodyMedium.copyWith(
-                            color: isDark
-                                ? AppColors.darkTextSecondary
-                                : AppColors.lightTextSecondary,
+                            color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                            fontSize: 12,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
+                  ),
+                  const SizedBox(width: 6),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                    size: 20,
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
 
-            // Card 3: Reservas de Áreas Comuns
+            // Item 3: Mural / Último Comunicado
             FrostedGlassCard(
+              borderRadius: 20,
+              onTap: () {
+                HapticFeedback.lightImpact();
+                NoticeDetailModal.show(
+                  context,
+                  title: 'Manutenção Preventiva dos Elevadores',
+                  category: 'COMUNICADO IMPORTANTE',
+                  date: 'Ontem às 14:30',
+                  content: 'Prezados moradores,\n\nInformamos que nesta sexta-feira a partir das 09h realizaremos a manutenção preventiva dos elevadores sociais da Torre A. O serviço tem previsão de término às 13h.\n\nDurante o período, utilizem o elevador de serviço.\n\nAtenciosamente,\nAdministração',
+                  author: 'Administração Predial',
+                  initialRead: false,
+                );
+              },
               child: Row(
                 children: [
                   Container(
-                    width: 48,
-                    height: 48,
+                    width: 44,
+                    height: 44,
                     decoration: BoxDecoration(
-                      color: isDark ? const Color(0x330EA5E9) : const Color(0xFFF0F9FF),
-                      borderRadius: BorderRadius.circular(16),
+                      color: isDark ? const Color(0x22FFFFFF) : const Color(0xFFF1F5F9),
+                      borderRadius: BorderRadius.circular(14),
                     ),
-                    child: const Icon(
-                      Icons.outdoor_grill_outlined,
-                      color: AppColors.info,
-                      size: 26,
+                    child: Icon(
+                      Icons.campaign_outlined,
+                      color: isDark ? Colors.white70 : const Color(0xFF334155),
+                      size: 22,
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 14),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Reservar Espaço Gourmet',
-                          style: AppTextStyles.titleSmall,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Manutenção dos Elevadores',
+                                style: AppTextStyles.titleSmall.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Flexible(
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: 6,
+                                    height: 6,
+                                    decoration: const BoxDecoration(
+                                      color: AppColors.danger,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Flexible(
+                                    child: Text(
+                                      'Aviso',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: isDark ? Colors.white70 : AppColors.lightTextSecondary,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 2),
+                        const SizedBox(height: 3),
                         Text(
-                          'Churrasqueira, Salão de Festas e Quadra',
+                          'Torre A • Parada parcial nesta sexta às 09h',
                           style: AppTextStyles.bodyMedium.copyWith(
-                            color: isDark
-                                ? AppColors.darkTextSecondary
-                                : AppColors.lightTextSecondary,
+                            color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                            fontSize: 12,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
                   ),
-                  const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+                  const SizedBox(width: 6),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                    size: 20,
+                  ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
 
-            // Card Informativo das Regras do Perfil Atual
+            // Item 4: Ocorrência Recente
             FrostedGlassCard(
-              customColor: isDark
-                  ? const Color(0x336366F1)
-                  : const Color(0x0D4F46E5),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              borderRadius: 20,
+              onTap: () {
+                HapticFeedback.lightImpact();
+                if (unitState is! UnitLoaded) return;
+                final scope = TenantScope.fromUnit(unitState.activeUnit);
+                final occurrences = OccurrenceLocalStore.load(scope);
+                final recent = occurrences.isNotEmpty
+                    ? occurrences.first
+                    : const OccurrenceItem(
+                        protocol: '2026-0891',
+                        title: 'Infiltração na vaga de garagem G2',
+                        category: 'MANUTENÇÃO PREDIAL',
+                        date: 'Criado em 28/Set/2026',
+                        status: 'Em Atendimento',
+                        description: 'Infiltração identificada na laje da garagem G2.',
+                        location: 'Garagem G2 — Subsolo',
+                        urgency: 'Alta / Urgente',
+                      );
+                OccurrenceDetailModal.show(context, recent);
+              },
+              child: Row(
                 children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.verified_user_outlined, color: AppColors.primary, size: 20),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Regras Ativas: ${currentRole.label}',
-                        style: AppTextStyles.titleSmall.copyWith(
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    currentRole == ResidentRole.inquilino
-                        ? '• Acesso total a portaria, convites e reservas do dia a dia.\n• Boletos de taxas estruturais são restritos ao proprietário.\n• Votações em assembleias liberadas mediante procuração.'
-                        : currentRole == ResidentRole.proprietario
-                            ? '• Acesso financeiro completo, boletos e cotas extraordinárias.\n• Direito a voto direto em todas as assembleias virtuais.\n• Gestão de titulares e contratos da unidade.'
-                            : '• Acesso a interfone virtual, convites e reservas de lazer.',
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-                      height: 1.4,
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: isDark ? const Color(0x22FFFFFF) : const Color(0xFFF1F5F9),
+                      borderRadius: BorderRadius.circular(14),
                     ),
+                    child: Icon(
+                      Icons.chat_bubble_outline_rounded,
+                      color: isDark ? Colors.white70 : const Color(0xFF334155),
+                      size: 22,
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Infiltração na Garagem G2',
+                                style: AppTextStyles.titleSmall.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Flexible(
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: 6,
+                                    height: 6,
+                                    decoration: const BoxDecoration(
+                                      color: AppColors.primary,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Flexible(
+                                    child: Text(
+                                      'Em Análise',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: isDark ? Colors.white70 : AppColors.lightTextSecondary,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          'Protocolo #2026-0891 • Síndico respondeu há 2h',
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                            fontSize: 12,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                    size: 20,
                   ),
                 ],
               ),
@@ -453,6 +817,68 @@ class HomeScreen extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+/// Widget auxiliar de Botão de Ação Rápida
+class _QuickActionButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final bool isDark;
+  final VoidCallback onTap;
+
+  const _QuickActionButton({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.isDark,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0x2AFFFFFF) : Colors.white.withAlpha(210),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: isDark ? AppColors.darkCardBorder : AppColors.lightCardBorder,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(isDark ? 30 : 10),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: color.withAlpha(isDark ? 45 : 28),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: color, size: 20),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: AppTextStyles.labelSmall.copyWith(
+                fontWeight: FontWeight.w600,
+                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

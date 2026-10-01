@@ -42,5 +42,13 @@ class TenantContext
     public static function clear(): void
     {
         self::$condominium = null;
+
+        if (app()->bound('currentCondominium')) {
+            app()->forgetInstance('currentCondominium');
+        }
+
+        if (app()->bound(self::class)) {
+            app()->forgetInstance(self::class);
+        }
     }
 }

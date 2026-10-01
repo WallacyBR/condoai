@@ -78,6 +78,11 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    const requestUrl = error.config?.url || '';
+    if (requestUrl.includes('/auth/refresh') || requestUrl.includes('/auth/login')) {
+      return Promise.reject(error);
+    }
+
     try {
       const refreshed = await handleApiError(error);
 
@@ -119,22 +124,25 @@ let isHandling401 = false;
 
 export async function handleApiError(error) {
   if (error.status === 401 || error?.response?.status === 401) {
-    // Se já estamos tratando um erro 401, evitar loop
+    const authInstance = await getAuth();
+
+    // Se já estamos tratando um erro 401, aguardar refreshPromise em andamento se existir
     if (isHandling401) {
+      if (authInstance.refreshPromise) {
+        return await authInstance.refreshPromise;
+      }
       return false;
     }
 
     isHandling401 = true;
 
     try {
-      const authInstance = await getAuth();
       const refreshed = await authInstance.refreshToken();
       if (refreshed) {
         return true;
       }
 
       await authInstance.logout();
-      await router.push({ name: 'login' });
       return false;
     } finally {
       isHandling401 = false;

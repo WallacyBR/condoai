@@ -86,7 +86,7 @@
         </svg>
         <h3 class="mt-2 text-base font-medium text-slate-900 dark:text-slate-100">Nenhuma unidade encontrada</h3>
         <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          {{ search ? 'Tente ajustar sua busca ou limpar os filtros aplicados' : 'Utilize o botão "Gerenciar Unidades" no cabeçalho para criar novas unidades' }}
+          {{ (filters.search || search) ? 'Tente ajustar sua busca ou limpar os filtros aplicados' : 'Utilize o botão "Gerenciar Unidades" no cabeçalho para criar novas unidades' }}
         </p>
       </div>
 
@@ -378,6 +378,7 @@ export default {
       unitStats,
       unitStatsHelpers,
       filters,
+      search,
       statusOptions,
       handleClearFilters,
       BuildingIcon

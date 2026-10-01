@@ -29,14 +29,19 @@ class AuthService {
 
         if (this.token) {
             markTenantHydrationPending();
-            this.setupTokenRefresh();
-            this.fetchCurrentUser().finally(() => resolveTenantHydration());
+            if (this.isTokenExpired(this.token)) {
+                this.refreshToken().finally(() => resolveTenantHydration());
+            } else {
+                this.setupTokenRefresh();
+                this.fetchCurrentUser().finally(() => resolveTenantHydration());
+            }
         }
     }
 
     decodeToken(token) {
         try {
             const base64Url = token.split('.')[1];
+            if (!base64Url) return null;
             const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
             const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
                 return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
@@ -45,6 +50,14 @@ class AuthService {
         } catch (e) {
             return null;
         }
+    }
+
+    isTokenExpired(token = this.token) {
+        if (!token) return true;
+        if (!token.includes('.')) return false; // Suporte a tokens em ambiente de teste
+        const decoded = this.decodeToken(token);
+        if (!decoded || !decoded.exp) return false;
+        return Date.now() >= (decoded.exp * 1000);
     }
 
     setupTokenRefresh() {
@@ -136,7 +149,6 @@ class AuthService {
             return await this.refreshPromise;
         }
 
-        // Evitar múltiplos refreshes simultâneos
         if (this.isRefreshing) {
             return false;
         }
@@ -150,6 +162,7 @@ class AuthService {
             return await this.refreshPromise;
         } finally {
             this.refreshPromise = null;
+            this.isRefreshing = false;
         }
     }
 
@@ -187,8 +200,10 @@ class AuthService {
             this.syncCurrentCondominium({ user: response.data });
             return this.hydrateTenant(response.data);
         } catch (error) {
-            console.error('Erro ao obter dados do usuário:', error);
             this.setUser(null);
+            if (error?.response?.status === 401) {
+                await this._handleAuthFailure();
+            }
             return { needsSelection: true };
         }
     }
@@ -219,7 +234,13 @@ class AuthService {
         resolveTenantHydration();
         
         const routerInstance = await getRouter();
-        routerInstance.push({ name: 'login' });
+        if (routerInstance && routerInstance.currentRoute?.value?.name !== 'login' && routerInstance.currentRoute?.value?.path !== '/login') {
+            try {
+                await routerInstance.push({ name: 'login' });
+            } catch (e) {
+                // Silencia erros de navegação já cancelada ou abortada
+            }
+        }
     }
 
     async logout() {
@@ -240,12 +261,7 @@ class AuthService {
 
     isAuthenticated() {
         if (!this.token) return false;
-        
-        const decoded = this.decodeToken(this.token);
-        if (!decoded || !decoded.exp) return false;
-        
-        const now = Date.now();
-        return now < this.tokenExpirationTime;
+        return !this.isTokenExpired(this.token);
     }
 
     getToken() {

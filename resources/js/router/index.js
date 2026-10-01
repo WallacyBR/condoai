@@ -617,7 +617,33 @@ const router = createRouter({
 
 // Navigation Guard
 router.beforeEach(async (to, from, next) => {
-  const isAuthenticated = !!localStorage.getItem('token');
+  const token = localStorage.getItem('token');
+  let isAuthenticated = !!token;
+
+  if (token && token.includes('.')) {
+    try {
+      const base64Url = token.split('.')[1];
+      if (base64Url) {
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        const decoded = JSON.parse(jsonPayload);
+        if (decoded && decoded.exp && Date.now() >= decoded.exp * 1000) {
+          const authModule = await import('../services/auth');
+          const authService = authModule.default?.default || authModule.default || authModule;
+          const refreshed = await authService.refreshToken();
+          isAuthenticated = refreshed && !!localStorage.getItem('token');
+          if (!isAuthenticated) {
+            localStorage.removeItem('token');
+          }
+        }
+      }
+    } catch (e) {
+      // Se falhar a decodificação do JWT, mantém fluxo
+    }
+  }
+
   const { useTenantStore } = await import('../stores/tenant');
   const tenantStore = useTenantStore();
   tenantStore.syncFromStorage();

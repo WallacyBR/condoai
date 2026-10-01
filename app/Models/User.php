@@ -13,6 +13,8 @@ class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    public const STAFF_PROFILE_NAMES = ['SysOp', 'Administradora', 'Síndico', 'Zelador'];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -129,6 +131,24 @@ class User extends Authenticatable implements JWTSubject
             ->toString();
 
         return in_array($profileName, ['sysop', 'super admin', 'super administrador'], true);
+    }
+
+    public function hasStaffProfile(): bool
+    {
+        return in_array($this->profile?->name, self::STAFF_PROFILE_NAMES, true);
+    }
+
+    public function residents()
+    {
+        return $this->hasMany(Resident::class);
+    }
+
+    public function residentInCondominium(int $condominiumId): ?Resident
+    {
+        return $this->residents()
+            ->withoutGlobalScopes()
+            ->where('condominium_id', $condominiumId)
+            ->first();
     }
 
     public function canModule(string $moduleName, string $ability): bool

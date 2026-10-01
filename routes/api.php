@@ -60,6 +60,7 @@ Route::prefix('public/supplier-quotes')->middleware('throttle:30,1')->group(func
 Route::get('public/invites/{token}', [AccessRequestController::class, 'publicInvite'])->middleware('throttle:60,1');
 Route::middleware(['auth:api', 'tenant'])->group(function () {
     Route::get('auth/current-condominium', [AuthController::class, 'currentCondominium']);
+    Route::get('my-apartments', [AuthController::class, 'myApartments']);
     Route::get('profile', [ProfileSettingsController::class, 'show']);
     Route::put('profile', [ProfileSettingsController::class, 'update']);
     Route::put('profile/password', [ProfileSettingsController::class, 'updatePassword']);
@@ -68,6 +69,7 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
     Route::get('condominiums/{condominium}/stats', [CondominiumController::class, 'stats']);
     Route::apiResource('condominiums', CondominiumController::class);
     Route::apiResource('residents', ResidentController::class);
+    Route::put('residents/{resident}/link-user', [ResidentController::class, 'linkUser']);
     Route::apiResource('towers', TowerController::class);
     Route::apiResource('blocks', BlockController::class);
     Route::apiResource('apartments', ApartmentController::class);

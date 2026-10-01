@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Concerns\ResolvesTenantCondominium;
 use App\Models\User;
 use App\Services\Security\AccessLogService;
+use App\Services\UserApartmentLinkService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -12,8 +14,11 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    public function __construct()
-    {
+    use ResolvesTenantCondominium;
+
+    public function __construct(
+        private readonly UserApartmentLinkService $apartmentLinkService
+    ) {
         $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
@@ -149,5 +154,20 @@ class AuthController extends Controller
                 'domain' => $condominium->domain,
             ],
         ]);
+    }
+
+    /**
+     * Lista unidades do usuário autenticado no tenant atual (contrato Flutter /my-apartments).
+     *
+     * @authenticated
+     */
+    public function myApartments(Request $request)
+    {
+        $condominiumId = $this->tenantCondominiumId($request);
+        $user = Auth::guard('api')->user();
+
+        $units = $this->apartmentLinkService->myApartmentsForUser($user, $condominiumId);
+
+        return response()->json(['data' => $units]);
     }
 }

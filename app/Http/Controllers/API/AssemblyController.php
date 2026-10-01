@@ -8,6 +8,7 @@ use App\Models\Apartment;
 use App\Models\Assembly;
 use App\Models\AssemblyAgenda;
 use App\Models\AssemblyVote;
+use App\Services\UserApartmentLinkService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -21,6 +22,11 @@ use Illuminate\Validation\Rule;
 class AssemblyController extends Controller
 {
     use ResolvesTenantCondominium;
+
+    public function __construct(
+        private readonly UserApartmentLinkService $apartmentLinkService
+    ) {
+    }
 
     /**
      * Listar assembleias do condomínio autenticado.
@@ -130,24 +136,10 @@ class AssemblyController extends Controller
 
         $assembly->load(['creator:id,name', 'agendas.votes']);
 
-        // Obter apartamentos vinculados ao usuário autenticado para verificar se já votou
-        $userApartmentIds = DB::table('apartment_resident')
-            ->join('residents', 'residents.id', '=', 'apartment_resident.resident_id')
-            ->where('residents.user_id', Auth::id())
-            ->where('apartment_resident.active', true)
-            ->pluck('apartment_resident.apartment_id')
-            ->toArray();
-
-        // Se não encontrou por resident_id, verifica se o usuário é proprietário/inquilino direto
-        if (empty($userApartmentIds)) {
-            $userApartmentIds = Apartment::where('condominium_id', $condoId)
-                ->where(function ($q) {
-                    $q->where('owner_id', Auth::id())
-                        ->orWhere('tenant_id', Auth::id());
-                })
-                ->pluck('id')
-                ->toArray();
-        }
+        $userApartmentIds = $this->apartmentLinkService->apartmentIdsForUser(
+            (int) Auth::id(),
+            $condoId
+        );
 
         $agendasData = $assembly->agendas->map(function ($agenda) use ($userApartmentIds) {
             $tally = $agenda->tallyResults();
@@ -260,10 +252,8 @@ class AssemblyController extends Controller
         $condoId = $this->tenantCondominiumId($request);
         abort_if($assembly->condominium_id !== $condoId, 404);
 
-        // Fechar todas as pautas em aberto
         $assembly->agendas()->where('status', 'aberta')->update(['status' => 'encerrada']);
 
-        // Gerar ata preliminar automática
         $minutes = $this->buildPreliminaryMinutes($assembly);
 
         $assembly->update([
@@ -377,13 +367,21 @@ class AssemblyController extends Controller
             'proxy_document' => 'nullable|string',
         ]);
 
-        // Verificar opções válidas
+        if (! $this->apartmentLinkService->userCanActOnApartment(
+            (int) Auth::id(),
+            $condoId,
+            (int) $validated['apartment_id']
+        )) {
+            return response()->json([
+                'message' => 'Você não possui vínculo autorizado com esta unidade neste condomínio.',
+            ], 403);
+        }
+
         $validOptions = is_array($agenda->options) ? $agenda->options : ['A favor', 'Contra', 'Abstenção'];
         if (! in_array($validated['chosen_option'], $validOptions)) {
             return response()->json(['message' => 'Opção de voto inválida.'], 422);
         }
 
-        // Verificar se a unidade já votou
         $existingVote = AssemblyVote::where('assembly_agenda_id', $agenda->id)
             ->where('apartment_id', $validated['apartment_id'])
             ->first();
@@ -392,7 +390,6 @@ class AssemblyController extends Controller
             return response()->json(['message' => 'Esta unidade já registrou seu voto nesta pauta.'], 422);
         }
 
-        // Calcular peso (se fração ideal ou 1.0000)
         $weight = 1.0000;
         if ($agenda->weight_type === 'fracao_ideal') {
             $apt = Apartment::find($validated['apartment_id']);

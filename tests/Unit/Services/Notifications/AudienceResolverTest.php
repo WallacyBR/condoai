@@ -6,6 +6,7 @@ use App\Enums\ResidentClassification;
 use App\Models\Apartment;
 use App\Models\Block;
 use App\Models\Condominium;
+use App\Models\Notice;
 use App\Models\Profile;
 use App\Models\Resident;
 use App\Models\User;
@@ -202,5 +203,59 @@ class AudienceResolverTest extends TestCase
         $this->assertCount(1, $users);
         $this->assertTrue($users->contains('id', $tenantUser->id));
         $this->assertFalse($users->contains('id', $ownerUser->id));
+    }
+
+    public function test_users_for_notice_send_to_all_returns_membership(): void
+    {
+        $condominium = Condominium::factory()->create();
+        $first = User::factory()->create(['condominium_id' => $condominium->id]);
+        $second = User::factory()->create(['condominium_id' => $condominium->id]);
+        $first->condominiums()->sync([$condominium->id]);
+        $second->condominiums()->sync([$condominium->id]);
+
+        $notice = Notice::factory()->create([
+            'condominium_id' => $condominium->id,
+            'send_to_all' => true,
+        ]);
+
+        $users = $this->resolver->usersForNotice($condominium->id, $notice);
+
+        $this->assertCount(2, $users);
+    }
+
+    public function test_users_for_notice_apartment_target_expands_via_q1(): void
+    {
+        $condominium = Condominium::factory()->create();
+        $profile = Profile::factory()->create(['name' => 'Morador']);
+        $block = Block::factory()->create(['condominium_id' => $condominium->id]);
+
+        $apartment = Apartment::factory()->create([
+            'condominium_id' => $condominium->id,
+            'block_id' => $block->id,
+        ]);
+
+        $ownerUser = User::factory()->create([
+            'condominium_id' => $condominium->id,
+            'profile_id' => $profile->id,
+        ]);
+        $ownerUser->condominiums()->sync([$condominium->id]);
+
+        $ownerResident = Resident::factory()->proprietario()->create([
+            'condominium_id' => $condominium->id,
+            'user_id' => $ownerUser->id,
+        ]);
+
+        $apartment->update(['owner_id' => $ownerResident->id]);
+
+        $notice = Notice::factory()->create([
+            'condominium_id' => $condominium->id,
+            'send_to_all' => false,
+        ]);
+        $notice->apartments()->attach($apartment->id);
+
+        $users = $this->resolver->usersForNotice($condominium->id, $notice);
+
+        $this->assertCount(1, $users);
+        $this->assertTrue($users->contains('id', $ownerUser->id));
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Services\Notifications;
 
 use App\Models\Apartment;
+use App\Models\Notice;
 use App\Models\Resident;
 use App\Models\User;
 use App\Services\UserApartmentLinkService;
@@ -152,6 +153,51 @@ class AudienceResolver
     public function usersForApartmentPackageAudience(int $condoId, int $apartmentId): Collection
     {
         return $this->apartmentLinkService->usersForApartmentPackageAudience($condoId, $apartmentId);
+    }
+
+    /**
+     * Audiência de aviso publicado — send_to_all (Q3) ou targets morph expandidos via Q1.
+     *
+     * @return Collection<int, User>
+     */
+    public function usersForNotice(int $condoId, Notice $notice): Collection
+    {
+        if ($notice->send_to_all) {
+            return $this->usersByMembership($condoId);
+        }
+
+        $users = collect();
+
+        $apartmentIds = $notice->apartments()->withoutGlobalScopes()->pluck('apartments.id');
+        foreach ($apartmentIds as $apartmentId) {
+            $users = $users->merge($this->usersForApartment($condoId, (int) $apartmentId));
+        }
+
+        $blockIds = $notice->blocks()->withoutGlobalScopes()->pluck('blocks.id');
+        foreach ($blockIds as $blockId) {
+            $relatedApartmentIds = Apartment::withoutGlobalScopes()
+                ->where('condominium_id', $condoId)
+                ->where('block_id', $blockId)
+                ->pluck('id');
+
+            foreach ($relatedApartmentIds as $apartmentId) {
+                $users = $users->merge($this->usersForApartment($condoId, (int) $apartmentId));
+            }
+        }
+
+        $towerIds = $notice->towers()->withoutGlobalScopes()->pluck('towers.id');
+        foreach ($towerIds as $towerId) {
+            $relatedApartmentIds = Apartment::withoutGlobalScopes()
+                ->where('condominium_id', $condoId)
+                ->where('tower_id', $towerId)
+                ->pluck('id');
+
+            foreach ($relatedApartmentIds as $apartmentId) {
+                $users = $users->merge($this->usersForApartment($condoId, (int) $apartmentId));
+            }
+        }
+
+        return $users->unique('id')->values();
     }
 
     private function applyMembershipConstraint($query, int $condoId): void

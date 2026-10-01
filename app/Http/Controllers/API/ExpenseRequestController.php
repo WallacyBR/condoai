@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Events\Finance\ExpenseRequestWasApproved;
 use App\Http\Controllers\API\Concerns\ResolvesCurrentCondominium;
 use App\Http\Controllers\Concerns\ResolvesTenantCondominium;
 use App\Http\Controllers\Controller;
@@ -120,6 +121,12 @@ class ExpenseRequestController extends Controller
             'status' => 'aprovado',
         ])->save();
 
+        event(new ExpenseRequestWasApproved(
+            condominiumId: $expenseRequest->condominium_id,
+            actorId: auth()->id(),
+            expenseRequestId: $expenseRequest->id,
+        ));
+
         return response()->json(['message' => 'Solicitação aprovada', 'data' => $expenseRequest->fresh()]);
     }
 
@@ -169,6 +176,12 @@ class ExpenseRequestController extends Controller
                 $expenseRequest->forceFill(['status' => 'rejected', 'rejected_at' => now(), 'rejection_reason' => $validated['justification']])->save();
             } elseif ($rules->count() === $approvals->count() + 1) {
                 $expenseRequest->forceFill(['status' => 'approved', 'approved_by' => $request->user()->id, 'approved_at' => now()])->save();
+
+                event(new ExpenseRequestWasApproved(
+                    condominiumId: $expenseRequest->condominium_id,
+                    actorId: $request->user()->id,
+                    expenseRequestId: $expenseRequest->id,
+                ));
             }
 
             return $expenseRequest->fresh(['approvals.approver', 'approver']);

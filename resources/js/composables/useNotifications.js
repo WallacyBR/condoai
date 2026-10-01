@@ -1,8 +1,8 @@
 import { ref, computed } from 'vue';
 import { apiRequest } from '../utils/api';
 
-// Estado global das notificações
-const notifications = ref({
+// Badges da sidebar (domínio operacional — separados do sino/inbox)
+const sidebarNotifications = ref({
   packages: 0,
   notices: 0,
   maintenance: 0,
@@ -12,50 +12,47 @@ const notifications = ref({
   areas: 0
 });
 
-// Estado para controlar se as notificações devem ser mostradas
+// Inbox in-app (fonte de verdade: API /notifications)
+const inboxUnreadCount = ref(0);
+const inboxItems = ref([]);
+
 const showNotifications = ref(true);
 
 export function useNotifications() {
-  
-  // Função para atualizar uma notificação específica
+
   const updateNotification = (key, value) => {
-    if (notifications.value.hasOwnProperty(key)) {
-      notifications.value[key] = value;
+    if (Object.prototype.hasOwnProperty.call(sidebarNotifications.value, key)) {
+      sidebarNotifications.value[key] = value;
     }
   };
 
-  // Função para incrementar uma notificação
   const incrementNotification = (key) => {
-    if (notifications.value.hasOwnProperty(key)) {
-      notifications.value[key]++;
+    if (Object.prototype.hasOwnProperty.call(sidebarNotifications.value, key)) {
+      sidebarNotifications.value[key]++;
     }
   };
 
-  // Função para decrementar uma notificação
   const decrementNotification = (key) => {
-    if (notifications.value.hasOwnProperty(key) && notifications.value[key] > 0) {
-      notifications.value[key]--;
+    if (Object.prototype.hasOwnProperty.call(sidebarNotifications.value, key) && sidebarNotifications.value[key] > 0) {
+      sidebarNotifications.value[key]--;
     }
   };
 
-  // Função para limpar uma notificação
   const clearNotification = (key) => {
-    if (notifications.value.hasOwnProperty(key)) {
-      notifications.value[key] = 0;
+    if (Object.prototype.hasOwnProperty.call(sidebarNotifications.value, key)) {
+      sidebarNotifications.value[key] = 0;
     }
   };
 
-  // Função para limpar todas as notificações
-  const clearAllNotifications = () => {
-    Object.keys(notifications.value).forEach(key => {
-      notifications.value[key] = 0;
+  const clearAllSidebarNotifications = () => {
+    Object.keys(sidebarNotifications.value).forEach(key => {
+      sidebarNotifications.value[key] = 0;
     });
   };
 
-  // Função para obter a cor do badge baseada no tipo de notificação
   const getBadgeColor = (type, count) => {
     if (count === 0) return 'bg-gray-500';
-    
+
     switch (type) {
       case 'packages':
         return count > 5 ? 'bg-red-500' : 'bg-orange-500';
@@ -75,46 +72,85 @@ export function useNotifications() {
     }
   };
 
-  // Função para carregar notificações do servidor
-  const loadNotificationsFromServer = async () => {
+  const loadSidebarNotificationsFromServer = async () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) return;
 
       const pendingPackages = await apiRequest('/packages?status=pending');
-      notifications.value.packages = Array.isArray(pendingPackages) ? pendingPackages.length : 0;
+      sidebarNotifications.value.packages = Array.isArray(pendingPackages) ? pendingPackages.length : 0;
     } catch {
-      notifications.value.packages = 0;
+      sidebarNotifications.value.packages = 0;
     }
   };
 
-  // Computed para verificar se há notificações
-  const hasNotifications = computed(() => {
-    return Object.values(notifications.value).some(count => count > 0);
+  const loadInboxFromServer = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const [countResponse, listResponse] = await Promise.all([
+        apiRequest('/notifications/unread-count'),
+        apiRequest('/notifications?unread=1&per_page=20'),
+      ]);
+
+      inboxUnreadCount.value = typeof countResponse?.count === 'number' ? countResponse.count : 0;
+      inboxItems.value = Array.isArray(listResponse?.data) ? listResponse.data : [];
+    } catch {
+      inboxUnreadCount.value = 0;
+      inboxItems.value = [];
+    }
+  };
+
+  const loadNotificationsFromServer = async () => {
+    await Promise.all([
+      loadSidebarNotificationsFromServer(),
+      loadInboxFromServer(),
+    ]);
+  };
+
+  const markInboxNotificationRead = async (notificationId) => {
+    await apiRequest(`/notifications/${notificationId}/read`, { method: 'POST' });
+    inboxItems.value = inboxItems.value.filter(item => item.id !== notificationId);
+    if (inboxUnreadCount.value > 0) {
+      inboxUnreadCount.value--;
+    }
+  };
+
+  const markAllInboxAsRead = async () => {
+    await apiRequest('/notifications/read-all', { method: 'POST' });
+    inboxUnreadCount.value = 0;
+    inboxItems.value = [];
+  };
+
+  const hasInboxNotifications = computed(() => inboxUnreadCount.value > 0);
+
+  const hasSidebarNotifications = computed(() => {
+    return Object.values(sidebarNotifications.value).some(count => count > 0);
   });
 
-  // Computed para total de notificações
-  const totalNotifications = computed(() => {
-    return Object.values(notifications.value).reduce((total, count) => total + count, 0);
-  });
-
-  // Função para alternar visibilidade das notificações
   const toggleNotifications = () => {
     showNotifications.value = !showNotifications.value;
   };
 
   return {
-    notifications: computed(() => notifications.value),
+    notifications: computed(() => sidebarNotifications.value),
+    inboxUnreadCount: computed(() => inboxUnreadCount.value),
+    inboxItems: computed(() => inboxItems.value),
     showNotifications: computed(() => showNotifications.value),
-    hasNotifications,
-    totalNotifications,
+    hasInboxNotifications,
+    hasSidebarNotifications,
     updateNotification,
     incrementNotification,
     decrementNotification,
     clearNotification,
-    clearAllNotifications,
+    clearAllSidebarNotifications,
     getBadgeColor,
     loadNotificationsFromServer,
+    loadSidebarNotificationsFromServer,
+    loadInboxFromServer,
+    markInboxNotificationRead,
+    markAllInboxAsRead,
     toggleNotifications
   };
 }

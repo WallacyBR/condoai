@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Enums\OccurrencePriority;
 use App\Enums\OccurrenceStatus;
+use App\Events\Occurrences\OccurrenceWasCreated;
 use App\Http\Controllers\Concerns\ResolvesTenantCondominium;
 use App\Http\Controllers\Controller;
 use App\Models\MaintenanceSchedule;
@@ -116,6 +117,12 @@ class OccurrenceController extends Controller
         }
 
         $occurrence->load(['user:id,name', 'photos', 'comments.user:id,name']);
+
+        event(new OccurrenceWasCreated(
+            condominiumId: (int) $occurrence->condominium_id,
+            actorId: Auth::id(),
+            occurrenceId: $occurrence->id,
+        ));
 
         return response()->json($occurrence, 201);
     }

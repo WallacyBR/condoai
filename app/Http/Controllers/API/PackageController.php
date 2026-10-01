@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Events\Packages\PackageWasReceived;
 use App\Http\Controllers\Controller;
 use App\Models\Apartment;
 use App\Models\Package;
@@ -96,6 +97,13 @@ class PackageController extends Controller
 
         try {
             $package = Package::create($data);
+
+            event(new PackageWasReceived(
+                condominiumId: (int) $package->condominium_id,
+                actorId: $request->user()->id,
+                packageId: $package->id,
+                apartmentId: (int) $package->apartment_id,
+            ));
 
             return response()->json($package->load(['apartment.tower', 'apartment.block']), 201);
         } catch (\Exception $e) {

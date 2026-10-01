@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Events\Notices\NoticeWasPublished;
 use App\Http\Controllers\Concerns\ResolvesTenantCondominium;
 use App\Http\Controllers\Controller;
 use App\Models\Apartment;
@@ -93,6 +94,12 @@ class NoticeController extends Controller
         }
 
         $notice->load('attachments', 'user:id,name', 'towers', 'blocks', 'apartments');
+
+        event(new NoticeWasPublished(
+            condominiumId: $condominiumId,
+            actorId: $user->id,
+            noticeId: $notice->id,
+        ));
 
         return response()->json($notice, 201);
     }

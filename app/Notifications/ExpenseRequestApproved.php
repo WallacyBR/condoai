@@ -3,26 +3,38 @@
 namespace App\Notifications;
 
 use App\Models\ExpenseRequest;
-use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 
-class ExpenseRequestApproved extends Notification
+class ExpenseRequestApproved extends CondoNotification
 {
-    use Queueable;
+    public function __construct(
+        private readonly int $condominiumId,
+        private readonly int $expenseRequestId,
+        private readonly string $title,
+        private readonly string $amount,
+        private readonly ?string $approvedAt,
+        private readonly ?int $actorId,
+    ) {}
 
-    public function __construct(private ExpenseRequest $expenseRequest) {}
-
-    public function via($notifiable)
+    protected function buildPayload(): array
     {
-        return ['database'];
-    }
+        $formattedAmount = 'R$ '.number_format((float) $this->amount, 2, ',', '.');
 
-    public function toArray($notifiable)
-    {
-        return [
-            'expense_request_id' => $this->expenseRequest->id,
-            'amount' => $this->expenseRequest->amount,
-            'approved_at' => $this->expenseRequest->approved_at,
-        ];
+        return array_merge(
+            $this->basePayload(
+                $this->condominiumId,
+                'finance',
+                'Despesa aprovada',
+                "{$this->title} — {$formattedAmount}",
+                "/finance/expense-requests/{$this->expenseRequestId}",
+                "expense_request.approved:{$this->expenseRequestId}",
+                $this->actorId,
+                ExpenseRequest::class,
+                $this->expenseRequestId,
+            ),
+            [
+                'amount' => $this->amount,
+                'approved_at' => $this->approvedAt,
+            ],
+        );
     }
 }

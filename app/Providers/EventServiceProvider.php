@@ -2,8 +2,16 @@
 
 namespace App\Providers;
 
+use App\Events\Finance\ExpenseRequestWasApproved;
 use App\Events\Notifications\InboxSmokeRequested;
+use App\Events\Notices\NoticeWasPublished;
+use App\Events\Occurrences\OccurrenceWasCreated;
+use App\Events\Packages\PackageWasReceived;
+use App\Listeners\Notifications\SendExpenseRequestApprovedNotification;
 use App\Listeners\Notifications\SendInboxSmokeNotification;
+use App\Listeners\Notifications\SendNoticePublishedNotification;
+use App\Listeners\Notifications\SendOccurrenceCreatedNotification;
+use App\Listeners\Notifications\SendPackageReceivedNotification;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -22,6 +30,18 @@ class EventServiceProvider extends ServiceProvider
         ],
         InboxSmokeRequested::class => [
             SendInboxSmokeNotification::class,
+        ],
+        ExpenseRequestWasApproved::class => [
+            SendExpenseRequestApprovedNotification::class,
+        ],
+        PackageWasReceived::class => [
+            SendPackageReceivedNotification::class,
+        ],
+        NoticeWasPublished::class => [
+            SendNoticePublishedNotification::class,
+        ],
+        OccurrenceWasCreated::class => [
+            SendOccurrenceCreatedNotification::class,
         ],
     ];
 

@@ -92,6 +92,216 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  void _showPackagesModal(BuildContext context) {
+    bool isRevealed = false;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) {
+        final isDark = Theme.of(ctx).brightness == Brightness.dark;
+
+        return StatefulBuilder(
+          builder: (modalCtx, setModalState) {
+            return FrostedGlassCard(
+              borderRadius: 32,
+              margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 44,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: isDark ? Colors.white24 : Colors.black12,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? const Color(0x33F59E0B)
+                                  : AppColors.warningLight,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(
+                              Icons.inventory_2_rounded,
+                              color: AppColors.warning,
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Retirada de Encomendas',
+                                style: AppTextStyles.titleSmall.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                '2 volumes aguardando na portaria',
+                                style: AppTextStyles.labelSmall.copyWith(
+                                  color: isDark
+                                      ? AppColors.darkTextSecondary
+                                      : AppColors.lightTextSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.warning,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Text(
+                          'Disponível',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Cartão Seguro do Código de Retirada
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? const Color(0x330F172A)
+                          : const Color(0xFFF1F5F9),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: isDark ? AppColors.darkCardBorder : AppColors.lightCardBorder,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          'CÓDIGO DE LIBERAÇÃO',
+                          style: AppTextStyles.badge.copyWith(
+                            color: isDark
+                                ? AppColors.darkTextSecondary
+                                : AppColors.lightTextSecondary,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 300),
+                          child: isRevealed
+                              ? SelectableText(
+                                  '#4029-A',
+                                  key: const ValueKey('revealed'),
+                                  style: AppTextStyles.titleLarge.copyWith(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.w800,
+                                    color: AppColors.primary,
+                                    letterSpacing: 2,
+                                  ),
+                                )
+                              : Text(
+                                  '••••••',
+                                  key: const ValueKey('hidden'),
+                                  style: AppTextStyles.titleLarge.copyWith(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.w800,
+                                    color: isDark
+                                        ? AppColors.darkTextSecondary
+                                        : AppColors.lightTextSecondary,
+                                    letterSpacing: 6,
+                                  ),
+                                ),
+                        ),
+                        const SizedBox(height: 12),
+                        OutlinedButton.icon(
+                          onPressed: () {
+                            HapticFeedback.lightImpact();
+                            setModalState(() {
+                              isRevealed = !isRevealed;
+                            });
+                          },
+                          icon: Icon(
+                            isRevealed
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                            size: 18,
+                            color: AppColors.primary,
+                          ),
+                          label: Text(
+                            isRevealed
+                                ? 'Ocultar Código'
+                                : 'Toque para Revelar Código',
+                            style: const TextStyle(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: AppColors.primary),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Lista dos Pacotes
+                  _PackageItemRow(
+                    company: 'Mercado Livre',
+                    tracking: 'Rastreio: ML-7829103BR',
+                    receivedTime: 'Hoje às 10:14 • Portaria A',
+                    isDark: isDark,
+                  ),
+                  const SizedBox(height: 8),
+                  _PackageItemRow(
+                    company: 'Amazon Brasil',
+                    tracking: 'Rastreio: AMZ-449102X',
+                    receivedTime: 'Hoje às 11:30 • Portaria A',
+                    isDark: isDark,
+                  ),
+
+                  const SizedBox(height: 16),
+                  Text(
+                    'Apresente este código na portaria no momento da retirada.',
+                    style: AppTextStyles.labelSmall.copyWith(
+                      color: isDark
+                          ? AppColors.darkTextSecondary
+                          : AppColors.lightTextSecondary,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -308,6 +518,7 @@ class HomeScreen extends StatelessWidget {
 
             // Card 2: Encomendas
             FrostedGlassCard(
+              onTap: () => _showPackagesModal(context),
               child: Row(
                 children: [
                   Container(
@@ -323,16 +534,20 @@ class HomeScreen extends StatelessWidget {
                       size: 26,
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 14),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
-                            Text(
-                              '2 Encomendas na Portaria',
-                              style: AppTextStyles.titleSmall,
+                            Expanded(
+                              child: Text(
+                                '2 Encomendas na Portaria',
+                                style: AppTextStyles.titleSmall,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                             const SizedBox(width: 8),
                             Container(
@@ -352,18 +567,40 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 2),
+                        const SizedBox(height: 3),
                         Text(
-                          'Código de retirada: #4029-A (Amazon & Mercado Livre)',
+                          'Amazon Brasil • Mercado Livre',
                           style: AppTextStyles.bodyMedium.copyWith(
                             color: isDark
                                 ? AppColors.darkTextSecondary
                                 : AppColors.lightTextSecondary,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.lock_outline_rounded,
+                              size: 13,
+                              color: AppColors.warning,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Toque para ver código de retirada',
+                              style: AppTextStyles.labelSmall.copyWith(
+                                color: AppColors.warning,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
+                  const SizedBox(width: 4),
+                  const Icon(Icons.arrow_forward_ios_rounded, size: 14),
                 ],
               ),
             ),
@@ -456,3 +693,59 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
+
+class _PackageItemRow extends StatelessWidget {
+  final String company;
+  final String tracking;
+  final String receivedTime;
+  final bool isDark;
+
+  const _PackageItemRow({
+    required this.company,
+    required this.tracking,
+    required this.receivedTime,
+    required this.isDark,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0x26FFFFFF) : Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: isDark ? AppColors.darkCardBorder : AppColors.lightCardBorder,
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.local_shipping_outlined,
+            color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+            size: 20,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  company,
+                  style: AppTextStyles.titleSmall.copyWith(fontSize: 13.5),
+                ),
+                Text(
+                  '$tracking • $receivedTime',
+                  style: AppTextStyles.labelSmall.copyWith(
+                    color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+

@@ -82,6 +82,17 @@ class UserApartmentLinkService
             }
         }
 
+        $directResidents = Resident::withoutGlobalScopes()
+            ->where('condominium_id', $condominiumId)
+            ->where('apartment_id', $apartmentId)
+            ->get();
+
+        foreach ($directResidents as $resident) {
+            if ($this->isPackageAudienceResident($resident)) {
+                $userIds->push($resident->user_id);
+            }
+        }
+
         $userIds = $userIds->filter()->unique()->values();
 
         if ($userIds->isEmpty()) {

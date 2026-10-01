@@ -13,11 +13,6 @@ use InvalidArgumentException;
  */
 class ResidentUserLinkService
 {
-    public function __construct(
-        private readonly UserApartmentLinkService $apartmentLinkService
-    ) {
-    }
-
     public function link(Resident $resident, ?int $userId, int $condominiumId): Resident
     {
         if ((int) $resident->condominium_id !== $condominiumId) {

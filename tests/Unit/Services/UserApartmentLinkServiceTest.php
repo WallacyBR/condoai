@@ -87,6 +87,46 @@ class UserApartmentLinkServiceTest extends TestCase
         $this->assertFalse($users->contains('id', $ownerUser->id));
     }
 
+    public function test_users_for_apartment_includes_resident_linked_via_apartment_id_only(): void
+    {
+        $condominium = Condominium::factory()->create();
+        $moradorProfile = Profile::factory()->create(['name' => 'Morador']);
+        $block = Block::factory()->create(['condominium_id' => $condominium->id]);
+
+        $apartment = Apartment::factory()->create([
+            'condominium_id' => $condominium->id,
+            'block_id' => $block->id,
+        ]);
+
+        $ownerUser = User::factory()->create([
+            'condominium_id' => $condominium->id,
+            'profile_id' => $moradorProfile->id,
+        ]);
+
+        $ownerResident = Resident::factory()->proprietario()->create([
+            'condominium_id' => $condominium->id,
+            'user_id' => $ownerUser->id,
+        ]);
+        $apartment->update(['owner_id' => $ownerResident->id]);
+
+        $moradorUser = User::factory()->create([
+            'condominium_id' => $condominium->id,
+            'profile_id' => $moradorProfile->id,
+        ]);
+
+        Resident::factory()->morador()->create([
+            'condominium_id' => $condominium->id,
+            'user_id' => $moradorUser->id,
+            'apartment_id' => $apartment->id,
+        ]);
+
+        $users = $this->service->usersForApartmentPackageAudience($condominium->id, $apartment->id);
+
+        $this->assertCount(1, $users);
+        $this->assertTrue($users->contains('id', $moradorUser->id));
+        $this->assertFalse($users->contains('id', $ownerUser->id));
+    }
+
     public function test_users_for_apartment_includes_morador_classification(): void
     {
         $condominium = Condominium::factory()->create();

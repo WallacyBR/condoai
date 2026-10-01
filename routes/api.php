@@ -185,16 +185,6 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
             ->name('dashboard.byArea');
     });
 
-    // Módulo de Assembleias Virtuais e Votações Digitais
-    Route::apiResource('assemblies', AssemblyController::class);
-    Route::post('assemblies/{assembly}/start', [AssemblyController::class, 'start']);
-    Route::post('assemblies/{assembly}/close', [AssemblyController::class, 'close']);
-    Route::post('assemblies/{assembly}/agendas', [AssemblyController::class, 'addAgenda']);
-    Route::post('assemblies/{assembly}/agendas/{agenda}/open', [AssemblyController::class, 'openAgendaVoting']);
-    Route::post('assemblies/{assembly}/agendas/{agenda}/close', [AssemblyController::class, 'closeAgendaVoting']);
-    Route::post('assemblies/{assembly}/agendas/{agenda}/vote', [AssemblyController::class, 'vote']);
-    Route::get('assemblies/{assembly}/agendas/{agenda}/results', [AssemblyController::class, 'results']);
-
     // Access Control Module Routes
     Route::prefix('access-control')->name('access-control.')->group(function () {
         Route::get('dashboard', [AccessControlDashboardController::class, 'getDashboardData'])->name('dashboard');

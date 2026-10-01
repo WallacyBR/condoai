@@ -1,17 +1,17 @@
 <template>
   <AuthenticatedLayout page-title="Visualizar Unidades">
     <div class="space-y-6">
-      <TopCard title="Unidades" :icon="BuildingIcon">
+      <PageHeader title="Unidades" subtitle="Listagem e status das unidades do condomínio">
         <template #actions>
-          <NeonButton @click="navigateToUnitsManagement" size="md">
-            <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <AppButton @click="navigateToUnitsManagement" variant="primary" size="md">
+            <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
             Gerenciar Unidades
-          </NeonButton>
+          </AppButton>
         </template>
-      </TopCard>
+      </PageHeader>
       <!-- Aviso quando nenhum condomínio está selecionado -->
       <div v-if="!selectedCondominiumName && !loading" class="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 rounded-xl p-4">
         <div class="flex items-center space-x-2">
@@ -95,13 +95,13 @@
         <div 
           v-for="unit in filteredUnits" 
           :key="unit.id" 
-          class="bg-white dark:bg-slate-900 rounded-xl shadow-sm p-6 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-colors flex flex-col justify-between"
+          class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm p-6 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-colors flex flex-col justify-between"
         >
           <div>
             <!-- Header com Status -->
             <div class="flex items-center justify-between mb-4">
               <div class="flex items-center space-x-3">
-                <div class="h-10 w-10 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center">
+                <div class="h-10 w-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center">
                   <svg class="h-5 w-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                   </svg>
@@ -194,12 +194,11 @@
 </template>
 
 <script>
-import { ref, computed, onMounted, h } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import AuthenticatedLayout from './layouts/AuthenticatedLayout.vue';
-import NeonButton from './NeonButton.vue';
+import PageHeader from './ui/PageHeader.vue';
 import AppButton from './ui/AppButton.vue';
-import TopCard from './ui/TopCard.vue';
 import StatsCard from './ui/StatsCard.vue';
 import ListFilters from './ui/ListFilters.vue';
 import { useListFilters } from '../composables/useListFilters.js';
@@ -208,7 +207,7 @@ import { apiRequest } from '../utils/api';
 
 export default {
   name: 'UnitsListView',
-  components: { AuthenticatedLayout, NeonButton, AppButton, TopCard, StatsCard, ListFilters },
+  components: { AuthenticatedLayout, PageHeader, AppButton, StatsCard, ListFilters },
   setup() {
     const router = useRouter();
     const units = ref([]);

@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\ChartAccount;
 use App\Models\Condominium;
 use App\Models\User;
-use App\Models\ChartAccount;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\InteractsWithTenant;
 use Tests\TestCase;
@@ -15,6 +15,7 @@ class BudgetsTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected Condominium $condominium;
 
     protected function setUp(): void
@@ -53,7 +54,7 @@ class BudgetsTest extends TestCase
         ]);
 
         $response->assertStatus(200)
-                 ->assertJson(['message' => 'Orçamento atualizado com sucesso.']);
+            ->assertJson(['message' => 'Orçamento atualizado com sucesso.']);
 
         $this->assertDatabaseHas('budget_items', [
             'condominium_id' => $this->condominium->id,
@@ -98,12 +99,12 @@ class BudgetsTest extends TestCase
         $response = $this->getJson("/api/finance/reports/budget?year={$year}&condominium_id={$this->condominium->id}");
 
         $response->assertStatus(200)
-                 ->assertJsonFragment([
-                     'chart_account_id' => $chartAccount->id,
-                     'budgeted_amount' => 1000.0,
-                     'actual_amount' => 750.0,
-                     'variance' => 250.0,
-                 ]);
+            ->assertJsonFragment([
+                'chart_account_id' => $chartAccount->id,
+                'budgeted_amount' => 1000.0,
+                'actual_amount' => 750.0,
+                'variance' => 250.0,
+            ]);
     }
 
     public function test_budget_report_returns_forbidden_for_other_condominium(): void
@@ -115,8 +116,8 @@ class BudgetsTest extends TestCase
             ->getJson("/api/finance/reports/budget?year={$year}&condominium_id={$otherCondominium->id}");
 
         $response->assertForbidden()
-                 ->assertJson([
-                     'message' => 'Acesso negado ao condomínio informado.',
-                 ]);
+            ->assertJson([
+                'message' => 'Acesso negado ao condomínio informado.',
+            ]);
     }
 }

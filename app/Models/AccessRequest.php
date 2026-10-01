@@ -14,7 +14,7 @@ class AccessRequest extends Model
 
     protected static function booted(): void
     {
-        static::addGlobalScope(new CondominiumScope());
+        static::addGlobalScope(new CondominiumScope);
     }
 
     protected $fillable = [
@@ -38,7 +38,7 @@ class AccessRequest extends Model
         'exit_time',
         'request_timestamp',  // Alterado de data_hora_solicitacao
         'resident_observation', // Alterado de observacao_morador
-        'gatehouse_observation',// Alterado de observacao_portaria
+        'gatehouse_observation', // Alterado de observacao_portaria
         'resident_response_timestamp', // Alterado de data_hora_resposta_morador
         'actual_entry_timestamp',    // Alterado de data_hora_entrada_efetiva
         'actual_exit_timestamp',     // Alterado de data_hora_saida_efetiva

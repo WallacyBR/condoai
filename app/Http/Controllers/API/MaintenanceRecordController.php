@@ -4,16 +4,14 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\MaintenanceRecord;
-use App\Models\MaintenanceSchedule;
 use App\Models\MaintenanceRecordPhoto;
 use App\Models\MaintenanceRecordSignature;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 
 /**
  * @group Manutenção - Registros
@@ -29,6 +27,7 @@ class MaintenanceRecordController extends Controller
      * Pode ser filtrado por `maintenance_schedule_id` ou `maintenance_equipment_id`.
      *
      * @authenticated
+     *
      * @queryParam page int A página a ser retornada. Example: 1
      * @queryParam per_page int Número de itens por página. Example: 15
      * @queryParam maintenance_schedule_id int ID do agendamento para filtrar registros. Example: 1
@@ -40,14 +39,14 @@ class MaintenanceRecordController extends Controller
     public function index(Request $request)
     {
         $condominiumId = Auth::user()->condominium_id;
-        if (!$condominiumId && !$request->attributes->has('condominium')) {
+        if (! $condominiumId && ! $request->attributes->has('condominium')) {
             return response()->json(['message' => 'Condomínio não identificado para o usuário.'], 400);
         }
         $currentCondominiumId = $condominiumId ?? $request->attributes->get('condominium')->id;
 
         $perPage = $request->input('per_page', 15);
         $query = MaintenanceRecord::where('condominium_id', $currentCondominiumId)
-                                    ->with(['schedule:id,title', 'user:id,name', 'reviewer:id,name', 'equipment:id,name']); // equipment via schedule
+            ->with(['schedule:id,title', 'user:id,name', 'reviewer:id,name', 'equipment:id,name']); // equipment via schedule
 
         if ($request->has('maintenance_schedule_id')) {
             $query->where('maintenance_schedule_id', $request->maintenance_schedule_id);
@@ -71,11 +70,11 @@ class MaintenanceRecordController extends Controller
             } else {
                 $record->equipment_name = null;
             }
+
             // Remover o carregamento aninhado para não poluir o JSON final se não for necessário
             // unset($record->schedule->equipment);
             return $record;
         });
-
 
         return response()->json($records);
     }
@@ -84,6 +83,7 @@ class MaintenanceRecordController extends Controller
      * Criar um novo registro de manutenção.
      *
      * @authenticated
+     *
      * @bodyParam maintenance_schedule_id int required ID do agendamento. Example: 1
      * @bodyParam user_id int ID do usuário que realizou (se diferente do autenticado, requer permissão). Example: 1
      * @bodyParam performed_at datetime required Data e hora da realização. Example: "2024-07-15 14:00:00"
@@ -98,7 +98,7 @@ class MaintenanceRecordController extends Controller
     public function store(Request $request)
     {
         $condominiumId = Auth::user()->condominium_id;
-        if (!$condominiumId && !$request->attributes->has('condominium')) {
+        if (! $condominiumId && ! $request->attributes->has('condominium')) {
             return response()->json(['message' => 'Condomínio não identificado para o usuário.'], 400);
         }
         $currentCondominiumId = $condominiumId ?? $request->attributes->get('condominium')->id;
@@ -127,17 +127,16 @@ class MaintenanceRecordController extends Controller
         $data = $request->only(['maintenance_schedule_id', 'performed_at', 'notes', 'status']);
         $data['condominium_id'] = $currentCondominiumId;
         $data['user_id'] = $request->input('user_id', Auth::id()); // Default to authenticated user
-        
+
         // Garantir que o status seja 'completed' se não especificado
         $data['status'] = $request->input('status', 'completed');
-        
+
         // Log para debug
         \Log::info('Criando registro de manutenção', [
             'data' => $data,
             'user_id' => Auth::id(),
-            'condominium_id' => $currentCondominiumId
+            'condominium_id' => $currentCondominiumId,
         ]);
-
 
         $record = MaintenanceRecord::create($data);
 
@@ -162,7 +161,7 @@ class MaintenanceRecordController extends Controller
                 $signatureData = str_replace('data:image/png;base64,', '', $signatureData);
                 $signatureData = str_replace(' ', '+', $signatureData);
                 $signatureImage = base64_decode($signatureData);
-                $signatureFileName = "signature_record_{$record->id}_" . time() . '.png';
+                $signatureFileName = "signature_record_{$record->id}_".time().'.png';
                 $path = "maintenance_signatures/condo_{$currentCondominiumId}/{$signatureFileName}";
                 Storage::disk('public')->put($path, $signatureImage);
 
@@ -176,16 +175,16 @@ class MaintenanceRecordController extends Controller
         }
 
         $record->load(['photos', 'signature', 'user:id,name', 'schedule:id,title']);
-        
+
         // Log para confirmar criação
         \Log::info('Registro de manutenção criado com sucesso', [
             'record_id' => $record->id,
             'schedule_id' => $record->maintenance_schedule_id,
             'status' => $record->status,
             'performed_at' => $record->performed_at,
-            'user_id' => $record->user_id
+            'user_id' => $record->user_id,
         ]);
-        
+
         return response()->json($record, 201);
     }
 
@@ -193,6 +192,7 @@ class MaintenanceRecordController extends Controller
      * Exibir um registro de manutenção específico.
      *
      * @authenticated
+     *
      * @urlParam record int required O ID do registro. Example: 1
      *
      * @responseFile status=200 scenario="Sucesso" storage/responses/maintenancerecord.show.json
@@ -201,7 +201,7 @@ class MaintenanceRecordController extends Controller
     public function show(Request $request, MaintenanceRecord $record)
     {
         $condominiumId = Auth::user()->condominium_id;
-        if (!$condominiumId && !$request->attributes->has('condominium')) {
+        if (! $condominiumId && ! $request->attributes->has('condominium')) {
             return response()->json(['message' => 'Condomínio não identificado para o usuário.'], 400);
         }
         $currentCondominiumId = $condominiumId ?? $request->attributes->get('condominium')->id;
@@ -211,6 +211,7 @@ class MaintenanceRecordController extends Controller
         }
 
         $record->load(['schedule:id,title,maintenance_equipment_id', 'user:id,name', 'reviewer:id,name', 'photos', 'signature', 'schedule.equipment:id,name']);
+
         return response()->json($record);
     }
 
@@ -218,7 +219,9 @@ class MaintenanceRecordController extends Controller
      * Atualizar um registro de manutenção (principalmente status ou notas).
      *
      * @authenticated
+     *
      * @urlParam record int required O ID do registro. Example: 1
+     *
      * @bodyParam notes string Notas sobre a manutenção.
      * @bodyParam status string Status do registro. Example: "completed"
      * @bodyParam performed_at datetime Data e hora da realização. Example: "2024-07-15 14:30:00"
@@ -229,7 +232,7 @@ class MaintenanceRecordController extends Controller
     public function update(Request $request, MaintenanceRecord $record)
     {
         $condominiumId = Auth::user()->condominium_id;
-        if (!$condominiumId && !$request->attributes->has('condominium')) {
+        if (! $condominiumId && ! $request->attributes->has('condominium')) {
             return response()->json(['message' => 'Condomínio não identificado para o usuário.'], 400);
         }
         $currentCondominiumId = $condominiumId ?? $request->attributes->get('condominium')->id;
@@ -258,9 +261,9 @@ class MaintenanceRecordController extends Controller
             $updateData['performed_at'] = now();
         }
 
-
         $record->update($updateData);
         $record->load(['photos', 'signature', 'user:id,name', 'schedule:id,title']);
+
         return response()->json($record);
     }
 
@@ -271,6 +274,7 @@ class MaintenanceRecordController extends Controller
      * Considere se esta rota é realmente necessária ou se deve apenas permitir arquivamento.
      *
      * @authenticated
+     *
      * @urlParam record int required O ID do registro. Example: 1
      *
      * @response status=204 scenario="Excluído com sucesso"
@@ -278,7 +282,7 @@ class MaintenanceRecordController extends Controller
     public function destroy(Request $request, MaintenanceRecord $record)
     {
         $condominiumId = Auth::user()->condominium_id;
-        if (!$condominiumId && !$request->attributes->has('condominium')) {
+        if (! $condominiumId && ! $request->attributes->has('condominium')) {
             return response()->json(['message' => 'Condomínio não identificado para o usuário.'], 400);
         }
         $currentCondominiumId = $condominiumId ?? $request->attributes->get('condominium')->id;
@@ -288,7 +292,7 @@ class MaintenanceRecordController extends Controller
         }
 
         // Antes de deletar, remover arquivos associados (fotos, assinatura)
-        foreach($record->photos as $photo) {
+        foreach ($record->photos as $photo) {
             Storage::disk('public')->delete($photo->file_path);
             $photo->delete();
         }
@@ -306,7 +310,9 @@ class MaintenanceRecordController extends Controller
      * Atualizar o status de um registro de manutenção (conferência, reabertura, etc.).
      *
      * @authenticated
+     *
      * @urlParam record int required O ID do registro. Example: 1
+     *
      * @bodyParam status string required Novo status. Valores: `under_review`, `reopened`, `archived`, `completed`. Example: "under_review"
      * @bodyParam review_notes string Notas da revisão (opcional).
      *
@@ -316,7 +322,7 @@ class MaintenanceRecordController extends Controller
     public function updateStatus(Request $request, MaintenanceRecord $record)
     {
         $condominiumId = Auth::user()->condominium_id;
-        if (!$condominiumId && !$request->attributes->has('condominium')) {
+        if (! $condominiumId && ! $request->attributes->has('condominium')) {
             return response()->json(['message' => 'Condomínio não identificado para o usuário.'], 400);
         }
         $currentCondominiumId = $condominiumId ?? $request->attributes->get('condominium')->id;
@@ -349,7 +355,7 @@ class MaintenanceRecordController extends Controller
             // Notas de reabertura podem ser adicionadas às notas principais ou a um campo específico
         } elseif ($newStatus === 'completed') {
             if (empty($record->performed_at)) { // Se estava pendente/reaberto e agora completo
-                 $updateData['performed_at'] = now();
+                $updateData['performed_at'] = now();
             }
             // Se já foi revisado e está sendo marcado como completo após revisão, manter dados da revisão.
             // Se estava 'under_review' e um usuário diferente do revisor marca como 'completed',
@@ -358,12 +364,13 @@ class MaintenanceRecordController extends Controller
         }
 
         // Adicionar notas de revisão se fornecidas
-        if ($request->filled('review_notes') && !empty($request->input('review_notes'))) {
-            $updateData['notes'] = ($record->notes ? $record->notes . "\n" : '') . "Nota de Revisão/Status (" . Auth::user()->name . " em " . now()->format('d/m/Y H:i') . "): " . $request->input('review_notes');
+        if ($request->filled('review_notes') && ! empty($request->input('review_notes'))) {
+            $updateData['notes'] = ($record->notes ? $record->notes."\n" : '').'Nota de Revisão/Status ('.Auth::user()->name.' em '.now()->format('d/m/Y H:i').'): '.$request->input('review_notes');
         }
 
         $record->update($updateData);
         $record->load(['photos', 'signature', 'user:id,name', 'reviewer:id,name', 'schedule:id,title']);
+
         return response()->json($record);
     }
 }

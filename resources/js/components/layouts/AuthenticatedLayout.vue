@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+  <div class="min-h-screen bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-150">
     <!-- Sidebar -->
     <aside 
-      class="fixed top-0 left-0 h-screen bg-gradient-to-b from-gray-900 to-gray-800 shadow-2xl transform transition-all duration-300 ease-in-out z-40 rounded-r-3xl backdrop-blur-xl border-r-2 border-cyan-500/30 flex flex-col"
+      class="fixed top-0 left-0 h-screen bg-white dark:bg-slate-900 shadow-lg transform transition-all duration-200 ease-in-out z-40 border-r border-slate-200 dark:border-slate-800 flex flex-col"
       :class="{ 
         '-translate-x-full': !isSidebarOpen, 
         'translate-x-0': isSidebarOpen, 
@@ -12,7 +12,7 @@
       }"
     >
       <!-- Logo -->
-      <div class="h-16 flex flex-col items-center justify-center border-b border-cyan-500/20 bg-gradient-to-r from-gray-900/80 to-gray-800/80 rounded-tr-3xl flex-shrink-0">
+      <div class="h-16 flex flex-col items-center justify-center border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex-shrink-0">
         <div v-if="!isCollapsed && isSidebarOpen" class="flex items-center justify-center">
           <img 
             :src="logoImage" 
@@ -30,242 +30,208 @@
           />
         </div>
         <div v-if="selectedCondoName && !isCollapsed && isSidebarOpen" class="mt-1 flex items-center gap-1.5">
-          <div class="h-1 w-1 rounded-full bg-cyan-400/60"></div>
-          <span class="text-xs text-cyan-400/80 truncate max-w-[180px]">{{ selectedCondoName }}</span>
+          <div class="h-1.5 w-1.5 rounded-full bg-indigo-500"></div>
+          <span class="text-xs text-slate-500 dark:text-slate-400 font-medium truncate max-w-[180px]">{{ selectedCondoName }}</span>
         </div>
       </div>
 
-      <!-- Menu - Agora com scroll -->
-      <nav class="flex-1 overflow-y-auto glass-scrollbar glass-scrollbar-cyan" v-if="isSidebarOpen">
-        <div class="px-2 py-4 space-y-2">
-          <template v-for="item in menuItems" :key="item.path">
-            <!-- Item principal -->
-            <div>
-              <router-link
-                v-if="!item.children"
-                :to="item.path"
-                class="flex items-center px-4 py-3 text-gray-300 rounded-2xl shadow-md transition-all duration-300 hover:bg-gradient-to-r hover:from-cyan-500/30 hover:to-pink-500/30 hover:text-cyan-400 group backdrop-blur-md relative"
+      <!-- Menu de Navegação -->
+      <nav class="flex-1 overflow-y-auto glass-scrollbar p-3 space-y-1" v-if="isSidebarOpen">
+        <template v-for="item in menuItems" :key="item.path">
+          <!-- Item principal sem filhos -->
+          <div v-if="!item.children">
+            <router-link
+              :to="item.path"
+              class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 rounded-lg transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 group relative font-medium text-sm"
+              :class="{
+                'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-semibold': isCurrentRoute(item.path),
+                'justify-center': isCollapsed
+              }"
+            >
+              <span v-html="item.icon" class="h-5 w-5 transition-all flex-shrink-0" :class="{ 'mr-3': isFullyExpanded }"></span>
+              <span
+                class="transition-all overflow-hidden whitespace-nowrap flex-1"
                 :class="{
-                  'bg-gradient-to-r from-cyan-500/30 to-pink-500/30 text-cyan-400 shadow-xl': isCurrentRoute(item.path),
-                  'justify-center': isCollapsed
+                  'w-0 opacity-0': !isFullyExpanded,
+                  'w-auto opacity-100': isFullyExpanded
                 }"
               >
-                <span v-html="item.icon" class="h-5 w-5 transition-all duration-250" :class="{ 'mr-3': isFullyExpanded }"></span>
-                <span
-                  class="transition-all duration-250 overflow-hidden whitespace-nowrap flex-1"
-                  :class="{
-                    'w-0 opacity-0': !isFullyExpanded,
-                    'w-auto opacity-100': isFullyExpanded
-                  }"
-                >
-                  {{ item.name }}
-                </span>
-                <!-- Badge de Notificação -->
+                {{ item.name }}
+              </span>
+              <!-- Badge de Notificação -->
+              <span 
+                v-if="item.badge && isFullyExpanded" 
+                class="ml-auto px-2 py-0.5 text-xs font-semibold text-white rounded-full"
+                :class="item.badgeColor || 'bg-red-500'"
+              >
+                {{ item.badge }}
+              </span>
+              <span 
+                v-if="item.badge && isCollapsed" 
+                class="absolute -top-1 -right-1 px-1.5 py-0.5 text-xs font-semibold text-white rounded-full"
+                :class="item.badgeColor || 'bg-red-500'"
+              >
+                {{ item.badge }}
+              </span>
+              <span v-if="isCollapsed" class="absolute left-full ml-2 px-2.5 py-1 bg-slate-900 text-white rounded-lg text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-50 whitespace-nowrap">
+                {{ item.name }}
+              </span>
+            </router-link>
+          </div>
+
+          <!-- Item com submenu -->
+          <div v-else>
+            <button
+              @click="toggleSubmenu(item.path)"
+              class="w-full flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 rounded-lg transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 group relative font-medium text-sm"
+              :class="{
+                'bg-indigo-50/50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 font-semibold': isCurrentRoute(item.path) || item.children.some(child => isCurrentRoute(child.path)) || expandedSubmenus[item.path],
+                'justify-center': isCollapsed
+              }"
+            >
+              <span v-html="item.icon" class="h-5 w-5 transition-all flex-shrink-0" :class="{ 'mr-3': isFullyExpanded }"></span>
+              <span
+                class="transition-all overflow-hidden whitespace-nowrap flex-1 text-left"
+                :class="{
+                  'w-0 opacity-0': !isFullyExpanded,
+                  'w-auto opacity-100': isFullyExpanded
+                }"
+              >
+                {{ item.name }}
+              </span>
+              <!-- Badge -->
+              <span 
+                v-if="item.badge && isFullyExpanded" 
+                class="px-2 py-0.5 text-xs font-semibold text-white rounded-full mr-2"
+                :class="item.badgeColor || 'bg-red-500'"
+              >
+                {{ item.badge }}
+              </span>
+              <!-- Ícone de expansão -->
+              <svg 
+                v-if="isFullyExpanded"
+                class="h-4 w-4 transition-transform duration-200 text-slate-400"
+                :class="{ 'rotate-90': expandedSubmenus[item.path] }"
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+              <span v-if="isCollapsed" class="absolute left-full ml-2 px-2.5 py-1 bg-slate-900 text-white rounded-lg text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-50 whitespace-nowrap">
+                {{ item.name }}
+              </span>
+            </button>
+
+            <!-- Submenu -->
+            <div 
+              v-if="item.children && (expandedSubmenus[item.path] || (isCollapsed && hoveredSubmenu === item.path))"
+              class="transition-all duration-200 ease-in-out"
+              :class="{
+                'ml-3 mt-1 space-y-0.5 border-l border-slate-200 dark:border-slate-800 pl-3': !isCollapsed,
+                'absolute left-full top-0 ml-2 min-w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 p-2 space-y-1 z-50': isCollapsed
+              }"
+              @mouseenter="handleSubmenuHover(item.path, true)"
+              @mouseleave="handleSubmenuHover(item.path, false)"
+            >
+              <router-link
+                v-for="child in item.children"
+                :key="child.path"
+                :to="child.path"
+                class="flex items-center px-2.5 py-1.5 text-slate-500 dark:text-slate-400 rounded-md text-xs font-medium transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 group relative"
+                :class="{
+                  'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 font-semibold': isCurrentRoute(child.path)
+                }"
+              >
+                <span v-html="child.icon" class="h-4 w-4 mr-2 flex-shrink-0"></span>
+                <span class="truncate flex-1">{{ child.name }}</span>
                 <span 
-                  v-if="item.badge && isFullyExpanded" 
-                  class="ml-auto px-2 py-0.5 text-xs font-semibold text-white rounded-full animate-pulse"
-                  :class="item.badgeColor || 'bg-red-500'"
+                  v-if="child.badge" 
+                  class="ml-auto px-1.5 py-0.5 text-[10px] font-semibold text-white rounded-full"
+                  :class="child.badgeColor || 'bg-red-500'"
                 >
-                  {{ item.badge }}
-                </span>
-                <span 
-                  v-if="item.badge && isCollapsed" 
-                  class="absolute -top-2 -right-2 px-1.5 py-0.5 text-xs font-semibold text-white rounded-full animate-pulse"
-                  :class="item.badgeColor || 'bg-red-500'"
-                >
-                  {{ item.badge }}
-                </span>
-                <span v-if="isCollapsed" class="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-cyan-400 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-lg z-50">
-                  {{ item.name }}
-                  <span v-if="item.badge" class="ml-2 px-1.5 py-0.5 text-xs font-semibold text-white rounded-full" :class="item.badgeColor || 'bg-red-500'">
-                    {{ item.badge }}
-                  </span>
+                  {{ child.badge }}
                 </span>
               </router-link>
-
-              <!-- Item com submenu -->
-              <div v-else>
-                <button
-                  @click="toggleSubmenu(item.path)"
-                  class="w-full flex items-center px-4 py-3 text-gray-300 rounded-2xl shadow-md transition-all duration-300 hover:bg-gradient-to-r hover:from-cyan-500/30 hover:to-pink-500/30 hover:text-cyan-400 group backdrop-blur-md relative"
-                  :class="{
-                    'bg-gradient-to-r from-cyan-500/30 to-pink-500/30 text-cyan-400 shadow-xl': isCurrentRoute(item.path) || item.children.some(child => isCurrentRoute(child.path)) || expandedSubmenus[item.path],
-                    'justify-center': isCollapsed
-                  }"
-                >
-                  <span v-html="item.icon" class="h-5 w-5 transition-all duration-250" :class="{ 'mr-3': isFullyExpanded }"></span>
-                  <span
-                    class="transition-all duration-250 overflow-hidden whitespace-nowrap flex-1 text-left"
-                    :class="{
-                      'w-0 opacity-0': !isFullyExpanded,
-                      'w-auto opacity-100': isFullyExpanded
-                    }"
-                  >
-                    {{ item.name }}
-                  </span>
-                  <!-- Badge de Notificação para submenu expandido -->
-                  <span 
-                    v-if="item.badge && isFullyExpanded" 
-                    class="px-2 py-0.5 text-xs font-semibold text-white rounded-full animate-pulse mr-2"
-                    :class="item.badgeColor || 'bg-red-500'"
-                  >
-                    {{ item.badge }}
-                  </span>
-                  <!-- Ícone de expansão -->
-                  <svg 
-                    v-if="isFullyExpanded"
-                    class="h-4 w-4 transition-transform duration-200"
-                    :class="{ 'rotate-90': expandedSubmenus[item.path] }"
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
-                  >
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                  </svg>
-                  <!-- Badge de Notificação para submenu colapsado -->
-                  <span 
-                    v-if="item.badge && isCollapsed" 
-                    class="absolute -top-2 -right-2 px-1.5 py-0.5 text-xs font-semibold text-white rounded-full animate-pulse"
-                    :class="item.badgeColor || 'bg-red-500'"
-                  >
-                    {{ item.badge }}
-                  </span>
-                  <span v-if="isCollapsed" class="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-cyan-400 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-lg z-50">
-                    {{ item.name }}
-                    <span v-if="item.badge" class="ml-2 px-1.5 py-0.5 text-xs font-semibold text-white rounded-full" :class="item.badgeColor || 'bg-red-500'">
-                      {{ item.badge }}
-                    </span>
-                  </span>
-                </button>
-
-                <!-- Submenu -->
-                <div 
-                  v-if="item.children && (expandedSubmenus[item.path] || (isCollapsed && hoveredSubmenu === item.path))"
-                  class="transition-all duration-300 ease-in-out overflow-hidden"
-                  :class="{
-                    'ml-4 mt-2 space-y-1 border-l-2 border-cyan-500/30 pl-4': !isCollapsed,
-                    'absolute left-full top-0 ml-2 min-w-48 bg-gray-800/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-cyan-500/20 p-2 space-y-1 z-50': isCollapsed
-                  }"
-                  @mouseenter="handleSubmenuHover(item.path, true)"
-                  @mouseleave="handleSubmenuHover(item.path, false)"
-                >
-                  <router-link
-                    v-for="child in item.children"
-                    :key="child.path"
-                    :to="child.path"
-                    class="flex items-center px-3 py-2 text-gray-400 rounded-xl transition-all duration-200 hover:bg-gradient-to-r hover:from-cyan-500/20 hover:to-pink-500/20 hover:text-cyan-300 group relative"
-                    :class="{
-                      'bg-gradient-to-r from-cyan-500/20 to-pink-500/20 text-cyan-300 shadow-lg': isCurrentRoute(child.path)
-                    }"
-                  >
-                    <span v-html="child.icon" class="h-4 w-4 transition-all duration-250 mr-2 flex-shrink-0"></span>
-                    <span class="text-sm font-medium truncate flex-1">{{ child.name }}</span>
-                    <!-- Badge de Notificação para subitem -->
-                    <span 
-                      v-if="child.badge" 
-                      class="ml-auto px-1.5 py-0.5 text-xs font-semibold text-white rounded-full animate-pulse"
-                      :class="child.badgeColor || 'bg-red-500'"
-                    >
-                      {{ child.badge }}
-                    </span>
-                  </router-link>
-                </div>
-              </div>
             </div>
-          </template>
-        </div>
+          </div>
+        </template>
       </nav>
 
       <!-- User Info -->
-      <div class="border-t border-cyan-500/20 bg-gradient-to-r from-gray-900/80 to-gray-800/80 rounded-br-3xl p-4 flex-shrink-0" v-if="isSidebarOpen">
+      <div class="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3.5 flex-shrink-0" v-if="isSidebarOpen">
         <div class="flex items-center gap-3" :class="{ 'justify-center': isCollapsed }">
           <div class="flex-shrink-0">
-            <div class="h-12 w-12 rounded-full bg-gradient-to-r from-cyan-500 to-pink-500 p-1 shadow-xl">
-              <div class="h-full w-full rounded-full bg-gray-800 flex items-center justify-center">
-                <span class="text-cyan-400 font-medium text-lg">{{ userInitials }}</span>
-              </div>
+            <div class="h-9 w-9 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm">
+              {{ userInitials }}
             </div>
           </div>
           <div 
-            class="transition-all duration-250 overflow-hidden"
+            class="transition-all duration-200 overflow-hidden"
             :class="{ 
               'w-0 opacity-0': !isFullyExpanded,
-              'w-auto opacity-100 ml-2': isFullyExpanded
+              'w-auto opacity-100 ml-1': isFullyExpanded
             }"
           >
-            <p class="text-base font-medium text-gray-300">{{ userName }}</p>
-            <button @click="logout" class="text-sm text-gray-400 hover:text-cyan-400 transition-colors duration-200 rounded-full px-3 py-1 mt-1 bg-gray-900/60 hover:bg-cyan-500/20 shadow">
-              Sair
+            <p class="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate max-w-[120px]">{{ userName }}</p>
+            <button @click="logout" class="text-xs text-slate-500 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 transition-colors font-medium">
+              Sair do sistema
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Collapse Button - Apenas em desktop -->
-      <button 
-        v-if="isSidebarOpen && isDesktop"
-        @click="toggleCollapse"
-        class="absolute -right-6 top-20 p-3 rounded-full bg-gray-800/60 hover:bg-gray-700/80 transition-all duration-200 border border-cyan-500/30 hover:border-cyan-400/50 backdrop-blur-sm shadow-lg hover:shadow-cyan-500/20 group"
-      >
-        <svg class="h-5 w-5 text-cyan-400 group-hover:text-cyan-300 transform transition-all duration-200" 
-             :class="{ 'rotate-180': isCollapsed }"
-             fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
+      <!-- Recolher / Expandir Menu (Interno à Sidebar) -->
+      <div v-if="isSidebarOpen && isDesktop" class="px-3 py-2 border-t border-slate-100 dark:border-slate-800/60 bg-white dark:bg-slate-900">
+        <button
+          @click="toggleCollapse"
+          class="w-full flex items-center justify-center p-2 rounded-lg text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-xs font-medium"
+          :title="isCollapsed ? 'Expandir Menu' : 'Recolher Menu'"
+        >
+          <svg class="h-4 w-4 transform transition-transform duration-200" :class="{ 'rotate-180': isCollapsed }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+          </svg>
+          <span v-if="!isCollapsed" class="ml-2">Recolher Menu</span>
+        </button>
+      </div>
     </aside>
 
-    <!-- Overlay -->
+    <!-- Overlay Mobile -->
     <div
       v-if="isSidebarOpen && !isDesktop"
       @click="toggleSidebar"
       class="fixed inset-0 bg-black/50 z-30"
     ></div>
 
-    <!-- Mobile Top Bar -->
-    <header
-      id="mobile-top-bar"
-      class="lg:hidden fixed top-0 left-0 right-0 h-16 flex items-center justify-between bg-gradient-to-r from-gray-900/95 to-gray-800/95 backdrop-blur-xl px-4 shadow-lg z-20 border-b border-cyan-500/20"
-    >
-      <h1 class="text-cyan-400 font-semibold text-lg">{{ pageTitle }}</h1>
-      <button
-        @click="toggleSidebar"
-        class="relative p-2.5 rounded-xl bg-gray-800/60 hover:bg-gray-700/80 transition-all duration-200 border border-cyan-500/30 hover:border-cyan-400/50 backdrop-blur-sm group"
-      >
-        <div class="flex flex-col items-center justify-center w-6 h-6 space-y-1">
-          <span 
-            class="block w-5 h-0.5 bg-cyan-400 transition-all duration-200 group-hover:bg-cyan-300"
-            :class="{ 'rotate-45 translate-y-1.5': isSidebarOpen }"
-          ></span>
-          <span 
-            class="block w-5 h-0.5 bg-cyan-400 transition-all duration-200 group-hover:bg-cyan-300"
-            :class="{ 'opacity-0': isSidebarOpen }"
-          ></span>
-          <span 
-            class="block w-5 h-0.5 bg-cyan-400 transition-all duration-200 group-hover:bg-cyan-300"
-            :class="{ '-rotate-45 -translate-y-1.5': isSidebarOpen }"
-          ></span>
-        </div>
-      </button>
-    </header>
-
-    <!-- Main Content -->
-    <main 
-      class="min-h-screen transition-all duration-300 pt-16 lg:pt-0" 
+    <!-- Main Content com TopBar Global -->
+    <div 
+      class="min-h-screen transition-all duration-300 flex flex-col"
       :class="{ 
         'lg:ml-64': isSidebarOpen && !isCollapsed && isDesktop,
         'lg:ml-20': isSidebarOpen && isCollapsed && isDesktop,
         'lg:ml-0': !isSidebarOpen || !isDesktop
       }"
     >
-      <!-- Header -->
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 lg:py-8">
-        <h2 class="hidden lg:block text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-pink-500 mb-6">
-          {{ pageTitle }}
-        </h2>
+      <!-- TopBar Global Unificado -->
+      <AppTopBar
+        id="mobile-top-bar"
+        :page-title="pageTitle"
+        :selected-condo-name="selectedCondoName"
+        :user-name="userName"
+        :user-initials="userInitials"
+        :is-desktop="isDesktop"
+        :is-sidebar-open="isSidebarOpen"
+        :is-collapsed="isCollapsed"
+        @toggle-sidebar="toggleSidebar"
+        @toggle-collapse="toggleCollapse"
+        @logout="logout"
+      />
+
+      <!-- Área de Conteúdo da Tela -->
+      <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
         <slot></slot>
-      </div>
-    </main>
+      </main>
+    </div>
     
     <!-- Toast Container -->
     <ToastContainer />
@@ -280,18 +246,20 @@ import { useNotifications } from '../../composables/useNotifications.js';
 import { useUser } from '../../composables/useUser.js';
 import auth from '../../services/auth.js';
 import ToastContainer from '../ToastContainer.vue';
+import AppTopBar from './AppTopBar.vue';
 import logoImage from '../../../images/condo_ai_quadrado.png';
 
 export default {
   name: 'AuthenticatedLayout',
   components: {
-    ToastContainer
+    ToastContainer,
+    AppTopBar
   },
   props: { pageTitle: { type: String, required: true } },
   setup() {
     const router = useRouter();
     const route = useRoute();
-    const { notifications, getBadgeColor, simulateNotificationUpdate, loadNotificationsFromServer } = useNotifications();
+    const { notifications, getBadgeColor, loadNotificationsFromServer } = useNotifications();
     const { user } = useUser();
     const isSidebarOpen = ref(window.innerWidth >= 1024);
     const isCollapsed = ref(false);
@@ -353,9 +321,6 @@ export default {
       
       // Carregar notificações do servidor
       loadNotificationsFromServer();
-      
-      // Simular atualizações de notificação (para demonstração)
-      simulateNotificationUpdate();
     });
     onBeforeUnmount(() => {
       window.removeEventListener('resize', handleResize);
@@ -554,11 +519,21 @@ export default {
             name: 'Fluxo de Caixa',
             path: '/finance/cash-flow',
             icon: `<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2V7a2 2 0 00-2-2H9a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>`
-          },,
+          },
           {
             name: 'Solicitações de Despesa',
             path: '/finance/expense-requests',
             icon: `<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>`
+          },
+          {
+            name: 'Orçamento Anual',
+            path: '/finance/budget',
+            icon: `<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 14h.01M9 11h.01M12 11h.01M15 11h.01M5.75 21H18.25a2 2 0 002-2V7.75a2 2 0 00-2-2H5.75a2 2 0 00-2 2v11.25a2 2 0 002 2z"></path></svg>`
+          },
+          {
+            name: 'Cotações e Compras',
+            path: '/finance/procurements',
+            icon: `<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0-6a2 2 0 00-2 2v1H9a1 1 0 000 2h1v2H9a1 1 0 100 2h1v2H9a1 1 0 100-2h-1v-2h-1V7h1a1 1 0 100-2h-1V4a2 2 0 00-2-2z"></path></svg>`
           },
           {
             name: 'Relatórios',
@@ -590,6 +565,39 @@ export default {
             path: '/perfis/dashboard',
             icon: `<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>`
+          }
+        ]
+      },
+      {
+        name: 'Segurança',
+        path: '/security/my-passkeys',
+        icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3l7 4v5c0 4.2-2.7 8-7 9-4.3-1-7-4.8-7-9V7l7-4z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4" />
+              </svg>`,
+        children: [
+          {
+            name: 'Logs de Acesso',
+            path: '/security/access-logs',
+            module: 'Segurança',
+            icon: `<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+                  </svg>`
+          },
+          {
+            name: 'Passkeys dos Usuários',
+            path: '/security/user-passkeys',
+            module: 'Segurança',
+            icon: `<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a4 4 0 11-8 0 4 4 0 018 0zM3 21a8 8 0 0116 0" />
+                  </svg>`
+          },
+          {
+            name: 'Minhas Passkeys',
+            path: '/security/my-passkeys',
+            icon: `<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.74 5.74L11 17H9v2H7v2H4v-3l6.26-6.26A6 6 0 1121 9z" />
                   </svg>`
           }
         ]
@@ -708,6 +716,10 @@ export default {
         .map(item => {
           if (item.children) {
             const children = item.children.filter(child => {
+              if (!child) {
+                return false;
+              }
+
               return !child.module || allowedModules.value[child.module];
             });
             return { ...item, children };
@@ -844,16 +856,14 @@ export default {
 </script>
 <style scoped>
 .router-link-active {
-  @apply bg-gradient-to-r from-cyan-500/20 to-pink-500/20 text-cyan-400;
+  @apply bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-semibold;
 }
-
-
 
 /* Animação suave para submenus */
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-6px);
   }
   to {
     opacity: 1;
@@ -868,81 +878,15 @@ export default {
   }
   to {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-6px);
   }
 }
 
 .submenu-enter-active {
-  animation: slideDown 0.3s ease-out;
+  animation: slideDown 0.2s ease-out;
 }
 
 .submenu-leave-active {
-  animation: slideUp 0.3s ease-in;
+  animation: slideUp 0.15s ease-in;
 }
-
-/* Efeitos de hover melhorados */
-.group:hover .group-hover\:shadow-cyan-500\/20 {
-  box-shadow: 0 0 20px rgba(34, 211, 238, 0.2);
-}
-
-/* Tooltip para items colapsados */
-.tooltip {
-  visibility: hidden;
-  opacity: 0;
-  position: absolute;
-  z-index: 1000;
-  left: 100%;
-  margin-left: 8px;
-  padding: 8px 12px;
-  background: rgba(31, 41, 55, 0.95);
-  color: #22d3ee;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  white-space: nowrap;
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(34, 211, 238, 0.2);
-  transition: all 0.2s ease;
-}
-
-.group:hover .tooltip {
-  visibility: visible;
-  opacity: 1;
-}
-
-/* Melhor indicador visual para item ativo */
-.active-indicator {
-  position: relative;
-}
-
-.active-indicator::before {
-  content: '';
-  position: absolute;
-  left: -8px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 4px;
-  height: 24px;
-  background: linear-gradient(to bottom, #22d3ee, #ec4899);
-  border-radius: 2px;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.active-indicator.active::before {
-  opacity: 1;
-}
-
-/* Efeito de pulsação para notificações */
-@keyframes pulse-cyan {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 0 8px rgba(34, 211, 238, 0);
-  }
-}
-
-.pulse-notification {
-  animation: pulse-cyan 2s infinite;
-}
-</style> 
+</style>

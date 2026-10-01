@@ -1,18 +1,6 @@
 <template>
   <AuthenticatedLayout page-title="Editar Unidade">
     <div class="space-y-6">
-      <!-- Debug Info -->
-      <div class="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
-        <h3 class="text-blue-300 font-medium mb-2">Debug Info</h3>
-        <div class="text-sm text-blue-200 space-y-1">
-          <div>ID da Rota: {{ route.params.id }}</div>
-          <div>Token: {{ token ? 'Presente' : 'Ausente' }}</div>
-          <div>Condomínio: {{ condominiumId || 'Não selecionado' }}</div>
-          <div>Loading: {{ loading }}</div>
-          <div>Error: {{ error || 'Nenhum' }}</div>
-        </div>
-      </div>
-
       <!-- Botão Voltar -->
       <div class="flex items-center space-x-4">
         <NeonButton @click="goBack" size="sm" variant="secondary">
@@ -117,6 +105,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import AuthenticatedLayout from '../components/layouts/AuthenticatedLayout.vue';
 import NeonButton from '../components/NeonButton.vue';
+import { apiRequest } from '../utils/api';
 
 export default {
   name: 'EditUnitPage',
@@ -126,50 +115,25 @@ export default {
     const route = useRoute();
     const loading = ref(false);
     const error = ref('');
-    const token = ref(localStorage.getItem('token'));
-    const condominiumId = ref(localStorage.getItem('selectedCondominium'));
     const form = ref({
       number: '',
       floor: null,
-      active: true,
-      condominium_id: condominiumId.value
+      active: true
     });
 
     // Carregar dados da unidade
     const loadUnit = async () => {
       try {
-        console.log('Carregando unidade com ID:', route.params.id);
         loading.value = true;
         error.value = '';
-        const response = await fetch(`/api/apartments/${route.params.id}`, {
-          headers: {
-            'Authorization': `Bearer ${token.value}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        console.log('Status da resposta:', response.status);
-        console.log('Headers da resposta:', response.headers);
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Dados recebidos da API:', data);
-          form.value = {
-            number: data.number || '',
-            floor: data.floor || null,
-            active: data.active !== undefined ? data.active : true,
-            condominium_id: data.condominium_id || condominiumId.value
-          };
-          console.log('Formulário preenchido:', form.value);
-        } else {
-          console.error('Erro ao carregar unidade - Status:', response.status);
-          const errorText = await response.text();
-          console.error('Erro detalhado:', errorText);
-          error.value = 'Erro ao carregar dados da unidade';
-        }
-      } catch (error) {
-        console.error('Erro ao carregar unidade:', error);
-        error.value = 'Erro de conexão ao carregar dados';
+        const data = await apiRequest(`/apartments/${route.params.id}`);
+        form.value = {
+          number: data.number || '',
+          floor: data.floor || null,
+          active: data.active !== undefined ? data.active : true
+        };
+      } catch (err) {
+        error.value = err.message || 'Erro ao carregar dados da unidade';
       } finally {
         loading.value = false;
       }
@@ -177,63 +141,29 @@ export default {
 
     const submit = async () => {
       try {
-        console.log('Enviando formulário:', form.value);
         loading.value = true;
         error.value = '';
-        const response = await fetch(`/api/apartments/${route.params.id}`, {
+        await apiRequest(`/apartments/${route.params.id}`, {
           method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token.value}`,
-            'Content-Type': 'application/json'
-          },
           body: JSON.stringify(form.value)
         });
 
-        console.log('Status da resposta do submit:', response.status);
-
-        if (response.ok) {
-          console.log('Unidade atualizada com sucesso');
-          router.push('/units-list');
-        } else {
-          const errorData = await response.json();
-          console.error('Erro ao salvar unidade:', errorData);
-          error.value = 'Erro ao salvar alterações';
-        }
-      } catch (error) {
-        console.error('Erro ao salvar unidade:', error);
-        error.value = 'Erro de conexão ao salvar';
+        router.push('/units-list');
+      } catch (err) {
+        error.value = err.message || 'Erro ao salvar alterações';
       } finally {
         loading.value = false;
       }
     };
 
     const goBack = () => {
-      console.log('Voltando para a lista de unidades');
       router.push('/units-list');
     };
 
     onMounted(() => {
-      console.log('EditUnitPage montado, ID da rota:', route.params.id);
-      
-      // Verificar autenticação
-      if (!token.value) {
-        console.log('Token não encontrado, redirecionando para login');
-        router.push('/login');
-        return;
-      }
-      
-      // Verificar condomínio selecionado
-      if (!condominiumId.value) {
-        console.log('Condomínio não selecionado, redirecionando para seleção');
-        router.push('/condominium-select');
-        return;
-      }
-      
       if (route.params.id) {
-        console.log('Iniciando carregamento da unidade');
         loadUnit();
       } else {
-        console.log('Nenhum ID fornecido, redirecionando');
         router.push('/units-list');
       }
     });
@@ -242,12 +172,10 @@ export default {
       form,
       loading,
       error,
-      token,
-      condominiumId,
       route,
       submit,
       goBack
     };
   }
 };
-</script> 
+</script>

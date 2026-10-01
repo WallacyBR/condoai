@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Apartment;
 use App\Models\CommonArea;
 use App\Models\CommonAreaBooking;
-use App\Models\Apartment;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CommonAreaBookingFactory extends Factory
@@ -14,6 +14,7 @@ class CommonAreaBookingFactory extends Factory
     public function definition(): array
     {
         $start = $this->faker->dateTimeBetween('+1 day', '+2 days');
+
         return [
             'common_area_id' => CommonArea::factory(),
             'apartment_id' => Apartment::factory(),

@@ -2,12 +2,12 @@
 
 namespace Database\Factories;
 
-use App\Models\MaintenanceRecord;
 use App\Models\Condominium;
+use App\Models\MaintenanceRecord;
 use App\Models\MaintenanceSchedule;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Factories\Factory;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class MaintenanceRecordFactory extends Factory
 {
@@ -37,9 +37,8 @@ class MaintenanceRecordFactory extends Factory
                 $reviewedBy = User::factory();
             }
         } elseif ($status === 'overdue') {
-             $performedAt = null; // Overdue means not performed
+            $performedAt = null; // Overdue means not performed
         }
-
 
         return [
             'notes' => $this->faker->paragraph,

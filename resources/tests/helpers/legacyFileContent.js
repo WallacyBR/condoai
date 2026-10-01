@@ -1,9 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const jsRoot = path.resolve(__dirname, '../../js');
+const jsRoot = path.resolve(process.cwd(), 'resources/js');
 
 /**
  * Lê o conteúdo-fonte de um componente Vue para specs legados baseados em arquivo.

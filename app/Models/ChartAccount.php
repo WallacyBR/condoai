@@ -14,7 +14,7 @@ class ChartAccount extends Model
 
     protected static function booted(): void
     {
-        static::addGlobalScope(new CondominiumScope());
+        static::addGlobalScope(new CondominiumScope);
     }
 
     protected $fillable = [
@@ -53,6 +53,4 @@ class ChartAccount extends Model
     {
         return $this->hasMany(Receivable::class);
     }
-
-    
 }

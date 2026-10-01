@@ -50,6 +50,7 @@ class ReceivableAttachmentController extends Controller
         if ($receivable->id !== $attachment->receivable_id) {
             return response()->json(['message' => 'Attachment not found for this receivable.'], 404);
         }
+
         return response()->json($attachment);
     }
 

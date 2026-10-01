@@ -21,6 +21,7 @@ class UserController extends Controller
      * Apenas usuários do mesmo condomínio do requisitante (ou todos para super admins) são retornados.
      *
      * @authenticated
+     *
      * @queryParam profile_id int ID do perfil para filtrar usuários. Example: 3
      * @queryParam condominium_id int ID do condomínio para filtrar usuários. Se não fornecido e o usuário autenticado tiver um condomínio, usa o do usuário. Example: 1
      * @queryParam per_page int Número de itens por página. Padrão: 15. Example: 10

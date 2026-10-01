@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
-use App\Models\MaintenanceArea;
 use App\Models\Condominium;
+use App\Models\MaintenanceArea;
+use Illuminate\Database\Seeder;
 
 class MaintenanceAreasSeeder extends Seeder
 {
@@ -16,7 +15,7 @@ class MaintenanceAreasSeeder extends Seeder
     {
         // Buscar condomínios existentes primeiro
         $condominiums = Condominium::all();
-        
+
         if ($condominiums->isEmpty()) {
             // Criar condomínio de exemplo apenas se não existir nenhum
             $condominium = Condominium::create([
@@ -75,8 +74,8 @@ class MaintenanceAreasSeeder extends Seeder
             foreach ($areas as $area) {
                 MaintenanceArea::updateOrCreate(
                     [
-                        'name' => $area['name'], 
-                        'condominium_id' => $condominium->id
+                        'name' => $area['name'],
+                        'condominium_id' => $condominium->id,
                     ],
                     [
                         'description' => $area['description'],
@@ -86,6 +85,6 @@ class MaintenanceAreasSeeder extends Seeder
             }
         }
 
-        $this->command->info('Áreas de manutenção criadas com sucesso para ' . $condominiums->count() . ' condomínio(s)!');
+        $this->command->info('Áreas de manutenção criadas com sucesso para '.$condominiums->count().' condomínio(s)!');
     }
 }

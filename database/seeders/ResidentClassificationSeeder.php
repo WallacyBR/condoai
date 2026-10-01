@@ -16,7 +16,7 @@ class ResidentClassificationSeeder extends Seeder
     {
         // Buscar condomínios existentes primeiro
         $condominiums = Condominium::all();
-        
+
         if ($condominiums->isEmpty()) {
             // Criar condomínio de exemplo apenas se não existir nenhum
             $condominium = Condominium::create([
@@ -87,15 +87,15 @@ class ResidentClassificationSeeder extends Seeder
             Resident::firstOrCreate(
                 [
                     'email' => $residentData['email'],
-                    'condominium_id' => $condominium->id
+                    'condominium_id' => $condominium->id,
                 ],
                 array_merge($residentData, ['condominium_id' => $condominium->id])
             );
         }
 
         $this->command->info('Moradores com classificações criados com sucesso!');
-        $this->command->info('Proprietários: ' . Resident::where('classification', ResidentClassification::PROPRIETARIO)->count());
-        $this->command->info('Moradores: ' . Resident::where('classification', ResidentClassification::MORADOR)->count());
-        $this->command->info('Inquilinos: ' . Resident::where('classification', ResidentClassification::INQUILINO)->count());
+        $this->command->info('Proprietários: '.Resident::where('classification', ResidentClassification::PROPRIETARIO)->count());
+        $this->command->info('Moradores: '.Resident::where('classification', ResidentClassification::MORADOR)->count());
+        $this->command->info('Inquilinos: '.Resident::where('classification', ResidentClassification::INQUILINO)->count());
     }
 }

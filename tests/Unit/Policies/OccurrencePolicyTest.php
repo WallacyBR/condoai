@@ -23,7 +23,7 @@ class OccurrencePolicyTest extends TestCase
         parent::setUp();
 
         $this->seedDefaultPermissionMatrix();
-        $this->policy = new OccurrencePolicy();
+        $this->policy = new OccurrencePolicy;
     }
 
     protected function tearDown(): void

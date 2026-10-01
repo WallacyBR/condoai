@@ -1,11 +1,12 @@
 import { ref, computed } from 'vue';
+import { apiRequest } from '../utils/api';
 
 // Estado global das notificações
 const notifications = ref({
-  packages: 3,
-  notices: 2,
-  maintenance: 5,
-  maintenanceTasks: 3,
+  packages: 0,
+  notices: 0,
+  maintenance: 0,
+  maintenanceTasks: 0,
   vehicles: 0,
   pets: 0,
   areas: 0
@@ -74,41 +75,16 @@ export function useNotifications() {
     }
   };
 
-  // Função para simular atualização de notificações (útil para testes)
-  const simulateNotificationUpdate = () => {
-    // Simular chegada de novas correspondências
-    setTimeout(() => {
-      incrementNotification('packages');
-    }, 5000);
-
-    // Simular novo aviso
-    setTimeout(() => {
-      incrementNotification('notices');
-    }, 10000);
-
-    // Simular nova tarefa de manutenção
-    setTimeout(() => {
-      incrementNotification('maintenanceTasks');
-    }, 15000);
-  };
-
-  // Função para carregar notificações do servidor (placeholder)
+  // Função para carregar notificações do servidor
   const loadNotificationsFromServer = async () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      // Aqui você pode implementar chamadas para APIs específicas
-      // Por exemplo:
-      // const response = await fetch('/api/notifications/counts', {
-      //   headers: { Authorization: `Bearer ${token}` }
-      // });
-      // const data = await response.json();
-      // Object.assign(notifications.value, data);
-      
-      console.log('Notificações carregadas do servidor (placeholder)');
-    } catch (error) {
-      console.error('Erro ao carregar notificações:', error);
+      const pendingPackages = await apiRequest('/packages?status=pending');
+      notifications.value.packages = Array.isArray(pendingPackages) ? pendingPackages.length : 0;
+    } catch {
+      notifications.value.packages = 0;
     }
   };
 
@@ -138,8 +114,7 @@ export function useNotifications() {
     clearNotification,
     clearAllNotifications,
     getBadgeColor,
-    simulateNotificationUpdate,
     loadNotificationsFromServer,
     toggleNotifications
   };
-} 
+}

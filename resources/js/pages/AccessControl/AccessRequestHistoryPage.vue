@@ -94,8 +94,11 @@
               <p class="text-white">{{ selectedRequest.visitor?.document || 'N/A' }}</p>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-400 mb-1">Morador Destino</label>
-              <p class="text-white">{{ selectedRequest.resident?.name || 'N/A' }}</p>
+              <label class="block text-sm font-medium text-gray-400 mb-1">Unidade de Destino</label>
+              <p class="text-white">{{ selectedRequest.apartment?.number || 'N/A' }}</p>
+              <p v-if="selectedRequest.resident?.name" class="text-xs text-gray-400 mt-1">
+                Responsável: {{ selectedRequest.resident.name }}
+              </p>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-400 mb-1">Status</label>
@@ -139,7 +142,7 @@ import api from '../../utils/api';
 import { useToast } from '../../composables/useToast';
 import { formatDateTime } from '../../utils/dateHelpers';
 
-const { success, error } = useToast();
+const { errorToast } = useToast();
 
 const historyRequests = ref([]);
 const loading = ref(false);
@@ -166,12 +169,12 @@ const fetchHistory = async (page = 1) => {
     };
     
     const response = await api.get('/access-control/access-requests/history', { params });
-    historyRequests.value = response.data?.data || [];
-    pagination.value = response.data?.meta || null;
+    historyRequests.value = Array.isArray(response.data) ? response.data : response.data?.data || [];
+    pagination.value = response.data?.meta || (response.data?.last_page ? response.data : null);
   } catch (e) {
     console.error("Erro ao buscar histórico:", e);
     errorMessage.value = 'Falha ao carregar o histórico de solicitações.';
-    error(errorMessage.value);
+    errorToast(errorMessage.value);
   } finally {
     loading.value = false;
   }
@@ -226,4 +229,4 @@ const getStatusInfo = (status) => {
 };
 
 onMounted(() => fetchHistory());
-</script> 
+</script>

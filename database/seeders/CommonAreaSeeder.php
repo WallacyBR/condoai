@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\CommonArea;
 use App\Models\Condominium;
+use Illuminate\Database\Seeder;
 
 class CommonAreaSeeder extends Seeder
 {
@@ -14,9 +14,10 @@ class CommonAreaSeeder extends Seeder
     public function run(): void
     {
         $condominiums = Condominium::all();
-        
+
         if ($condominiums->isEmpty()) {
             $this->command->warn('Nenhum condomínio encontrado. Execute primeiro o CustomCondominiumResidentsSeeder.');
+
             return;
         }
 
@@ -155,6 +156,6 @@ class CommonAreaSeeder extends Seeder
             }
         }
 
-        $this->command->info('Áreas comuns criadas com sucesso para ' . $condominiums->count() . ' condomínio(s)!');
+        $this->command->info('Áreas comuns criadas com sucesso para '.$condominiums->count().' condomínio(s)!');
     }
-} 
+}

@@ -101,6 +101,7 @@
 <script>
 import { ref, computed, onMounted } from 'vue';
 import CommonAreaBookingForm from './CommonAreaBookingForm.vue';
+import { apiRequest } from '../utils/api';
 
 export default {
   name: 'CommonAreaCalendar',
@@ -111,10 +112,8 @@ export default {
     } 
   },
   components: { CommonAreaBookingForm },
-  setup(props) {
-    const token = localStorage.getItem('token');
-    const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
-
+  emits: ['edit'],
+  setup(props, { emit }) {
     const bookings = ref([]);
     const loading = ref(false);
 
@@ -126,21 +125,16 @@ export default {
     const loadBookings = async () => {
       try {
         loading.value = true;
-        const resp = await fetch(`/api/common-areas/${props.area.id}/bookings`, { headers });
-        
-        if (resp.ok) {
-          const data = await resp.json();
-          // Adicionar métodos auxiliares aos objetos de reserva
-          bookings.value = data.map(booking => ({
-            ...booking,
-            canBeCancelled: canBeCancelled(booking),
-            canBeEdited: canBeEdited(booking)
-          }));
-        } else {
-          console.error('Erro ao carregar reservas');
-        }
+        const data = await apiRequest(`/common-areas/${props.area.id}/bookings`);
+        const list = Array.isArray(data) ? data : (data?.data || []);
+        // Adicionar métodos auxiliares aos objetos de reserva
+        bookings.value = list.map(booking => ({
+          ...booking,
+          canBeCancelled: canBeCancelled(booking),
+          canBeEdited: canBeEdited(booking)
+        }));
       } catch (error) {
-        console.error('Erro ao carregar reservas:', error);
+        bookings.value = [];
       } finally {
         loading.value = false;
       }
@@ -161,31 +155,21 @@ export default {
       if (!confirm('Tem certeza que deseja cancelar esta reserva?')) return;
 
       try {
-        const response = await fetch(`/api/common-areas/${props.area.id}/bookings/${bookingId}/cancel`, {
-          method: 'PATCH',
-          headers
-        });
-
-        if (response.ok) {
-          // Atualizar status da reserva localmente
-          const booking = bookings.value.find(b => b.id === bookingId);
-          if (booking) {
-            booking.status = 'cancelled';
-            booking.canBeCancelled = false;
-            booking.canBeEdited = false;
-          }
-        } else {
-          alert('Erro ao cancelar reserva');
+        await apiRequest(`/common-areas/${props.area.id}/bookings/${bookingId}/cancel`, { method: 'PATCH' });
+        // Atualizar status da reserva localmente
+        const booking = bookings.value.find(b => b.id === bookingId);
+        if (booking) {
+          booking.status = 'cancelled';
+          booking.canBeCancelled = false;
+          booking.canBeEdited = false;
         }
       } catch (error) {
-        console.error('Erro ao cancelar reserva:', error);
-        alert('Erro de conexão');
+        alert(error.message || 'Erro ao cancelar reserva');
       }
     };
 
     const editBooking = (booking) => {
-      // Implementar edição de reserva se necessário
-      console.log('Editar reserva:', booking);
+      emit('edit', booking);
     };
 
     // Métodos auxiliares

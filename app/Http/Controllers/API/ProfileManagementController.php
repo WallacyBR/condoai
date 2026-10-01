@@ -5,7 +5,6 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Module;
 use App\Models\Profile;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -17,7 +16,7 @@ class ProfileManagementController extends Controller
      */
     public function getManagementData()
     {
-        $profiles = Profile::with(['modules' => function($query) {
+        $profiles = Profile::with(['modules' => function ($query) {
             $query->withPivot(['can_view', 'can_create', 'can_update', 'can_delete', 'scope']);
         }])->withCount('users')->get();
 
@@ -26,14 +25,14 @@ class ProfileManagementController extends Controller
         $scopeOptions = [
             'own' => 'Próprios registros',
             'condominium' => 'Registros do condomínio',
-            'all' => 'Todos os registros'
+            'all' => 'Todos os registros',
         ];
 
         return response()->json([
             'profiles' => $profiles,
             'modules' => $modules,
             'scope_options' => $scopeOptions,
-            'protected_profiles' => ['SysOp'] // Perfis que não podem ser excluídos
+            'protected_profiles' => ['SysOp'], // Perfis que não podem ser excluídos
         ]);
     }
 
@@ -58,7 +57,7 @@ class ProfileManagementController extends Controller
         try {
             $profile = Profile::create([
                 'name' => $validated['name'],
-                'description' => $validated['description']
+                'description' => $validated['description'],
             ]);
 
             if (isset($validated['modules'])) {
@@ -69,14 +68,15 @@ class ProfileManagementController extends Controller
 
             return response()->json([
                 'message' => 'Perfil criado com sucesso!',
-                'profile' => $profile->load(['modules' => function($query) {
+                'profile' => $profile->load(['modules' => function ($query) {
                     $query->withPivot(['can_view', 'can_create', 'can_update', 'can_delete', 'scope']);
-                }])
+                }]),
             ], 201);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'Erro ao criar perfil: ' . $e->getMessage()], 500);
+
+            return response()->json(['message' => 'Erro ao criar perfil: '.$e->getMessage()], 500);
         }
     }
 
@@ -107,7 +107,7 @@ class ProfileManagementController extends Controller
             if (isset($validated['name']) || isset($validated['description'])) {
                 $profile->update([
                     'name' => $validated['name'] ?? $profile->name,
-                    'description' => $validated['description'] ?? $profile->description
+                    'description' => $validated['description'] ?? $profile->description,
                 ]);
             }
 
@@ -119,14 +119,15 @@ class ProfileManagementController extends Controller
 
             return response()->json([
                 'message' => 'Perfil atualizado com sucesso!',
-                'profile' => $profile->load(['modules' => function($query) {
+                'profile' => $profile->load(['modules' => function ($query) {
                     $query->withPivot(['can_view', 'can_create', 'can_update', 'can_delete', 'scope']);
-                }])
+                }]),
             ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'Erro ao atualizar perfil: ' . $e->getMessage()], 500);
+
+            return response()->json(['message' => 'Erro ao atualizar perfil: '.$e->getMessage()], 500);
         }
     }
 
@@ -143,7 +144,7 @@ class ProfileManagementController extends Controller
         // Verifica se há usuários usando este perfil
         if ($profile->users()->count() > 0) {
             return response()->json([
-                'message' => 'Não é possível excluir este perfil pois existem usuários vinculados a ele'
+                'message' => 'Não é possível excluir este perfil pois existem usuários vinculados a ele',
             ], 409);
         }
 
@@ -166,12 +167,12 @@ class ProfileManagementController extends Controller
         try {
             $newProfile = Profile::create([
                 'name' => $validated['name'],
-                'description' => $validated['description']
+                'description' => $validated['description'],
             ]);
 
             // Copia todos os módulos e privilégios do perfil original
             $originalModules = $profile->modules()->withPivot([
-                'can_view', 'can_create', 'can_update', 'can_delete', 'scope'
+                'can_view', 'can_create', 'can_update', 'can_delete', 'scope',
             ])->get();
 
             $syncData = [];
@@ -191,14 +192,15 @@ class ProfileManagementController extends Controller
 
             return response()->json([
                 'message' => 'Perfil duplicado com sucesso!',
-                'profile' => $newProfile->load(['modules' => function($query) {
+                'profile' => $newProfile->load(['modules' => function ($query) {
                     $query->withPivot(['can_view', 'can_create', 'can_update', 'can_delete', 'scope']);
-                }])
+                }]),
             ], 201);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'Erro ao duplicar perfil: ' . $e->getMessage()], 500);
+
+            return response()->json(['message' => 'Erro ao duplicar perfil: '.$e->getMessage()], 500);
         }
     }
 
@@ -221,7 +223,7 @@ class ProfileManagementController extends Controller
     private function syncProfileModules(Profile $profile, array $modules)
     {
         $syncData = [];
-        
+
         foreach ($modules as $moduleData) {
             $syncData[$moduleData['module_id']] = [
                 'can_view' => $moduleData['can_view'] ?? false,
@@ -240,7 +242,7 @@ class ProfileManagementController extends Controller
      */
     public function getPrivilegesReport()
     {
-        $profiles = Profile::with(['modules' => function($query) {
+        $profiles = Profile::with(['modules' => function ($query) {
             $query->withPivot(['can_view', 'can_create', 'can_update', 'can_delete', 'scope']);
         }, 'users:id,name,profile_id'])->get();
 
@@ -259,10 +261,10 @@ class ProfileManagementController extends Controller
                         'can_delete' => $module->pivot->can_delete,
                         'scope' => $module->pivot->scope,
                     ];
-                })
+                }),
             ];
         });
 
         return response()->json($report);
     }
-} 
+}

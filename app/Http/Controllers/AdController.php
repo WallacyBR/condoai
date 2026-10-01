@@ -10,11 +10,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rule;
 
 class AdController extends Controller
 {
     use ResolvesTenantCondominium;
+
     /**
      * Display a listing of the resource.
      */
@@ -36,10 +36,10 @@ class AdController extends Controller
             $query->where('price', '<=', $request->input('max_price'));
         }
         if ($request->has('search')) {
-            $searchTerm = '%' . $request->input('search') . '%';
+            $searchTerm = '%'.$request->input('search').'%';
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('title', 'like', $searchTerm)
-                  ->orWhere('description', 'like', $searchTerm);
+                    ->orWhere('description', 'like', $searchTerm);
             });
         }
 
@@ -100,9 +100,11 @@ class AdController extends Controller
             }
 
             DB::commit();
+
             return response()->json($ad->load('images'), 201);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json(['message' => 'Error creating ad', 'error' => $e->getMessage()], 500);
         }
     }
@@ -185,9 +187,11 @@ class AdController extends Controller
             }
 
             DB::commit();
+
             return response()->json($ad->load('images'), 200);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json(['message' => 'Error updating ad', 'error' => $e->getMessage()], 500);
         }
     }
@@ -212,9 +216,11 @@ class AdController extends Controller
             $ad->delete(); // Soft delete the ad
 
             DB::commit();
+
             return response()->json(['message' => 'Ad deleted successfully'], 200);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json(['message' => 'Error deleting ad', 'error' => $e->getMessage()], 500);
         }
     }
@@ -308,6 +314,7 @@ class AdController extends Controller
     public function myAds()
     {
         $ads = Auth::user()->ads()->with('images')->paginate(15);
+
         return response()->json($ads);
     }
 

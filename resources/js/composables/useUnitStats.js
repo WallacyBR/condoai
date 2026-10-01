@@ -17,9 +17,9 @@ export function useUnitStats(units) {
 
   const getStatusClass = (unit) => {
     if (unit.owner || unit.tenant) {
-      return 'bg-blue-500/20 text-blue-300 border border-blue-500/30';
+      return 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/50';
     }
-    return 'bg-orange-500/20 text-orange-300 border border-orange-500/30';
+    return 'bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/50';
   };
 
   const getStatusLabel = (unit) => {

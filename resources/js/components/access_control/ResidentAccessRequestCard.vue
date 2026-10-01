@@ -46,7 +46,7 @@
 
       <!-- Detalhes do Veículo (se houver) -->
       <div v-if="request.visitor_vehicle" class="mb-3 text-xs text-gray-300 border-t border-gray-700/50 pt-3">
-        <p><strong class="font-medium text-gray-400">Veículo:</strong> {{ request.visitor_vehicle.plate }} - {{ request.visitor_vehicle.model }} ({{ request.visitor_vehicle.cor }})</p>
+        <p><strong class="font-medium text-gray-400">Veículo:</strong> {{ request.visitor_vehicle.plate || request.visitor_vehicle.license_plate }} - {{ request.visitor_vehicle.model }} ({{ request.visitor_vehicle.color }})</p>
       </div>
 
       <!-- Observações da Portaria (se houver) -->

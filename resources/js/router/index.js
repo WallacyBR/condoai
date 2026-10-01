@@ -307,6 +307,36 @@ const routes = [
     component: () => import('../finance/BudgetView.vue'),
     meta: { requiresAuth: true, requiresCondo: true }
   },
+  {
+    path: '/finance/procurements',
+    name: 'finance.procurements',
+    component: () => import('../finance/ProcurementsView.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/security/access-logs',
+    name: 'security.access-logs',
+    component: () => import('../security/SecurityAccessLogsView.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/security/user-passkeys',
+    name: 'security.user-passkeys',
+    component: () => import('../security/SecurityUserPasskeysView.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/security/my-passkeys',
+    name: 'security.my-passkeys',
+    component: () => import('../security/MyPasskeysView.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/cotacoes/responder/:token',
+    name: 'public.supplier-quote',
+    component: () => import('../pages/PublicSupplierQuotePage.vue'),
+    meta: { requiresAuth: false }
+  },
   // Maintenance Module Routes
   {
     path: '/maintenance/dashboard',

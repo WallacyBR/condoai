@@ -8,12 +8,11 @@ use App\Models\AccessRequest;
 use App\Models\Apartment;
 use App\Models\ProtectiveMeasure;
 use App\Models\Resident;
-use App\Models\User;
 use App\Models\Visitor;
 use App\Models\VisitorVehicle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 /**
@@ -46,7 +45,8 @@ class AccessRequestController extends Controller
         $condominiumId = $this->tenantCondominiumId($request);
 
         $query = AccessRequest::query()
-            ->with(['visitor', 'visitorVehicle', 'resident.user', 'apartment', 'parkingSpot']);
+            ->where('condominium_id', $condominiumId)
+            ->with(['visitor', 'visitorVehicle', 'resident', 'apartment', 'parkingSpot']);
 
         if ($request->has('status') && $request->status !== '') {
             $query->where('status', $request->status);
@@ -70,8 +70,8 @@ class AccessRequestController extends Controller
      * @bodyParam visitor_photo_url string URL da foto do visitante.
      * @bodyParam visitor_vehicle_plate string Placa do veículo do visitante. Example: ABC-1234
      * @bodyParam visitor_vehicle_model string Modelo do veículo do visitante. Example: Honda Civic
-     * @bodyParam resident_id int ID do morador responsável. Example: 2
-     * @bodyParam apartment_id int ID do apartamento. Example: 1
+     * @bodyParam apartment_id int required ID da unidade de destino. Example: 1
+     * @bodyParam resident_id int ID de morador vinculado para compatibilidade. Quando ausente, o sistema infere pela unidade. Example: 2
      * @bodyParam visit_date date Data da visita. Example: 2024-12-25
      * @bodyParam visit_time string Hora da visita. Example: 14:00
      * @bodyParam duration_hours int Duração da visita em horas. Example: 2
@@ -89,66 +89,160 @@ class AccessRequestController extends Controller
             'visitor_name' => 'required|string|max:255',
             'visitor_document' => 'required|string|max:255',
             'visitor_phone' => 'nullable|string|max:255',
+            'visitor_observations' => 'nullable|string',
+            'visitor_photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'visitor_photo_url' => 'nullable|url',
-            'visitor_vehicle_plate' => 'nullable|string|max:20',
-            'visitor_vehicle_model' => 'nullable|string|max:255',
-            'resident_id' => ['required', Rule::exists('residents', 'id')->where(function ($query) use ($condominiumId) {
+            'visitor_id' => ['nullable', Rule::exists('visitors', 'id')->where(function ($query) use ($condominiumId) {
+                return $query->where('condominium_id', $condominiumId);
+            })],
+            'resident_id' => ['nullable', Rule::exists('residents', 'id')->where(function ($query) use ($condominiumId) {
                 return $query->where('condominium_id', $condominiumId);
             })],
             'apartment_id' => ['required', Rule::exists('apartments', 'id')->where(function ($query) use ($condominiumId) {
                 return $query->where('condominium_id', $condominiumId);
             })],
-            'visit_date' => 'required|date',
-            'visit_time' => 'required|string',
+            'visit_date' => 'nullable|date',
+            'visit_time' => 'nullable|string',
             'duration_hours' => 'nullable|integer|min:1',
             'purpose' => 'nullable|string|max:255',
             'observations' => 'nullable|string',
+            'gatehouse_observation' => 'nullable|string',
+            'has_vehicle' => 'nullable|boolean',
+            'visitor_vehicle_id' => ['nullable', Rule::exists('visitor_vehicles', 'id')->where(function ($query) use ($condominiumId) {
+                return $query->where('condominium_id', $condominiumId);
+            })],
+            'visitor_vehicle_plate' => 'nullable|string|max:20',
+            'visitor_vehicle_model' => 'nullable|string|max:255',
+            'vehicle_plate' => 'nullable|string|max:20',
+            'vehicle_model' => 'nullable|string|max:255',
+            'vehicle_color' => 'nullable|string|max:255',
+            'vehicle.plate' => 'nullable|string|max:20',
+            'vehicle.model' => 'nullable|string|max:255',
+            'vehicle.color' => 'nullable|string|max:255',
         ]);
+
+        $apartment = Apartment::where('condominium_id', $condominiumId)->find($validated['apartment_id']);
+
+        if (! $apartment) {
+            return response()->json([
+                'message' => 'Unidade não encontrada para o condomínio atual.',
+                'errors' => [
+                    'apartment_id' => ['A unidade informada não pertence ao condomínio atual.'],
+                ],
+            ], 422);
+        }
+
+        $resident = $this->resolveResidentForApartment($apartment, $validated['resident_id'] ?? null);
+
+        if (! $resident) {
+            return response()->json([
+                'message' => 'A unidade de destino não possui morador vinculado para receber a autorização.',
+                'errors' => [
+                    'apartment_id' => ['Vincule ao menos um morador à unidade antes de criar a solicitação.'],
+                ],
+            ], 422);
+        }
+
+        $visitAt = isset($validated['visit_date'])
+            ? \Illuminate\Support\Carbon::parse($validated['visit_date'])
+            : now();
+        $visitTime = $validated['visit_time'] ?? $visitAt->format('H:i:s');
+
+        $vehiclePlate = $validated['visitor_vehicle_plate']
+            ?? $validated['vehicle_plate']
+            ?? data_get($validated, 'vehicle.plate');
+        $vehicleModel = $validated['visitor_vehicle_model']
+            ?? $validated['vehicle_model']
+            ?? data_get($validated, 'vehicle.model');
+        $vehicleColor = $validated['vehicle_color'] ?? data_get($validated, 'vehicle.color');
 
         // Check for protective measures
         $protectiveMeasure = $this->_checkProtectiveMeasures(
             $condominiumId,
             $validated['visitor_document'],
-            $validated['visitor_vehicle_plate'] ?? null
+            $vehiclePlate
         );
 
         if ($protectiveMeasure) {
             return response()->json([
                 'message' => 'Medida protetiva ativa encontrada para este visitante/veículo.',
-                'protective_measure' => $protectiveMeasure
+                'medida_protetiva_ativa' => true,
+                'protective_measure' => $protectiveMeasure,
             ], 422);
         }
 
         DB::beginTransaction();
         try {
+            $photoUrl = $validated['visitor_photo_url'] ?? null;
+
+            if ($request->hasFile('visitor_photo')) {
+                $path = $request->file('visitor_photo')->store('visitors_photos', 'public');
+                $photoUrl = Storage::url($path);
+            }
+
             // Find or create Visitor
-            $visitor = Visitor::firstOrCreate(
-                ['document' => $validated['visitor_document'], 'condominium_id' => $condominiumId],
-                ['name' => $validated['visitor_name'], 'phone' => $validated['visitor_phone'], 'photo_url' => $validated['visitor_photo_url'] ?? null]
-            );
+            $visitor = isset($validated['visitor_id'])
+                ? Visitor::where('condominium_id', $condominiumId)->findOrFail($validated['visitor_id'])
+                : Visitor::firstOrCreate(
+                    ['document' => $validated['visitor_document'], 'condominium_id' => $condominiumId],
+                    [
+                        'name' => $validated['visitor_name'],
+                        'phone' => $validated['visitor_phone'] ?? null,
+                        'photo_url' => $photoUrl,
+                        'observations' => $validated['visitor_observations'] ?? null,
+                    ]
+                );
+
+            $visitor->fill([
+                'name' => $validated['visitor_name'],
+                'phone' => $validated['visitor_phone'] ?? $visitor->phone,
+                'photo_url' => $photoUrl ?? $visitor->photo_url,
+                'observations' => $validated['visitor_observations'] ?? $visitor->observations,
+            ])->save();
 
             $visitorVehicle = null;
-            if (isset($validated['visitor_vehicle_plate'])) {
+            if (! empty($validated['visitor_vehicle_id'])) {
+                $visitorVehicle = VisitorVehicle::where('condominium_id', $condominiumId)
+                    ->where('visitor_id', $visitor->id)
+                    ->findOrFail($validated['visitor_vehicle_id']);
+            } elseif (! empty($vehiclePlate)) {
                 $visitorVehicle = VisitorVehicle::firstOrCreate(
-                    ['plate' => $validated['visitor_vehicle_plate'], 'condominium_id' => $condominiumId],
-                    ['model' => $validated['visitor_vehicle_model'] ?? null]
+                    [
+                        'license_plate' => mb_strtoupper($vehiclePlate),
+                        'condominium_id' => $condominiumId,
+                        'visitor_id' => $visitor->id,
+                    ],
+                    [
+                        'brand' => $vehicleModel ?: 'Não informado',
+                        'model' => $vehicleModel ?: 'Não informado',
+                        'color' => $vehicleColor ?: 'Não informado',
+                        'plate' => mb_strtoupper($vehiclePlate),
+                    ]
                 );
+
+                $visitorVehicle->fill([
+                    'visitor_id' => $visitor->id,
+                    'model' => $vehicleModel ?: $visitorVehicle->model,
+                    'color' => $vehicleColor ?: $visitorVehicle->color,
+                    'plate' => mb_strtoupper($vehiclePlate),
+                ])->save();
             }
 
             $accessRequest = AccessRequest::create([
                 'condominium_id' => $condominiumId,
                 'visitor_id' => $visitor->id,
                 'visitor_vehicle_id' => $visitorVehicle ? $visitorVehicle->id : null,
-                'resident_id' => $validated['resident_id'],
-                'apartment_id' => $validated['apartment_id'],
+                'resident_id' => $resident->id,
+                'apartment_id' => $apartment->id,
                 'visitor_name' => $validated['visitor_name'],
                 'visitor_document' => $validated['visitor_document'],
                 'visitor_phone' => $validated['visitor_phone'] ?? null,
-                'visit_date' => $validated['visit_date'],
-                'visit_time' => $validated['visit_time'],
+                'visit_date' => $visitAt,
+                'visit_time' => $visitTime,
                 'duration_hours' => $validated['duration_hours'] ?? null,
                 'purpose' => $validated['purpose'] ?? null,
-                'observations' => $validated['observations'] ?? null,
+                'observations' => $validated['observations'] ?? $validated['visitor_observations'] ?? null,
+                'gatehouse_observation' => $validated['gatehouse_observation'] ?? null,
                 'status' => 'pending', // Initial status
                 'request_timestamp' => now(),
             ]);
@@ -157,10 +251,11 @@ class AccessRequestController extends Controller
 
             return response()->json([
                 'message' => 'Solicitação de acesso criada com sucesso!',
-                'access_request' => $accessRequest->load(['visitor', 'visitorVehicle', 'resident.user', 'apartment'])
+                'access_request' => $accessRequest->load(['visitor', 'visitorVehicle', 'resident', 'apartment']),
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json(['message' => 'Erro ao criar solicitação de acesso', 'error' => $e->getMessage()], 500);
         }
     }
@@ -174,7 +269,9 @@ class AccessRequestController extends Controller
      */
     public function show(AccessRequest $accessRequest)
     {
-        $accessRequest->load(['visitor', 'visitorVehicle', 'resident.user', 'apartment', 'parkingSpot']);
+        $this->authorizeTenantAccess($accessRequest);
+        $accessRequest->load(['visitor', 'visitorVehicle', 'resident', 'apartment', 'parkingSpot']);
+
         return response()->json($accessRequest);
     }
 
@@ -188,6 +285,7 @@ class AccessRequestController extends Controller
     public function update(Request $request, AccessRequest $accessRequest)
     {
         $condominiumId = $this->tenantCondominiumId($request);
+        $this->authorizeTenantAccess($accessRequest, $condominiumId);
 
         $validated = $request->validate([
             'visitor_name' => 'sometimes|required|string|max:255',
@@ -250,10 +348,11 @@ class AccessRequestController extends Controller
 
             return response()->json([
                 'message' => 'Solicitação de acesso atualizada com sucesso!',
-                'access_request' => $accessRequest->load(['visitor', 'visitorVehicle', 'resident.user', 'apartment'])
+                'access_request' => $accessRequest->load(['visitor', 'visitorVehicle', 'resident', 'apartment']),
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json(['message' => 'Erro ao atualizar solicitação de acesso', 'error' => $e->getMessage()], 500);
         }
     }
@@ -267,7 +366,9 @@ class AccessRequestController extends Controller
      */
     public function destroy(AccessRequest $accessRequest)
     {
+        $this->authorizeTenantAccess($accessRequest);
         $accessRequest->delete();
+
         return response()->json(null, 204);
     }
 
@@ -283,8 +384,9 @@ class AccessRequestController extends Controller
         $condominiumId = $this->tenantCondominiumId($request);
 
         $accessRequests = AccessRequest::query()
+            ->where('condominium_id', $condominiumId)
             ->whereIn('status', ['pending', 'authorized', 'entry_recorded'])
-            ->with(['visitor', 'visitorVehicle', 'resident.user', 'apartment', 'parkingSpot'])
+            ->with(['visitor', 'visitorVehicle', 'resident', 'apartment', 'parkingSpot'])
             ->orderByDesc('request_timestamp')
             ->get();
 
@@ -319,7 +421,7 @@ class AccessRequestController extends Controller
             });
         }
 
-        return response()->json($accessRequests);
+        return response()->json(['data' => $accessRequests]);
     }
 
     /**
@@ -331,23 +433,46 @@ class AccessRequestController extends Controller
      */
     public function listMyRequestsAsResident(Request $request)
     {
+        $user = auth()->user();
         $condominiumId = $this->tenantCondominiumId($request);
-        $residentId = auth()->user()->resident->id;
+        $resident = Resident::where('condominium_id', $condominiumId)
+            ->where('email', $user->email)
+            ->first();
+
+        if (! $resident) {
+            return response()->json(['data' => []]);
+        }
 
         $accessRequests = AccessRequest::query()
-            ->where('resident_id', $residentId)
+            ->where('condominium_id', $condominiumId)
+            ->where(function ($query) use ($resident) {
+                $apartmentIds = collect([$resident->apartment_id])
+                    ->merge($resident->apartments()->pluck('apartments.id'))
+                    ->merge($resident->ownedApartments()->pluck('apartments.id'))
+                    ->merge($resident->rentedApartments()->pluck('apartments.id'))
+                    ->filter()
+                    ->unique()
+                    ->values();
+
+                $query->where('resident_id', $resident->id);
+
+                if ($apartmentIds->isNotEmpty()) {
+                    $query->orWhereIn('apartment_id', $apartmentIds);
+                }
+            })
             ->whereIn('status', ['pending', 'authorized'])
-            ->with(['visitor', 'visitorVehicle', 'resident.user', 'apartment'])
+            ->with(['visitor', 'visitorVehicle', 'resident', 'apartment'])
             ->orderByDesc('request_timestamp')
             ->get();
 
-        return response()->json($accessRequests);
+        return response()->json(['data' => $accessRequests]);
     }
 
     /**
      * Responder a uma solicitação.
      *
      * @urlParam access_request int ID da solicitação.
+     *
      * @bodyParam response string required Resposta do morador (authorized ou unauthorized). Example: authorized
      * @bodyParam resident_observation string Observação opcional. Example: "Pode subir"
      *
@@ -355,13 +480,24 @@ class AccessRequestController extends Controller
      */
     public function respondToRequest(Request $request, AccessRequest $accessRequest)
     {
+        $this->authorizeTenantAccess($accessRequest);
         $validated = $request->validate([
-            'response' => ['required', Rule::in(['authorized', 'unauthorized'])],
+            'response' => ['required', Rule::in([
+                'authorized',
+                'unauthorized',
+                'inform_not_home',
+                'awaiting_at_gatehouse',
+                'await_at_gatehouse',
+            ])],
             'resident_observation' => 'nullable|string',
         ]);
 
+        $status = $validated['response'] === 'await_at_gatehouse'
+            ? 'awaiting_at_gatehouse'
+            : $validated['response'];
+
         $accessRequest->update([
-            'status' => $validated['response'],
+            'status' => $status,
             'resident_observation' => $validated['resident_observation'],
             'resident_response_timestamp' => now(),
         ]);
@@ -373,6 +509,7 @@ class AccessRequestController extends Controller
      * Registrar entrada do visitante.
      *
      * @urlParam access_request int ID da solicitação.
+     *
      * @bodyParam parking_spot_id int ID da vaga utilizada. Example: 5
      * @bodyParam gatehouse_entry_observation string Observação da portaria. Example: "Entrada confirmada"
      *
@@ -380,6 +517,7 @@ class AccessRequestController extends Controller
      */
     public function recordEntry(Request $request, AccessRequest $accessRequest)
     {
+        $this->authorizeTenantAccess($accessRequest);
         $validated = $request->validate([
             'parking_spot_id' => 'nullable|exists:parking_spots,id',
             'gatehouse_entry_observation' => 'nullable|string',
@@ -399,12 +537,14 @@ class AccessRequestController extends Controller
      * Registrar saída do visitante.
      *
      * @urlParam access_request int ID da solicitação.
+     *
      * @bodyParam gatehouse_exit_observation string Observação da portaria. Example: "Saída registrada"
      *
      * @response { "message": "Saída registrada com sucesso!" }
      */
     public function recordExit(Request $request, AccessRequest $accessRequest)
     {
+        $this->authorizeTenantAccess($accessRequest);
         $validated = $request->validate([
             'gatehouse_exit_observation' => 'nullable|string',
         ]);
@@ -422,12 +562,14 @@ class AccessRequestController extends Controller
      * Cancelar uma solicitação.
      *
      * @urlParam access_request int ID da solicitação.
+     *
      * @bodyParam cancellation_observation string Motivo do cancelamento. Example: "Visitante não compareceu"
      *
      * @response { "message": "Solicitação cancelada com sucesso!" }
      */
     public function cancelRequest(Request $request, AccessRequest $accessRequest)
     {
+        $this->authorizeTenantAccess($accessRequest);
         $validated = $request->validate([
             'cancellation_observation' => 'nullable|string',
         ]);
@@ -456,7 +598,8 @@ class AccessRequestController extends Controller
         $condominiumId = $this->tenantCondominiumId($request);
 
         $query = AccessRequest::query()
-            ->with(['visitor', 'visitorVehicle', 'resident.user', 'apartment', 'parkingSpot']);
+            ->where('condominium_id', $condominiumId)
+            ->with(['visitor', 'visitorVehicle', 'resident', 'apartment', 'parkingSpot']);
 
         if ($request->has('status') && $request->status !== '') {
             $query->where('status', $request->status);
@@ -488,7 +631,7 @@ class AccessRequestController extends Controller
         $visitorDocument = $request->input('visitor_document');
         $vehiclePlate = $request->input('vehicle_plate');
 
-        if (!$visitorDocument && !$vehiclePlate) {
+        if (! $visitorDocument && ! $vehiclePlate) {
             return response()->json(['message' => 'Pelo menos um documento de visitante ou placa de veículo deve ser fornecido.'], 422);
         }
 
@@ -497,7 +640,7 @@ class AccessRequestController extends Controller
         if ($protectiveMeasure) {
             return response()->json([
                 'has_protective_measure' => true,
-                'measure' => $protectiveMeasure->load(['aggressorVisitor', 'protectedResident.user'])
+                'measure' => $protectiveMeasure->load(['aggressorVisitor', 'protectedResident']),
             ]);
         }
 
@@ -507,9 +650,6 @@ class AccessRequestController extends Controller
     /**
      * Helper method to check for active protective measures.
      *
-     * @param int $condominiumId
-     * @param string|null $visitorDocument
-     * @param string|null $vehiclePlate
      * @return ProtectiveMeasure|null
      */
     private function _checkProtectiveMeasures(?int $condominiumId, ?string $visitorDocument, ?string $vehiclePlate)
@@ -520,7 +660,7 @@ class AccessRequestController extends Controller
                 $q->whereNull('condominium_id')
                     ->orWhere('condominium_id', $condominiumId);
             })
-            ->where(function ($q) use ($visitorDocument, $vehiclePlate) {
+            ->where(function ($q) use ($visitorDocument) {
                 if ($visitorDocument) {
                     $q->orWhereHas('aggressorVisitor', function ($sq) use ($visitorDocument) {
                         $sq->where('document', $visitorDocument);
@@ -532,5 +672,38 @@ class AccessRequestController extends Controller
             });
 
         return $query->first();
+    }
+
+    private function authorizeTenantAccess(AccessRequest $accessRequest, ?int $condominiumId = null): void
+    {
+        $tenantId = $condominiumId ?? $this->tenantCondominiumId(request());
+        abort_if($accessRequest->condominium_id !== $tenantId, 404);
+    }
+
+    private function resolveResidentForApartment(Apartment $apartment, ?int $residentId): ?Resident
+    {
+        if ($residentId) {
+            return Resident::where('condominium_id', $apartment->condominium_id)->find($residentId);
+        }
+
+        if ($apartment->owner_id) {
+            return Resident::where('condominium_id', $apartment->condominium_id)->find($apartment->owner_id);
+        }
+
+        if ($apartment->tenant_id) {
+            return Resident::where('condominium_id', $apartment->condominium_id)->find($apartment->tenant_id);
+        }
+
+        $pivotResident = $apartment->residents()
+            ->wherePivot('active', true)
+            ->first();
+
+        if ($pivotResident) {
+            return $pivotResident;
+        }
+
+        return Resident::where('condominium_id', $apartment->condominium_id)
+            ->where('apartment_id', $apartment->id)
+            ->first();
     }
 }

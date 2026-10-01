@@ -155,7 +155,7 @@ const submitting = ref(false);
 const fetchUsers = async () => {
   loadingUsers.value = true;
   try {
-    const response = await api.get('/users?profile_type=resident&per_page=1000'); // Ajustar conforme API
+    const response = await api.get('/residents?per_page=1000');
     users.value = response.data.data || response.data;
   } catch (e) {
     errorToast('Erro ao carregar lista de moradores.');

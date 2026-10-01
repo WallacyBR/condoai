@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Condominium;
 use App\Models\ProtectiveMeasure;
 use App\Models\User;
 use App\Models\Visitor;
-use App\Models\Condominium;
 use Illuminate\Database\Seeder;
 
 class ProtectiveMeasureSeeder extends Seeder
@@ -21,6 +21,7 @@ class ProtectiveMeasureSeeder extends Seeder
         $condominiums = Condominium::all();
         if ($condominiums->isEmpty()) {
             $this->command->warn('Nenhum condomínio encontrado. Execute o CustomCondominiumResidentsSeeder primeiro.');
+
             return;
         }
 
@@ -31,12 +32,13 @@ class ProtectiveMeasureSeeder extends Seeder
 
             if ($residents->isEmpty() || $visitors->isEmpty()) {
                 $this->command->warn("Condomínio {$condominium->name} não tem moradores ou visitantes suficientes. Pulando...");
+
                 continue;
             }
 
             // Criar 2-5 medidas protetivas por condomínio
             $numberOfMeasures = rand(2, 5);
-            
+
             for ($i = 0; $i < $numberOfMeasures; $i++) {
                 $protectedResident = $residents->random();
                 $aggressorVisitor = $visitors->random();
@@ -55,7 +57,7 @@ class ProtectiveMeasureSeeder extends Seeder
                     ->forCondominium($condominium->id)
                     ->between($protectedResident->id, $aggressorVisitor->id)
                     ->create([
-                        'is_active' => rand(0, 100) < 80 // 80% de chance de estar ativa
+                        'is_active' => rand(0, 100) < 80, // 80% de chance de estar ativa
                     ]);
             }
 
@@ -123,6 +125,6 @@ class ProtectiveMeasureSeeder extends Seeder
                 ]);
         }
 
-        $this->command->info("✅ Cenários específicos criados para demonstração");
+        $this->command->info('✅ Cenários específicos criados para demonstração');
     }
-} 
+}

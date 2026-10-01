@@ -8,7 +8,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Resident;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Log;
 
 class ResidentController extends Controller
 {
@@ -29,26 +28,27 @@ class ResidentController extends Controller
                 }
             }
         }
+
         return $data;
     }
 
     public function index(Request $request)
     {
-        $query = Resident::with('condominium');
+        $query = Resident::with(['condominium', 'apartment']);
 
         if ($request->has('apartment_id')) {
             $query->where(function ($q) use ($request) {
                 $apartmentId = $request->apartment_id;
                 $q->where('apartment_id', $apartmentId)
-                  ->orWhereHas('apartments', function ($subQuery) use ($apartmentId) {
-                      $subQuery->where('apartments.id', $apartmentId);
-                  })
-                  ->orWhereHas('ownedApartments', function ($subQuery) use ($apartmentId) {
-                      $subQuery->where('apartments.id', $apartmentId);
-                  })
-                  ->orWhereHas('rentedApartments', function ($subQuery) use ($apartmentId) {
-                      $subQuery->where('apartments.id', $apartmentId);
-                  });
+                    ->orWhereHas('apartments', function ($subQuery) use ($apartmentId) {
+                        $subQuery->where('apartments.id', $apartmentId);
+                    })
+                    ->orWhereHas('ownedApartments', function ($subQuery) use ($apartmentId) {
+                        $subQuery->where('apartments.id', $apartmentId);
+                    })
+                    ->orWhereHas('rentedApartments', function ($subQuery) use ($apartmentId) {
+                        $subQuery->where('apartments.id', $apartmentId);
+                    });
             });
         }
 
@@ -59,7 +59,7 @@ class ResidentController extends Controller
     {
         // Determinar o condomínio automaticamente
         $condominiumId = $this->tenantCondominiumId($request);
-        
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'rg' => 'nullable|string|max:30',
@@ -68,17 +68,17 @@ class ResidentController extends Controller
             'commercial_phone' => 'nullable|string|max:20',
             'whatsapp' => 'nullable|string|max:20',
             'email' => 'required|email|unique:residents,email',
-            'person_type' => ['required', Rule::in(['fisica','juridica'])],
+            'person_type' => ['required', Rule::in(['fisica', 'juridica'])],
             'photo' => 'nullable|string',
             'notes' => 'nullable|string',
             'is_porter' => 'boolean',
             'is_janitor' => 'boolean',
             'is_cleaning' => 'boolean',
             'apartment_id' => [
-                'nullable', 
-                Rule::exists('apartments','id')->where(function ($query) use ($condominiumId) {
+                'nullable',
+                Rule::exists('apartments', 'id')->where(function ($query) use ($condominiumId) {
                     return $query->where('condominium_id', $condominiumId);
-                })
+                }),
             ],
             'billing_address_type' => 'required|in:condominium,custom',
             'cep' => 'nullable|string|max:20',
@@ -86,14 +86,14 @@ class ResidentController extends Controller
             'neighborhood' => 'nullable|string|max:100',
             'city' => 'nullable|string|max:100',
             'state' => 'nullable|string|max:2',
-            'classification' => ['required', Rule::in([ 'proprietario', 'morador', 'inquilino' ])],
+            'classification' => ['required', Rule::in(['proprietario', 'morador', 'inquilino'])],
             'active' => 'boolean',
             'owned_apartment_ids' => 'nullable|array',
             'owned_apartment_ids.*' => [
                 'integer',
-                Rule::exists('apartments','id')->where(function ($query) use ($condominiumId) {
+                Rule::exists('apartments', 'id')->where(function ($query) use ($condominiumId) {
                     return $query->where('condominium_id', $condominiumId);
-                })
+                }),
             ],
         ]);
 
@@ -104,9 +104,9 @@ class ResidentController extends Controller
 
         $resident = Resident::create($validated);
 
-        if ($resident->classification == ResidentClassification::PROPRIETARIO && !empty($validated['owned_apartment_ids'])) {
+        if ($resident->classification == ResidentClassification::PROPRIETARIO && ! empty($validated['owned_apartment_ids'])) {
             \App\Models\Apartment::whereIn('id', $validated['owned_apartment_ids'])
-                                 ->update(['owner_id' => $resident->id]);
+                ->update(['owner_id' => $resident->id]);
         }
 
         return response()->json($resident->load('ownedApartments'), 201);
@@ -127,7 +127,7 @@ class ResidentController extends Controller
         \Log::info('Request input owned_apartment_ids:', ['data' => $request->input('owned_apartment_ids')]);
         \Log::info('Request input classification:', ['data' => $request->input('classification')]);
         \Log::info('Request input condominium_id:', ['data' => $request->input('condominium_id')]);
-        
+
         // Debug temporário para identificar problemas
         \Log::info('Resident update request data:', [
             'resident_id' => $resident->id,
@@ -138,10 +138,10 @@ class ResidentController extends Controller
 
         try {
             \Log::info('Iniciando validação...');
-            
+
             // Determinar o condomínio automaticamente
             $condominiumId = $this->tenantCondominiumId($request);
-            
+
             $validated = $request->validate([
                 'name' => 'sometimes|string|max:255',
                 'rg' => 'nullable|string|max:30',
@@ -149,18 +149,18 @@ class ResidentController extends Controller
                 'cell_phone' => 'nullable|string|max:20',
                 'commercial_phone' => 'nullable|string|max:20',
                 'whatsapp' => 'nullable|string|max:20',
-                'email' => ['sometimes','email', Rule::unique('residents')->ignore($resident->id)],
-                'person_type' => ['sometimes', Rule::in(['fisica','juridica'])],
+                'email' => ['sometimes', 'email', Rule::unique('residents')->ignore($resident->id)],
+                'person_type' => ['sometimes', Rule::in(['fisica', 'juridica'])],
                 'photo' => 'nullable|string',
                 'notes' => 'nullable|string',
                 'is_porter' => 'sometimes|boolean',
                 'is_janitor' => 'sometimes|boolean',
                 'is_cleaning' => 'sometimes|boolean',
                 'apartment_id' => [
-                    'nullable', 
-                    Rule::exists('apartments','id')->where(function ($query) use ($condominiumId) {
+                    'nullable',
+                    Rule::exists('apartments', 'id')->where(function ($query) use ($condominiumId) {
                         return $query->where('condominium_id', $condominiumId);
-                    })
+                    }),
                 ],
                 'billing_address_type' => 'sometimes|in:condominium,custom',
                 'cep' => 'nullable|string|max:20',
@@ -168,17 +168,17 @@ class ResidentController extends Controller
                 'neighborhood' => 'nullable|string|max:100',
                 'city' => 'nullable|string|max:100',
                 'state' => 'nullable|string|max:2',
-                'classification' => ['sometimes', Rule::in([ 'proprietario', 'morador', 'inquilino' ])],
+                'classification' => ['sometimes', Rule::in(['proprietario', 'morador', 'inquilino'])],
                 'active' => 'sometimes|boolean',
                 'owned_apartment_ids' => 'nullable|array',
                 'owned_apartment_ids.*' => [
                     'integer',
-                    Rule::exists('apartments','id')->where(function ($query) use ($condominiumId) {
+                    Rule::exists('apartments', 'id')->where(function ($query) use ($condominiumId) {
                         return $query->where('condominium_id', $condominiumId);
-                    })
+                    }),
                 ],
             ]);
-            
+
             \Log::info('Validação passou com sucesso!');
             \Log::info('Dados validados:', $validated);
 
@@ -208,15 +208,16 @@ class ResidentController extends Controller
         if (isset($validated['owned_apartment_ids'])) {
             // Remover todas as relações existentes
             $resident->ownedApartments()->update(['owner_id' => null]);
-            
+
             // Adicionar as novas relações
-            if (!empty($validated['owned_apartment_ids'])) {
+            if (! empty($validated['owned_apartment_ids'])) {
                 \App\Models\Apartment::whereIn('id', $validated['owned_apartment_ids'])
-                                     ->update(['owner_id' => $resident->id]);
+                    ->update(['owner_id' => $resident->id]);
             }
         }
 
         \Log::info('=== FIM UPDATE RESIDENT ===');
+
         return $resident->load(['condominium', 'ownedApartments'])->append('raw_classification');
     }
 

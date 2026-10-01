@@ -12,6 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         if (Schema::getConnection()->getDriverName() === 'sqlite') {
+            Schema::table('apartments', function (Blueprint $table) {
+                if (! Schema::hasColumn('apartments', 'condominium_id')) {
+                    $table->foreignId('condominium_id')->after('id')->constrained('condominiums')->onDelete('cascade');
+                }
+
+                if (! Schema::hasColumn('apartments', 'tower_id')) {
+                    $table->foreignId('tower_id')->nullable()->after('condominium_id')->constrained('towers')->onDelete('cascade');
+                }
+            });
+
             return;
         }
 

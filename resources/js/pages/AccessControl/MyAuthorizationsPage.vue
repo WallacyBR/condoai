@@ -76,7 +76,7 @@ const fetchMyRequests = async () => {
   try {
     // A API já filtra por status 'pendente' por padrão para esta rota
     const response = await api.get('/access-control/access-requests/my-requests');
-    myRequests.value = response.data?.data || [];
+    myRequests.value = Array.isArray(response.data) ? response.data : response.data?.data || [];
   } catch (e) {
     console.error("Erro ao buscar minhas solicitações:", e);
     error.value = 'Falha ao carregar suas solicitações pendentes.';

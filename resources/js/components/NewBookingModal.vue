@@ -155,6 +155,7 @@
 <script>
 import { ref, reactive, computed, watch } from 'vue';
 import NeonButton from './NeonButton.vue';
+import { apiRequest } from '../utils/api';
 
 export default {
   name: 'NewBookingModal',
@@ -214,34 +215,12 @@ export default {
       return form.start_time && form.end_time && form.start_time < form.end_time;
     });
 
-    // Carregar áreas quando o modal for aberto
-    watch(() => props.show, (show) => {
-      if (show) {
-        loadAreas();
-      } else {
-        resetForm();
-      }
-    });
-
     const loadAreas = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const condo = localStorage.getItem('selectedCondominium');
-        
-        if (!condo) return;
-
-        const response = await fetch(`/api/common-areas?condominium_id=${condo}&active=1`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (response.ok) {
-          areas.value = await response.json();
-        }
+        const data = await apiRequest('/common-areas?active=1');
+        areas.value = Array.isArray(data) ? data : (data?.data || []);
       } catch (e) {
-        console.error('Erro ao carregar áreas:', e);
+        error.value = e.message || 'Erro ao carregar áreas';
       }
     };
 
@@ -261,20 +240,10 @@ export default {
       if (!form.date || !selectedArea.value) return;
 
       try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`/api/common-areas/${selectedArea.value.id}/available-slots?date=${form.date}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          availablePeriods.value = data.available_slots.filter(slot => slot.type === 'period');
-        }
+        const data = await apiRequest(`/common-areas/${selectedArea.value.id}/available-slots?date=${form.date}`);
+        availablePeriods.value = (data?.available_slots || []).filter(slot => slot.type === 'period');
       } catch (e) {
-        console.error('Erro ao carregar slots:', e);
+        error.value = e.message || 'Erro ao carregar horários disponíveis';
       }
     };
 
@@ -305,27 +274,15 @@ export default {
           notes: form.notes
         };
 
-        const token = localStorage.getItem('token');
-        const response = await fetch(`/api/common-areas/${form.common_area_id}/bookings`, {
+        const data = await apiRequest(`/common-areas/${form.common_area_id}/bookings`, {
           method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
           body: JSON.stringify(bookingData)
         });
 
-        const data = await response.json();
-
-        if (response.ok) {
-          emit('created', data);
-          resetForm();
-        } else {
-          error.value = data.message || 'Erro ao criar reserva';
-        }
+        emit('created', data);
+        resetForm();
       } catch (err) {
-        console.error('Erro ao criar reserva:', err);
-        error.value = 'Erro de conexão';
+        error.value = err.message || 'Erro ao criar reserva';
       } finally {
         loading.value = false;
       }
@@ -344,6 +301,15 @@ export default {
       availablePeriods.value = [];
       error.value = '';
     };
+
+    // Carregar áreas quando o modal for aberto
+    watch(() => props.show, (show) => {
+      if (show) {
+        loadAreas();
+      } else {
+        resetForm();
+      }
+    }, { immediate: true });
 
     const formatPrice = (price) => {
       return price ? price.toFixed(2).replace('.', ',') : '0,00';
@@ -368,4 +334,4 @@ export default {
     };
   }
 };
-</script> 
+</script>

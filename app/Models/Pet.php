@@ -12,7 +12,7 @@ class Pet extends Model
 
     protected static function booted(): void
     {
-        static::addGlobalScope(new CondominiumScope());
+        static::addGlobalScope(new CondominiumScope);
     }
 
     protected $fillable = [

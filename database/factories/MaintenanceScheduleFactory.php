@@ -2,11 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Models\MaintenanceSchedule;
 use App\Models\Condominium;
 use App\Models\MaintenanceEquipment;
-use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\MaintenanceSchedule;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class MaintenanceScheduleFactory extends Factory
 {
@@ -48,9 +48,8 @@ class MaintenanceScheduleFactory extends Factory
             $endDate = $startDate->copy()->addMonths($this->faker->numberBetween(3, 12));
         }
 
-
         return [
-            'title' => 'Maintenance for ' . $this->faker->word,
+            'title' => 'Maintenance for '.$this->faker->word,
             'description' => $this->faker->sentence,
             'type' => $type,
             'start_date' => $startDate,

@@ -2,12 +2,12 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Enums\OccurrencePriority;
+use App\Enums\OccurrenceStatus;
+use App\Models\Condominium;
 use App\Models\Occurrence;
 use App\Models\User;
-use App\Models\Condominium;
-use App\Enums\OccurrenceStatus;
-use App\Enums\OccurrencePriority;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class OccurrenceFactory extends Factory
 {

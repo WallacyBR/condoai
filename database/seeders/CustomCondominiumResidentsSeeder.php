@@ -2,13 +2,13 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\Condominium;
-use App\Models\Tower;
-use App\Models\Block;
-use App\Models\Apartment;
-use App\Models\Resident;
 use App\Enums\ResidentClassification;
+use App\Models\Apartment;
+use App\Models\Block;
+use App\Models\Condominium;
+use App\Models\Resident;
+use App\Models\Tower;
+use Illuminate\Database\Seeder;
 
 class CustomCondominiumResidentsSeeder extends Seeder
 {
@@ -35,12 +35,12 @@ class CustomCondominiumResidentsSeeder extends Seeder
             ['name' => 'Torre A', 'condominium_id' => $condo1->id],
             ['active' => true]
         );
-        
+
         $blockA1 = Block::firstOrCreate(
             ['name' => 'Bloco A1', 'condominium_id' => $condo1->id, 'tower_id' => $towerA->id],
             ['active' => true]
         );
-        
+
         $blockA2 = Block::firstOrCreate(
             ['name' => 'Bloco A2', 'condominium_id' => $condo1->id, 'tower_id' => $towerA->id],
             ['active' => true]
@@ -55,7 +55,7 @@ class CustomCondominiumResidentsSeeder extends Seeder
                 'active' => true,
             ]
         );
-        
+
         $apA1_102 = Apartment::firstOrCreate(
             ['number' => '102', 'block_id' => $blockA1->id, 'condominium_id' => $condo1->id],
             [
@@ -64,7 +64,7 @@ class CustomCondominiumResidentsSeeder extends Seeder
                 'active' => true,
             ]
         );
-        
+
         // Apartamentos do bloco A2
         $apA2_201 = Apartment::firstOrCreate(
             ['number' => '201', 'block_id' => $blockA2->id, 'condominium_id' => $condo1->id],
@@ -96,7 +96,7 @@ class CustomCondominiumResidentsSeeder extends Seeder
             ['name' => 'Bloco B1', 'condominium_id' => $condo2->id],
             ['active' => true]
         );
-        
+
         $blockB2 = Block::firstOrCreate(
             ['name' => 'Bloco B2', 'condominium_id' => $condo2->id],
             ['active' => true]
@@ -109,7 +109,7 @@ class CustomCondominiumResidentsSeeder extends Seeder
                 'active' => true,
             ]
         );
-        
+
         $apB2_201 = Apartment::firstOrCreate(
             ['number' => '201', 'block_id' => $blockB2->id, 'condominium_id' => $condo2->id],
             [
@@ -129,7 +129,7 @@ class CustomCondominiumResidentsSeeder extends Seeder
                 'active' => true,
             ]
         );
-        
+
         $tenant1 = Resident::firstOrCreate(
             ['email' => 'maria@completo.com', 'condominium_id' => $condo1->id],
             [
@@ -139,7 +139,7 @@ class CustomCondominiumResidentsSeeder extends Seeder
                 'active' => true,
             ]
         );
-        
+
         $resident1 = Resident::firstOrCreate(
             ['email' => 'carlos@completo.com', 'condominium_id' => $condo1->id],
             [
@@ -151,13 +151,13 @@ class CustomCondominiumResidentsSeeder extends Seeder
         );
 
         // Associar moradores ao apartamento 101 do bloco A1 (evitar duplicatas)
-        if (!$apA1_101->residents()->where('resident_id', $owner1->id)->exists()) {
+        if (! $apA1_101->residents()->where('resident_id', $owner1->id)->exists()) {
             $apA1_101->residents()->attach($owner1->id, ['type' => 'proprietario', 'active' => true]);
         }
-        if (!$apA1_101->residents()->where('resident_id', $tenant1->id)->exists()) {
+        if (! $apA1_101->residents()->where('resident_id', $tenant1->id)->exists()) {
             $apA1_101->residents()->attach($tenant1->id, ['type' => 'inquilino', 'active' => true]);
         }
-        if (!$apA1_101->residents()->where('resident_id', $resident1->id)->exists()) {
+        if (! $apA1_101->residents()->where('resident_id', $resident1->id)->exists()) {
             $apA1_101->residents()->attach($resident1->id, ['type' => 'morador', 'active' => true]);
         }
 
@@ -171,7 +171,7 @@ class CustomCondominiumResidentsSeeder extends Seeder
                 'active' => true,
             ]
         );
-        
+
         $tenant2 = Resident::firstOrCreate(
             ['email' => 'pedro@simples.com', 'condominium_id' => $condo2->id],
             [
@@ -181,7 +181,7 @@ class CustomCondominiumResidentsSeeder extends Seeder
                 'active' => true,
             ]
         );
-        
+
         $resident2 = Resident::firstOrCreate(
             ['email' => 'lucia@simples.com', 'condominium_id' => $condo2->id],
             [
@@ -193,16 +193,16 @@ class CustomCondominiumResidentsSeeder extends Seeder
         );
 
         // Associar moradores ao apartamento 101 do bloco B1 (evitar duplicatas)
-        if (!$apB1_101->residents()->where('resident_id', $owner2->id)->exists()) {
+        if (! $apB1_101->residents()->where('resident_id', $owner2->id)->exists()) {
             $apB1_101->residents()->attach($owner2->id, ['type' => 'proprietario', 'active' => true]);
         }
-        if (!$apB1_101->residents()->where('resident_id', $tenant2->id)->exists()) {
+        if (! $apB1_101->residents()->where('resident_id', $tenant2->id)->exists()) {
             $apB1_101->residents()->attach($tenant2->id, ['type' => 'inquilino', 'active' => true]);
         }
-        if (!$apB1_101->residents()->where('resident_id', $resident2->id)->exists()) {
+        if (! $apB1_101->residents()->where('resident_id', $resident2->id)->exists()) {
             $apB1_101->residents()->attach($resident2->id, ['type' => 'morador', 'active' => true]);
         }
 
         $this->command->info('Condomínios, torres, blocos, apartamentos e moradores criados com sucesso!');
     }
-} 
+}

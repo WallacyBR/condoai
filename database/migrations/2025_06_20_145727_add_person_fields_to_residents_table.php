@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('residents', function (Blueprint $table) {
             // Primeiro, renomear a coluna phone para cell_phone se ela existir
-            if (Schema::hasColumn('residents', 'phone') && !Schema::hasColumn('residents', 'cell_phone')) {
+            if (Schema::hasColumn('residents', 'phone') && ! Schema::hasColumn('residents', 'cell_phone')) {
                 $table->renameColumn('phone', 'cell_phone');
             }
         });
@@ -26,10 +26,10 @@ return new class extends Migration
             } else {
                 $table->enum('person_type', ['fisica', 'juridica'])->default('fisica')->after('email');
             }
-            
+
             // Usar cell_phone como referência (já foi renomeado na operação anterior)
             $table->string('commercial_phone')->nullable()->after('cell_phone');
-            
+
             // Verificar se state existe, senão usar email como referência
             $afterStateColumn = Schema::hasColumn('residents', 'state') ? 'state' : 'email';
             $table->string('photo')->nullable()->after($afterStateColumn);

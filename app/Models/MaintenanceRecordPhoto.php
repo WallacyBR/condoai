@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\CondominiumScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use App\Models\Scopes\CondominiumScope; // Assuming photos should also be scoped if accessed directly
+use Illuminate\Database\Eloquent\Model; // Assuming photos should also be scoped if accessed directly
 
 class MaintenanceRecordPhoto extends Model
 {
@@ -29,7 +29,7 @@ class MaintenanceRecordPhoto extends Model
      */
     protected static function booted(): void
     {
-        static::addGlobalScope(new CondominiumScope());
+        static::addGlobalScope(new CondominiumScope);
     }
 
     public function condominium()

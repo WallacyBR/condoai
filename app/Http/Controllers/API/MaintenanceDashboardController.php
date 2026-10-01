@@ -4,11 +4,9 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\MaintenanceRecord;
-use App\Models\MaintenanceSchedule;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 /**
  * @group Manutenção - Dashboard
@@ -23,13 +21,14 @@ class MaintenanceDashboardController extends Controller
      * Retorna contagens de manutenções vencidas, realizadas e pendentes (a realizar).
      *
      * @authenticated
+     *
      * @responseFile status=200 scenario="Sucesso" storage/responses/maintenance.dashboard.stats.json
      * @responseFile status=401 scenario="Não autenticado" storage/responses/unauthenticated.json
      */
     public function getGeneralStats(Request $request)
     {
         $condominiumId = Auth::user()->condominium_id;
-        if (!$condominiumId && !$request->attributes->has('condominium')) {
+        if (! $condominiumId && ! $request->attributes->has('condominium')) {
             return response()->json(['message' => 'Condomínio não identificado para o usuário.'], 400);
         }
         $currentCondominiumId = $condominiumId ?? $request->attributes->get('condominium')->id;
@@ -46,21 +45,21 @@ class MaintenanceDashboardController extends Controller
         $overdueCount = MaintenanceRecord::where('condominium_id', $currentCondominiumId)
             ->where(function ($query) use ($now) {
                 $query->where('status', 'overdue')
-                      ->orWhere(function ($subQuery) use ($now) {
-                          $subQuery->where('status', 'pending')
-                                   ->whereHas('schedule', function ($sQuery) use ($now) {
-                                       // Considera a start_date do schedule para registros pendentes
-                                       // Se due_time existir, compara com a hora atual também
-                                       $sQuery->where(function($q) use ($now) {
-                                           $q->where('start_date', '<', $now->toDateString())
-                                             ->orWhere(function($q2) use ($now){
-                                                $q2->where('start_date', '=', $now->toDateString())
-                                                   ->whereNotNull('due_time')
-                                                   ->where('due_time', '<', $now->toTimeString());
-                                             });
-                                       });
-                                   });
-                      });
+                    ->orWhere(function ($subQuery) use ($now) {
+                        $subQuery->where('status', 'pending')
+                            ->whereHas('schedule', function ($sQuery) use ($now) {
+                                // Considera a start_date do schedule para registros pendentes
+                                // Se due_time existir, compara com a hora atual também
+                                $sQuery->where(function ($q) use ($now) {
+                                    $q->where('start_date', '<', $now->toDateString())
+                                        ->orWhere(function ($q2) use ($now) {
+                                            $q2->where('start_date', '=', $now->toDateString())
+                                                ->whereNotNull('due_time')
+                                                ->where('due_time', '<', $now->toTimeString());
+                                        });
+                                });
+                            });
+                    });
             })->count();
 
         $completedCount = MaintenanceRecord::where('condominium_id', $currentCondominiumId)
@@ -73,15 +72,15 @@ class MaintenanceDashboardController extends Controller
         $pendingCount = MaintenanceRecord::where('condominium_id', $currentCondominiumId)
             ->where('status', 'pending')
             ->whereHas('schedule', function ($sQuery) use ($now) {
-                $sQuery->where(function($q) use ($now) {
+                $sQuery->where(function ($q) use ($now) {
                     $q->where('start_date', '>', $now->toDateString())
-                      ->orWhere(function($q2) use ($now){
-                         $q2->where('start_date', '=', $now->toDateString())
-                            ->where(function ($q3) use ($now) { // Se tem due_time, deve ser futuro, senão qualquer um no dia de hoje
-                                $q3->whereNull('due_time')
-                                   ->orWhere('due_time', '>=', $now->toTimeString());
-                            });
-                      });
+                        ->orWhere(function ($q2) use ($now) {
+                            $q2->where('start_date', '=', $now->toDateString())
+                                ->where(function ($q3) use ($now) { // Se tem due_time, deve ser futuro, senão qualquer um no dia de hoje
+                                    $q3->whereNull('due_time')
+                                        ->orWhere('due_time', '>=', $now->toTimeString());
+                                });
+                        });
                 });
             })
             ->count();
@@ -99,19 +98,19 @@ class MaintenanceDashboardController extends Controller
         ]);
     }
 
-
     /**
      * Estatísticas de Manutenção por Equipamento.
      *
      * Retorna contagens de manutenções vencidas, realizadas e pendentes, agrupadas por equipamento.
      *
      * @authenticated
+     *
      * @responseFile status=200 scenario="Sucesso" storage/responses/maintenance.dashboard.byequipment.json
      */
     public function getStatsByEquipment(Request $request)
     {
         $condominiumId = Auth::user()->condominium_id;
-        if (!$condominiumId && !$request->attributes->has('condominium')) {
+        if (! $condominiumId && ! $request->attributes->has('condominium')) {
             return response()->json(['message' => 'Condomínio não identificado para o usuário.'], 400);
         }
         $currentCondominiumId = $condominiumId ?? $request->attributes->get('condominium')->id;
@@ -121,45 +120,45 @@ class MaintenanceDashboardController extends Controller
             ->withCount([
                 'schedules as total_schedules_count',
                 'schedules as pending_schedules_count' => function ($query) use ($now) {
-                    $query->whereHas('records', function($q) use ($now) {
+                    $query->whereHas('records', function ($q) use ($now) {
                         $q->where('status', 'pending')
-                          ->whereHas('schedule', function ($sQuery) use ($now) {
-                                $sQuery->where(function($sq) use ($now) {
+                            ->whereHas('schedule', function ($sQuery) use ($now) {
+                                $sQuery->where(function ($sq) use ($now) {
                                     $sq->where('start_date', '>', $now->toDateString())
-                                      ->orWhere(function($sq2) use ($now){
-                                         $sq2->where('start_date', '=', $now->toDateString())
-                                            ->where(function ($sq3) use ($now) {
-                                                $sq3->whereNull('due_time')
-                                                   ->orWhere('due_time', '>=', $now->toTimeString());
-                                            });
-                                      });
+                                        ->orWhere(function ($sq2) use ($now) {
+                                            $sq2->where('start_date', '=', $now->toDateString())
+                                                ->where(function ($sq3) use ($now) {
+                                                    $sq3->whereNull('due_time')
+                                                        ->orWhere('due_time', '>=', $now->toTimeString());
+                                                });
+                                        });
                                 });
                             });
                     });
                 },
                 'schedules as completed_schedules_count' => function ($query) {
-                    $query->whereHas('records', function($q){
+                    $query->whereHas('records', function ($q) {
                         $q->where('status', 'completed');
                     });
                 },
                 'schedules as overdue_schedules_count' => function ($query) use ($now) {
-                     $query->whereHas('records', function($q) use ($now) {
+                    $query->whereHas('records', function ($q) use ($now) {
                         $q->where('status', 'overdue')
-                          ->orWhere(function ($subQuery) use ($now) {
-                              $subQuery->where('status', 'pending')
-                                       ->whereHas('schedule', function ($sQuery) use ($now) {
-                                           $sQuery->where(function($sq) use ($now) {
-                                               $sq->where('start_date', '<', $now->toDateString())
-                                                 ->orWhere(function($sq2) use ($now){
+                            ->orWhere(function ($subQuery) use ($now) {
+                                $subQuery->where('status', 'pending')
+                                    ->whereHas('schedule', function ($sQuery) use ($now) {
+                                        $sQuery->where(function ($sq) use ($now) {
+                                            $sq->where('start_date', '<', $now->toDateString())
+                                                ->orWhere(function ($sq2) use ($now) {
                                                     $sq2->where('start_date', '=', $now->toDateString())
-                                                       ->whereNotNull('due_time')
-                                                       ->where('due_time', '<', $now->toTimeString());
-                                                 });
-                                           });
-                                       });
-                          });
+                                                        ->whereNotNull('due_time')
+                                                        ->where('due_time', '<', $now->toTimeString());
+                                                });
+                                        });
+                                    });
+                            });
                     });
-                }
+                },
             ])
             ->select('id', 'name', 'maintenance_area_id') // Selecionar campos necessários
             ->with('maintenanceArea:id,name') // Carregar a área para contexto
@@ -175,12 +174,13 @@ class MaintenanceDashboardController extends Controller
      * Retorna contagens de manutenções vencidas, realizadas e pendentes, agrupadas por área de manutenção.
      *
      * @authenticated
+     *
      * @responseFile status=200 scenario="Sucesso" storage/responses/maintenance.dashboard.byarea.json
      */
     public function getStatsByArea(Request $request)
     {
         $condominiumId = Auth::user()->condominium_id;
-        if (!$condominiumId && !$request->attributes->has('condominium')) {
+        if (! $condominiumId && ! $request->attributes->has('condominium')) {
             return response()->json(['message' => 'Condomínio não identificado para o usuário.'], 400);
         }
         $currentCondominiumId = $condominiumId ?? $request->attributes->get('condominium')->id;
@@ -190,7 +190,7 @@ class MaintenanceDashboardController extends Controller
             ->select('id', 'name')
             ->withCount([
                 'equipments',
-                'equipments as pending_schedules_count' => function ($query) use ($now, $currentCondominiumId) {
+                'equipments as pending_schedules_count' => function ($query) use ($now) {
                     $query->whereHas('schedules.records', function ($q) use ($now) {
                         $q->where('status', 'pending')
                             ->whereHas('schedule', function ($sQuery) use ($now) {
@@ -229,7 +229,7 @@ class MaintenanceDashboardController extends Controller
                                     });
                             });
                     });
-                }
+                },
             ])
             ->orderBy('name')
             ->get();

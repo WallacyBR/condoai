@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\MaintenanceRecordPhoto;
 use App\Models\Condominium;
 use App\Models\MaintenanceRecord;
+use App\Models\MaintenanceRecordPhoto;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class MaintenanceRecordPhotoFactory extends Factory
@@ -25,8 +25,8 @@ class MaintenanceRecordPhotoFactory extends Factory
     {
         // Placeholder for file_path. In a real seeding scenario, you might
         // copy some sample images to storage and use their paths.
-        $fileName = $this->faker->word . '_' . $this->faker->randomNumber(5) . '.jpg';
-        $filePath = 'maintenance_photos/' . $fileName;
+        $fileName = $this->faker->word.'_'.$this->faker->randomNumber(5).'.jpg';
+        $filePath = 'maintenance_photos/'.$fileName;
 
         return [
             'file_path' => $filePath,

@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
+use App\Enums\OccurrencePriority;
+use App\Enums\OccurrenceStatus;
+use App\Models\Scopes\CondominiumScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Scopes\CondominiumScope;
-use App\Enums\OccurrenceStatus;
-use App\Enums\OccurrencePriority;
 
 class Occurrence extends Model
 {

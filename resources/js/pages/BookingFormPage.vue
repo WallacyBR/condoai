@@ -274,6 +274,7 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import AuthenticatedLayout from '../components/layouts/AuthenticatedLayout.vue';
 import NeonButton from '../components/NeonButton.vue';
+import { apiRequest } from '../utils/api';
 
 export default {
   name: 'BookingFormPage',
@@ -380,77 +381,41 @@ export default {
     // Funções principais
     const loadAreas = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const condo = localStorage.getItem('selectedCondominium');
-        
-        if (!condo) return;
-
-        const response = await fetch(`/api/common-areas?condominium_id=${condo}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (response.ok) {
-          areas.value = await response.json();
-        }
+        const data = await apiRequest('/common-areas');
+        areas.value = Array.isArray(data) ? data : (data?.data || []);
       } catch (e) {
-        console.error('Erro ao carregar áreas:', e);
+        error.value = e.message || 'Erro ao carregar áreas';
       }
     };
 
     const loadApartments = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const condo = localStorage.getItem('selectedCondominium');
-        
-        if (!condo) return;
-
-        const response = await fetch(`/api/apartments?condominium_id=${condo}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (response.ok) {
-          apartments.value = await response.json();
-        }
+        const data = await apiRequest('/apartments');
+        apartments.value = Array.isArray(data) ? data : (data?.data || []);
       } catch (e) {
-        console.error('Erro ao carregar apartamentos:', e);
+        error.value = e.message || 'Erro ao carregar unidades';
       }
     };
 
     const loadBooking = async () => {
       if (!isEditing.value) return;
-      
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`/api/common-area-bookings/${route.params.id}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
 
-        if (response.ok) {
-          const booking = await response.json();
-          const startTime = new Date(booking.start_time);
-          const endTime = new Date(booking.end_time);
-          
-          form.value = {
-            common_area_id: booking.common_area_id,
-            apartment_id: booking.apartment_id,
-            date: startTime.toISOString().split('T')[0],
-            start_time: startTime.toTimeString().slice(0, 5),
-            end_time: endTime.toTimeString().slice(0, 5),
-            booking_type: booking.booking_type || '',
-            notes: booking.notes || ''
-          };
-        }
+      try {
+        const booking = await apiRequest(`/common-area-bookings/${route.params.id}`);
+        const startTime = new Date(booking.start_time);
+        const endTime = new Date(booking.end_time);
+
+        form.value = {
+          common_area_id: booking.common_area_id,
+          apartment_id: booking.apartment_id,
+          date: startTime.toISOString().split('T')[0],
+          start_time: startTime.toTimeString().slice(0, 5),
+          end_time: endTime.toTimeString().slice(0, 5),
+          booking_type: booking.booking_type || '',
+          notes: booking.notes || ''
+        };
       } catch (e) {
-        console.error('Erro ao carregar reserva:', e);
+        error.value = e.message || 'Erro ao carregar reserva';
       }
     };
 
@@ -470,21 +435,11 @@ export default {
       if (!form.value.common_area_id || !form.value.date) return;
       
       try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`/api/common-areas/${form.value.common_area_id}/available-slots?date=${form.value.date}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          bookingTypeForSelectedDate.value = data.booking_type;
-          availablePeriods.value = data.available_slots || [];
-        }
+        const data = await apiRequest(`/common-areas/${form.value.common_area_id}/available-slots?date=${form.value.date}`);
+        bookingTypeForSelectedDate.value = data.booking_type;
+        availablePeriods.value = data.available_slots || [];
       } catch (e) {
-        console.error('Erro ao carregar slots disponíveis:', e);
+        error.value = e.message || 'Erro ao carregar horários disponíveis';
       }
     };
 
@@ -495,8 +450,6 @@ export default {
       error.value = '';
       
       try {
-        const token = localStorage.getItem('token');
-        
         // Preparar dados do formulário
         const formData = {
           common_area_id: form.value.common_area_id,
@@ -520,29 +473,19 @@ export default {
         }
 
         const url = isEditing.value 
-          ? `/api/common-area-bookings/${route.params.id}`
-          : `/api/common-area-bookings`;
-        
+          ? `/common-area-bookings/${route.params.id}`
+          : `/common-area-bookings`;
+
         const method = isEditing.value ? 'PUT' : 'POST';
 
-        const response = await fetch(url, {
+        const booking = await apiRequest(url, {
           method,
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
           body: JSON.stringify(formData)
         });
 
-        if (response.ok) {
-          const booking = await response.json();
-          router.push({ name: 'bookings.show', params: { id: booking.id } });
-        } else {
-          const errorData = await response.json();
-          error.value = errorData.message || 'Erro ao salvar reserva';
-        }
+        router.push({ name: 'bookings.show', params: { id: booking.id } });
       } catch (e) {
-        error.value = 'Erro de conexão';
+        error.value = e.message || 'Erro ao salvar reserva';
       } finally {
         submitting.value = false;
       }
@@ -587,4 +530,4 @@ export default {
     };
   }
 };
-</script> 
+</script>

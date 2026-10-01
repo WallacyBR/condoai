@@ -27,8 +27,6 @@ class Block extends Model
         'active' => 'boolean',
     ];
 
-
-
     public function condominium()
     {
         return $this->belongsTo(Condominium::class);

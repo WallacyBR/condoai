@@ -1,17 +1,17 @@
 <template>
-  <div class="bg-gradient-to-br from-gray-900/90 via-gray-800/90 to-gray-900/90 rounded-2xl p-6 border-2 border-gray-700/50 shadow-xl mb-6">
-    <div class="flex justify-between items-center">
+  <div class="bg-white dark:bg-slate-900 rounded-xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm mb-6 transition-colors">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div class="flex items-center space-x-3">
-        <div v-if="icon || $slots.icon" class="h-10 w-10 rounded-full flex items-center justify-center" :class="iconBg">
+        <div v-if="icon || $slots.icon" class="h-10 w-10 rounded-lg flex items-center justify-center bg-indigo-50 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400 flex-shrink-0">
           <component v-if="icon" :is="icon" class="h-5 w-5" />
           <slot v-else name="icon" />
         </div>
         <div>
-          <h1 class="text-2xl font-semibold text-white">{{ title }}</h1>
-          <p v-if="subtitle" class="text-gray-400 text-sm">{{ subtitle }}</p>
+          <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">{{ title }}</h1>
+          <p v-if="subtitle" class="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-0.5">{{ subtitle }}</p>
         </div>
       </div>
-      <div>
+      <div v-if="$slots.actions" class="flex flex-wrap items-center gap-2">
         <slot name="actions" />
       </div>
     </div>
@@ -19,14 +19,10 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
-
-const props = defineProps({
+defineProps({
   title: { type: String, required: true },
   subtitle: { type: String, default: '' },
-  color: { type: String, default: 'cyan' },
+  color: { type: String, default: 'indigo' },
   icon: { type: [Object, Function], default: null }
 });
-
-const iconBg = computed(() => `bg-${props.color}-500/20 text-${props.color}-400`);
 </script>

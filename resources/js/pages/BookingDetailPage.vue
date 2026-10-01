@@ -4,25 +4,22 @@
       <!-- Loading State -->
       <div v-if="loading" class="flex justify-center items-center py-12">
         <div class="flex flex-col items-center space-y-3">
-          <div class="relative">
-            <div class="animate-spin rounded-full h-8 w-8 border-4 border-gray-700"></div>
-            <div class="animate-spin rounded-full h-8 w-8 border-4 border-t-cyan-500 absolute top-0 left-0"></div>
-          </div>
-          <span class="text-gray-400 text-sm">Carregando detalhes da reserva...</span>
+          <div class="animate-spin rounded-full h-8 w-8 border-2 border-slate-300 border-t-indigo-600 dark:border-slate-700 dark:border-t-indigo-400"></div>
+          <span class="text-slate-500 dark:text-slate-400 text-sm">Carregando detalhes da reserva...</span>
         </div>
       </div>
 
       <!-- Error State -->
-      <div v-else-if="error" class="bg-gradient-to-r from-red-900/20 via-red-800/20 to-red-900/20 backdrop-blur-xl rounded-xl p-4 border border-red-500/30">
+      <div v-else-if="error" class="bg-rose-50 dark:bg-rose-950/30 rounded-xl p-4 border border-rose-200 dark:border-rose-800/50">
         <div class="flex items-center space-x-3">
-          <div class="h-8 w-8 rounded-lg bg-red-500/20 flex items-center justify-center border border-red-500/30">
-            <svg class="h-4 w-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="h-8 w-8 rounded-lg bg-rose-100 dark:bg-rose-900/50 flex items-center justify-center text-rose-600 dark:text-rose-400 shrink-0">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
           <div>
-            <h3 class="text-base font-semibold text-red-300">Erro ao carregar reserva</h3>
-            <p class="text-red-400/80 text-sm">{{ error }}</p>
+            <h3 class="text-sm font-semibold text-rose-800 dark:text-rose-300">Erro ao carregar reserva</h3>
+            <p class="text-rose-600 dark:text-rose-400 text-xs">{{ error }}</p>
           </div>
         </div>
       </div>
@@ -30,76 +27,77 @@
       <!-- Conteúdo da Reserva -->
       <div v-else-if="booking" class="space-y-6">
         <!-- Top Card com Informações Principais -->
-        <div class="bg-gradient-to-br from-gray-900/90 via-gray-800/90 to-gray-900/90 backdrop-blur-xl rounded-2xl p-6 border border-gray-700/50">
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
           <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div class="flex items-start space-x-3">
               <!-- Botão Voltar -->
-              <NeonButton
+              <AppButton
                 @click="goBack"
                 variant="secondary"
                 size="sm"
-                class="!px-2 !py-2"
+                class="!px-2.5 !py-2 shrink-0"
+                aria-label="Voltar"
               >
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
-              </NeonButton>
+              </AppButton>
               
               <!-- Informações da Reserva -->
               <div>
-                <div class="flex items-center gap-3 mb-2">
-                  <h1 class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500">
+                <div class="flex items-center gap-3 mb-2 flex-wrap">
+                  <h1 class="text-xl font-bold text-slate-900 dark:text-slate-100">
                     Reserva #{{ booking.id }}
                   </h1>
                   <span 
-                    class="px-3 py-1 text-xs font-bold rounded-full"
+                    class="px-2.5 py-0.5 text-xs font-semibold rounded-full shrink-0"
                     :class="getStatusBadgeClass(booking.status)"
                   >
                     {{ getStatusText(booking.status) }}
                   </span>
                 </div>
-                <div class="flex items-center space-x-2 text-gray-300">
-                  <svg class="h-4 w-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="flex items-center space-x-2 text-slate-700 dark:text-slate-300 text-sm">
+                  <svg class="h-4 w-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                   </svg>
                   <span class="font-medium">{{ booking.common_area?.name || 'Área não informada' }}</span>
                 </div>
-                <div class="flex items-center space-x-2 text-gray-400 mt-1 text-sm">
-                  <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="flex items-center space-x-2 text-slate-500 dark:text-slate-400 mt-1 text-xs">
+                  <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                   <span>{{ formatDate(booking.start_time) }}</span>
-                  <span class="text-gray-500">•</span>
+                  <span>•</span>
                   <span>{{ formatTimeRange(booking.start_time, booking.end_time) }}</span>
                 </div>
               </div>
             </div>
             
             <!-- Ações -->
-            <div class="flex items-center gap-2">
-              <NeonButton 
+            <div class="flex items-center gap-2 shrink-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-slate-100 dark:border-slate-800">
+              <AppButton 
                 v-if="canEdit(booking)"
                 @click="editBooking"
                 variant="secondary"
                 size="sm"
               >
-                <svg class="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="h-3.5 w-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
                 Editar
-              </NeonButton>
+              </AppButton>
               
-              <NeonButton 
+              <AppButton 
                 v-if="canCancel(booking)"
                 @click="cancelBooking"
                 variant="danger"
                 size="sm"
               >
-                <svg class="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="h-3.5 w-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
                 Cancelar
-              </NeonButton>
+              </AppButton>
             </div>
           </div>
         </div>
@@ -109,121 +107,121 @@
           <!-- Coluna Principal -->
           <div class="xl:col-span-2 space-y-6">
             <!-- Detalhes da Reserva -->
-            <div class="bg-gradient-to-br from-gray-900/50 via-gray-800/50 to-gray-900/50 backdrop-blur-xl rounded-xl p-5 border border-gray-700/30">
-              <div class="flex items-center mb-4">
-                <div class="h-8 w-8 rounded-lg bg-gradient-to-r from-indigo-500/20 to-purple-500/20 flex items-center justify-center border border-indigo-500/30 mr-3">
-                  <svg class="h-4 w-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
+              <div class="flex items-center mb-5 pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div class="h-8 w-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mr-3">
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <h2 class="text-lg font-bold text-white">Detalhes da Reserva</h2>
+                <h2 class="text-base font-semibold text-slate-900 dark:text-slate-100">Detalhes da Reserva</h2>
               </div>
               
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="group">
-                  <label class="block text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Data da Reserva</label>
-                  <div class="bg-gray-800/50 rounded-lg p-3 border border-gray-700/50 group-hover:border-gray-600/50 transition-colors">
-                    <p class="text-white font-medium">{{ formatDate(booking.start_time) }}</p>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Data da Reserva</label>
+                  <div class="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-3 border border-slate-200/60 dark:border-slate-700/60">
+                    <p class="text-slate-900 dark:text-slate-100 font-medium text-sm">{{ formatDate(booking.start_time) }}</p>
                   </div>
                 </div>
                 
-                <div class="group">
-                  <label class="block text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Horário</label>
-                  <div class="bg-gray-800/50 rounded-lg p-3 border border-gray-700/50 group-hover:border-gray-600/50 transition-colors">
-                    <p class="text-white font-medium">{{ formatTimeRange(booking.start_time, booking.end_time) }}</p>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Horário</label>
+                  <div class="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-3 border border-slate-200/60 dark:border-slate-700/60">
+                    <p class="text-slate-900 dark:text-slate-100 font-medium text-sm">{{ formatTimeRange(booking.start_time, booking.end_time) }}</p>
                   </div>
                 </div>
                 
-                <div class="group">
-                  <label class="block text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Tipo de Reserva</label>
-                  <div class="bg-gray-800/50 rounded-lg p-3 border border-gray-700/50 group-hover:border-gray-600/50 transition-colors">
-                    <p class="text-white font-medium capitalize">{{ booking.booking_type || 'Não informado' }}</p>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Tipo de Reserva</label>
+                  <div class="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-3 border border-slate-200/60 dark:border-slate-700/60">
+                    <p class="text-slate-900 dark:text-slate-100 font-medium text-sm capitalize">{{ booking.booking_type || 'Não informado' }}</p>
                   </div>
                 </div>
                 
-                <div v-if="booking.total_price" class="group">
-                  <label class="block text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Valor Total</label>
-                  <div class="bg-gradient-to-r from-green-900/30 to-green-800/30 rounded-lg p-3 border border-green-500/30 group-hover:border-green-400/50 transition-colors">
-                    <p class="text-green-400 font-bold text-lg">R$ {{ formatPrice(booking.total_price) }}</p>
+                <div v-if="booking.total_price">
+                  <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Valor Total</label>
+                  <div class="bg-emerald-50 dark:bg-emerald-950/40 rounded-lg p-3 border border-emerald-200 dark:border-emerald-800/50">
+                    <p class="text-emerald-700 dark:text-emerald-300 font-bold text-base">R$ {{ formatPrice(booking.total_price) }}</p>
                   </div>
                 </div>
                 
-                <div class="group">
-                  <label class="block text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Criada em</label>
-                  <div class="bg-gray-800/50 rounded-lg p-3 border border-gray-700/50 group-hover:border-gray-600/50 transition-colors">
-                    <p class="text-gray-300 font-medium text-sm">{{ formatDateTime(booking.created_at) }}</p>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Criada em</label>
+                  <div class="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-3 border border-slate-200/60 dark:border-slate-700/60">
+                    <p class="text-slate-700 dark:text-slate-300 font-medium text-xs">{{ formatDateTime(booking.created_at) }}</p>
                   </div>
                 </div>
                 
-                <div v-if="booking.updated_at !== booking.created_at" class="group">
-                  <label class="block text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Última atualização</label>
-                  <div class="bg-gray-800/50 rounded-lg p-3 border border-gray-700/50 group-hover:border-gray-600/50 transition-colors">
-                    <p class="text-gray-300 font-medium text-sm">{{ formatDateTime(booking.updated_at) }}</p>
+                <div v-if="booking.updated_at !== booking.created_at">
+                  <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Última atualização</label>
+                  <div class="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-3 border border-slate-200/60 dark:border-slate-700/60">
+                    <p class="text-slate-700 dark:text-slate-300 font-medium text-xs">{{ formatDateTime(booking.updated_at) }}</p>
                   </div>
                 </div>
               </div>
               
               <!-- Observações -->
-              <div v-if="booking.notes" class="mt-6">
-                <label class="block text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Observações</label>
-                <div class="bg-gradient-to-r from-gray-800/50 to-gray-700/50 rounded-lg p-4 border border-gray-700/50">
-                  <p class="text-gray-300 whitespace-pre-wrap text-sm leading-relaxed">{{ booking.notes }}</p>
+              <div v-if="booking.notes" class="mt-5">
+                <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Observações</label>
+                <div class="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-3.5 border border-slate-200/60 dark:border-slate-700/60">
+                  <p class="text-slate-700 dark:text-slate-300 whitespace-pre-wrap text-sm leading-relaxed">{{ booking.notes }}</p>
                 </div>
               </div>
             </div>
 
             <!-- Informações da Área Comum -->
-            <div v-if="booking.common_area" class="bg-gradient-to-br from-gray-900/50 via-gray-800/50 to-gray-900/50 backdrop-blur-xl rounded-xl p-5 border border-gray-700/30">
-              <div class="flex items-center mb-4">
-                <div class="h-8 w-8 rounded-lg bg-gradient-to-r from-green-500/20 to-emerald-500/20 flex items-center justify-center border border-green-500/30 mr-3">
-                  <svg class="h-4 w-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div v-if="booking.common_area" class="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
+              <div class="flex items-center mb-5 pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div class="h-8 w-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mr-3">
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                   </svg>
                 </div>
-                <h2 class="text-lg font-bold text-white">Área Comum</h2>
+                <h2 class="text-base font-semibold text-slate-900 dark:text-slate-100">Área Comum</h2>
               </div>
               
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="group">
-                  <label class="block text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Nome</label>
-                  <div class="bg-gray-800/50 rounded-lg p-3 border border-gray-700/50 group-hover:border-gray-600/50 transition-colors">
-                    <p class="text-white font-bold">{{ booking.common_area.name }}</p>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Nome</label>
+                  <div class="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-3 border border-slate-200/60 dark:border-slate-700/60">
+                    <p class="text-slate-900 dark:text-slate-100 font-semibold text-sm">{{ booking.common_area.name }}</p>
                   </div>
                 </div>
                 
-                <div v-if="booking.common_area.capacity" class="group">
-                  <label class="block text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Capacidade</label>
-                  <div class="bg-gray-800/50 rounded-lg p-3 border border-gray-700/50 group-hover:border-gray-600/50 transition-colors">
-                    <p class="text-white font-medium">{{ booking.common_area.capacity }} pessoas</p>
+                <div v-if="booking.common_area.capacity">
+                  <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Capacidade</label>
+                  <div class="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-3 border border-slate-200/60 dark:border-slate-700/60">
+                    <p class="text-slate-900 dark:text-slate-100 font-medium text-sm">{{ booking.common_area.capacity }} pessoas</p>
                   </div>
                 </div>
                 
-                <div v-if="booking.common_area.price_per_hour" class="group">
-                  <label class="block text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Preço por Hora</label>
-                  <div class="bg-gray-800/50 rounded-lg p-3 border border-gray-700/50 group-hover:border-gray-600/50 transition-colors">
-                    <p class="text-white font-medium">R$ {{ formatPrice(booking.common_area.price_per_hour) }}</p>
+                <div v-if="booking.common_area.price_per_hour">
+                  <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Preço por Hora</label>
+                  <div class="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-3 border border-slate-200/60 dark:border-slate-700/60">
+                    <p class="text-slate-900 dark:text-slate-100 font-medium text-sm">R$ {{ formatPrice(booking.common_area.price_per_hour) }}</p>
                   </div>
                 </div>
                 
-                <div class="group">
-                  <label class="block text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Requer Aprovação</label>
-                  <div class="bg-gray-800/50 rounded-lg p-3 border border-gray-700/50 group-hover:border-gray-600/50 transition-colors">
-                    <p class="text-white font-medium">{{ booking.common_area.requires_approval ? 'Sim' : 'Não' }}</p>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Requer Aprovação</label>
+                  <div class="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-3 border border-slate-200/60 dark:border-slate-700/60">
+                    <p class="text-slate-900 dark:text-slate-100 font-medium text-sm">{{ booking.common_area.requires_approval ? 'Sim' : 'Não' }}</p>
                   </div>
                 </div>
               </div>
               
-              <div v-if="booking.common_area.description" class="mt-6">
-                <label class="block text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Descrição</label>
-                <div class="bg-gradient-to-r from-gray-800/50 to-gray-700/50 rounded-lg p-4 border border-gray-700/50">
-                  <p class="text-gray-300 text-sm leading-relaxed">{{ booking.common_area.description }}</p>
+              <div v-if="booking.common_area.description" class="mt-5">
+                <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Descrição</label>
+                <div class="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-3.5 border border-slate-200/60 dark:border-slate-700/60">
+                  <p class="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">{{ booking.common_area.description }}</p>
                 </div>
               </div>
               
-              <div v-if="booking.common_area.rules" class="mt-6">
-                <label class="block text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Regras</label>
-                <div class="bg-gradient-to-r from-gray-800/50 to-gray-700/50 rounded-lg p-4 border border-gray-700/50">
-                  <p class="text-gray-300 whitespace-pre-wrap text-sm leading-relaxed">{{ booking.common_area.rules }}</p>
+              <div v-if="booking.common_area.rules" class="mt-5">
+                <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Regras</label>
+                <div class="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-3.5 border border-slate-200/60 dark:border-slate-700/60">
+                  <p class="text-slate-700 dark:text-slate-300 whitespace-pre-wrap text-sm leading-relaxed">{{ booking.common_area.rules }}</p>
                 </div>
               </div>
             </div>
@@ -232,105 +230,104 @@
           <!-- Sidebar -->
           <div class="space-y-6">
             <!-- Informações do Solicitante -->
-            <div class="bg-gradient-to-br from-gray-900/50 via-gray-800/50 to-gray-900/50 backdrop-blur-xl rounded-xl p-4 border border-gray-700/30">
-              <div class="flex items-center mb-4">
-                <div class="h-7 w-7 rounded-lg bg-gradient-to-r from-blue-500/20 to-cyan-500/20 flex items-center justify-center border border-blue-500/30 mr-2">
-                  <svg class="h-3 w-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="bg-white dark:bg-slate-900 rounded-xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
+              <div class="flex items-center mb-4 pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div class="h-7 w-7 rounded-lg bg-blue-50 dark:bg-blue-950/50 flex items-center justify-center text-blue-600 dark:text-blue-400 mr-2.5">
+                  <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                 </div>
-                <h3 class="text-base font-bold text-white">Solicitante</h3>
+                <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100">Solicitante</h3>
               </div>
               
               <div class="space-y-3">
                 <div>
-                  <label class="block text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">Apartamento</label>
-                  <div class="bg-gray-800/50 rounded-lg p-2 border border-gray-700/50">
-                    <p class="text-white font-medium text-sm">{{ formatApartment(booking.apartment) }}</p>
+                  <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wider">Apartamento</label>
+                  <div class="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-2.5 border border-slate-200/60 dark:border-slate-700/60">
+                    <p class="text-slate-900 dark:text-slate-100 font-medium text-sm">{{ formatApartment(booking.apartment) }}</p>
                   </div>
                 </div>
                 
                 <div v-if="booking.apartment?.residents?.length">
-                  <label class="block text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">Responsável</label>
-                  <div class="bg-gray-800/50 rounded-lg p-2 border border-gray-700/50">
-                    <p class="text-white font-medium text-sm">{{ booking.apartment.residents[0].name }}</p>
+                  <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wider">Responsável</label>
+                  <div class="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-2.5 border border-slate-200/60 dark:border-slate-700/60">
+                    <p class="text-slate-900 dark:text-slate-100 font-medium text-sm">{{ booking.apartment.residents[0].name }}</p>
                   </div>
                 </div>
               </div>
             </div>
 
             <!-- Timeline de Status -->
-            <div class="bg-gradient-to-br from-gray-900/50 via-gray-800/50 to-gray-900/50 backdrop-blur-xl rounded-xl p-4 border border-gray-700/30">
-              <div class="flex items-center mb-4">
-                <div class="h-7 w-7 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 flex items-center justify-center border border-purple-500/30 mr-2">
-                  <svg class="h-3 w-3 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="bg-white dark:bg-slate-900 rounded-xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
+              <div class="flex items-center mb-4 pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div class="h-7 w-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mr-2.5">
+                  <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <h3 class="text-base font-bold text-white">Timeline</h3>
+                <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100">Linha do Tempo</h3>
               </div>
               
               <div class="space-y-4">
                 <div class="flex items-start space-x-3">
-                  <div class="relative">
-                    <div class="w-3 h-3 rounded-full bg-green-500 border-2 border-green-400"></div>
-                    <div class="absolute top-3 left-1.5 w-0.5 h-6 bg-gradient-to-b from-green-500 to-transparent"></div>
+                  <div class="relative flex flex-col items-center">
+                    <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-50 dark:ring-emerald-950/50"></div>
+                    <div class="w-0.5 h-8 bg-slate-200 dark:bg-slate-700 my-1"></div>
                   </div>
                   <div class="flex-1 min-w-0">
-                    <p class="text-white font-medium text-sm">Reserva criada</p>
-                    <p class="text-gray-400 text-xs mt-0.5">{{ formatDateTime(booking.created_at) }}</p>
+                    <p class="text-slate-900 dark:text-slate-100 font-medium text-xs">Reserva criada</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">{{ formatDateTime(booking.created_at) }}</p>
                   </div>
                 </div>
                 
                 <div v-if="booking.status !== 'pending'" class="flex items-start space-x-3">
-                  <div class="relative">
-                    <div class="w-3 h-3 rounded-full border-2" :class="'bg-' + getStatusDotClass(booking.status).replace('bg-', '') + ' border-' + getStatusDotClass(booking.status).replace('bg-', '') + '-400'"></div>
-                    <div v-if="booking.status === 'approved' && new Date(booking.start_time) < new Date()" class="absolute top-3 left-1.5 w-0.5 h-6 bg-gradient-to-b from-blue-500 to-transparent"></div>
+                  <div class="relative flex flex-col items-center">
+                    <div class="w-2.5 h-2.5 rounded-full ring-4" :class="[getStatusDotClass(booking.status), 'ring-slate-100 dark:ring-slate-800']"></div>
+                    <div v-if="booking.status === 'approved' && new Date(booking.start_time) < new Date()" class="w-0.5 h-8 bg-slate-200 dark:bg-slate-700 my-1"></div>
                   </div>
                   <div class="flex-1 min-w-0">
-                    <p class="text-white font-medium text-sm">{{ getStatusText(booking.status) }}</p>
-                    <p class="text-gray-400 text-xs mt-0.5">{{ formatDateTime(booking.updated_at) }}</p>
+                    <p class="text-slate-900 dark:text-slate-100 font-medium text-xs">{{ getStatusText(booking.status) }}</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">{{ formatDateTime(booking.updated_at) }}</p>
                   </div>
                 </div>
                 
                 <div v-if="booking.status === 'approved' && new Date(booking.start_time) < new Date()" class="flex items-start space-x-3">
-                  <div class="w-3 h-3 rounded-full bg-blue-500 border-2 border-blue-400"></div>
+                  <div class="w-2.5 h-2.5 rounded-full bg-blue-500 ring-4 ring-blue-50 dark:ring-blue-950/50"></div>
                   <div class="flex-1 min-w-0">
-                    <p class="text-white font-medium text-sm">Reserva concluída</p>
-                    <p class="text-gray-400 text-xs mt-0.5">{{ formatDateTime(booking.end_time) }}</p>
+                    <p class="text-slate-900 dark:text-slate-100 font-medium text-xs">Reserva concluída</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">{{ formatDateTime(booking.end_time) }}</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- Ações Rápidas -->
-            <div class="bg-gradient-to-br from-gray-900/50 via-gray-800/50 to-gray-900/50 backdrop-blur-xl rounded-xl p-4 border border-gray-700/30">
-              <h3 class="text-base font-bold text-white mb-4">Ações Rápidas</h3>
-              
-              <div class="space-y-3">
-                <NeonButton
-                  @click="viewArea"
-                  variant="secondary"
+            <!-- Links Rápidos -->
+            <div class="bg-white dark:bg-slate-900 rounded-xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
+              <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">Links Rápidos</h3>
+              <div class="space-y-2">
+                <AppButton 
+                  @click="viewArea" 
+                  variant="outline" 
                   size="sm"
-                  class="w-full justify-center"
+                  class="w-full justify-start text-xs"
                 >
-                  <svg class="h-3 w-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="h-3.5 w-3.5 mr-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                   </svg>
                   Ver Área Comum
-                </NeonButton>
+                </AppButton>
                 
-                <NeonButton
-                  @click="viewAllBookings"
-                  variant="outline"
+                <AppButton 
+                  @click="viewAllBookings" 
+                  variant="outline" 
                   size="sm"
-                  class="w-full justify-center"
+                  class="w-full justify-start text-xs"
                 >
-                  <svg class="h-3 w-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="h-3.5 w-3.5 mr-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
                   </svg>
                   Todas as Reservas
-                </NeonButton>
+                </AppButton>
               </div>
             </div>
           </div>
@@ -344,12 +341,15 @@
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import AuthenticatedLayout from '../components/layouts/AuthenticatedLayout.vue';
+import AppButton from '../components/ui/AppButton.vue';
 import NeonButton from '../components/NeonButton.vue';
+import { apiRequest } from '../utils/api';
 
 export default {
   name: 'BookingDetailPage',
   components: {
     AuthenticatedLayout,
+    AppButton,
     NeonButton
   },
   setup() {
@@ -402,24 +402,24 @@ export default {
 
     const getStatusBadgeClass = (status) => {
       const statusClasses = {
-        'pending': 'bg-gradient-to-r from-yellow-600/30 to-yellow-500/30 text-yellow-300 border border-yellow-500/50 shadow-lg',
-        'approved': 'bg-gradient-to-r from-green-600/30 to-green-500/30 text-green-300 border border-green-500/50 shadow-lg',
-        'rejected': 'bg-gradient-to-r from-red-600/30 to-red-500/30 text-red-300 border border-red-500/50 shadow-lg',
-        'cancelled': 'bg-gradient-to-r from-gray-600/30 to-gray-500/30 text-gray-300 border border-gray-500/50 shadow-lg',
-        'completed': 'bg-gradient-to-r from-blue-600/30 to-blue-500/30 text-blue-300 border border-blue-500/50 shadow-lg'
+        'pending': 'bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/50',
+        'approved': 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/50',
+        'rejected': 'bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800/50',
+        'cancelled': 'bg-slate-100 text-slate-700 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700',
+        'completed': 'bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/50'
       };
-      return statusClasses[status] || 'bg-gradient-to-r from-gray-600/30 to-gray-500/30 text-gray-300 border border-gray-500/50 shadow-lg';
+      return statusClasses[status] || 'bg-slate-100 text-slate-700 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700';
     };
 
     const getStatusDotClass = (status) => {
       const statusClasses = {
-        'pending': 'bg-yellow-500',
-        'approved': 'bg-green-500',
-        'rejected': 'bg-red-500',
-        'cancelled': 'bg-gray-500',
+        'pending': 'bg-amber-500',
+        'approved': 'bg-emerald-500',
+        'rejected': 'bg-rose-500',
+        'cancelled': 'bg-slate-400',
         'completed': 'bg-blue-500'
       };
-      return statusClasses[status] || 'bg-gray-500';
+      return statusClasses[status] || 'bg-slate-400';
     };
 
     const canEdit = (booking) => {
@@ -435,22 +435,10 @@ export default {
       try {
         loading.value = true;
         error.value = '';
-        
-        const token = localStorage.getItem('token');
-        const response = await fetch(`/api/common-area-bookings/${route.params.id}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
 
-        if (response.ok) {
-          booking.value = await response.json();
-        } else {
-          error.value = 'Erro ao carregar reserva';
-        }
+        booking.value = await apiRequest(`/common-area-bookings/${route.params.id}`);
       } catch (e) {
-        error.value = 'Erro de conexão';
+        error.value = e.message || 'Erro ao carregar reserva';
       } finally {
         loading.value = false;
       }
@@ -472,22 +460,10 @@ export default {
       }
 
       try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`/api/common-areas/${booking.value.common_area_id}/bookings/${booking.value.id}/cancel`, {
-          method: 'PATCH',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (response.ok) {
-          await loadBooking();
-        } else {
-          error.value = 'Erro ao cancelar reserva';
-        }
+        await apiRequest(`/common-areas/${booking.value.common_area_id}/bookings/${booking.value.id}/cancel`, { method: 'PATCH' });
+        await loadBooking();
       } catch (e) {
-        error.value = 'Erro de conexão';
+        error.value = e.message || 'Erro ao cancelar reserva';
       }
     };
 
@@ -527,4 +503,4 @@ export default {
     };
   }
 };
-</script> 
+</script>

@@ -13,31 +13,31 @@ return new class extends Migration
     {
         Schema::table('maintenance_equipments', function (Blueprint $table) {
             // Verificar se as colunas não existem antes de adicionar
-            if (!Schema::hasColumn('maintenance_equipments', 'maintenance_area_id')) {
+            if (! Schema::hasColumn('maintenance_equipments', 'maintenance_area_id')) {
                 $table->foreignId('maintenance_area_id')->constrained('maintenance_areas')->onDelete('cascade');
             }
-            
-            if (!Schema::hasColumn('maintenance_equipments', 'name')) {
+
+            if (! Schema::hasColumn('maintenance_equipments', 'name')) {
                 $table->string('name');
             }
-            
-            if (!Schema::hasColumn('maintenance_equipments', 'description')) {
+
+            if (! Schema::hasColumn('maintenance_equipments', 'description')) {
                 $table->text('description')->nullable();
             }
-            
-            if (!Schema::hasColumn('maintenance_equipments', 'location_details')) {
+
+            if (! Schema::hasColumn('maintenance_equipments', 'location_details')) {
                 $table->string('location_details')->nullable();
             }
-            
-            if (!Schema::hasColumn('maintenance_equipments', 'qr_code_hash')) {
+
+            if (! Schema::hasColumn('maintenance_equipments', 'qr_code_hash')) {
                 $table->string('qr_code_hash')->unique()->nullable();
             }
-            
-            if (!Schema::hasColumn('maintenance_equipments', 'qr_code_access_level')) {
+
+            if (! Schema::hasColumn('maintenance_equipments', 'qr_code_access_level')) {
                 $table->enum('qr_code_access_level', ['public', 'internal_users', 'specific_users'])->default('internal_users');
             }
-            
-            if (!Schema::hasColumn('maintenance_equipments', 'created_at')) {
+
+            if (! Schema::hasColumn('maintenance_equipments', 'created_at')) {
                 $table->timestamp('created_at')->nullable();
             }
         });
@@ -53,10 +53,10 @@ return new class extends Migration
             $table->dropColumn([
                 'maintenance_area_id',
                 'name',
-                'description', 
+                'description',
                 'location_details',
                 'qr_code_hash',
-                'qr_code_access_level'
+                'qr_code_access_level',
             ]);
         });
     }

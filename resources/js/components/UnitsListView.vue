@@ -13,14 +13,14 @@
         </template>
       </TopCard>
       <!-- Aviso quando nenhum condomínio está selecionado -->
-      <div v-if="!selectedCondominiumName && !loading" class="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
+      <div v-if="!selectedCondominiumName && !loading" class="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 rounded-xl p-4">
         <div class="flex items-center space-x-2">
-          <svg class="h-5 w-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="h-5 w-5 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
           </svg>
-          <span class="text-yellow-300 font-medium">Nenhum condomínio selecionado</span>
+          <span class="text-amber-900 dark:text-amber-200 font-medium">Nenhum condomínio selecionado</span>
         </div>
-        <p class="text-yellow-200 text-sm mt-1">Selecione um condomínio para visualizar as unidades.</p>
+        <p class="text-amber-700 dark:text-amber-300 text-sm mt-1">Selecione um condomínio para visualizar as unidades.</p>
       </div>
 
       <!-- Cards de Resumo -->
@@ -35,7 +35,7 @@
         <StatsCard 
           label="Ocupadas" 
           :value="unitStats.ocupadas"
-          variant="blue"
+          variant="green"
           :default-icon-path="'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'"
         />
         
@@ -49,7 +49,7 @@
         <StatsCard 
           label="Taxa de Ocupação" 
           :value="unitStats.taxaOcupacao"
-          variant="red"
+          variant="primary"
         />
       </div>
 
@@ -70,22 +70,22 @@
       </div>
 
       <!-- Loading State -->
-      <div v-if="loading" class="flex justify-center items-center py-8">
+      <div v-if="loading" class="flex justify-center items-center py-12">
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
       </div>
 
       <!-- Error State -->
-      <div v-else-if="error" class="bg-red-500/10 border border-red-500/30 rounded-lg p-4 text-red-300">
+      <div v-else-if="error" class="bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/50 rounded-xl p-4 text-rose-700 dark:text-rose-300 text-sm">
         {{ error }}
       </div>
 
       <!-- Empty State -->
-      <div v-else-if="filteredUnits.length === 0 && selectedCondominiumName" class="text-center py-8">
-        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div v-else-if="filteredUnits.length === 0 && selectedCondominiumName" class="text-center py-12 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm">
+        <svg class="mx-auto h-12 w-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
         </svg>
-        <h3 class="mt-2 text-sm font-medium text-gray-300">Nenhuma unidade encontrada</h3>
-        <p class="mt-1 text-sm text-gray-500">
+        <h3 class="mt-2 text-base font-medium text-slate-900 dark:text-slate-100">Nenhuma unidade encontrada</h3>
+        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
           {{ search ? 'Tente ajustar sua busca ou limpar os filtros aplicados' : 'Utilize o botão "Gerenciar Unidades" no cabeçalho para criar novas unidades' }}
         </p>
       </div>
@@ -95,91 +95,97 @@
         <div 
           v-for="unit in filteredUnits" 
           :key="unit.id" 
-          class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl shadow-xl p-6 border-2 border-indigo-500/20 hover:border-indigo-500/40 transition-all duration-300 hover:shadow-2xl hover:scale-105"
+          class="bg-white dark:bg-slate-900 rounded-xl shadow-sm p-6 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-colors flex flex-col justify-between"
         >
-          <!-- Header com Status -->
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center space-x-3">
-              <div class="h-12 w-12 rounded-full bg-indigo-100 flex items-center justify-center border-2 border-indigo-500/30">
-                <svg class="h-6 w-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-              </div>
-              <div>
-                <h3 class="text-lg font-semibold text-white">Unidade {{ unit.number }}</h3>
-                <p class="text-sm text-gray-400">{{ unit.block ? unit.block.name : '' }}{{ unit.tower ? ` - ${unit.tower.name}` : '' }}</p>
-              </div>
-            </div>
-            <div class="flex flex-col items-end space-y-1">
-              <span class="px-2 py-1 text-xs font-semibold rounded-full"
-                    :class="unitStatsHelpers.getStatusClass(unit)">
-                {{ unitStatsHelpers.getStatusLabel(unit) }}
-              </span>
-              <span class="text-xs text-gray-400">{{ unit.floor }}º andar</span>
-            </div>
-          </div>
-
-          <!-- Informações da Unidade -->
-          <div class="bg-gray-800/50 rounded-lg p-4 mb-4 border border-gray-700/50">
-            <div class="space-y-2">
-              <!-- Estrutura -->
-              <div class="flex items-center space-x-2">
-                <svg class="h-4 w-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-                <span class="text-sm text-blue-300">Estrutura</span>
-              </div>
-              <div class="space-y-1">
-                <div v-if="unit.tower">
-                  <span class="text-gray-400">Torre:</span>
-                  <span class="text-white ml-2">{{ unit.tower.name }}</span>
-                </div>
-                <div v-if="unit.block">
-                  <span class="text-gray-400">Bloco:</span>
-                  <span class="text-white ml-2">{{ unit.block.name }}</span>
+          <div>
+            <!-- Header com Status -->
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-3">
+                <div class="h-10 w-10 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center">
+                  <svg class="h-5 w-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
                 </div>
                 <div>
-                  <span class="text-gray-400">Andar:</span>
-                  <span class="text-white ml-2">{{ unit.floor }}º</span>
+                  <h3 class="text-base font-semibold text-slate-900 dark:text-slate-100">Unidade {{ unit.number }}</h3>
+                  <p class="text-xs text-slate-500 dark:text-slate-400">{{ unit.block ? unit.block.name : '' }}{{ unit.tower ? ` - ${unit.tower.name}` : '' }}</p>
                 </div>
               </div>
-
-              <!-- Proprietário -->
-              <div class="flex items-center space-x-2 mt-3">
-                <svg class="h-4 w-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                <span class="text-sm text-green-300">Proprietário</span>
+              <div class="flex flex-col items-end space-y-1">
+                <span class="px-2.5 py-0.5 text-xs font-medium rounded-full"
+                      :class="unitStatsHelpers.getStatusClass(unit)">
+                  {{ unitStatsHelpers.getStatusLabel(unit) }}
+                </span>
+                <span class="text-xs text-slate-400">{{ unit.floor }}º andar</span>
               </div>
-              <p class="text-white">{{ unit.owner ? unit.owner.name : 'Não informado' }}</p>
+            </div>
 
-              <!-- Inquilino -->
-              <div v-if="unit.tenant" class="mt-3">
-                <div class="flex items-center space-x-2">
-                  <svg class="h-4 w-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                  <span class="text-sm text-purple-300">Inquilino</span>
+            <!-- Informações da Unidade -->
+            <div class="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3.5 mb-4 border border-slate-100 dark:border-slate-800">
+              <div class="space-y-3">
+                <!-- Estrutura -->
+                <div>
+                  <div class="flex items-center space-x-1.5 mb-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    <svg class="h-3.5 w-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    <span>Estrutura</span>
+                  </div>
+                  <div class="space-y-0.5 text-xs text-slate-600 dark:text-slate-400">
+                    <div v-if="unit.tower" class="flex justify-between">
+                      <span class="text-slate-500">Torre:</span>
+                      <span class="font-medium text-slate-800 dark:text-slate-200">{{ unit.tower.name }}</span>
+                    </div>
+                    <div v-if="unit.block" class="flex justify-between">
+                      <span class="text-slate-500">Bloco:</span>
+                      <span class="font-medium text-slate-800 dark:text-slate-200">{{ unit.block.name }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-slate-500">Andar:</span>
+                      <span class="font-medium text-slate-800 dark:text-slate-200">{{ unit.floor }}º</span>
+                    </div>
+                  </div>
                 </div>
-                <p class="text-white">{{ unit.tenant.name }}</p>
+
+                <!-- Proprietário -->
+                <div class="pt-2 border-t border-slate-200/60 dark:border-slate-700/60">
+                  <div class="flex items-center space-x-1.5 mb-1 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    <svg class="h-3.5 w-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <span>Proprietário</span>
+                  </div>
+                  <p class="text-xs text-slate-800 dark:text-slate-200 font-medium">{{ unit.owner ? unit.owner.name : 'Não informado' }}</p>
+                </div>
+
+                <!-- Inquilino -->
+                <div v-if="unit.tenant" class="pt-2 border-t border-slate-200/60 dark:border-slate-700/60">
+                  <div class="flex items-center space-x-1.5 mb-1 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    <svg class="h-3.5 w-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <span>Inquilino</span>
+                  </div>
+                  <p class="text-xs text-slate-800 dark:text-slate-200 font-medium">{{ unit.tenant.name }}</p>
+                </div>
               </div>
             </div>
           </div>
 
           <!-- Ações -->
-          <div class="flex space-x-2">
-            <NeonButton @click="viewResidents(unit)" size="sm" variant="success" class="flex-1">
-              <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="flex space-x-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+            <AppButton @click="viewResidents(unit)" size="sm" variant="secondary" class="flex-1">
+              <svg class="h-3.5 w-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a1.5 1.5 0 01-3 0 1.5 1.5 0 013 0z" />
               </svg>
               Moradores
-            </NeonButton>
-            <NeonButton @click="viewVehicles(unit)" size="sm" variant="info" class="flex-1">
-              <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            </AppButton>
+            <AppButton @click="viewVehicles(unit)" size="sm" variant="secondary" class="flex-1">
+              <svg class="h-3.5 w-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-3 3m0 0l-3-3m3 3V8a2 2 0 00-2-2H9m11 11H9m0 0V6a2 2 0 012-2h5a2 2 0 012 2v3" />
               </svg>
               Veículos
-            </NeonButton>
+            </AppButton>
           </div>
         </div>
       </div>
@@ -188,19 +194,21 @@
 </template>
 
 <script>
-import { ref, computed, watch, onMounted, h } from 'vue';
+import { ref, computed, onMounted, h } from 'vue';
 import { useRouter } from 'vue-router';
 import AuthenticatedLayout from './layouts/AuthenticatedLayout.vue';
 import NeonButton from './NeonButton.vue';
+import AppButton from './ui/AppButton.vue';
 import TopCard from './ui/TopCard.vue';
 import StatsCard from './ui/StatsCard.vue';
 import ListFilters from './ui/ListFilters.vue';
 import { useListFilters } from '../composables/useListFilters.js';
 import { useUnitStats } from '../composables/useUnitStats.js';
+import { apiRequest } from '../utils/api';
 
 export default {
   name: 'UnitsListView',
-  components: { AuthenticatedLayout, NeonButton, TopCard, StatsCard, ListFilters },
+  components: { AuthenticatedLayout, NeonButton, AppButton, TopCard, StatsCard, ListFilters },
   setup() {
     const router = useRouter();
     const units = ref([]);
@@ -246,23 +254,12 @@ export default {
       }
     };
 
-    // Variáveis para gerenciar filtro por condomínio
-    const selectedCondominiumId = ref(localStorage.getItem('selectedCondominium'));
-    const selectedCondominiumName = ref(localStorage.getItem('selectedCondominiumName'));
+    // Nome exibido apenas como contexto visual; o tenant é resolvido no backend.
+    const selectedCondominiumName = ref(localStorage.getItem('selectedCondominiumName') || 'Condomínio atual');
 
     // Função para atualizar as informações do condomínio selecionado
     const updateSelectedCondominium = () => {
-      selectedCondominiumId.value = localStorage.getItem('selectedCondominium');
-      selectedCondominiumName.value = localStorage.getItem('selectedCondominiumName');
-    };
-
-    // Função para construir URL com filtro por condomínio
-    const buildUrlWithCondominiumFilter = (baseUrl) => {
-      if (selectedCondominiumId.value) {
-        const separator = baseUrl.includes('?') ? '&' : '?';
-        return `${baseUrl}${separator}condominium_id=${selectedCondominiumId.value}`;
-      }
-      return baseUrl;
+      selectedCondominiumName.value = localStorage.getItem('selectedCondominiumName') || 'Condomínio atual';
     };
 
     // Função para lidar com limpeza de filtros
@@ -281,114 +278,22 @@ export default {
 
     const loadData = async () => {
       try {
-        const token = localStorage.getItem('token');
-        
-        // Carregar unidades
-        const url = buildUrlWithCondominiumFilter('/api/apartments');
-        console.log('Fetching units with token:', token ? 'Present' : 'Missing');
-        console.log('Fetching units from URL:', url);
-        const response = await fetch(url, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Dados brutos da API:', data);
-          
-          // Verificar se os dados têm a estrutura esperada
-          if (Array.isArray(data)) {
-            units.value = data;
-          } else if (data.data && Array.isArray(data.data)) {
-            units.value = data.data;
-          } else {
-            console.error('Estrutura de dados inesperada:', data);
-            units.value = [];
-          }
+        const [unitsData, towersData, blocksData] = await Promise.all([
+          apiRequest('/apartments'),
+          apiRequest('/towers'),
+          apiRequest('/blocks')
+        ]);
 
-          // Carregar torres
-          const towersUrl = buildUrlWithCondominiumFilter('/api/towers');
-          console.log('Fetching towers with token:', token ? 'Present' : 'Missing');
-          console.log('Fetching towers from URL:', towersUrl);
-          const towersResponse = await fetch(towersUrl, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          });
-          
-          if (towersResponse.ok) {
-            const towersData = await towersResponse.json();
-            towers.value = Array.isArray(towersData) ? towersData : (towersData.data || []);
-          }
-
-          // Carregar blocos
-          const blocksUrl = buildUrlWithCondominiumFilter('/api/blocks');
-          console.log('Fetching blocks with token:', token ? 'Present' : 'Missing');
-          console.log('Fetching blocks from URL:', blocksUrl);
-          const blocksResponse = await fetch(blocksUrl, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          });
-          
-          if (blocksResponse.ok) {
-            const blocksData = await blocksResponse.json();
-            blocks.value = Array.isArray(blocksData) ? blocksData : (blocksData.data || []);
-          }
-        } else {
-          // Tenta ler a resposta de erro como JSON, que é o esperado do Handler.php
-          const errorBody = await response.json().catch(() => null);
-          const errorMessage = errorBody?.message || `Falha ao carregar dados. Status: ${response.status}`;
-          error.value = errorMessage;
-          console.error('Erro na API:', response.status, response.statusText, errorBody);
-          units.value = [];
-        }
+        units.value = Array.isArray(unitsData) ? unitsData : (unitsData?.data || []);
+        towers.value = Array.isArray(towersData) ? towersData : (towersData?.data || []);
+        blocks.value = Array.isArray(blocksData) ? blocksData : (blocksData?.data || []);
       } catch (e) {
-        if (e instanceof SyntaxError) {
-          error.value = 'Erro ao processar a resposta do servidor. A resposta não é um JSON válido.';
-        } else {
-          error.value = e.message || 'Erro de conexão.';
-        }
-        console.error('Exceção ao carregar dados:', e);
+        error.value = e.message || 'Erro ao carregar unidades.';
         units.value = [];
+        towers.value = [];
+        blocks.value = [];
       } finally {
         loading.value = false;
-      }
-    };
-
-    const loadCondominiums = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('/api/condominiums', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Dados brutos dos condomínios:', data);
-          
-          // Verificar se os dados têm a estrutura esperada
-          if (Array.isArray(data)) {
-            console.log('Condomínios carregados diretamente:', data);
-          } else if (data.data && Array.isArray(data.data)) {
-            console.log('Condomínios carregados a partir de data.data:', data.data);
-          } else {
-            console.error('Estrutura de dados inesperada:', data);
-          }
-        } else {
-          error.value = 'Falha ao carregar dados dos condomínios';
-          console.error('Erro ao carregar condomínios:', response.status, response.statusText);
-        }
-      } catch (e) {
-        error.value = 'Erro ao carregar condomínios';
-        console.error('Exceção ao carregar condomínios:', e);
       }
     };
 
@@ -443,18 +348,15 @@ export default {
     // Carregar dados ao montar o componente
     onMounted(() => {
       loadData();
-      loadCondominiums();
       
       // Configurar listeners para mudanças de condomínio
       window.addEventListener('condominiumSelected', () => {
-        console.log('Condomínio alterado via evento customizado');
         updateSelectedCondominium();
         loadData();
       });
 
       window.addEventListener('storage', (e) => {
-        if (e.key === 'selectedCondominium') {
-          console.log('Condomínio alterado via localStorage');
+        if (e.key === 'selectedCondominiumName' || e.key === 'selectedCondominium') {
           updateSelectedCondominium();
           loadData();
         }
@@ -482,4 +384,4 @@ export default {
     };
   }
 };
-</script> 
+</script>

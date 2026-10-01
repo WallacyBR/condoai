@@ -17,7 +17,9 @@ class ProfileSettingsTest extends TestCase
     use RefreshDatabase;
 
     protected Condominium $condominium;
+
     protected Profile $profile;
+
     protected User $user;
 
     protected function setUp(): void
@@ -87,7 +89,7 @@ class ProfileSettingsTest extends TestCase
     {
         $token = JWTAuth::fromUser($this->user);
 
-        $passwordResponse = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $passwordResponse = $this->withHeader('Authorization', 'Bearer '.$token)
             ->withHeader('X-Condominium-Id', (string) $this->condominium->id)
             ->putJson('/api/profile/password', [
                 'current_password' => 'senha-atual',
@@ -102,7 +104,7 @@ class ProfileSettingsTest extends TestCase
 
         $this->assertTrue(Hash::check('NovaSenhaSegura123', $this->user->fresh()->password));
 
-        $this->withHeader('Authorization', 'Bearer ' . $token)
+        $this->withHeader('Authorization', 'Bearer '.$token)
             ->withHeader('X-Condominium-Id', (string) $this->condominium->id)
             ->getJson('/api/profile')
             ->assertUnauthorized();

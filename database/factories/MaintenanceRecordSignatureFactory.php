@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\MaintenanceRecordSignature;
 use App\Models\Condominium;
 use App\Models\MaintenanceRecord;
+use App\Models\MaintenanceRecordSignature;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class MaintenanceRecordSignatureFactory extends Factory
@@ -23,8 +23,8 @@ class MaintenanceRecordSignatureFactory extends Factory
      */
     public function definition(): array
     {
-        $fileName = 'signature_' . $this->faker->unixTime() . '_' . $this->faker->randomNumber(5) . '.png';
-        $filePath = 'maintenance_signatures/' . $fileName;
+        $fileName = 'signature_'.$this->faker->unixTime().'_'.$this->faker->randomNumber(5).'.png';
+        $filePath = 'maintenance_signatures/'.$fileName;
 
         return [
             'signature_path' => $filePath,

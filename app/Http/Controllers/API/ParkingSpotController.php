@@ -23,16 +23,12 @@ class ParkingSpotController extends Controller
 
     public function store(Request $request)
     {
-        $condoId = $request->condominium_id;
+        $condoId = $this->currentCondominiumId($request);
 
         $validated = $request->validate([
             'identifier' => [
                 'required', 'string', 'max:10',
                 Rule::unique('parking_spots')->where(fn ($q) => $q->where('condominium_id', $condoId)),
-            ],
-            'condominium_id' => [
-                'required',
-                Rule::exists('condominiums', 'id')->where(fn ($q) => $q->where('active', true)),
             ],
             'apartment_id' => [
                 'required',
@@ -44,6 +40,8 @@ class ParkingSpotController extends Controller
             ],
         ]);
 
+        $validated['condominium_id'] = $condoId;
+
         $spot = ParkingSpot::create($validated);
 
         return response()->json($spot->load(['apartment', 'rentedToApartment']), 201);
@@ -51,12 +49,13 @@ class ParkingSpotController extends Controller
 
     public function batchStore(Request $request)
     {
+        $condoId = $this->currentCondominiumId($request);
+
         $validated = $request->validate([
-            'condominium_id' => 'required|exists:condominiums,id',
             'spots_per_apartment' => 'required|integer|min:1',
         ]);
 
-        $apartments = Apartment::where('condominium_id', $validated['condominium_id'])->get();
+        $apartments = Apartment::where('condominium_id', $condoId)->get();
         $spots = [];
 
         foreach ($apartments as $apartment) {
@@ -64,13 +63,13 @@ class ParkingSpotController extends Controller
                 $identifier = "{$apartment->number}-V{$i}";
 
                 // Check for existing spot to avoid duplicates
-                if (ParkingSpot::where('identifier', $identifier)->where('condominium_id', $validated['condominium_id'])->exists()) {
+                if (ParkingSpot::where('identifier', $identifier)->where('condominium_id', $condoId)->exists()) {
                     continue;
                 }
 
                 $spots[] = ParkingSpot::create([
                     'identifier' => $identifier,
-                    'condominium_id' => $validated['condominium_id'],
+                    'condominium_id' => $condoId,
                     'apartment_id' => $apartment->id,
                 ]);
             }
@@ -126,5 +125,18 @@ class ParkingSpotController extends Controller
         $parkingSpot->update(['rented_to_apartment_id' => $validated['rented_to_apartment_id'] ?? null]);
 
         return $parkingSpot->load(['apartment', 'rentedToApartment']);
+    }
+
+    private function currentCondominiumId(Request $request): int
+    {
+        if (app()->bound('currentCondominium')) {
+            return app('currentCondominium')->id;
+        }
+
+        if ($request->attributes->has('condominium')) {
+            return $request->attributes->get('condominium')->id;
+        }
+
+        return (int) $request->user()->condominium_id;
     }
 }

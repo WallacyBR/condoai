@@ -1,38 +1,29 @@
 import { mount } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, jest } from '@jest/globals';
 import AccountsView from '../js/finance/AccountsView.vue';
 import { useFinanceDataStore } from '../js/finance/stores/financeDataStore';
-import { mountOptionsWithLayoutStubs } from './helpers/mountWithLayoutStubs.js';
-
-vi.mock('../js/utils/api', () => ({
-  default: {
-    get: vi.fn(),
-    post: vi.fn(),
-  },
-}));
-
-vi.mock('../js/composables/useUser', () => ({
-  useUser: () => ({
-    user: { value: { condominium_id: 1 } },
-  }),
-}));
 
 describe('AccountsView.vue', () => {
   it('exibe lista de contas', async () => {
-    setActivePinia(createPinia());
+    const pinia = createPinia();
+    setActivePinia(pinia);
     const store = useFinanceDataStore();
-    store.fetchBanks = vi.fn(async () => {
-      store.banks = [{ id: 1, name: 'Conta Principal' }];
+    store.fetchBanks = jest.fn(async () => {
+      store.banks = [{ id: 1, name: 'Conta Principal', agency: '0001', account_number: '123', balance: 100 }];
     });
-    store.fetchChartAccounts = vi.fn(async () => {
+    store.fetchChartAccounts = jest.fn(async () => {
       store.chartAccounts = [];
     });
-
-    const wrapper = mount(AccountsView, mountOptionsWithLayoutStubs({
-      global: { plugins: [store.$pinia] },
-    }));
-
+    const wrapper = mount(AccountsView, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          AuthenticatedLayout: { template: '<main><slot /></main>' },
+          NeonButton: { template: '<button><slot /></button>' }
+        }
+      }
+    });
     expect(store.fetchBanks).toHaveBeenCalled();
     await wrapper.vm.$nextTick();
     expect(wrapper.text()).toContain('Conta Principal');

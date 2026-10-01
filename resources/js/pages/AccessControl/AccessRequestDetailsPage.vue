@@ -171,12 +171,12 @@
             
             <div class="space-y-3 text-sm">
               <div>
-                <span class="font-medium text-gray-400">Morador:</span>
-                <span class="text-white ml-2">{{ request.resident?.name || 'Não informado' }}</span>
+                <span class="font-medium text-gray-400">Unidade:</span>
+                <span class="text-white ml-2">{{ request.apartment?.number || 'Não informado' }}</span>
               </div>
-              <div v-if="request.apartment">
-                <span class="font-medium text-gray-400">Apartamento:</span>
-                <span class="text-white ml-2">{{ request.apartment.number }}</span>
+              <div v-if="request.resident">
+                <span class="font-medium text-gray-400">Responsável:</span>
+                <span class="text-white ml-2">{{ request.resident.name }}</span>
               </div>
               <div v-if="request.apartment?.block">
                 <span class="font-medium text-gray-400">Bloco/Torre:</span>
@@ -389,7 +389,7 @@ const fetchRequestDetails = async () => {
     isLoading.value = true;
     error.value = '';
     
-    const response = await api.get(`/api/access-control/access-requests/${route.params.id}`);
+    const response = await api.get(`/access-control/access-requests/${route.params.id}`);
     request.value = response.data.data;
   } catch (e) {
     console.error('Erro ao carregar detalhes da solicitação:', e);
@@ -419,7 +419,7 @@ const recordEntry = () => {
 
 const recordExit = async () => {
   try {
-    await api.post(`/api/access-control/access-requests/${request.value.id}/record-exit`);
+    await api.post(`/access-control/access-requests/${request.value.id}/record-exit`);
     successToast('Saída registrada com sucesso!');
     fetchRequestDetails(); // Refresh data
   } catch (e) {
@@ -434,7 +434,7 @@ const cancelRequest = async () => {
   }
   
   try {
-    await api.post(`/api/access-control/access-requests/${request.value.id}/cancel`);
+    await api.post(`/access-control/access-requests/${request.value.id}/cancel`);
     successToast('Solicitação cancelada com sucesso!');
     fetchRequestDetails(); // Refresh data
   } catch (e) {
@@ -450,4 +450,4 @@ const goBack = () => {
 onMounted(() => {
   fetchRequestDetails();
 });
-</script> 
+</script>

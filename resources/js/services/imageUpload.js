@@ -9,66 +9,30 @@ export const imageUploadService = {
    */
   async uploadImage(base64Image, folder = 'residents') {
     try {
-      console.log('Iniciando upload da imagem...');
-      console.log('Folder:', folder);
-      console.log('Tamanho da imagem:', base64Image.length, 'caracteres');
-      
-      // TESTE TEMPORÁRIO: Testar rota sem autenticação
-      console.log('Testando rota sem autenticação...');
-      try {
-        const testResponse = await api.post('/test-upload', {
-          test: 'dados de teste',
-          folder: folder
-        });
-        console.log('Teste sem autenticação funcionou:', testResponse.data);
-      } catch (testError) {
-        console.error('Teste sem autenticação falhou:', testError);
-      }
-      
       const requestData = {
         image: base64Image,
         folder: folder
       };
 
-      console.log('Enviando requisição para /api/images/upload...');
-      console.log('Token de autenticação:', localStorage.getItem('token') ? 'Presente' : 'Ausente');
-      
       const response = await api.post('/images/upload', requestData);
-      
-      console.log('Resposta recebida:', response);
-      console.log('Status da resposta:', response.status);
-      console.log('Dados da resposta:', response.data);
 
-      // Verificar se a resposta tem a estrutura esperada
       if (response.data && response.data.success) {
-        console.log('Upload bem-sucedido:', response.data);
         return {
           success: true,
           url: response.data.url,
           filename: response.data.filename
         };
       } else {
-        console.error('Resposta não tem sucesso:', response.data);
         const errorMessage = response.data?.error || response.data?.message || 'Erro desconhecido no upload';
         throw new Error(errorMessage);
       }
     } catch (error) {
-      console.error('Erro detalhado no upload:', error);
-      console.error('Tipo do erro:', error.constructor.name);
-      console.error('Mensagem do erro:', error.message);
-      
       if (error.response) {
-        console.error('Resposta de erro do servidor:', error.response);
-        console.error('Status do erro:', error.response.status);
-        console.error('Dados do erro:', error.response.data);
-        
         const serverError = error.response.data?.error || error.response.data?.message || 'Erro do servidor';
         throw new Error(`Erro do servidor (${error.response.status}): ${serverError}`);
       } else if (error.request) {
-        console.error('Erro de rede:', error.request);
         throw new Error('Erro de conexão com o servidor. Verifique sua conexão com a internet.');
       } else {
-        console.error('Erro de configuração:', error.message);
         throw new Error(`Erro de configuração: ${error.message}`);
       }
     }
@@ -81,21 +45,15 @@ export const imageUploadService = {
    */
   async deleteImage(imageUrl) {
     try {
-      console.log('Deletando imagem:', imageUrl);
-      
       const response = await api.delete('/images/delete', {
         data: { url: imageUrl }
       });
-
-      console.log('Resposta da deleção:', response);
 
       return {
         success: true,
         message: response.data?.message || 'Imagem deletada com sucesso'
       };
     } catch (error) {
-      console.error('Erro ao deletar imagem:', error);
-      
       if (error.response) {
         const serverError = error.response.data?.error || error.response.data?.message || 'Erro do servidor';
         throw new Error(`Erro do servidor (${error.response.status}): ${serverError}`);
@@ -112,18 +70,14 @@ export const imageUploadService = {
    */
   fileToBase64(file) {
     return new Promise((resolve, reject) => {
-      console.log('Convertendo arquivo para base64:', file.name, file.size, 'bytes');
-      
       const reader = new FileReader();
       reader.readAsDataURL(file);
       
       reader.onload = () => {
-        console.log('Arquivo convertido com sucesso, tamanho:', reader.result.length, 'caracteres');
         resolve(reader.result);
       };
       
       reader.onerror = error => {
-        console.error('Erro ao converter arquivo:', error);
         reject(error);
       };
     });
@@ -223,4 +177,4 @@ export const imageUploadService = {
     console.log('Arquivo válido');
     return { valid: true };
   }
-}; 
+};

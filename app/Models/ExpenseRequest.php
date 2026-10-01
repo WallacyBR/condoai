@@ -13,16 +13,23 @@ class ExpenseRequest extends Model
 
     protected static function booted(): void
     {
-        static::addGlobalScope(new CondominiumScope());
+        static::addGlobalScope(new CondominiumScope);
     }
 
     protected $fillable = [
         'condominium_id',
+        'chart_account_id',
         'requested_by',
         'amount',
+        'title',
+        'reference',
         'due_date',
         'description',
         'paid_at',
+        'payable_id',
+        'submitted_at',
+        'rejected_at',
+        'rejection_reason',
     ];
 
     protected $casts = [
@@ -30,6 +37,8 @@ class ExpenseRequest extends Model
         'due_date' => 'date',
         'approved_at' => 'datetime',
         'paid_at' => 'date',
+        'submitted_at' => 'datetime',
+        'rejected_at' => 'datetime',
     ];
 
     public function condominium()
@@ -50,5 +59,20 @@ class ExpenseRequest extends Model
     public function attachments()
     {
         return $this->hasMany(ExpenseRequestAttachment::class);
+    }
+
+    public function approvals()
+    {
+        return $this->hasMany(ExpenseRequestApproval::class)->orderBy('approval_order');
+    }
+
+    public function payable()
+    {
+        return $this->belongsTo(Payable::class);
+    }
+
+    public function chartAccount()
+    {
+        return $this->belongsTo(ChartAccount::class);
     }
 }

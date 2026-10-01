@@ -12,7 +12,7 @@ class CommonAreaBooking extends Model
 
     protected static function booted(): void
     {
-        static::addGlobalScope(new CondominiumScope());
+        static::addGlobalScope(new CondominiumScope);
     }
 
     protected $fillable = [
@@ -56,15 +56,22 @@ class CommonAreaBooking extends Model
 
     // Constantes para tipos de reserva
     const TYPE_CUSTOM = 'custom';
+
     const TYPE_MORNING = 'morning';
+
     const TYPE_AFTERNOON = 'afternoon';
+
     const TYPE_EVENING = 'evening';
+
     const TYPE_FULL_DAY = 'full_day';
 
     // Constantes para status
     const STATUS_PENDING = 'pending';
+
     const STATUS_CONFIRMED = 'confirmed';
+
     const STATUS_CANCELLED = 'cancelled';
+
     const STATUS_COMPLETED = 'completed';
 
     public function commonArea()

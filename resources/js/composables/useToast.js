@@ -102,7 +102,11 @@ export function useToast() {
     error,
     warning,
     info,
+    successToast: success,
+    errorToast: error,
+    warningToast: warning,
+    infoToast: info,
     getToastClasses,
     getToastIcon
   };
-} 
+}

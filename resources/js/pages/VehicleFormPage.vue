@@ -1,40 +1,22 @@
 <template>
   <AuthenticatedLayout :page-title="pageTitle">
-    <div class="space-y-6">
-      <!-- Header Card - OBRIGATÓRIO conforme DESIGN_MANUAL.md -->
-      <div :class="headerCardClasses">
-        <div class="flex items-center space-x-4">
-          <div :class="headerIconClasses">
-            <svg class="h-8 w-8" :class="headerIconColor" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path v-if="isEditing" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-          </div>
-          <div>
-            <h1 class="text-2xl font-bold text-white">{{ pageTitle }}</h1>
-            <p :class="headerDescriptionColor">{{ pageDescription }}</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Navigation -->
-      <div class="flex items-center space-x-2">
-        <NeonButton @click="router.push('/vehicles')" size="md" variant="secondary">
-          <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          Voltar para Veículos
-        </NeonButton>
-      </div>
+    <div class="space-y-6 max-w-4xl mx-auto">
+      <!-- Header unificado com botão voltar -->
+      <PageHeader
+        :title="pageTitle"
+        :subtitle="pageDescription"
+        show-back
+        @back="router.push('/vehicles')"
+      />
 
       <!-- Form Card -->
-      <div class="bg-gradient-to-br from-gray-900/90 via-gray-800/90 to-gray-900/90 backdrop-blur-xl rounded-2xl p-6 border border-gray-700/50">
+      <div class="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
         <form @submit.prevent="handleSubmit" class="space-y-6">
           <!-- Vehicle Information -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- License Plate -->
             <div>
-              <label for="license_plate" class="block text-sm font-medium text-gray-300 mb-2">
+              <label for="license_plate" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                 Placa do Veículo *
               </label>
               <input
@@ -47,12 +29,12 @@
                 :class="inputClasses"
                 @input="formatLicensePlate"
               />
-              <p class="mt-1 text-xs text-gray-500">Formato: ABC-1234 ou ABC1234</p>
+              <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Formato: ABC-1234 ou ABC1234</p>
             </div>
 
             <!-- Model -->
             <div>
-              <label for="model" class="block text-sm font-medium text-gray-300 mb-2">
+              <label for="model" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                 Modelo *
               </label>
               <input
@@ -68,7 +50,7 @@
 
             <!-- Color -->
             <div>
-              <label for="color" class="block text-sm font-medium text-gray-300 mb-2">
+              <label for="color" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                 Cor *
               </label>
               <input
@@ -84,7 +66,7 @@
 
             <!-- Year -->
             <div>
-              <label for="year" class="block text-sm font-medium text-gray-300 mb-2">
+              <label for="year" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                 Ano
               </label>
               <input
@@ -102,7 +84,7 @@
 
           <!-- Apartment Selection -->
           <div>
-            <label for="apartment_id" class="block text-sm font-medium text-gray-300 mb-2">
+            <label for="apartment_id" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
               Apartamento *
             </label>
             <select
@@ -125,7 +107,7 @@
 
           <!-- Parking Spot Selection -->
           <div>
-            <label for="parking_spot_id" class="block text-sm font-medium text-gray-300 mb-2">
+            <label for="parking_spot_id" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
               Vaga de Estacionamento
             </label>
             <select
@@ -146,14 +128,14 @@
                 </span>
               </option>
             </select>
-            <p class="mt-1 text-xs text-gray-500">
+            <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
               Apenas vagas disponíveis ou já vinculadas a este veículo são exibidas
             </p>
           </div>
 
           <!-- Notes -->
           <div>
-            <label for="notes" class="block text-sm font-medium text-gray-300 mb-2">
+            <label for="notes" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
               Observações
             </label>
             <textarea
@@ -167,27 +149,26 @@
           </div>
 
           <!-- Actions -->
-          <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-700/50">
-            <NeonButton
+          <div class="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-slate-200 dark:border-slate-800">
+            <AppButton
               type="button"
               @click="router.push('/vehicles')"
               size="md"
               variant="secondary"
-              class="flex-1 sm:flex-none"
             >
               Cancelar
-            </NeonButton>
-            <NeonButton
+            </AppButton>
+            <AppButton
               type="submit"
               size="md"
+              variant="primary"
               :loading="isSubmitting"
-              class="flex-1"
             >
-              <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
               </svg>
               {{ isEditing ? 'Atualizar Veículo' : 'Cadastrar Veículo' }}
-            </NeonButton>
+            </AppButton>
           </div>
         </form>
       </div>
@@ -200,13 +181,18 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import AuthenticatedLayout from '../components/layouts/AuthenticatedLayout.vue';
 import NeonButton from '../components/NeonButton.vue';
+import AppButton from '../components/ui/AppButton.vue';
+import PageHeader from '../components/ui/PageHeader.vue';
 import { formatApartmentDescription } from '../utils/formatters.js';
+import { apiRequest } from '../utils/api';
 
 export default {
   name: 'VehicleFormPage',
   components: {
     AuthenticatedLayout,
-    NeonButton
+    NeonButton,
+    AppButton,
+    PageHeader
   },
   setup() {
     const router = useRouter();
@@ -238,30 +224,9 @@ export default {
         : 'Cadastre um novo veículo no condomínio';
     });
 
-    // Header card classes based on context
-    const headerCardClasses = computed(() => {
-      return isEditing.value
-        ? 'bg-gradient-to-r from-orange-600/20 to-amber-600/20 rounded-2xl p-6 border-2 border-orange-500/30'
-        : 'bg-gradient-to-r from-green-600/20 to-emerald-600/20 rounded-2xl p-6 border-2 border-green-500/30';
-    });
-
-    const headerIconClasses = computed(() => {
-      return isEditing.value
-        ? 'h-16 w-16 rounded-full bg-orange-100 flex items-center justify-center border-2 border-orange-500/30'
-        : 'h-16 w-16 rounded-full bg-green-100 flex items-center justify-center border-2 border-green-500/30';
-    });
-
-    const headerIconColor = computed(() => {
-      return isEditing.value ? 'text-orange-600' : 'text-green-600';
-    });
-
-    const headerDescriptionColor = computed(() => {
-      return isEditing.value ? 'text-orange-300' : 'text-green-300';
-    });
-
-    const inputClasses = 'w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 backdrop-blur-sm transition-all duration-200';
+    const inputClasses = 'w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors shadow-sm';
     
-    const selectClasses = 'w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 backdrop-blur-sm transition-all duration-200';
+    const selectClasses = 'w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors shadow-sm';
 
     const availableParkingSpots = computed(() => {
       return parkingSpots.value.filter(spot => 
@@ -272,38 +237,33 @@ export default {
 
     const loadData = async () => {
       loading.value = true;
-      const token = localStorage.getItem('token');
-      const condo = localStorage.getItem('selectedCondominium');
-      const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
 
       try {
         // Load apartments and parking spots
-        const [aptsRes, spotsRes] = await Promise.all([
-          fetch(`/api/apartments?condominium_id=${condo}`, { headers }),
-          fetch(`/api/parking-spots?condominium_id=${condo}`, { headers })
+        const [apartmentsData, parkingSpotsData] = await Promise.all([
+          apiRequest('/apartments'),
+          apiRequest('/parking-spots')
         ]);
 
-        if (aptsRes.ok) apartments.value = await aptsRes.json();
-        if (spotsRes.ok) parkingSpots.value = await spotsRes.json();
+        apartments.value = Array.isArray(apartmentsData) ? apartmentsData : (apartmentsData?.data || []);
+        parkingSpots.value = Array.isArray(parkingSpotsData) ? parkingSpotsData : (parkingSpotsData?.data || []);
 
         // Load vehicle data if editing
         if (isEditing.value) {
-          const vehicleRes = await fetch(`/api/vehicles/${route.params.id}`, { headers });
-          if (vehicleRes.ok) {
-            const vehicle = await vehicleRes.json();
-            form.value = {
-              license_plate: vehicle.license_plate || '',
-              model: vehicle.model || '',
-              color: vehicle.color || '',
-              year: vehicle.year || '',
-              apartment_id: vehicle.apartment_id || '',
-              parking_spot_id: vehicle.parking_spot_id || '',
-              notes: vehicle.notes || ''
-            };
-          }
+          const vehicle = await apiRequest(`/vehicles/${route.params.id}`);
+          form.value = {
+            license_plate: vehicle.license_plate || '',
+            model: vehicle.model || '',
+            color: vehicle.color || '',
+            year: vehicle.year || '',
+            apartment_id: vehicle.apartment_id || '',
+            parking_spot_id: vehicle.parking_spot_id || '',
+            notes: vehicle.notes || ''
+          };
         }
       } catch (e) {
-        console.error('Erro ao carregar dados:', e);
+        apartments.value = [];
+        parkingSpots.value = [];
       } finally {
         loading.value = false;
       }
@@ -323,14 +283,10 @@ export default {
 
     const handleSubmit = async () => {
       isSubmitting.value = true;
-      const token = localStorage.getItem('token');
-      const condo = localStorage.getItem('selectedCondominium');
-      const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
 
       try {
         const payload = {
           ...form.value,
-          condominium_id: condo,
           // Remove empty values
           parking_spot_id: form.value.parking_spot_id || null,
           year: form.value.year || null,
@@ -340,21 +296,14 @@ export default {
         const url = isEditing.value ? `/vehicles/${route.params.id}` : '/vehicles';
         const method = isEditing.value ? 'PUT' : 'POST';
 
-        const response = await fetch(url, {
+        await apiRequest(url, {
           method,
-          headers,
           body: JSON.stringify(payload)
         });
 
-        if (response.ok) {
-          router.push('/vehicles');
-        } else {
-          const error = await response.json();
-          console.error('Erro ao salvar veículo:', error);
-          // Here you could show an error message to the user
-        }
+        router.push('/vehicles');
       } catch (e) {
-        console.error('Erro ao salvar veículo:', e);
+        isSubmitting.value = false;
       } finally {
         isSubmitting.value = false;
       }
@@ -372,10 +321,6 @@ export default {
       isEditing,
       pageTitle,
       pageDescription,
-      headerCardClasses,
-      headerIconClasses,
-      headerIconColor,
-      headerDescriptionColor,
       inputClasses,
       selectClasses,
       availableParkingSpots,
@@ -385,4 +330,4 @@ export default {
     };
   }
 };
-</script> 
+</script>

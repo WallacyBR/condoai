@@ -1,5 +1,5 @@
 <template>
-  <AuthenticatedLayout>
+  <AuthenticatedLayout page-title="Ocorrências">
     <OccurrenceList />
   </AuthenticatedLayout>
 </template>

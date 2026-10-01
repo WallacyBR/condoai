@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Models\Condominium;
 use App\Models\Profile;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Condominium;
 
 class TestUserSeeder extends Seeder
 {
@@ -14,13 +14,14 @@ class TestUserSeeder extends Seeder
     {
         // Buscar perfil SysOp ou criar um padrão
         $profile = Profile::where('name', 'SysOp')->first();
-        if (!$profile) {
+        if (! $profile) {
             $this->command->warn('Perfil SysOp não encontrado. Usando o primeiro perfil disponível.');
             $profile = Profile::first();
         }
 
-        if (!$profile) {
+        if (! $profile) {
             $this->command->error('Nenhum perfil encontrado! Execute o DefaultProfileSeeder primeiro.');
+
             return;
         }
 
@@ -42,7 +43,7 @@ class TestUserSeeder extends Seeder
 
         // Verificar se o usuário já existe e atualizar se necessário
         $user = User::where('email', 'teste@teste.com')->first();
-        
+
         if ($user) {
             // Atualizar o usuário existente
             $user->update([
@@ -63,17 +64,68 @@ class TestUserSeeder extends Seeder
             $this->command->info('Usuário teste criado com sucesso.');
         }
 
-        // Criar usuário administrador se não existir
+        // Criar ou atualizar usuário administrador (Admin SaaS / SysOp)
         $adminUser = User::where('email', 'admin@sistema.com')->first();
-        if (!$adminUser) {
-            User::create([
-                'name' => 'Administrador Sistema',
+        if (! $adminUser) {
+            $adminUser = User::create([
+                'name' => 'Administrador SaaS',
                 'email' => 'admin@sistema.com',
                 'password' => Hash::make('admin123'),
                 'profile_id' => $profile->id,
                 'condominium_id' => $condo->id,
             ]);
-            $this->command->info('Usuário administrador criado com sucesso.');
+            $this->command->info('Usuário administrador SaaS criado com sucesso.');
+        } else {
+            $adminUser->update([
+                'profile_id' => $profile->id,
+            ]);
+        }
+        $adminUser->condominiums()->syncWithoutDetaching([$condo->id]);
+
+        // Criar ou atualizar usuário Síndico
+        $sindicoProfile = Profile::where('name', 'Síndico')->first();
+        if ($sindicoProfile) {
+            $sindicoUser = User::where('email', 'sindico@teste.com')->first();
+            if (! $sindicoUser) {
+                $sindicoUser = User::create([
+                    'name' => 'Síndico Teste',
+                    'email' => 'sindico@teste.com',
+                    'password' => Hash::make('teste'),
+                    'profile_id' => $sindicoProfile->id,
+                    'condominium_id' => $condo->id,
+                ]);
+                $this->command->info('Usuário Síndico criado com sucesso.');
+            } else {
+                $sindicoUser->update([
+                    'password' => Hash::make('teste'),
+                    'profile_id' => $sindicoProfile->id,
+                    'condominium_id' => $condo->id,
+                ]);
+            }
+            $sindicoUser->condominiums()->syncWithoutDetaching([$condo->id]);
+        }
+
+        // Criar ou atualizar usuário Morador
+        $moradorProfile = Profile::where('name', 'Morador')->first();
+        if ($moradorProfile) {
+            $moradorUser = User::where('email', 'morador@teste.com')->first();
+            if (! $moradorUser) {
+                $moradorUser = User::create([
+                    'name' => 'Morador Teste',
+                    'email' => 'morador@teste.com',
+                    'password' => Hash::make('teste'),
+                    'profile_id' => $moradorProfile->id,
+                    'condominium_id' => $condo->id,
+                ]);
+                $this->command->info('Usuário Morador criado com sucesso.');
+            } else {
+                $moradorUser->update([
+                    'password' => Hash::make('teste'),
+                    'profile_id' => $moradorProfile->id,
+                    'condominium_id' => $condo->id,
+                ]);
+            }
+            $moradorUser->condominiums()->syncWithoutDetaching([$condo->id]);
         }
     }
 }

@@ -191,6 +191,7 @@
 
 <script>
 import { ref, watch } from 'vue';
+import { apiRequest } from '../utils/api';
 
 export default {
   name: 'UnitModal',
@@ -221,8 +222,7 @@ export default {
       owner_name: '',
       owner_phone: '',
       owner_email: '',
-      notes: '',
-      condominium_id: localStorage.getItem('selectedCondominium')
+      notes: ''
     });
 
     // Reset form when modal opens/closes
@@ -230,10 +230,8 @@ export default {
       if (newVal) {
         if (props.unit) {
           // Edit mode - populate form with existing data
-          form.value = {
-            ...props.unit,
-            condominium_id: props.unit.condominium_id || localStorage.getItem('selectedCondominium')
-          };
+          const { condominium_id: condominiumId, ...unitData } = props.unit;
+          form.value = unitData;
         } else {
           // Create mode - reset form
           form.value = {
@@ -245,8 +243,7 @@ export default {
             owner_name: '',
             owner_phone: '',
             owner_email: '',
-            notes: '',
-            condominium_id: localStorage.getItem('selectedCondominium')
+            notes: ''
           };
         }
       }
@@ -261,32 +258,19 @@ export default {
     const submit = async () => {
       try {
         loading.value = true;
-        
-        const token = localStorage.getItem('token');
-        const url = props.unit ? `/api/units/${props.unit.id}` : '/api/units';
+
+        const url = props.unit ? `/units/${props.unit.id}` : '/units';
         const method = props.unit ? 'PUT' : 'POST';
-        
-        const response = await fetch(url, {
+
+        const data = await apiRequest(url, {
           method,
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
           body: JSON.stringify(form.value)
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          emit('submit', data);
-          close();
-        } else {
-          const errorData = await response.json();
-          console.error('Erro ao salvar unidade:', errorData);
-          // Aqui você pode adicionar uma notificação de erro
-        }
+        emit('submit', data);
+        close();
       } catch (error) {
-        console.error('Erro ao salvar unidade:', error);
-        // Aqui você pode adicionar uma notificação de erro
+        // Notificacao visual deve ser adicionada pela tela chamadora.
       } finally {
         loading.value = false;
       }
@@ -300,4 +284,4 @@ export default {
     };
   }
 };
-</script> 
+</script>

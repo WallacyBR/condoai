@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\CondominiumScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Scopes\CondominiumScope;
 use Illuminate\Support\Str; // Para gerar o qr_code_hash
 
 class MaintenanceEquipment extends Model
@@ -33,7 +33,7 @@ class MaintenanceEquipment extends Model
      */
     protected static function booted(): void
     {
-        static::addGlobalScope(new CondominiumScope());
+        static::addGlobalScope(new CondominiumScope);
 
         // Gerar qr_code_hash ao criar, se não fornecido
         static::creating(function ($equipment) {
@@ -71,6 +71,7 @@ class MaintenanceEquipment extends Model
         if ($this->relationLoaded('qrAccessUsers')) {
             return $this->qrAccessUsers;
         }
+
         return [];
     }
 }

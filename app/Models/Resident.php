@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Enums\ResidentClassification;
 use App\Enums\PersonType;
+use App\Enums\ResidentClassification;
 use App\Models\Scopes\CondominiumScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

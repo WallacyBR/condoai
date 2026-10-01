@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
@@ -87,9 +88,18 @@ class User extends Authenticatable implements JWTSubject
             ->withTimestamps();
     }
 
+    public function passkeys()
+    {
+        return $this->hasMany(UserPasskey::class);
+    }
+
     public function belongsToCondominium(int $condominiumId): bool
     {
         if ($this->isPlatformAdmin()) {
+            return true;
+        }
+
+        if ($this->condominium_id && (int) $this->condominium_id === $condominiumId) {
             return true;
         }
 
@@ -101,6 +111,24 @@ class User extends Authenticatable implements JWTSubject
     public function isPlatformAdmin(): bool
     {
         return $this->profile?->name === 'SysOp';
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        if ((bool) ($this->is_super_admin ?? false)) {
+            return true;
+        }
+
+        if ($this->isPlatformAdmin()) {
+            return true;
+        }
+
+        $profileName = Str::of($this->profile?->name ?? '')
+            ->ascii()
+            ->lower()
+            ->toString();
+
+        return in_array($profileName, ['sysop', 'super admin', 'super administrador'], true);
     }
 
     public function canModule(string $moduleName, string $ability): bool
@@ -144,6 +172,63 @@ class User extends Authenticatable implements JWTSubject
             ->first();
 
         return $module?->pivot;
+    }
+
+    public function hasPermissionTo(string $permission): bool
+    {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
+        [$action, $moduleKey] = array_pad(explode('_', $permission, 2), 2, '');
+
+        $permissionColumn = [
+            'view' => 'can_view',
+            'create' => 'can_create',
+            'edit' => 'can_update',
+            'update' => 'can_update',
+            'delete' => 'can_delete',
+            'approve' => 'can_update',
+            'reconcile' => 'can_update',
+        ][$action] ?? null;
+
+        if (! $permissionColumn || ! $moduleKey) {
+            return false;
+        }
+
+        $moduleAlias = [
+            'occurrences' => 'ocorrencias',
+            'packages' => 'correspondencias',
+            'residents' => 'moradores',
+            'units' => 'unidades',
+            'payables' => 'financeiro',
+            'receivables' => 'financeiro',
+            'security' => 'seguranca',
+        ][$moduleKey] ?? $moduleKey;
+
+        $profile = $this->relationLoaded('profile') ? $this->profile : $this->profile()->with('modules')->first();
+
+        if (! $profile) {
+            return false;
+        }
+
+        $modules = $profile->relationLoaded('modules') ? $profile->modules : $profile->modules()->get();
+
+        return $modules->contains(function ($module) use ($moduleAlias, $permissionColumn) {
+            $normalizedModuleName = Str::of($module->name)
+                ->ascii()
+                ->lower()
+                ->replaceMatches('/[^a-z0-9]+/', '')
+                ->toString();
+
+            $normalizedAlias = Str::of($moduleAlias)
+                ->ascii()
+                ->lower()
+                ->replaceMatches('/[^a-z0-9]+/', '')
+                ->toString();
+
+            return $normalizedModuleName === $normalizedAlias && (bool) $module->pivot->{$permissionColumn};
+        });
     }
 
     /**

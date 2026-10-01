@@ -38,7 +38,7 @@
             <p v-if="currentRequestDetails.visitor?.phone" class="text-sm text-gray-300">Telefone: {{ currentRequestDetails.visitor?.phone }}</p>
 
             <div v-if="currentRequestDetails.visitor_vehicle" class="mt-2 pt-2 border-t border-gray-700/50">
-              <p class="text-sm text-gray-300"><strong class="text-gray-400">Veículo:</strong> {{ currentRequestDetails.visitor_vehicle.plate }} - {{ currentRequestDetails.visitor_vehicle.model }} ({{ currentRequestDetails.visitor_vehicle.cor }})</p>
+              <p class="text-sm text-gray-300"><strong class="text-gray-400">Veículo:</strong> {{ currentRequestDetails.visitor_vehicle.plate || currentRequestDetails.visitor_vehicle.license_plate }} - {{ currentRequestDetails.visitor_vehicle.model }} ({{ currentRequestDetails.visitor_vehicle.color }})</p>
             </div>
           </div>
         </div>
@@ -72,7 +72,7 @@
           <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
           Não Estou
         </NeonButton>
-        <NeonButton @click="submitResponse('await_at_gatehouse')" variant="warning" class="w-full">
+        <NeonButton @click="submitResponse('awaiting_at_gatehouse')" variant="warning" class="w-full">
           <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
           Aguardar Portaria
         </NeonButton>
@@ -139,7 +139,7 @@ const fetchFullRequestDetails = async (requestId) => {
   loadingDetails.value = true;
   detailsError.value = '';
   try {
-    const response = await api.get(`/api/access-control/access-requests/${requestId}`);
+    const response = await api.get(`/access-control/access-requests/${requestId}`);
     currentRequestDetails.value = response.data;
   } catch (e) {
     console.error("Erro ao buscar detalhes completos da solicitação:", e);
@@ -155,7 +155,7 @@ const submitResponse = async (responseAction) => {
 
   submittingResponse.value = true;
   try {
-    await api.post(`/api/access-control/access-requests/${currentRequestDetails.value.id}/respond`, {
+    await api.post(`/access-control/access-requests/${currentRequestDetails.value.id}/respond`, {
       response: responseAction,
       resident_observation: residentObservation.value,
     });

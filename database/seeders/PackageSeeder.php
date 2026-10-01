@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
+use App\Models\Apartment;
+use App\Models\Condominium;
 use App\Models\Package;
 use App\Models\Resident;
-use App\Models\Condominium;
-use App\Models\Apartment;
+use Illuminate\Database\Seeder;
 
 class PackageSeeder extends Seeder
 {
@@ -16,16 +16,18 @@ class PackageSeeder extends Seeder
     public function run(): void
     {
         $condominiums = Condominium::all();
-        
+
         if ($condominiums->isEmpty()) {
             $this->command->warn('Nenhum condomínio encontrado. Execute primeiro o CustomCondominiumResidentsSeeder.');
+
             return;
         }
 
         $residents = Resident::all();
-        
+
         if ($residents->isEmpty()) {
             $this->command->warn('Nenhum morador encontrado. Execute primeiro o CustomCondominiumResidentsSeeder.');
+
             return;
         }
 
@@ -49,10 +51,16 @@ class PackageSeeder extends Seeder
             'Alimentação',
         ];
 
+        $created = 0;
+
         foreach ($condominiums as $condominium) {
+            if (Package::withoutGlobalScopes()->where('condominium_id', $condominium->id)->exists()) {
+                continue;
+            }
+
             $condoResidents = $residents->where('condominium_id', $condominium->id);
             $apartments = Apartment::where('condominium_id', $condominium->id)->get();
-            
+
             if ($condoResidents->isEmpty() || $apartments->isEmpty()) {
                 continue;
             }
@@ -63,17 +71,17 @@ class PackageSeeder extends Seeder
                 $apartment = $apartments->random();
                 $courier = $couriers[array_rand($couriers)];
                 $packageType = $packageTypes[array_rand($packageTypes)];
-                
+
                 $arrivedAt = now()->subDays(rand(0, 30));
                 $isDelivered = rand(0, 1);
                 $deliveredAt = $isDelivered ? $arrivedAt->copy()->addHours(rand(1, 48)) : null;
-                
+
                 Package::create([
                     'recipient_name' => $resident->name,
                     'recipient_apartment' => $apartment->number,
                     'recipient_phone' => $resident->cell_phone,
                     'sender' => $courier,
-                    'description' => $packageType . ' - ' . $courier,
+                    'description' => $packageType.' - '.$courier,
                     'size' => ['pequeno', 'médio', 'grande'][rand(0, 2)],
                     'weight' => rand(1, 50) / 10, // peso em kg
                     'tracking_code' => strtoupper(substr(md5(rand()), 0, 10)),
@@ -89,9 +97,10 @@ class PackageSeeder extends Seeder
                     'created_at' => $arrivedAt,
                     'updated_at' => $deliveredAt ?? $arrivedAt,
                 ]);
+                $created++;
             }
         }
 
-        $this->command->info('Pacotes criados com sucesso para ' . $condominiums->count() . ' condomínio(s)!');
+        $this->command->info("Pacotes criados com sucesso: {$created}.");
     }
-} 
+}

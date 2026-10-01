@@ -282,9 +282,10 @@ export async function handleTenantHttpError({ status, message, hadTenantHeader =
       tenantStore.clear();
     }
 
-    const router = routerModule.default;
-    if (router.currentRoute.value.path !== '/condominium-select') {
-      await router.push('/condominium-select');
+    const router = routerModule.default?.default || routerModule.default || routerModule;
+    const currentPath = router?.currentRoute?.value?.path ?? router?.currentRoute?.path ?? '';
+    if (currentPath !== '/condominium-select') {
+      await router?.push?.('/condominium-select');
     }
 
     return true;

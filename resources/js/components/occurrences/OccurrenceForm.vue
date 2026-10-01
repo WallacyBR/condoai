@@ -1,79 +1,120 @@
 <template>
-  <div class="container mx-auto p-4">
-    <h1 class="text-2xl font-bold mb-6">{{ isEditing ? 'Editar' : 'Nova' }} Ocorrência</h1>
-    <form @submit.prevent="handleSubmit" class="space-y-6 bg-white shadow-md rounded-lg p-6">
+  <div class="space-y-6">
+    <TopCard
+      :title="pageTitle"
+      subtitle="Preencha os dados do chamado do condomínio"
+      :icon="OccurrenceIcon"
+    >
+      <template #actions>
+        <NeonButton @click="goBack" size="sm" variant="secondary">
+          Voltar
+        </NeonButton>
+      </template>
+    </TopCard>
+
+    <form
+      @submit.prevent="handleSubmit"
+      class="space-y-6 bg-white dark:bg-slate-900 shadow-sm rounded-xl border border-slate-200 dark:border-slate-800 p-6"
+    >
       <div>
-        <label for="title" class="block text-sm font-medium text-gray-700">Título</label>
-        <input type="text" id="title" v-model="form.title" required
-               class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-               :class="{'border-red-500': errors.title}">
-        <p v-if="errors.title" class="mt-1 text-xs text-red-500">{{ errors.title.join(', ') }}</p>
+        <label for="title" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+          Título
+        </label>
+        <input
+          id="title"
+          v-model="form.title"
+          type="text"
+          required
+          class="mt-1.5 block w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder-slate-400 text-sm focus:ring-2 focus:ring-indigo-500 shadow-sm"
+          :class="{ '!border-rose-500': errors.title }"
+        />
+        <p v-if="errors.title" class="mt-1 text-xs text-rose-600 dark:text-rose-400">{{ errors.title.join(', ') }}</p>
       </div>
 
       <div>
-        <label for="description" class="block text-sm font-medium text-gray-700">Descrição</label>
-        <textarea id="description" v-model="form.description" rows="4" required
-                  class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  :class="{'border-red-500': errors.description}"></textarea>
-        <p v-if="errors.description" class="mt-1 text-xs text-red-500">{{ errors.description.join(', ') }}</p>
+        <label for="description" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+          Descrição
+        </label>
+        <textarea
+          id="description"
+          v-model="form.description"
+          rows="5"
+          required
+          class="mt-1.5 block w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder-slate-400 text-sm focus:ring-2 focus:ring-indigo-500 shadow-sm"
+          :class="{ '!border-rose-500': errors.description }"
+        ></textarea>
+        <p v-if="errors.description" class="mt-1 text-xs text-rose-600 dark:text-rose-400">{{ errors.description.join(', ') }}</p>
       </div>
 
-      <div>
-        <label for="priority" class="block text-sm font-medium text-gray-700">Prioridade</label>
-        <select id="priority" v-model="form.priority" required
-                class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                :class="{'border-red-500': errors.priority}">
-          <option disabled value="">Selecione a prioridade</option>
-          <option v-for="(label, value) in priorityOptions" :key="value" :value="value">{{ label }}</option>
-        </select>
-        <p v-if="errors.priority" class="mt-1 text-xs text-red-500">{{ errors.priority.join(', ') }}</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label for="priority" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+            Prioridade
+          </label>
+          <select
+            id="priority"
+            v-model="form.priority"
+            required
+            class="mt-1.5 block w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 text-sm focus:ring-2 focus:ring-indigo-500 shadow-sm"
+            :class="{ '!border-rose-500': errors.priority }"
+          >
+            <option disabled value="">Selecione a prioridade</option>
+            <option v-for="(label, value) in priorityOptions" :key="value" :value="value">{{ label }}</option>
+          </select>
+          <p v-if="errors.priority" class="mt-1 text-xs text-rose-600 dark:text-rose-400">{{ errors.priority.join(', ') }}</p>
+        </div>
+
+        <div v-if="isEditing">
+          <label for="status" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+            Status
+          </label>
+          <select
+            id="status"
+            v-model="form.status"
+            required
+            class="mt-1.5 block w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 text-sm focus:ring-2 focus:ring-indigo-500 shadow-sm"
+            :class="{ '!border-rose-500': errors.status }"
+          >
+            <option v-for="(label, value) in statusOptions" :key="value" :value="value">{{ label }}</option>
+          </select>
+          <p v-if="errors.status" class="mt-1 text-xs text-rose-600 dark:text-rose-400">{{ errors.status.join(', ') }}</p>
+        </div>
       </div>
 
-      <div v-if="isEditing">
-        <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
-        <select id="status" v-model="form.status" required
-                class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                :class="{'border-red-500': errors.status}">
-          <option v-for="(label, value) in statusOptions" :key="value" :value="value">{{ label }}</option>
-        </select>
-        <p v-if="errors.status" class="mt-1 text-xs text-red-500">{{ errors.status.join(', ') }}</p>
-      </div>
-
-      <!-- Upload de Fotos -->
       <div v-if="!isEditing" class="space-y-2">
-        <label class="block text-sm font-medium text-gray-700">Fotos (opcional)</label>
+        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+          Fotos (opcional)
+        </label>
         <FileUpload
           v-model="form.photos"
           :multiple="true"
           accept="image/*"
           :maxSize="5"
         />
-        <p v-if="errors.photos" class="mt-1 text-xs text-red-500">{{ errors.photos.join(', ') }}</p>
-        <!-- A pré-visualização e remoção de fotos agora são tratadas dentro do FileUpload.vue -->
-        <!-- A entrada de descrição individual por foto no upload inicial foi removida para simplificação -->
+        <p v-if="errors.photos" class="mt-1 text-xs text-rose-600 dark:text-rose-400">{{ errors.photos.join(', ') }}</p>
       </div>
 
-      <div class="flex justify-end space-x-3 pt-4">
-        <router-link :to="{ name: 'OccurrenceIndex' }"
-                     class="py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+      <div class="flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+        <NeonButton @click="goBack" size="md" variant="secondary">
           Cancelar
-        </router-link>
-        <button type="submit" :disabled="submitting"
-                class="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50">
+        </NeonButton>
+        <NeonButton type="submit" :disabled="submitting" :loading="submitting" size="md" variant="primary">
           {{ submitting ? 'Salvando...' : (isEditing ? 'Atualizar Ocorrência' : 'Criar Ocorrência') }}
-        </button>
+        </NeonButton>
       </div>
-      <p v-if="submitError" class="text-sm text-red-600 mt-2">{{ submitError }}</p>
+      <p v-if="submitError" class="text-xs text-rose-600 dark:text-rose-400 mt-2">{{ submitError }}</p>
     </form>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue';
+import { h, ref, reactive, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import api from '../../utils/api';
 import { useToast } from '../../composables/useToast';
-import FileUpload from '../FileUpload.vue'; // Importar o componente FileUpload
+import FileUpload from '../FileUpload.vue';
+import TopCard from '../ui/TopCard.vue';
+import NeonButton from '../NeonButton.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -81,22 +122,37 @@ const toast = useToast();
 
 const isEditing = computed(() => !!route.params.id);
 const occurrenceId = computed(() => route.params.id);
+const pageTitle = computed(() => `${isEditing.value ? 'Editar' : 'Nova'} Ocorrência`);
+
+const OccurrenceIcon = {
+  render() {
+    return h('svg', {
+      ...this.$attrs,
+      fill: 'none',
+      stroke: 'currentColor',
+      viewBox: '0 0 24 24',
+    }, [
+      h('path', {
+        'stroke-linecap': 'round',
+        'stroke-linejoin': 'round',
+        'stroke-width': 2,
+        d: 'M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z',
+      }),
+    ]);
+  },
+};
 
 const form = reactive({
   title: '',
   description: '',
   priority: '',
-  status: 'open', // Default para criação, será atualizado se editando
-  photos: [], // Array de File objects // Este será agora o v-model para FileUpload
-  // photo_descriptions: [], // Removido conforme decisão de simplificação
+  status: 'open',
+  photos: [],
 });
 
-// photoPreviews será gerenciado internamente pelo FileUpload ou não será mais necessário da mesma forma
-// const photoPreviews = ref([]);
-
 const errors = ref({});
-const submitError = ref('');
 const submitting = ref(false);
+const submitError = ref('');
 
 const priorityOptions = {
   low: 'Baixa',
@@ -113,91 +169,75 @@ const statusOptions = {
   reopened: 'Reaberta',
 };
 
-const fetchOccurrence = async () => {
-  if (!isEditing.value) return;
+const fetchOccurrence = async (id) => {
   try {
-    const response = await api.get(`/occurrences/${occurrenceId.value}`);
-    const data = response.data;
-    form.title = data.title;
-    form.description = data.description;
-    form.priority = data.priority;
-    form.status = data.status;
-    // Fotos são gerenciadas separadamente em edição por enquanto
+    const response = await api.get(`/occurrences/${id}`);
+    form.title = response.data.title;
+    form.description = response.data.description;
+    form.priority = response.data.priority;
+    form.status = response.data.status;
   } catch (err) {
-    console.error("Erro ao buscar ocorrência:", err);
-    submitError.value = "Não foi possível carregar os dados da ocorrência para edição.";
-    toast.error("Erro ao carregar dados da ocorrência.");
+    toast.error('Erro ao carregar os dados da ocorrência.');
+    console.error(err);
+    router.push({ name: 'OccurrenceIndex' });
   }
 };
-
-// handleFileUpload e removePhoto não são mais necessários aqui,
-// pois FileUpload.vue gerencia seus próprios arquivos internamente via v-model.
 
 const handleSubmit = async () => {
   submitting.value = true;
   errors.value = {};
   submitError.value = '';
 
-  const formData = new FormData();
-  formData.append('title', form.title);
-  formData.append('description', form.description);
-  formData.append('priority', form.priority);
-
-  if (isEditing.value) {
-    formData.append('status', form.status);
-    formData.append('_method', 'PUT');
-    // Nota: A lógica de upload de fotos para edição não está neste formulário.
-    // As fotos são gerenciadas na OccurrenceView.vue ou precisarão ser adicionadas aqui se o escopo mudar.
-  } else {
-    // Apenas adicionar fotos se não estiver editando e houver fotos
-    if (form.photos.length > 0) {
-      form.photos.forEach((file, index) => {
-        formData.append(`photos[${index}]`, file);
-        // Descrições individuais no upload inicial foram removidas para simplificação.
-        // Se necessário, o FileUpload.vue precisaria ser estendido ou as descrições gerenciadas de outra forma.
-      });
-    }
-  }
-
   try {
-    let response;
     if (isEditing.value) {
-      response = await api.post(`/occurrences/${occurrenceId.value}`, formData, {
-         headers: { 'Content-Type': 'multipart/form-data' } // Necessário para _method PUT com FormData
+      await api.put(`/occurrences/${occurrenceId.value}`, {
+        title: form.title,
+        description: form.description,
+        priority: form.priority,
+        status: form.status,
       });
       toast.success('Ocorrência atualizada com sucesso!');
     } else {
-      response = await api.post('/occurrences', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+      const formData = new FormData();
+      formData.append('title', form.title);
+      formData.append('description', form.description);
+      formData.append('priority', form.priority);
+      formData.append('status', form.status);
+
+      if (form.photos && form.photos.length > 0) {
+        form.photos.forEach((photo) => {
+          formData.append('photos[]', photo);
+        });
+      }
+
+      await api.post('/occurrences', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
       toast.success('Ocorrência criada com sucesso!');
     }
-    router.push({ name: 'OccurrenceShow', params: { id: response.data.id } });
+    router.push({ name: 'OccurrenceIndex' });
   } catch (err) {
-    console.error("Erro ao salvar ocorrência:", err);
-    if (err.response && err.response.status === 422) {
+    if (err.response && err.response.data && err.response.data.errors) {
       errors.value = err.response.data.errors;
-      submitError.value = "Por favor, corrija os erros no formulário.";
     } else {
-      submitError.value = err.response?.data?.message || 'Ocorreu um erro ao salvar a ocorrência.';
+      submitError.value = 'Ocorreu um erro ao salvar a ocorrência.';
     }
-    toast.error(submitError.value);
+    toast.error('Erro ao salvar a ocorrência.');
+    console.error(err);
   } finally {
     submitting.value = false;
   }
 };
 
+const goBack = () => {
+  router.push({ name: 'OccurrenceIndex' });
+};
+
 onMounted(() => {
   if (isEditing.value) {
-    fetchOccurrence();
-  } else {
-    // Define um valor padrão para prioridade ao criar
-    form.priority = 'medium';
+    fetchOccurrence(occurrenceId.value);
   }
 });
-
 </script>
-
-<style scoped>
-/* Adicionar estilos específicos se necessário */
-</style>

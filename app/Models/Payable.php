@@ -13,15 +13,20 @@ class Payable extends Model
 
     protected static function booted(): void
     {
-        static::addGlobalScope(new CondominiumScope());
+        static::addGlobalScope(new CondominiumScope);
     }
 
     protected $fillable = [
         'condominium_id',
         'chart_account_id',
         'bank_id',
+        'expense_request_id',
+        'installment_group_id',
         'due_date',
+        'competence_date',
         'amount',
+        'counterpart_name',
+        'reference',
         'status',
         'description',
         'paid_at',
@@ -29,6 +34,7 @@ class Payable extends Model
 
     protected $casts = [
         'due_date' => 'date',
+        'competence_date' => 'date',
         'amount' => 'decimal:2',
         'paid_at' => 'date',
     ];
@@ -51,5 +57,15 @@ class Payable extends Model
     public function attachments()
     {
         return $this->hasMany(PayableAttachment::class);
+    }
+
+    public function settlements()
+    {
+        return $this->hasMany(FinanceSettlement::class);
+    }
+
+    public function expenseRequest()
+    {
+        return $this->belongsTo(ExpenseRequest::class);
     }
 }

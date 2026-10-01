@@ -3,95 +3,94 @@
 namespace App\Http\Controllers\API;
 
 use App\Enums\TransactionType;
+use App\Http\Controllers\API\Concerns\ResolvesCurrentCondominium;
 use App\Http\Controllers\Concerns\ResolvesTenantCondominium;
 use App\Http\Controllers\Controller;
 use App\Models\CashFlow;
 use App\Models\Payable;
 use App\Models\Receivable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class TransactionController extends Controller
 {
+    use ResolvesCurrentCondominium;
     use ResolvesTenantCondominium;
 
+    /**
+     * Lista títulos financeiros de receita e despesa do condomínio atual.
+     */
     public function index(Request $request)
     {
-        $type = $request->query('type');
-        $query = $request->query('query');
-        $startDate = $request->query('start_date');
-        $endDate = $request->query('end_date');
+        $validated = $request->validate([
+            'type' => ['nullable', 'in:payable,receivable'],
+            'query' => ['nullable', 'string'],
+            'start_date' => ['nullable', 'date'],
+            'end_date' => ['nullable', 'date'],
+        ]);
 
-        $payables = collect();
-        $receivables = collect();
+        $condominiumId = $this->tenantCondominiumId($request);
+        $titles = collect();
 
-        if (! $type || $type === 'payable') {
-            $payablesQuery = Payable::query();
-            if ($query) {
-                $payablesQuery->where('description', 'like', '%'.$query.'%');
-            }
-            if ($startDate) {
-                $payablesQuery->whereDate('due_date', '>=', $startDate);
-            }
-            if ($endDate) {
-                $payablesQuery->whereDate('due_date', '<=', $endDate);
-            }
-            $payables = $payablesQuery->get()->map(function ($item) {
-                $item->type = 'payable';
-
-                return $item;
-            });
+        if (($validated['type'] ?? null) !== 'receivable') {
+            $titles = $titles->merge($this->titles(Payable::class, 'payable', $condominiumId, $validated));
         }
 
-        if (! $type || $type === 'receivable') {
-            $receivablesQuery = Receivable::query();
-            if ($query) {
-                $receivablesQuery->where('description', 'like', '%'.$query.'%');
-            }
-            if ($startDate) {
-                $receivablesQuery->whereDate('due_date', '>=', $startDate);
-            }
-            if ($endDate) {
-                $receivablesQuery->whereDate('due_date', '<=', $endDate);
-            }
-            $receivables = $receivablesQuery->get()->map(function ($item) {
-                $item->type = 'receivable';
-
-                return $item;
-            });
+        if (($validated['type'] ?? null) !== 'payable') {
+            $titles = $titles->merge($this->titles(Receivable::class, 'receivable', $condominiumId, $validated));
         }
 
-        $transactions = $payables->merge($receivables)->sortByDesc(function ($transaction) {
-            return $transaction->due_date;
-        })->values();
-
-        return response()->json($transactions);
+        return response()->json($titles->sortByDesc('due_date')->values());
     }
 
+    /**
+     * Cria um título financeiro compatível com a tela de lançamentos.
+     */
     public function store(Request $request)
     {
         $condoId = $this->tenantCondominiumId($request);
 
         $validated = $request->validate([
-            'type' => 'required|in:payable,receivable',
-            'chart_account_id' => 'required|exists:chart_accounts,id',
-            'bank_id' => 'nullable|exists:banks,id',
-            'due_date' => 'required|date',
-            'amount' => 'required|numeric',
-            'status' => 'required|string',
-            'description' => 'nullable|string',
-            'paid_at' => 'nullable|date',
-            'received_at' => 'nullable|date',
+            'type' => ['required', 'in:payable,receivable'],
+            'chart_account_id' => [
+                'required',
+                'integer',
+                Rule::exists('chart_accounts', 'id')->where('condominium_id', $condoId),
+            ],
+            'bank_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('banks', 'id')->where('condominium_id', $condoId),
+            ],
+            'due_date' => ['required', 'date'],
+            'competence_date' => ['nullable', 'date'],
+            'amount' => ['required', 'numeric', 'min:0.01'],
+            'status' => ['nullable', 'string'],
+            'description' => ['nullable', 'string', 'max:2000'],
+            'counterpart_name' => ['nullable', 'string', 'max:255'],
+            'reference' => ['nullable', 'string', 'max:255'],
+            'paid_at' => ['nullable', 'date'],
+            'received_at' => ['nullable', 'date'],
         ]);
 
         try {
             DB::beginTransaction();
 
-            unset($validated['condominium_id']);
-            $validated['condominium_id'] = $condoId;
+            $type = $validated['type'];
+            unset($validated['type'], $validated['condominium_id']);
 
-            if ($request->type === 'payable') {
-                $transaction = Payable::create(collect($validated)->except(['type', 'received_at'])->all());
+            $data = [
+                ...$validated,
+                'condominium_id' => $condoId,
+                'competence_date' => $validated['competence_date'] ?? $validated['due_date'],
+                'status' => $validated['status'] ?? 'pending',
+            ];
+
+            if ($type === 'payable') {
+                unset($data['received_at']);
+                $transaction = Payable::create($data);
                 CashFlow::create([
                     'condominium_id' => $transaction->condominium_id,
                     'payable_id' => $transaction->id,
@@ -101,7 +100,8 @@ class TransactionController extends Controller
                     'description' => $transaction->description,
                 ]);
             } else {
-                $transaction = Receivable::create(collect($validated)->except(['type', 'paid_at'])->all());
+                unset($data['paid_at']);
+                $transaction = Receivable::create($data);
                 CashFlow::create([
                     'condominium_id' => $transaction->condominium_id,
                     'receivable_id' => $transaction->id,
@@ -120,5 +120,28 @@ class TransactionController extends Controller
 
             return response()->json(['message' => 'Error creating transaction', 'error' => $e->getMessage()], 500);
         }
+    }
+
+    private function titles(string $model, string $type, int $condominiumId, array $filters): Collection
+    {
+        $query = $model::with(['account:id,name', 'bank:id,name'])->where('condominium_id', $condominiumId);
+
+        if (! empty($filters['query'])) {
+            $query->where('description', 'like', '%'.$filters['query'].'%');
+        }
+
+        if (! empty($filters['start_date'])) {
+            $query->whereDate('due_date', '>=', $filters['start_date']);
+        }
+
+        if (! empty($filters['end_date'])) {
+            $query->whereDate('due_date', '<=', $filters['end_date']);
+        }
+
+        return $query->get()->map(function ($title) use ($type) {
+            $title->type = $type;
+
+            return $title;
+        });
     }
 }

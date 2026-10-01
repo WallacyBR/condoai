@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\MaintenanceArea;
 use App\Models\Condominium;
+use App\Models\MaintenanceArea;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class MaintenanceAreaFactory extends Factory

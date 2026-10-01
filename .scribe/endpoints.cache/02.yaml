@@ -162,14 +162,13 @@ endpoints:
     fileParameters: []
     responses:
       -
-        status: 500
-        content: |-
-          {
-              "message": "Server Error"
-          }
+        status: 401
+        content: '{"message":"N\u00e3o autenticado."}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
+          x-ratelimit-limit: '1000'
+          x-ratelimit-remaining: '948'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -327,14 +326,13 @@ endpoints:
     fileParameters: []
     responses:
       -
-        status: 500
-        content: |-
-          {
-              "message": "Server Error"
-          }
+        status: 401
+        content: '{"message":"N\u00e3o autenticado."}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
+          x-ratelimit-limit: '1000'
+          x-ratelimit-remaining: '947'
           access-control-allow-origin: '*'
         description: null
         custom: []
@@ -598,7 +596,7 @@ endpoints:
         name: photo_id
         description: 'The ID of the photo.'
         required: true
-        example: 16
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -626,7 +624,7 @@ endpoints:
         custom: []
     cleanUrlParameters:
       occurrence_id: 16
-      photo_id: 16
+      photo_id: 1
       occurrence: 1
       photo: 1
     queryParameters: []
@@ -735,7 +733,7 @@ endpoints:
         name: comment_id
         description: 'The ID of the comment.'
         required: true
-        example: 16
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -763,7 +761,7 @@ endpoints:
         custom: []
     cleanUrlParameters:
       occurrence_id: 16
-      comment_id: 16
+      comment_id: 1
       occurrence: 1
       comment: 1
     queryParameters: []

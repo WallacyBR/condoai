@@ -5,9 +5,9 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\MaintenanceEquipment;
 use App\Models\MaintenanceRecord;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 
 /**
  * @group Manutenção - Relatório Público QR Code
@@ -32,10 +32,10 @@ class PublicMaintenanceReportController extends Controller
     public function showReportByQrCode(Request $request, $qr_code_hash)
     {
         $equipment = MaintenanceEquipment::where('qr_code_hash', $qr_code_hash)
-                                         ->with(['condominium:id,name', 'maintenanceArea:id,name'])
-                                         ->first();
+            ->with(['condominium:id,name', 'maintenanceArea:id,name'])
+            ->first();
 
-        if (!$equipment) {
+        if (! $equipment) {
             return response()->json(['message' => 'Equipamento não encontrado ou QR Code inválido.'], 404);
         }
 
@@ -43,22 +43,22 @@ class PublicMaintenanceReportController extends Controller
         $user = Auth::guard('api')->user(); // Tenta pegar usuário autenticado pela API (se houver)
 
         if ($accessLevel === 'internal_users') {
-            if (!$user) {
+            if (! $user) {
                 return response()->json(['message' => 'Acesso restrito. Por favor, realize o login para visualizar este relatório.'], 401);
             }
             // Verifica se o usuário logado pertence ao mesmo condomínio do equipamento
             if ($user->condominium_id !== $equipment->condominium_id) {
-                 return response()->json(['message' => 'Acesso não autorizado a este relatório.'], 403);
+                return response()->json(['message' => 'Acesso não autorizado a este relatório.'], 403);
             }
         } elseif ($accessLevel === 'specific_users') {
-            if (!$user) {
+            if (! $user) {
                 return response()->json(['message' => 'Acesso restrito a usuários específicos. Por favor, realize o login.'], 401);
             }
             if ($user->condominium_id !== $equipment->condominium_id) {
-                 return response()->json(['message' => 'Acesso não autorizado a este relatório.'], 403);
+                return response()->json(['message' => 'Acesso não autorizado a este relatório.'], 403);
             }
             // Verifica se o usuário está na lista de permissão do equipamento
-            if (!$equipment->qrAccessUsers()->where('user_id', $user->id)->exists()) {
+            if (! $equipment->qrAccessUsers()->where('user_id', $user->id)->exists()) {
                 return response()->json(['message' => 'Você não tem permissão para visualizar este relatório específico.'], 403);
             }
         }
@@ -68,11 +68,11 @@ class PublicMaintenanceReportController extends Controller
         $lastRecords = MaintenanceRecord::whereHas('schedule', function ($query) use ($equipment) {
             $query->where('maintenance_equipment_id', $equipment->id);
         })
-        ->where('status', 'completed')
-        ->orderBy('performed_at', 'desc')
-        ->take(5)
-        ->with('user:id,name') // Quem realizou
-        ->get(['id', 'performed_at', 'notes', 'user_id', 'status']);
+            ->where('status', 'completed')
+            ->orderBy('performed_at', 'desc')
+            ->take(5)
+            ->with('user:id,name') // Quem realizou
+            ->get(['id', 'performed_at', 'notes', 'user_id', 'status']);
 
         // Buscar próxima manutenção agendada.
         // ATENÇÃO: Esta lógica busca apenas o próximo *registro de manutenção pendente* existente.
@@ -82,15 +82,14 @@ class PublicMaintenanceReportController extends Controller
         $nextPendingRecord = MaintenanceRecord::whereHas('schedule', function ($query) use ($equipment) {
             $query->where('maintenance_equipment_id', $equipment->id);
         })
-        ->where('status', 'pending')
-        ->whereHas('schedule', function($q){ // Garante que a data do schedule é futura
-            $q->where('start_date', '>=', Carbon::today()->toDateString());
-        })
-        ->orderBy('maintenance_schedules.start_date', 'asc') // Ordena pela data do schedule
-        ->select('maintenance_records.id', 'maintenance_records.status', 'maintenance_schedules.start_date', 'maintenance_schedules.due_time', 'maintenance_schedules.title')
-        ->join('maintenance_schedules', 'maintenance_records.maintenance_schedule_id', '=', 'maintenance_schedules.id')
-        ->first();
-
+            ->where('status', 'pending')
+            ->whereHas('schedule', function ($q) { // Garante que a data do schedule é futura
+                $q->where('start_date', '>=', Carbon::today()->toDateString());
+            })
+            ->orderBy('maintenance_schedules.start_date', 'asc') // Ordena pela data do schedule
+            ->select('maintenance_records.id', 'maintenance_records.status', 'maintenance_schedules.start_date', 'maintenance_schedules.due_time', 'maintenance_schedules.title')
+            ->join('maintenance_schedules', 'maintenance_records.maintenance_schedule_id', '=', 'maintenance_schedules.id')
+            ->first();
 
         return response()->json([
             'equipment' => [

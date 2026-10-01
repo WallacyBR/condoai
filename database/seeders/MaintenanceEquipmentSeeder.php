@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\MaintenanceEquipment;
-use App\Models\MaintenanceArea;
 use App\Models\Condominium;
+use App\Models\MaintenanceArea;
+use App\Models\MaintenanceEquipment;
+use Illuminate\Database\Seeder;
 
 class MaintenanceEquipmentSeeder extends Seeder
 {
@@ -15,16 +15,18 @@ class MaintenanceEquipmentSeeder extends Seeder
     public function run(): void
     {
         $condominiums = Condominium::all();
-        
+
         if ($condominiums->isEmpty()) {
             $this->command->warn('Nenhum condomínio encontrado. Execute primeiro o CustomCondominiumResidentsSeeder.');
+
             return;
         }
 
         $maintenanceAreas = MaintenanceArea::all();
-        
+
         if ($maintenanceAreas->isEmpty()) {
             $this->command->warn('Nenhuma área de manutenção encontrada. Execute primeiro o MaintenanceAreasSeeder.');
+
             return;
         }
 
@@ -74,7 +76,7 @@ class MaintenanceEquipmentSeeder extends Seeder
 
         foreach ($condominiums as $condominium) {
             $condoAreas = $maintenanceAreas->where('condominium_id', $condominium->id);
-            
+
             foreach ($condoAreas as $area) {
                 if (isset($equipmentsByArea[$area->name])) {
                     foreach ($equipmentsByArea[$area->name] as $equipment) {
@@ -86,7 +88,7 @@ class MaintenanceEquipmentSeeder extends Seeder
                             ],
                             [
                                 'description' => $equipment['description'],
-                                'location_details' => 'Localizado na área: ' . $area->name,
+                                'location_details' => 'Localizado na área: '.$area->name,
                                 'qr_code_hash' => bin2hex(random_bytes(16)), // Gerar hash único para QR Code
                                 'qr_code_access_level' => in_array($area->name, ['Elevadores', 'Portaria']) ? 'specific_users' : 'internal_users',
                                 'maintenance_area_id' => $area->id,
@@ -98,8 +100,6 @@ class MaintenanceEquipmentSeeder extends Seeder
             }
         }
 
-        $this->command->info('Equipamentos de manutenção criados com sucesso para ' . $condominiums->count() . ' condomínio(s)!');
+        $this->command->info('Equipamentos de manutenção criados com sucesso para '.$condominiums->count().' condomínio(s)!');
     }
-
-
-} 
+}

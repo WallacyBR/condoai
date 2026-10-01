@@ -5,8 +5,6 @@ namespace App\Models;
 use App\Models\Scopes\CondominiumScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Apartment;
-use App\Models\User;
 
 class Package extends Model
 {

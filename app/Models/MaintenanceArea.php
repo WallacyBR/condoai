@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\CondominiumScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Scopes\CondominiumScope; // Para o multi-tenancy
+use Illuminate\Database\Eloquent\SoftDeletes; // Para o multi-tenancy
 
 class MaintenanceArea extends Model
 {
@@ -24,7 +24,7 @@ class MaintenanceArea extends Model
      */
     protected static function booted(): void
     {
-        static::addGlobalScope(new CondominiumScope());
+        static::addGlobalScope(new CondominiumScope);
     }
 
     /**

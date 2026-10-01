@@ -1,8 +1,9 @@
 import { mount } from '@vue/test-utils';
+import { markRaw } from 'vue';
 import TopCard from '../js/components/ui/TopCard.vue';
 
 const DummyIcon = {
-  template: '<svg></svg>',
+  template: '<svg></svg>'
 };
 
 test('renderiza título e subtítulo', async () => {
@@ -10,11 +11,11 @@ test('renderiza título e subtítulo', async () => {
     props: {
       title: 'Exemplo',
       subtitle: 'Detalhes',
-      icon: DummyIcon,
+      icon: markRaw(DummyIcon)
     },
     slots: {
-      actions: '<button>Ação</button>',
-    },
+      actions: '<button>Ação</button>'
+    }
   });
   await wrapper.vm.$nextTick();
   expect(wrapper.find('h1').text()).toContain('Exemplo');

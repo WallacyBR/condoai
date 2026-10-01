@@ -120,19 +120,7 @@
 
         <!-- Botões de Ação -->
         <div class="flex justify-between items-center pt-6">
-          <!-- Botão de teste da API (apenas em desenvolvimento) -->
-          <NeonButton 
-            type="button" 
-            @click="testApiConnection" 
-            size="sm" 
-            class="bg-yellow-600/40 hover:bg-yellow-600/60 text-xs"
-            v-if="isDevelopment"
-          >
-            <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Testar API
-          </NeonButton>
+          <div></div>
           
           <div class="flex space-x-4">
             <NeonButton 
@@ -232,11 +220,6 @@ export default {
       return form.value.apartment_id && form.value.pickup_location.trim();
     });
 
-    // Computed para verificar se estamos em modo de desenvolvimento
-    const isDevelopment = computed(() => {
-      return import.meta.env.DEV;
-    });
-
     const showMessage = (message, type = 'error') => {
       if (type === 'error') {
         error.value = message;
@@ -251,43 +234,23 @@ export default {
       try {
         loading.value = true;
         error.value = '';
-        
-        const condo = localStorage.getItem('selectedCondominium');
-        console.log('Condomínio selecionado:', condo); // Debug
-        
-        if (!condo) {
-          showMessage('Nenhum condomínio selecionado');
-          return;
-        }
 
-        // Carregar apartamentos
-        console.log('Carregando apartamentos...'); // Debug
-        
         try {
-          const apartmentsData = await apiRequest(`/api/apartments?condominium_id=${condo}`);
-          console.log('Dados dos apartamentos recebidos:', apartmentsData); // Debug
-          
-          // Verificar se recebemos dados válidos
+          const apartmentsData = await apiRequest('/apartments');
+
           if (apartmentsData) {
             apartments.value = Array.isArray(apartmentsData) ? apartmentsData : (apartmentsData?.data || []);
-            console.log('Apartamentos processados:', apartments.value); // Debug
-            console.log('Total de apartamentos:', apartments.value.length); // Debug
           } else {
-            console.warn('Nenhum dado de apartamento recebido');
             apartments.value = [];
           }
         } catch (apiError) {
-          console.error('Erro específico na API de apartamentos:', apiError);
           showMessage(`Erro ao carregar apartamentos: ${apiError.message}`);
           apartments.value = [];
         }
 
-        // Se for edição, carregar dados do pacote
         if (id) {
-          console.log('Carregando dados do pacote para edição, ID:', id); // Debug
           try {
-            const pkg = await apiRequest(`/api/packages/${id}`);
-            console.log('Dados do pacote carregados:', pkg); // Debug
+            const pkg = await apiRequest(`/packages/${id}`);
             
             if (pkg) {
               form.value.apartment_id = pkg.apartment_id;
@@ -298,28 +261,13 @@ export default {
               showMessage('Correspondência não encontrada');
             }
           } catch (pkgError) {
-            console.error('Erro ao carregar pacote:', pkgError);
             showMessage(`Erro ao carregar dados da correspondência: ${pkgError.message}`);
           }
         }
       } catch (e) {
-        console.error('Erro geral ao carregar dados:', e);
         showMessage('Erro ao carregar dados do formulário');
       } finally {
         loading.value = false;
-      }
-    };
-
-    // Função para testar a conectividade da API
-    const testApiConnection = async () => {
-      try {
-        console.log('Testando conexão com a API...');
-        const testResponse = await apiRequest('/api/packages');
-        console.log('Teste de API bem-sucedido:', testResponse);
-        showMessage('Conexão com a API funcionando corretamente!', 'success');
-      } catch (e) {
-        console.error('Erro no teste da API:', e);
-        showMessage(`Erro na conexão com a API: ${e.message}`);
       }
     };
 
@@ -335,26 +283,13 @@ export default {
 
         const url = id ? `/packages/${id}` : '/packages';
         const method = id ? 'PUT' : 'POST';
-        const condo = localStorage.getItem('selectedCondominium');
-        
-        // Validação adicional
-        if (!condo) {
-          showMessage('Nenhum condomínio selecionado. Selecione um condomínio antes de continuar.');
-          return;
-        }
 
-        // Construir dados do formulário
         const body = {
           apartment_id: parseInt(form.value.apartment_id),
           pickup_location: form.value.pickup_location.trim(),
           observation: form.value.observation ? form.value.observation.trim() : null,
           photo: form.value.photo || null
         };
-
-        // Log para depuração
-        console.log('Dados sendo enviados:', body);
-        console.log('URL:', url);
-        console.log('Method:', method);
 
         const resp = await apiRequest(url, { 
           method, 
@@ -363,8 +298,6 @@ export default {
             'Content-Type': 'application/json'
           }
         });
-
-        console.log('Resposta da API:', resp);
 
         if (resp) {
           showMessage(
@@ -378,10 +311,6 @@ export default {
           }, 1500);
         }
       } catch (e) {
-        console.error('Erro detalhado ao salvar:', e);
-        console.error('Stack trace:', e.stack);
-        
-        // Melhor tratamento de mensagens de erro
         let errorMessage = 'Erro ao salvar correspondência. Tente novamente.';
         
         if (e.message) {
@@ -420,11 +349,9 @@ export default {
       error,
       success,
       isFormValid,
-      isDevelopment,
       submit, 
       goBack,
-      formatApartmentDescription,
-      testApiConnection
+      formatApartmentDescription
     };
   }
 };

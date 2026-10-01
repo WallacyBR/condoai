@@ -2,66 +2,33 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\API\Concerns\ResolvesCurrentCondominium;
 use App\Http\Controllers\Controller;
-use App\Models\Payable;
-use App\Models\Receivable;
-use Illuminate\Support\Facades\DB;
+use App\Services\Finance\FinanceInsightsService;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class FinanceDashboardController extends Controller
 {
-    public function forecast()
+    use ResolvesCurrentCondominium;
+
+    /**
+     * Exibe os indicadores e projeções do condomínio atual.
+     *
+     * @queryParam as_of_date date Data-base. Example: 2026-06-26
+     * @queryParam horizon_days integer Horizonte da projeção entre 7 e 365 dias. Example: 90
+     */
+    public function forecast(Request $request, FinanceInsightsService $insights)
     {
-        $payables = Payable::orderBy('due_date')->get();
-        $receivables = Receivable::orderBy('due_date')->get();
+        $validated = $request->validate([
+            'as_of_date' => ['nullable', 'date'],
+            'horizon_days' => ['nullable', 'integer', 'min:7', 'max:365'],
+        ]);
 
-        $allTransactions = collect();
-
-        foreach ($payables as $payable) {
-            $allTransactions->push([
-                'date' => $payable->due_date,
-                'amount' => -$payable->amount, // Expenses are negative
-            ]);
-        }
-
-        foreach ($receivables as $receivable) {
-            $allTransactions->push([
-                'date' => $receivable->due_date,
-                'amount' => $receivable->amount,
-            ]);
-        }
-
-        $allTransactions = $allTransactions->sortBy('date')->values();
-
-        $amounts = $allTransactions->pluck('amount');
-
-        $movingAverage = $amounts->avg() ?? 0;
-        $trend = $this->calculateTrend($amounts);
-
-        return [
-            'moving_average' => (float) $movingAverage,
-            'trend' => $trend,
-        ];
-    }
-
-    private function calculateTrend($collection): float
-    {
-        $values = $collection->values();
-        $n = $values->count();
-        if ($n < 2) {
-            return 0;
-        }
-        $x = range(1, $n);
-        $sumX = array_sum($x);
-        $sumY = $values->sum();
-        $sumXY = 0;
-        $sumX2 = 0;
-        foreach ($values as $index => $y) {
-            $xi = $index + 1;
-            $sumXY += $xi * $y;
-            $sumX2 += $xi * $xi;
-        }
-        $slope = ($n * $sumXY - $sumX * $sumY) / ($n * $sumX2 - $sumX ** 2);
-
-        return round($slope, 2);
+        return response()->json($insights->dashboard(
+            $this->currentCondominium($request),
+            Carbon::parse($validated['as_of_date'] ?? now()->toDateString())->startOfDay(),
+            $validated['horizon_days'] ?? 90
+        ));
     }
 }

@@ -17,6 +17,9 @@
       <SignaturePad v-if="!form.no_sign" v-model="form.signature" @mousedown="sigStart" @mouseup="sigEnd" @mousemove="sigMove" />
       <WebcamCapture v-if="form.no_sign" v-model="form.document_photo" />
       <button class="px-3 py-1 bg-cyan-600 text-white rounded">Entregar</button>
+      <p v-if="message" class="text-sm" :class="messageType === 'success' ? 'text-green-400' : 'text-red-400'">
+        {{ message }}
+      </p>
     </form>
   </AuthenticatedLayout>
 </template>
@@ -43,34 +46,61 @@ export default {
     });
     const apartments = ref([]);
     const packages = ref([]);
+    const message = ref('');
+    const messageType = ref('error');
+
+    const showMessage = (text, type = 'error') => {
+      message.value = text;
+      messageType.value = type;
+    };
+    const sigStart = () => {};
+    const sigEnd = () => {};
+    const sigMove = () => {};
 
     const load = async () => {
-      const condo = localStorage.getItem('selectedCondominium');
-      apartments.value = await apiRequest(`/api/apartments?condominium_id=${condo}`) || [];
+      apartments.value = await apiRequest('/apartments') || [];
     };
 
     watch(() => form.value.apartment_id, async (val) => {
       if (!val) return;
-      packages.value = await apiRequest(`/api/packages?apartment_id=${val}&status=pending`) || [];
+      packages.value = await apiRequest(`/packages?apartment_id=${val}&status=pending`) || [];
     });
 
     const submit = async () => {
+      if (!form.value.package_id || !form.value.token) {
+        showMessage('Informe a encomenda e o código de retirada.');
+        return;
+      }
+
       const data = {
         code: form.value.token,
         signature: form.value.signature,
         document_photo: form.value.document_photo
       };
-      const resp = await apiRequest(`/api/packages/${form.value.package_id}/withdraw`, { method: 'POST', body: JSON.stringify(data) });
-      if (resp) {
-        form.value.token = '';
-        form.value.package_id = null;
-        packages.value = packages.value.filter(p => p.id !== form.value.package_id);
+
+      try {
+        const packageId = form.value.package_id;
+        const resp = await apiRequest(`/packages/${packageId}/withdraw`, {
+          method: 'POST',
+          body: JSON.stringify(data)
+        });
+
+        if (resp) {
+          packages.value = packages.value.filter(p => p.id !== packageId);
+          form.value.token = '';
+          form.value.package_id = null;
+          form.value.signature = '';
+          form.value.document_photo = '';
+          showMessage('Encomenda entregue com sucesso.', 'success');
+        }
+      } catch (error) {
+        showMessage(error.message || 'Erro ao registrar entrega.');
       }
     };
 
     onMounted(load);
 
-    return { form, apartments, packages, submit, formatApartmentDescription };
+    return { form, apartments, packages, message, messageType, submit, formatApartmentDescription, sigStart, sigEnd, sigMove };
   }
 };
 </script>

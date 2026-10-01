@@ -195,7 +195,7 @@ const handleSubmit = async () => {
       }
     };
 
-    await api.post(`/api/access-control/access-requests/${props.requestId}/record-entry`, payload);
+    await api.post(`/access-control/access-requests/${props.requestId}/record-entry`, payload);
     
     successToast('Entrada registrada com sucesso!');
     emit('entry-recorded');

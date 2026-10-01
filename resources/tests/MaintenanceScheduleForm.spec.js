@@ -1,20 +1,13 @@
-import { shallowMount, mount } from '@vue/test-utils';
-import { vi } from 'vitest';
-import MaintenanceScheduleForm from '@/components/maintenance/MaintenanceScheduleForm.vue';
-import Modal from '@/components/Modal.vue';
-import api from '@/utils/api';
+import { flushPromises, mount } from '@vue/test-utils';
+import MaintenanceScheduleForm from '@/components/maintenance/MaintenanceScheduleForm.vue'; // Ajuste o caminho se necessário
+import Modal from '@/components/Modal.vue'; // Mock ou componente real
+import api from '@/utils/api'; // Mock da API
 
-const { mockApi } = vi.hoisted(() => ({
-  mockApi: {
-    get: vi.fn(),
-    post: vi.fn(),
-    put: vi.fn(),
-    delete: vi.fn(),
-  },
-}));
-
-vi.mock('@/utils/api', () => ({
-  default: mockApi,
+// Mock do helper api
+jest.mock('@/utils/api', () => ({
+  get: jest.fn(),
+  post: jest.fn(),
+  put: jest.fn(),
 }));
 
 // Mock do componente Modal, se for complexo ou para isolar o teste
@@ -26,14 +19,13 @@ vi.mock('@/utils/api', () => ({
 // }));
 
 
-const modalStub = {
-  props: ['show'],
-  template: '<div v-if="show"><slot name="title" /><slot /><slot name="footer" /></div>',
-  emits: ['close'],
-};
-
 describe('MaintenanceScheduleForm.vue', () => {
   let wrapper;
+  const modalStub = {
+    props: ['show'],
+    template: '<div v-if="show"><slot name="title" /><slot /><slot name="footer" /></div>',
+    emits: ['close']
+  };
 
   const mockAvailableEquipment = [
     { id: 1, name: 'Bomba Piscina' },
@@ -67,7 +59,7 @@ describe('MaintenanceScheduleForm.vue', () => {
       global: {
         // Fornecer stubs ou componentes globais se necessário
          stubs: {
-             Modal: modalStub,
+             Modal: modalStub
          }
       }
     });
@@ -101,10 +93,11 @@ describe('MaintenanceScheduleForm.vue', () => {
     // Remontar o componente com props de edição
     wrapper = mount(MaintenanceScheduleForm, {
       props: { show: true, scheduleData },
-       global: { stubs: { Modal: modalStub } },
+     global: { stubs: { Modal: modalStub } }
     });
-    await wrapper.vm.$nextTick();
-    await wrapper.vm.$nextTick();
+    await flushPromises();
+    await wrapper.vm.$nextTick(); // onMounted
+    await wrapper.vm.$nextTick(); // watch
 
     expect(wrapper.find('#title').element.value).toBe(scheduleData.title);
     expect(wrapper.find('#maintenance_equipment_id').element.value).toBe(String(scheduleData.maintenance_equipment_id));
@@ -133,10 +126,11 @@ describe('MaintenanceScheduleForm.vue', () => {
     const scheduleData = { id: 1, title: 'Agendamento Original', responsible_users: [] };
      wrapper = mount(MaintenanceScheduleForm, { // Remontar com dados
       props: { show: true, scheduleData },
-      global: { stubs: { Modal: modalStub } },
+      global: { stubs: { Modal: modalStub } }
     });
-    await wrapper.vm.$nextTick();
-    await wrapper.vm.$nextTick();
+    await flushPromises();
+    await wrapper.vm.$nextTick(); // onMounted
+    await wrapper.vm.$nextTick(); // watch
 
     api.put.mockResolvedValue({ data: { ...scheduleData, title: 'Título Atualizado' } });
 
@@ -149,6 +143,7 @@ describe('MaintenanceScheduleForm.vue', () => {
   });
 
   it('exibe erros de validação da API', async () => {
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     const errors = {
       title: ['O campo título é obrigatório.'],
       maintenance_equipment_id: ['Selecione um equipamento válido.'],
@@ -160,6 +155,7 @@ describe('MaintenanceScheduleForm.vue', () => {
 
     expect(wrapper.vm.errors.title).toEqual(errors.title);
     expect(wrapper.find('p.text-red-400').text()).toContain(errors.title[0]);
+    consoleErrorSpy.mockRestore();
   });
 
   it('emite "close" ao clicar no botão Cancelar', async () => {

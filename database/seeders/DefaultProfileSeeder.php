@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\Profile;
 use App\Models\Module;
+use App\Models\Profile;
 use Illuminate\Database\Seeder;
 
 class DefaultProfileSeeder extends Seeder
@@ -30,9 +30,10 @@ class DefaultProfileSeeder extends Seeder
     private function assignPermissionsToProfiles(): void
     {
         $allModules = Module::all();
-        
+
         if ($allModules->isEmpty()) {
             $this->command->warn('Nenhum módulo encontrado. Execute o ModuleSeeder primeiro.');
+
             return;
         }
 
@@ -68,7 +69,7 @@ class DefaultProfileSeeder extends Seeder
                 return [$module->id => [
                     'can_view' => true,
                     'can_create' => in_array($module->name, ['Condomínios', 'Moradores', 'Unidades', 'Relatórios']),
-                    'can_update' => in_array($module->name, ['Condomínios', 'Moradores', 'Unidades']),
+                    'can_update' => in_array($module->name, ['Condomínios', 'Moradores', 'Unidades', 'Segurança']),
                     'can_delete' => false,
                     'scope' => 'all',
                 ]];
@@ -84,7 +85,7 @@ class DefaultProfileSeeder extends Seeder
                     'can_view' => true,
                     'can_create' => ! in_array($module->name, ['Condomínios', 'Configurações']),
                     'can_update' => ! in_array($module->name, ['Condomínios', 'Configurações']),
-                    'can_delete' => in_array($module->name, ['Correspondências', 'Ocorrências', 'Financeiro']),
+                    'can_delete' => in_array($module->name, ['Correspondências', 'Ocorrências', 'Financeiro', 'Segurança']),
                     'scope' => $module->name === 'Ocorrências' ? 'condominium' : 'own',
                 ]];
             })->toArray();

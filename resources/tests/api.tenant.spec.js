@@ -8,19 +8,7 @@ vi.mock('../js/services/auth', () => ({
   },
 }));
 
-const handleTenantHttpErrorMock = vi.fn();
-
-vi.mock('../js/utils/tenant', async (importOriginal) => {
-  const actual = await importOriginal();
-  return {
-    ...actual,
-    handleTenantHttpError: async (...args) => {
-      handleTenantHttpErrorMock(...args);
-      return actual.handleTenantHttpError(...args);
-    },
-  };
-});
-
+import * as tenantModule from '../js/utils/tenant';
 import { api, apiRequest } from '../js/utils/api';
 import {
   TENANT_HEADER,
@@ -31,12 +19,14 @@ import {
   resolveTenantHydration,
 } from '../js/utils/tenant';
 
+let handleTenantHttpErrorMock;
+
 describe('api tenant integration', () => {
   beforeEach(() => {
     localStorage.clear();
     resetTenantErrorHandlingForTests();
-    handleTenantHttpErrorMock.mockClear();
     vi.restoreAllMocks();
+    handleTenantHttpErrorMock = vi.spyOn(tenantModule, 'handleTenantHttpError');
   });
 
   const getRequestHandler = () => {

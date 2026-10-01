@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Validator;
 
 class BudgetItemController extends Controller
 {
+    use Concerns\ResolvesCurrentCondominium;
+
     public function index(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -19,21 +21,23 @@ class BudgetItemController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        $budgetItems = BudgetItem::where('year', $request->year)->get();
+        $budgetItems = BudgetItem::where('year', $request->year)
+            ->where('condominium_id', $this->currentCondominium($request)->id)->get();
+
         return response()->json($budgetItems);
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'condominium_id' => 'required|exists:condominiums,id',
+        $validated = $request->validate([
             'chart_account_id' => 'required|exists:chart_accounts,id',
             'amount' => 'required|numeric|min:0',
             'month' => 'required|integer|min:1|max:12',
             'year' => 'required|integer|min:2000|max:2100',
         ]);
 
-        $budgetItem = BudgetItem::create($request->all());
+        $budgetItem = BudgetItem::create([...$validated, 'condominium_id' => $this->currentCondominium($request)->id]);
+
         return response()->json($budgetItem, 201);
     }
 
@@ -49,6 +53,7 @@ class BudgetItemController extends Controller
         ]);
 
         $budgetItem->update($request->only('amount'));
+
         return response()->json($budgetItem);
     }
 
@@ -60,7 +65,6 @@ class BudgetItemController extends Controller
             'items.*.month' => 'required|integer|min:1|max:12',
             'items.*.year' => 'required|integer|min:2000|max:2100',
             'items.*.amount' => 'required|numeric|min:0',
-            'condominium_id' => 'required|exists:condominiums,id',
         ]);
 
         if ($validator->fails()) {
@@ -68,7 +72,7 @@ class BudgetItemController extends Controller
         }
 
         $items = $request->input('items', []);
-        $condominiumId = $request->input('condominium_id');
+        $condominiumId = $this->currentCondominium($request)->id;
 
         foreach ($items as $itemData) {
             BudgetItem::updateOrCreate(
@@ -85,10 +89,10 @@ class BudgetItemController extends Controller
         return response()->json(['message' => 'Orçamento atualizado com sucesso.']);
     }
 
-
     public function destroy(BudgetItem $budgetItem)
     {
         $budgetItem->delete();
+
         return response()->json(null, 204);
     }
 }

@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\CondominiumScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Scopes\CondominiumScope;
 
 class MaintenanceSchedule extends Model
 {
@@ -39,7 +39,7 @@ class MaintenanceSchedule extends Model
      */
     protected static function booted(): void
     {
-        static::addGlobalScope(new CondominiumScope());
+        static::addGlobalScope(new CondominiumScope);
     }
 
     public function condominium()

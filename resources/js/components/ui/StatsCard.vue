@@ -1,15 +1,21 @@
 <template>
-  <div class="bg-gradient-to-br rounded-2xl p-6 border-2 shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl"
-       :class="cardClasses">
+  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-colors hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700">
     <div class="flex items-center justify-between">
-      <div>
-        <p class="text-sm font-medium" :class="textClasses.label">{{ label }}</p>
-        <p class="text-2xl font-bold" :class="textClasses.value">{{ value }}</p>
+      <div class="flex-1 min-w-0 pr-3">
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 truncate">
+          {{ label || title }}
+        </p>
+        <p class="mt-1.5 text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 truncate">
+          {{ value }}
+        </p>
+        <p v-if="subtitle || description" class="mt-1 text-xs text-slate-500 dark:text-slate-400 truncate">
+          {{ subtitle || description }}
+        </p>
       </div>
-      <div class="h-12 w-12 rounded-full flex items-center justify-center"
-           :class="iconClasses">
+
+      <div class="flex h-11 w-11 items-center justify-center rounded-xl flex-shrink-0 transition-colors" :class="iconContainerClasses">
         <slot name="icon">
-          <svg class="h-6 w-6" :class="textClasses.icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="defaultIconPath" />
           </svg>
         </slot>
@@ -24,16 +30,27 @@ export default {
   props: {
     label: {
       type: String,
-      required: true
+      default: ''
+    },
+    title: {
+      type: String,
+      default: ''
     },
     value: {
       type: [String, Number],
       required: true
     },
+    subtitle: {
+      type: String,
+      default: ''
+    },
+    description: {
+      type: String,
+      default: ''
+    },
     variant: {
       type: String,
-      default: 'primary',
-      validator: (value) => ['primary', 'blue', 'orange', 'red', 'green', 'purple'].includes(value)
+      default: 'primary'
     },
     defaultIconPath: {
       type: String,
@@ -41,63 +58,27 @@ export default {
     }
   },
   computed: {
-    cardClasses() {
-      const variants = {
-        primary: 'from-purple-900/50 via-purple-800/50 to-purple-900/50 border-purple-500/30 hover:border-purple-500/50',
-        blue: 'from-blue-900/50 via-blue-800/50 to-blue-900/50 border-blue-500/30 hover:border-blue-500/50',
-        orange: 'from-orange-900/50 via-orange-800/50 to-orange-900/50 border-orange-500/30 hover:border-orange-500/50',
-        red: 'from-red-900/50 via-red-800/50 to-red-900/50 border-red-500/30 hover:border-red-500/50',
-        green: 'from-green-900/50 via-green-800/50 to-green-900/50 border-green-500/30 hover:border-green-500/50',
-        purple: 'from-purple-900/50 via-purple-800/50 to-purple-900/50 border-purple-500/30 hover:border-purple-500/50'
-      };
-      return variants[this.variant];
-    },
-    textClasses() {
-      const variants = {
-        primary: {
-          label: 'text-purple-300',
-          value: 'text-purple-100',
-          icon: 'text-purple-400'
-        },
-        blue: {
-          label: 'text-blue-300',
-          value: 'text-blue-100',
-          icon: 'text-blue-400'
-        },
-        orange: {
-          label: 'text-orange-300',
-          value: 'text-orange-100',
-          icon: 'text-orange-400'
-        },
-        red: {
-          label: 'text-red-300',
-          value: 'text-red-100',
-          icon: 'text-red-400'
-        },
-        green: {
-          label: 'text-green-300',
-          value: 'text-green-100',
-          icon: 'text-green-400'
-        },
-        purple: {
-          label: 'text-purple-300',
-          value: 'text-purple-100',
-          icon: 'text-purple-400'
-        }
-      };
-      return variants[this.variant];
-    },
-    iconClasses() {
-      const variants = {
-        primary: 'bg-purple-500/20',
-        blue: 'bg-blue-500/20',
-        orange: 'bg-orange-500/20',
-        red: 'bg-red-500/20',
-        green: 'bg-green-500/20',
-        purple: 'bg-purple-500/20'
-      };
-      return variants[this.variant];
+    iconContainerClasses() {
+      switch (this.variant) {
+        case 'green':
+        case 'success':
+          return 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400';
+        case 'orange':
+        case 'warning':
+          return 'bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400';
+        case 'red':
+        case 'danger':
+          return 'bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400';
+        case 'blue':
+        case 'info':
+          return 'bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400';
+        case 'purple':
+          return 'bg-purple-50 text-purple-600 dark:bg-purple-950/40 dark:text-purple-400';
+        case 'primary':
+        default:
+          return 'bg-indigo-50 text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-400';
+      }
     }
   }
 };
-</script> 
+</script>

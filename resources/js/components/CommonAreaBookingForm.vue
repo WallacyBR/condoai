@@ -131,6 +131,7 @@
 
 <script>
 import { ref, reactive, computed, watch } from 'vue';
+import { apiRequest } from '../utils/api';
 
 export default {
   name: 'CommonAreaBookingForm',
@@ -193,27 +194,14 @@ export default {
         loading.value = true;
         error.value = '';
 
-        const token = localStorage.getItem('token');
-        const response = await fetch(`/api/common-areas/${props.area.id}/available-slots?date=${form.date}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
+        const data = await apiRequest(`/common-areas/${props.area.id}/available-slots?date=${form.date}`);
+        availableSlots.value = data.available_slots || [];
 
-        if (response.ok) {
-          const data = await response.json();
-          availableSlots.value = data.available_slots;
-          
-          // Separar períodos padrão dos slots customizados
-          availablePeriods.value = data.available_slots.filter(slot => slot.type === 'period');
-          availableHourlySlots.value = data.available_slots.filter(slot => slot.type === 'hourly');
-        } else {
-          error.value = 'Erro ao carregar horários disponíveis';
-        }
+        // Separar períodos padrão dos slots customizados
+        availablePeriods.value = availableSlots.value.filter(slot => slot.type === 'period');
+        availableHourlySlots.value = availableSlots.value.filter(slot => slot.type === 'hourly');
       } catch (err) {
-        console.error('Erro ao carregar slots:', err);
-        error.value = 'Erro de conexão';
+        error.value = err.message || 'Erro ao carregar horários disponíveis';
       } finally {
         loading.value = false;
       }
@@ -265,36 +253,24 @@ export default {
           notes: form.notes
         };
 
-        const token = localStorage.getItem('token');
-        const response = await fetch(`/api/common-areas/${props.area.id}/bookings`, {
+        const data = await apiRequest(`/common-areas/${props.area.id}/bookings`, {
           method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
           body: JSON.stringify(bookingData)
         });
 
-        const data = await response.json();
-
-        if (response.ok) {
-          emit('submit', data);
-          // Limpar formulário
-          Object.assign(form, {
-            date: '',
-            start_time: '',
-            end_time: '',
-            booking_type: 'custom',
-            notes: ''
-          });
-          availablePeriods.value = [];
-          availableHourlySlots.value = [];
-        } else {
-          error.value = data.message || 'Erro ao fazer reserva';
-        }
+        emit('submit', data);
+        // Limpar formulário
+        Object.assign(form, {
+          date: '',
+          start_time: '',
+          end_time: '',
+          booking_type: 'custom',
+          notes: ''
+        });
+        availablePeriods.value = [];
+        availableHourlySlots.value = [];
       } catch (err) {
-        console.error('Erro ao fazer reserva:', err);
-        error.value = 'Erro de conexão';
+        error.value = err.message || 'Erro ao fazer reserva';
       } finally {
         loading.value = false;
       }

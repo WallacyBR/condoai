@@ -1,24 +1,26 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\API;
 
+use App\Enums\OccurrencePriority;
+use App\Enums\OccurrenceStatus;
 use App\Http\Controllers\Concerns\ResolvesTenantCondominium;
 use App\Http\Controllers\Controller;
 use App\Models\Occurrence;
-use App\Models\OccurrencePhoto;
 use App\Models\OccurrenceComment;
+use App\Models\OccurrencePhoto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use App\Enums\OccurrenceStatus;
-use App\Enums\OccurrencePriority;
 use Illuminate\Validation\Rules\Enum;
 
 class OccurrenceController extends Controller
 {
     use ResolvesTenantCondominium;
+
     /**
      * @group Ocorrências
+     *
      * @authenticated
      * Display a listing of the occurrences.
      *
@@ -65,6 +67,7 @@ class OccurrenceController extends Controller
 
     /**
      * @group Ocorrências
+     *
      * @authenticated
      * Store a newly created occurrence in storage.
      *
@@ -75,7 +78,6 @@ class OccurrenceController extends Controller
      * @bodyParam photos.* file A photo for the occurrence.
      * @bodyParam photo_descriptions string[] Descriptions for each photo. Should have the same number of elements as photos. Example: ["Foto da lâmpada queimada", "Corredor escuro"]
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -119,33 +121,35 @@ class OccurrenceController extends Controller
 
     /**
      * @group Ocorrências
+     *
      * @authenticated
      * Display the specified occurrence.
      *
      * @urlParam occurrence integer required The ID of the occurrence. Example: 1
-     * @param  \App\Models\Occurrence  $occurrence
+     *
      * @return \Illuminate\Http\Response
      */
     public function show(Occurrence $occurrence)
     {
         $this->authorize('view', $occurrence);
         $occurrence->load(['user:id,name', 'photos', 'comments.user:id,name', 'condominium:id,name']);
+
         return response()->json($occurrence);
     }
 
     /**
      * @group Ocorrências
+     *
      * @authenticated
      * Update the specified occurrence in storage.
      *
      * @urlParam occurrence integer required The ID of the occurrence. Example: 1
+     *
      * @bodyParam title string The title of the occurrence. Example: Lâmpada do poste P-12 queimada
      * @bodyParam description string A detailed description of the occurrence.
      * @bodyParam priority string The priority of the occurrence. Example: high
      * @bodyParam status string The status of the occurrence. Example: in_progress
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Occurrence  $occurrence
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Occurrence $occurrence)
@@ -168,11 +172,12 @@ class OccurrenceController extends Controller
 
     /**
      * @group Ocorrências
+     *
      * @authenticated
      * Remove the specified occurrence from storage.
      *
      * @urlParam occurrence integer required The ID of the occurrence. Example: 1
-     * @param  \App\Models\Occurrence  $occurrence
+     *
      * @return \Illuminate\Http\Response
      */
     public function destroy(Occurrence $occurrence)
@@ -192,15 +197,15 @@ class OccurrenceController extends Controller
 
     /**
      * @group Ocorrências
+     *
      * @authenticated
      * Add a photo to an existing occurrence.
      *
      * @urlParam occurrence integer required The ID of the occurrence. Example: 1
+     *
      * @bodyParam photo file required The photo file to upload.
      * @bodyParam description string A description for the photo.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Occurrence  $occurrence
      * @return \Illuminate\Http\Response
      */
     public function addPhoto(Request $request, Occurrence $occurrence)
@@ -224,14 +229,13 @@ class OccurrenceController extends Controller
 
     /**
      * @group Ocorrências
+     *
      * @authenticated
      * Delete a photo from an occurrence.
      *
      * @urlParam occurrence integer required The ID of the occurrence. Example: 1
      * @urlParam photo integer required The ID of the photo to delete. Example: 1
      *
-     * @param  \App\Models\Occurrence  $occurrence
-     * @param  \App\Models\OccurrencePhoto  $photo
      * @return \Illuminate\Http\Response
      */
     public function deletePhoto(Occurrence $occurrence, OccurrencePhoto $photo)
@@ -250,14 +254,14 @@ class OccurrenceController extends Controller
 
     /**
      * @group Ocorrências
+     *
      * @authenticated
      * Add a comment to an existing occurrence.
      *
      * @urlParam occurrence integer required The ID of the occurrence. Example: 1
+     *
      * @bodyParam comment string required The comment text. Example: Verifiquei a lâmpada, realmente está queimada.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Occurrence  $occurrence
      * @return \Illuminate\Http\Response
      */
     public function addComment(Request $request, Occurrence $occurrence)
@@ -278,16 +282,15 @@ class OccurrenceController extends Controller
         return response()->json($comment, 201);
     }
 
-     /**
+    /**
      * @group Ocorrências
+     *
      * @authenticated
      * Delete a comment from an occurrence.
      *
      * @urlParam occurrence integer required The ID of the occurrence. Example: 1
      * @urlParam comment integer required The ID of the comment to delete. Example: 1
      *
-     * @param  \App\Models\Occurrence  $occurrence
-     * @param  \App\Models\OccurrenceComment  $comment
      * @return \Illuminate\Http\Response
      */
     public function deleteComment(Occurrence $occurrence, OccurrenceComment $comment)

@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Enums\ResidentClassification;
 use App\Enums\PersonType;
+use App\Enums\ResidentClassification;
 use App\Models\Condominium;
 use App\Models\Resident;
 use Illuminate\Database\Eloquent\Factories\Factory;

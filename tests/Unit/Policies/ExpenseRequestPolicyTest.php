@@ -23,7 +23,7 @@ class ExpenseRequestPolicyTest extends TestCase
         parent::setUp();
 
         $this->seedDefaultPermissionMatrix();
-        $this->policy = new ExpenseRequestPolicy();
+        $this->policy = new ExpenseRequestPolicy;
     }
 
     protected function tearDown(): void

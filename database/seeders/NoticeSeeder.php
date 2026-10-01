@@ -2,11 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
+use App\Models\Condominium;
 use App\Models\Notice;
 use App\Models\User;
-use App\Models\Condominium;
+use Illuminate\Database\Seeder;
 
 class NoticeSeeder extends Seeder
 {
@@ -21,6 +20,7 @@ class NoticeSeeder extends Seeder
 
         if ($users->isEmpty() || $condominiums->isEmpty()) {
             $this->command->warn('Usuários ou condomínios não encontrados. Execute os seeders básicos primeiro.');
+
             return;
         }
 
@@ -28,8 +28,8 @@ class NoticeSeeder extends Seeder
         foreach ($condominiums as $condominium) {
             // Buscar um usuário deste condomínio
             $user = $users->where('condominium_id', $condominium->id)->first();
-            
-            if (!$user) {
+
+            if (! $user) {
                 // Se não houver usuário específico do condomínio, usar o primeiro usuário disponível
                 $user = $users->first();
             }
@@ -60,7 +60,7 @@ class NoticeSeeder extends Seeder
                     'title' => 'Coleta Seletiva - Novo Cronograma',
                     'body' => 'A partir desta semana, a coleta seletiva será realizada às quartas-feiras pela manhã. Lembramos que materiais recicláveis devem ser separados corretamente e colocados nos locais apropriados.',
                     'send_to_all' => true,
-                ]
+                ],
             ];
 
             foreach ($notices as $noticeData) {
@@ -74,6 +74,6 @@ class NoticeSeeder extends Seeder
             }
         }
 
-        $this->command->info('Avisos de teste criados com sucesso para ' . $condominiums->count() . ' condomínio(s)!');
+        $this->command->info('Avisos de teste criados com sucesso para '.$condominiums->count().' condomínio(s)!');
     }
 }

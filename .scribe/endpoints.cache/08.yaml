@@ -8,6 +8,94 @@ endpoints:
   -
     httpMethods:
       - GET
+    uri: api/access-control/check-protective-measure
+    metadata:
+      groupName: 'Controle de Acessos'
+      groupDescription: |-
+
+        Endpoints para gerenciar solicitações de acesso de visitantes.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Verifica se há medida protetiva ativa para um visitante ou veículo.'
+      description: ''
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      visitor_document:
+        name: visitor_document
+        description: 'Documento do visitante.'
+        required: false
+        example: 123.456.789-00
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+      vehicle_plate:
+        name: vehicle_plate
+        description: 'Placa do veículo.'
+        required: false
+        example: ABC-1234
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+    cleanQueryParameters:
+      visitor_document: 123.456.789-00
+      vehicle_plate: ABC-1234
+    bodyParameters:
+      visitor_document:
+        name: visitor_document
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      vehicle_plate:
+        name: vehicle_plate
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+    cleanBodyParameters:
+      visitor_document: architecto
+      vehicle_plate: architecto
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: '{ "has_protective_measure": true, "measure": { ... } }'
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 200
+        content: '{ "has_protective_measure": false }'
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - GET
     uri: api/access-control/access-requests
     metadata:
       groupName: 'Controle de Acessos'
@@ -55,32 +143,7 @@ endpoints:
     responses:
       -
         status: 200
-        content: |
-          {
-              "data": [
-                  {
-                      "id": 1,
-                      "status": "authorized",
-                      "request_timestamp": "2024-07-20T13:00:00Z",
-                      "resident_response_timestamp": "2024-07-20T14:00:00Z",
-                      "visitor": {
-                          "id": 1,
-                          "name": "Joao Silva",
-                          "document": "123.456.789-00",
-                          "phone": "(11) 99999-9999",
-                          "photo_url": null
-                      },
-                      "resident": {
-                          "id": 1,
-                          "name": "Maria Santos"
-                      },
-                      "visitor_vehicle": null,
-                      "resident_observation": "Visitante autorizado",
-                      "gatehouse_observation": "Documentacao verificada"
-                  }
-              ],
-              "message": "Dados de exemplo - Funcionalidade em desenvolvimento"
-          }
+        content: '{ "data": [ { "id": 1, "status": "pending", ... } ], "meta": { ... } }'
         headers: []
         description: ''
         custom: []
@@ -106,55 +169,309 @@ endpoints:
       authenticated: false
       custom: []
     headers:
-      Content-Type: application/json
+      Content-Type: multipart/form-data
       Accept: application/json
     urlParameters: []
     cleanUrlParameters: []
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
+      visitor_name:
+        name: visitor_name
+        description: 'Nome do visitante.'
+        required: true
+        example: 'João Silva'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+      visitor_document:
+        name: visitor_document
+        description: 'Documento do visitante.'
+        required: true
+        example: 123.456.789-00
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+      visitor_phone:
+        name: visitor_phone
+        description: 'Telefone do visitante.'
+        required: false
+        example: '(11) 99999-9999'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        custom: []
+      visitor_observations:
+        name: visitor_observations
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      visitor_photo:
+        name: visitor_photo
+        description: 'Must be an image. Must not be greater than 2048 kilobytes.'
+        required: false
+        example: null
+        type: file
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      visitor_photo_url:
+        name: visitor_photo_url
+        description: 'URL da foto do visitante.'
+        required: false
+        example: 'http://www.bailey.biz/quos-velit-et-fugiat-sunt-nihil-accusantium-harum.html'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
       visitor_id:
         name: visitor_id
-        description: 'ID do visitante.'
+        description: ''
         required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      resident_id:
+        name: resident_id
+        description: 'ID de morador vinculado para compatibilidade. Quando ausente, o sistema infere pela unidade.'
+        required: false
+        example: 2
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        custom: []
+      apartment_id:
+        name: apartment_id
+        description: 'ID da unidade de destino.'
+        required: true
         example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: true
         nullable: false
         custom: []
-      resident_id:
-        name: resident_id
-        description: 'ID do morador responsável.'
+      visit_date:
+        name: visit_date
+        description: 'Data da visita.'
+        required: false
+        example: '2024-12-25'
+        type: date
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        custom: []
+      visit_time:
+        name: visit_time
+        description: 'Hora da visita.'
+        required: false
+        example: '14:00'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        custom: []
+      duration_hours:
+        name: duration_hours
+        description: 'Duração da visita em horas.'
         required: false
         example: 2
         type: integer
         enumValues: []
         exampleWasSpecified: true
-        nullable: false
+        nullable: true
+        custom: []
+      purpose:
+        name: purpose
+        description: 'Propósito da visita.'
+        required: false
+        example: 'Visita familiar'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        custom: []
+      observations:
+        name: observations
+        description: 'Observações adicionais.'
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      gatehouse_observation:
+        name: gatehouse_observation
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
         custom: []
       has_vehicle:
         name: has_vehicle
-        description: 'Indica se há veículo.'
+        description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      visitor_vehicle_id:
+        name: visitor_vehicle_id
+        description: ''
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      visitor_vehicle_plate:
+        name: visitor_vehicle_plate
+        description: 'Placa do veículo do visitante.'
+        required: false
+        example: ABC-1234
+        type: string
+        enumValues: []
         exampleWasSpecified: true
+        nullable: true
+        custom: []
+      visitor_vehicle_model:
+        name: visitor_vehicle_model
+        description: 'Modelo do veículo do visitante.'
+        required: false
+        example: 'Honda Civic'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        custom: []
+      vehicle_plate:
+        name: vehicle_plate
+        description: 'Must not be greater than 20 characters.'
+        required: false
+        example: cmyuwpwlvqwrsitc
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      vehicle_model:
+        name: vehicle_model
+        description: 'Must not be greater than 255 characters.'
+        required: false
+        example: p
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      vehicle_color:
+        name: vehicle_color
+        description: 'Must not be greater than 255 characters.'
+        required: false
+        example: s
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      vehicle:
+        name: vehicle
+        description: ''
+        required: false
+        example: []
+        type: object
+        enumValues: []
+        exampleWasSpecified: false
         nullable: false
         custom: []
+      vehicle.plate:
+        name: vehicle.plate
+        description: 'Must not be greater than 20 characters.'
+        required: false
+        example: cqldzsnrwtujwvlx
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      vehicle.model:
+        name: vehicle.model
+        description: 'Must not be greater than 255 characters.'
+        required: false
+        example: j
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      vehicle.color:
+        name: vehicle.color
+        description: 'Must not be greater than 255 characters.'
+        required: false
+        example: k
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
     cleanBodyParameters:
-      visitor_id: 1
+      visitor_name: 'João Silva'
+      visitor_document: 123.456.789-00
+      visitor_phone: '(11) 99999-9999'
+      visitor_observations: architecto
+      visitor_photo_url: 'http://www.bailey.biz/quos-velit-et-fugiat-sunt-nihil-accusantium-harum.html'
       resident_id: 2
-      has_vehicle: true
-    fileParameters: []
+      apartment_id: 1
+      visit_date: '2024-12-25'
+      visit_time: '14:00'
+      duration_hours: 2
+      purpose: 'Visita familiar'
+      observations: architecto
+      gatehouse_observation: architecto
+      has_vehicle: false
+      visitor_vehicle_plate: ABC-1234
+      visitor_vehicle_model: 'Honda Civic'
+      vehicle_plate: cmyuwpwlvqwrsitc
+      vehicle_model: p
+      vehicle_color: s
+      vehicle:
+        plate: cqldzsnrwtujwvlx
+        model: j
+        color: k
+    fileParameters:
+      visitor_photo: null
     responses:
       -
-        status: 201
-        content: |
-          {
-              "message": "Funcionalidade em desenvolvimento"
-          }
+        status: 200
+        content: '{ "message": "Solicitação de acesso criada com sucesso!" }'
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 422
+        content: '{ "message": "Medida protetiva ativa encontrada para este visitante/veículo." }'
         headers: []
         description: ''
         custom: []
@@ -225,41 +542,7 @@ endpoints:
     responses:
       -
         status: 200
-        content: |
-          {
-              "data": [
-                  {
-                      "id": 1,
-                      "status": "authorized",
-                      "request_timestamp": "2024-07-15T12:00:00Z",
-                      "resident_response_timestamp": "2024-07-15T12:30:00Z",
-                      "entry_timestamp": "2024-07-15T13:00:00Z",
-                      "visitor": {
-                          "id": 1,
-                          "name": "Joao Silva",
-                          "document": "123.456.789-00",
-                          "phone": "(11) 99999-9999",
-                          "photo_url": null
-                      },
-                      "resident": {
-                          "id": 1,
-                          "name": "Maria Santos"
-                      },
-                      "visitor_vehicle": null,
-                      "resident_observation": "Visitante autorizado",
-                      "gatehouse_observation": "Entrada registrada"
-                  }
-              ],
-              "meta": {
-                  "current_page": 1,
-                  "last_page": 1,
-                  "per_page": 15,
-                  "total": 1,
-                  "from": 1,
-                  "to": 1
-              },
-              "message": "Dados de exemplo - Histórico de solicitações"
-          }
+        content: '{ "data": [ { "id": 1, "status": "authorized", ... } ], "meta": { ... } }'
         headers: []
         description: ''
         custom: []
@@ -297,32 +580,7 @@ endpoints:
     responses:
       -
         status: 200
-        content: |
-          {
-              "data": [
-                  {
-                      "id": 1,
-                      "status": "authorized",
-                      "request_timestamp": "2024-07-20T13:00:00Z",
-                      "resident_response_timestamp": "2024-07-20T14:00:00Z",
-                      "visitor": {
-                          "id": 1,
-                          "name": "Joao Silva",
-                          "document": "123.456.789-00",
-                          "phone": "(11) 99999-9999",
-                          "photo_url": null
-                      },
-                      "resident": {
-                          "id": 1,
-                          "name": "Maria Santos"
-                      },
-                      "visitor_vehicle": null,
-                      "resident_observation": "Visitante autorizado",
-                      "gatehouse_observation": "Documentacao verificada"
-                  }
-              ],
-              "message": "Dados de exemplo - Funcionalidade em desenvolvimento"
-          }
+        content: '{ "data": [ { "id": 1, "status": "pending", ... } ] }'
         headers: []
         description: ''
         custom: []
@@ -360,32 +618,7 @@ endpoints:
     responses:
       -
         status: 200
-        content: |
-          {
-              "data": [
-                  {
-                      "id": 1,
-                      "status": "authorized",
-                      "request_timestamp": "2024-07-20T13:00:00Z",
-                      "resident_response_timestamp": "2024-07-20T14:00:00Z",
-                      "visitor": {
-                          "id": 1,
-                          "name": "Joao Silva",
-                          "document": "123.456.789-00",
-                          "phone": "(11) 99999-9999",
-                          "photo_url": null
-                      },
-                      "resident": {
-                          "id": 1,
-                          "name": "Maria Santos"
-                      },
-                      "visitor_vehicle": null,
-                      "resident_observation": "Visitante autorizado",
-                      "gatehouse_observation": "Documentacao verificada"
-                  }
-              ],
-              "message": "Dados de exemplo - Funcionalidade em desenvolvimento"
-          }
+        content: '{ "data": [ { "id": 1, "status": "pending", ... } ] }'
         headers: []
         description: ''
         custom: []
@@ -406,7 +639,7 @@ endpoints:
         Endpoints para gerenciar solicitações de acesso de visitantes.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Detalhes de uma solicitação.'
+      title: 'Exibir detalhes de uma solicitação de acesso.'
       description: ''
       authenticated: false
       custom: []
@@ -416,16 +649,27 @@ endpoints:
     urlParameters:
       id:
         name: id
-        description: 'ID da solicitação.'
-        required: false
-        example: 1
+        description: 'The ID of the access request.'
+        required: true
+        example: 16
         type: integer
         enumValues: []
-        exampleWasSpecified: true
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      access_request:
+        name: access_request
+        description: 'ID da solicitação de acesso.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
         nullable: false
         custom: []
     cleanUrlParameters:
-      id: 1
+      id: 16
+      access_request: 16
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -434,10 +678,7 @@ endpoints:
     responses:
       -
         status: 200
-        content: |
-          {
-              "message": "Funcionalidade em desenvolvimento"
-          }
+        content: '{ "id": 1, "status": "pending", ... }'
         headers: []
         description: ''
         custom: []
@@ -450,7 +691,7 @@ endpoints:
   -
     httpMethods:
       - POST
-    uri: 'api/access-control/access-requests/{access_request}/respond'
+    uri: 'api/access-control/access-requests/{access_request_id}/respond'
     metadata:
       groupName: 'Controle de Acessos'
       groupDescription: |-
@@ -466,29 +707,29 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      access_request:
-        name: access_request
-        description: ''
+      access_request_id:
+        name: access_request_id
+        description: 'The ID of the access request.'
         required: true
-        example: architecto
-        type: string
+        example: 16
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
-      id:
-        name: id
+      access_request:
+        name: access_request
         description: 'ID da solicitação.'
         required: false
-        example: 1
+        example: 16
         type: integer
         enumValues: []
-        exampleWasSpecified: true
+        exampleWasSpecified: false
         nullable: false
         custom: []
     cleanUrlParameters:
-      access_request: architecto
-      id: 1
+      access_request_id: 16
+      access_request: 16
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -510,7 +751,7 @@ endpoints:
         type: string
         enumValues: []
         exampleWasSpecified: true
-        nullable: false
+        nullable: true
         custom: []
     cleanBodyParameters:
       response: authorized
@@ -519,10 +760,7 @@ endpoints:
     responses:
       -
         status: 200
-        content: |
-          {
-              "message": "Funcionalidade em desenvolvimento"
-          }
+        content: '{ "message": "Resposta registrada com sucesso!" }'
         headers: []
         description: ''
         custom: []
@@ -535,7 +773,7 @@ endpoints:
   -
     httpMethods:
       - POST
-    uri: 'api/access-control/access-requests/{access_request}/record-entry'
+    uri: 'api/access-control/access-requests/{access_request_id}/record-entry'
     metadata:
       groupName: 'Controle de Acessos'
       groupDescription: |-
@@ -551,29 +789,29 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      access_request:
-        name: access_request
-        description: ''
+      access_request_id:
+        name: access_request_id
+        description: 'The ID of the access request.'
         required: true
-        example: architecto
-        type: string
+        example: 16
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
-      id:
-        name: id
+      access_request:
+        name: access_request
         description: 'ID da solicitação.'
         required: false
-        example: 1
+        example: 16
         type: integer
         enumValues: []
-        exampleWasSpecified: true
+        exampleWasSpecified: false
         nullable: false
         custom: []
     cleanUrlParameters:
-      access_request: architecto
-      id: 1
+      access_request_id: 16
+      access_request: 16
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -585,7 +823,7 @@ endpoints:
         type: integer
         enumValues: []
         exampleWasSpecified: true
-        nullable: false
+        nullable: true
         custom: []
       gatehouse_entry_observation:
         name: gatehouse_entry_observation
@@ -595,7 +833,7 @@ endpoints:
         type: string
         enumValues: []
         exampleWasSpecified: true
-        nullable: false
+        nullable: true
         custom: []
     cleanBodyParameters:
       parking_spot_id: 5
@@ -604,10 +842,7 @@ endpoints:
     responses:
       -
         status: 200
-        content: |
-          {
-              "message": "Funcionalidade em desenvolvimento"
-          }
+        content: '{ "message": "Entrada registrada com sucesso!" }'
         headers: []
         description: ''
         custom: []
@@ -620,7 +855,7 @@ endpoints:
   -
     httpMethods:
       - POST
-    uri: 'api/access-control/access-requests/{access_request}/record-exit'
+    uri: 'api/access-control/access-requests/{access_request_id}/record-exit'
     metadata:
       groupName: 'Controle de Acessos'
       groupDescription: |-
@@ -636,29 +871,29 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      access_request:
-        name: access_request
-        description: ''
+      access_request_id:
+        name: access_request_id
+        description: 'The ID of the access request.'
         required: true
-        example: architecto
-        type: string
+        example: 16
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
-      id:
-        name: id
+      access_request:
+        name: access_request
         description: 'ID da solicitação.'
         required: false
-        example: 1
+        example: 16
         type: integer
         enumValues: []
-        exampleWasSpecified: true
+        exampleWasSpecified: false
         nullable: false
         custom: []
     cleanUrlParameters:
-      access_request: architecto
-      id: 1
+      access_request_id: 16
+      access_request: 16
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -670,7 +905,7 @@ endpoints:
         type: string
         enumValues: []
         exampleWasSpecified: true
-        nullable: false
+        nullable: true
         custom: []
     cleanBodyParameters:
       gatehouse_exit_observation: '"Saída registrada"'
@@ -678,10 +913,7 @@ endpoints:
     responses:
       -
         status: 200
-        content: |
-          {
-              "message": "Funcionalidade em desenvolvimento"
-          }
+        content: '{ "message": "Saída registrada com sucesso!" }'
         headers: []
         description: ''
         custom: []
@@ -694,7 +926,7 @@ endpoints:
   -
     httpMethods:
       - POST
-    uri: 'api/access-control/access-requests/{access_request}/cancel'
+    uri: 'api/access-control/access-requests/{access_request_id}/cancel'
     metadata:
       groupName: 'Controle de Acessos'
       groupDescription: |-
@@ -710,29 +942,29 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      access_request:
-        name: access_request
-        description: ''
+      access_request_id:
+        name: access_request_id
+        description: 'The ID of the access request.'
         required: true
-        example: architecto
-        type: string
+        example: 16
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
-      id:
-        name: id
+      access_request:
+        name: access_request
         description: 'ID da solicitação.'
         required: false
-        example: 1
+        example: 16
         type: integer
         enumValues: []
-        exampleWasSpecified: true
+        exampleWasSpecified: false
         nullable: false
         custom: []
     cleanUrlParameters:
-      access_request: architecto
-      id: 1
+      access_request_id: 16
+      access_request: 16
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -744,7 +976,7 @@ endpoints:
         type: string
         enumValues: []
         exampleWasSpecified: true
-        nullable: false
+        nullable: true
         custom: []
     cleanBodyParameters:
       cancellation_observation: '"Visitante não compareceu"'
@@ -752,10 +984,7 @@ endpoints:
     responses:
       -
         status: 200
-        content: |
-          {
-              "message": "Funcionalidade em desenvolvimento"
-          }
+        content: '{ "message": "Solicitação cancelada com sucesso!" }'
         headers: []
         description: ''
         custom: []

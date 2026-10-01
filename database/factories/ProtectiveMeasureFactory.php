@@ -2,12 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\Condominium;
 use App\Models\ProtectiveMeasure;
 use App\Models\User;
 use App\Models\Visitor;
-use App\Models\Condominium;
-use Illuminate\Database\Eloquent\Factories\Factory;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ProtectiveMeasure>
@@ -134,4 +134,4 @@ class ProtectiveMeasureFactory extends Factory
             'is_active' => false,
         ]);
     }
-} 
+}

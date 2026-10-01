@@ -10,6 +10,11 @@ trait SmartOrdering
      */
     public function scopeOrderByNameSmart($query)
     {
+        $driver = $query->getConnection()->getDriverName();
+        if ($driver === 'sqlite') {
+            return $query->orderBy('name');
+        }
+
         return $query->orderByRaw("
             CASE 
                 WHEN name REGEXP '^[0-9]+$' THEN 0 
@@ -28,6 +33,11 @@ trait SmartOrdering
      */
     public function scopeOrderByFieldSmart($query, $field)
     {
+        $driver = $query->getConnection()->getDriverName();
+        if ($driver === 'sqlite') {
+            return $query->orderBy($field);
+        }
+
         return $query->orderByRaw("
             CASE 
                 WHEN {$field} REGEXP '^[0-9]+$' THEN 0 
@@ -39,4 +49,4 @@ trait SmartOrdering
             END
         ");
     }
-} 
+}

@@ -2,34 +2,42 @@
   <AuthenticatedLayout page-title="Dashboard">
     <TopCard
       v-if="selectedCondoName"
-      title="Dashboard"
-      :subtitle="selectedCondoName"
+      title="Visão Geral"
+      :subtitle="`Condomínio: ${selectedCondoName}`"
       :icon="BuildingIcon"
     >
       <template #actions>
-        <button @click="changeCondominium" class="px-2 py-1 text-xs bg-cyan-600/20 text-cyan-300 rounded hover:bg-cyan-600/40 transition-colors">
-          Trocar
-        </button>
+        <AppButton @click="changeCondominium" size="sm" variant="secondary">
+          <svg class="h-4 w-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+          </svg>
+          Trocar Condomínio
+        </AppButton>
       </template>
     </TopCard>
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <div class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl shadow-xl p-8 border-2 border-cyan-500/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-        <h3 class="text-lg font-medium text-cyan-300">Total de Unidades</h3>
-        <p class="mt-2 text-4xl font-bold text-cyan-400 drop-shadow">{{ condoStats.apartments_count }}</p>
-      </div>
-      <div class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl shadow-xl p-8 border-2 border-green-500/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-        <h3 class="text-lg font-medium text-green-300">Total de Moradores</h3>
-        <p class="mt-2 text-4xl font-bold text-green-400 drop-shadow">{{ condoStats.residents_count }}</p>
-      </div>
-      <div class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl shadow-xl p-8 border-2 border-blue-500/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-        <h3 class="text-lg font-medium text-blue-300">Vagas de Garagem</h3>
-        <p class="mt-2 text-4xl font-bold text-blue-400 drop-shadow">{{ condoStats.parking_spots_count }}</p>
-      </div>
-      <div class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl shadow-xl p-8 border-2 border-red-500/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-        <h3 class="text-lg font-medium text-red-300">Chamados Abertos</h3>
-        <p class="mt-2 text-4xl font-bold text-red-400 drop-shadow">N/A</p>
-      </div>
+
+    <!-- Stats Cards Sóbrios e Consistentes -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
+      <StatsCard
+        label="Total de Unidades"
+        :value="condoStats.apartments_count"
+        variant="primary"
+      />
+      <StatsCard
+        label="Total de Moradores"
+        :value="condoStats.residents_count"
+        variant="green"
+      />
+      <StatsCard
+        label="Vagas de Garagem"
+        :value="condoStats.parking_spots_count"
+        variant="blue"
+      />
+      <StatsCard
+        label="Chamados Abertos"
+        value="0"
+        variant="orange"
+      />
     </div>
   </AuthenticatedLayout>
 </template>
@@ -37,6 +45,8 @@
 <script>
 import AuthenticatedLayout from './layouts/AuthenticatedLayout.vue';
 import TopCard from './ui/TopCard.vue';
+import StatsCard from './ui/StatsCard.vue';
+import AppButton from './ui/AppButton.vue';
 import { ref, onMounted, onUnmounted, h } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '../utils/api';
@@ -48,6 +58,8 @@ export default {
   components: {
     AuthenticatedLayout,
     TopCard,
+    StatsCard,
+    AppButton
   },
   setup() {
     const router = useRouter();

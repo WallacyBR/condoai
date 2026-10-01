@@ -1,5 +1,5 @@
 <template>
-  <AuthenticatedLayout>
+  <AuthenticatedLayout page-title="Editar Ocorrência">
     <OccurrenceForm />
   </AuthenticatedLayout>
 </template>

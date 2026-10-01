@@ -1,37 +1,21 @@
 import { mount } from '@vue/test-utils';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import BudgetView from '../js/finance/BudgetView.vue';
 import api from '../js/utils/api';
 import { useUser } from '../js/composables/useUser';
 import { useToast } from '../js/composables/useToast';
-import { mountOptionsWithLayoutStubs } from './helpers/mountWithLayoutStubs.js';
 
-vi.mock('../js/utils/api', () => ({
-  default: {
-    get: vi.fn(),
-    post: vi.fn(),
-  },
-}));
-
-vi.mock('../js/composables/useUser', () => ({
-  useUser: vi.fn(() => ({
+// Mocking composables
+jest.mock('../js/utils/api');
+jest.mock('../js/composables/useUser', () => ({
+  useUser: jest.fn(() => ({
     user: { value: { condominium_id: 1 } },
-    setUser: vi.fn(),
-  })),
+    setUser: jest.fn()
+  }))
 }));
-
-vi.mock('../js/composables/useToast', () => ({
-  useToast: vi.fn(() => ({
-    showToast: vi.fn(),
-  })),
-}));
-
-vi.mock('../js/services/auth', () => ({
-  default: {
-    getToken: vi.fn(() => null),
-    refreshToken: vi.fn(),
-    logout: vi.fn(),
-  },
+jest.mock('../js/composables/useToast', () => ({
+  useToast: jest.fn(() => ({
+    showToast: jest.fn()
+  }))
 }));
 
 describe('BudgetView.vue', () => {
@@ -40,7 +24,7 @@ describe('BudgetView.vue', () => {
 
   beforeEach(() => {
     // Reset mocks before each test
-    vi.clearAllMocks();
+    jest.clearAllMocks();
 
     // Setup mock return values for composables
     mockUser = {
@@ -51,7 +35,7 @@ describe('BudgetView.vue', () => {
     useUser.mockReturnValue({ user: mockUser });
 
     mockToast = {
-      showToast: vi.fn(),
+      showToast: jest.fn(),
     };
     useToast.mockReturnValue(mockToast);
 
@@ -79,14 +63,15 @@ describe('BudgetView.vue', () => {
   });
 
   it('renders the component and loads initial data', async () => {
-    const wrapper = mount(BudgetView, mountOptionsWithLayoutStubs({
+    const wrapper = mount(BudgetView, {
       global: {
         stubs: {
-          TopCard: true,
-          NeonButton: true,
+          AuthenticatedLayout: { template: '<main><slot /></main>' },
+          TopCard: { template: '<section><slot /><slot name="actions" /></section>' },
+          NeonButton: { template: '<button><slot /></button>' },
         },
       },
-    }));
+    });
 
     // Wait for the component to finish its async operations
     await wrapper.vm.$nextTick();
@@ -102,16 +87,17 @@ describe('BudgetView.vue', () => {
   });
 
   it('allows editing a budget item and saving', async () => {
-    const wrapper = mount(BudgetView, mountOptionsWithLayoutStubs({
+    const wrapper = mount(BudgetView, {
       global: {
         stubs: {
-          TopCard: true,
+          AuthenticatedLayout: { template: '<main><slot /></main>' },
+          TopCard: { template: '<section><slot /><slot name="actions" /></section>' },
           NeonButton: {
             template: '<button @click="$emit(\'click\')"><slot/></button>',
           },
         },
       },
-    }));
+    });
 
     // Wait for async operations
     await wrapper.vm.$nextTick();
@@ -132,7 +118,6 @@ describe('BudgetView.vue', () => {
 
     // Check if the API was called with the correct payload
     expect(api.post).toHaveBeenCalledWith('/finance/budget-items/bulk', expect.objectContaining({
-      condominium_id: 1,
       items: expect.arrayContaining([
         expect.objectContaining({
           chart_account_id: '2', // Manutenção
@@ -146,6 +131,7 @@ describe('BudgetView.vue', () => {
         })
       ]),
     }));
+    expect(api.post.mock.calls[api.post.mock.calls.length - 1][1]).not.toHaveProperty('condominium_id');
 
     // Check for success toast
     expect(mockToast.showToast).toHaveBeenCalledWith('Orçamento salvo com sucesso!', 'success');

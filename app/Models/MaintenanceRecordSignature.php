@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\CondominiumScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Scopes\CondominiumScope;
 
 class MaintenanceRecordSignature extends Model
 {
@@ -26,7 +26,7 @@ class MaintenanceRecordSignature extends Model
      */
     protected static function booted(): void
     {
-        static::addGlobalScope(new CondominiumScope());
+        static::addGlobalScope(new CondominiumScope);
     }
 
     public function condominium()

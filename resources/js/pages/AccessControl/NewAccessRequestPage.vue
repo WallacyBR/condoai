@@ -22,7 +22,7 @@
               id="visitor_document_search"
               v-model="searchDocument"
               @keyup.enter="searchVisitor"
-              @blur="searchVisitor" <!-- Adicionado para verificar ao sair do campo -->
+              @blur="searchVisitor"
               placeholder="Digite o número do documento"
               class="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors"
             />
@@ -40,7 +40,7 @@
         <div class="flex flex-col items-center">
           <svg class="h-12 w-12 text-red-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
           <h3 class="text-xl font-semibold text-red-300">ALERTA DE MEDIDA PROTETIVA ATIVA!</h3>
-          <p class="text-red-200 mt-1">Este visitante possui uma medida protetiva ativa contra o morador selecionado.</p>
+          <p class="text-red-200 mt-1">Este visitante possui uma medida protetiva ativa vinculada ao cadastro.</p>
           <p class="text-red-200">A criação da solicitação de acesso está bloqueada.</p>
         </div>
       </div>
@@ -117,15 +117,14 @@
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
           <div>
-            <label for="resident_id" class="block text-sm font-medium text-gray-300 mb-1">Morador de Destino *</label>
-            <!-- TODO: Usar um componente de select/busca para moradores -->
-            <select id="resident_id" v-model="form.resident_id" @change="checkProtectiveMeasure" required class="form-input">
-              <option disabled value="">Selecione o morador</option>
-              <option v-for="resident in residents" :key="resident.id" :value="resident.id">
-                {{ resident.name }} ({{ resident.email }})
+            <label for="apartment_id" class="block text-sm font-medium text-gray-300 mb-1">Unidade de Destino *</label>
+            <select id="apartment_id" v-model="form.apartment_id" required class="form-input">
+              <option disabled value="">Selecione a unidade</option>
+              <option v-for="apartment in apartments" :key="apartment.id" :value="apartment.id">
+                {{ formatApartment(apartment) }}
               </option>
             </select>
-             <p v-if="loadingResidents" class="text-xs text-cyan-400 mt-1">Carregando moradores...</p>
+             <p v-if="loadingApartments" class="text-xs text-cyan-400 mt-1">Carregando unidades...</p>
           </div>
           <div class="md:col-span-2">
             <label for="gatehouse_observation" class="block text-sm font-medium text-gray-300 mb-1">Observações da Portaria</label>
@@ -174,7 +173,7 @@ const form = reactive({
   vehicle_model: '',
   vehicle_color: '',
 
-  resident_id: '',
+  apartment_id: '',
   gatehouse_observation: '',
 });
 
@@ -186,21 +185,29 @@ const searchError = ref('');
 const submitting = ref(false);
 const protectiveMeasureAlert = ref(false);
 
-const residents = ref([]);
-const loadingResidents = ref(false);
+const apartments = ref([]);
+const loadingApartments = ref(false);
 
-const fetchResidents = async () => {
-  loadingResidents.value = true;
+const fetchApartments = async () => {
+  loadingApartments.value = true;
   try {
-    // Idealmente, esta rota teria paginação ou um limite, ou um select com busca
-    const response = await api.get('/users?profile_type=resident&per_page=1000'); // Exemplo, ajustar endpoint
-    residents.value = response.data.data || response.data; // Ajustar conforme estrutura da API de users
+    const response = await api.get('/apartments');
+    apartments.value = response.data.data || response.data || [];
   } catch (e) {
-    console.error("Erro ao buscar moradores:", e);
-    errorToast('Não foi possível carregar a lista de moradores.');
+    console.error("Erro ao buscar unidades:", e);
+    errorToast('Não foi possível carregar a lista de unidades.');
   } finally {
-    loadingResidents.value = false;
+    loadingApartments.value = false;
   }
+};
+
+const formatApartment = (apartment) => {
+  const structure = [apartment.tower?.name, apartment.block?.name].filter(Boolean).join(' / ');
+  const resident = apartment.resident?.name || apartment.owner?.name || apartment.tenant?.name;
+  return [
+    structure ? `${structure} - Unidade ${apartment.number}` : `Unidade ${apartment.number}`,
+    resident ? `(${resident})` : null,
+  ].filter(Boolean).join(' ');
 };
 
 const searchVisitor = async () => {
@@ -212,7 +219,7 @@ const searchVisitor = async () => {
   searchError.value = '';
   protectiveMeasureAlert.value = false; // Resetar alerta ao buscar novo visitante
   try {
-    const response = await api.get(`/api/access-control/visitors/search-by-document?document=${searchDocument.value.trim()}`);
+    const response = await api.get(`/access-control/visitors/search-by-document?document=${searchDocument.value.trim()}`);
     const visitor = response.data;
     form.visitor_id = visitor.id;
     form.visitor_name = visitor.name;
@@ -221,7 +228,7 @@ const searchVisitor = async () => {
     form.visitor_observations = visitor.observations || '';
     // TODO: Lidar com foto do visitante e veículos existentes (selecionar ou adicionar novo)
     successToast(`Visitante "${visitor.name}" encontrado.`);
-    await checkProtectiveMeasure(); // Verificar medida protetiva se morador já estiver selecionado
+    await checkProtectiveMeasure();
   } catch (e) {
     if (e.response && e.response.status === 404) {
       searchError.value = 'Visitante não encontrado. Preencha os dados para cadastrá-lo.';
@@ -272,7 +279,6 @@ const checkProtectiveMeasure = async () => {
   }
 };
 
-watch(() => form.resident_id, checkProtectiveMeasure);
 // Se o visitor_id mudar (após busca), também verificar
 watch(() => form.visitor_id, checkProtectiveMeasure);
 
@@ -303,7 +309,8 @@ const submitNewAccessRequest = async () => {
     if (form.visitor_vehicle_id) formData.append('visitor_vehicle_id', form.visitor_vehicle_id);
   }
 
-  formData.append('resident_id', form.resident_id);
+  formData.append('apartment_id', form.apartment_id);
+  formData.append('visit_date', new Date().toISOString());
   if (form.gatehouse_observation) formData.append('gatehouse_observation', form.gatehouse_observation);
 
   try {
@@ -338,7 +345,7 @@ const goBack = () => {
 };
 
 onMounted(() => {
-  fetchResidents();
+  fetchApartments();
 });
 
 </script>

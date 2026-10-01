@@ -10,7 +10,7 @@ enum ResidentClassification: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::PROPRIETARIO => 'Proprietário',
             self::MORADOR => 'Morador',
             self::INQUILINO => 'Inquilino',
@@ -19,7 +19,7 @@ enum ResidentClassification: string
 
     public function description(): string
     {
-        return match($this) {
+        return match ($this) {
             self::PROPRIETARIO => 'Proprietário do imóvel (pode ser morador ou não)',
             self::MORADOR => 'Pessoa que reside no imóvel',
             self::INQUILINO => 'Pessoa que aluga o imóvel',
@@ -34,4 +34,4 @@ enum ResidentClassification: string
             self::INQUILINO->value => self::INQUILINO->label(),
         ];
     }
-} 
+}

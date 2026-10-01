@@ -15,11 +15,11 @@ return new class extends Migration
             // Dados básicos
             $table->string('rg')->nullable()->after('name');
             $table->string('cpf')->nullable()->after('rg');
-            
+
             // Contato - usar cell_phone se existir, senão phone
             $afterPhoneColumn = Schema::hasColumn('residents', 'cell_phone') ? 'cell_phone' : 'phone';
             $table->string('whatsapp')->nullable()->after($afterPhoneColumn);
-            
+
             // Endereço para boletos
             $table->enum('billing_address_type', ['condominium', 'custom'])->default('condominium')->after('whatsapp');
             $table->string('cep')->nullable()->after('billing_address_type');
@@ -45,7 +45,7 @@ return new class extends Migration
                 'address',
                 'neighborhood',
                 'city',
-                'state'
+                'state',
             ]);
         });
     }

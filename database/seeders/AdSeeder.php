@@ -2,13 +2,13 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\Ad;
-use App\Models\Resident;
-use App\Models\Condominium;
 use App\Enums\AdCategory;
 use App\Enums\AdCondition;
 use App\Enums\AdStatus;
+use App\Models\Ad;
+use App\Models\Condominium;
+use App\Models\Resident;
+use Illuminate\Database\Seeder;
 
 class AdSeeder extends Seeder
 {
@@ -18,16 +18,18 @@ class AdSeeder extends Seeder
     public function run(): void
     {
         $condominiums = Condominium::all();
-        
+
         if ($condominiums->isEmpty()) {
             $this->command->warn('Nenhum condomínio encontrado. Execute primeiro o CustomCondominiumResidentsSeeder.');
+
             return;
         }
 
         $residents = Resident::all();
-        
+
         if ($residents->isEmpty()) {
             $this->command->warn('Nenhum morador encontrado. Execute primeiro o CustomCondominiumResidentsSeeder.');
+
             return;
         }
 
@@ -108,26 +110,27 @@ class AdSeeder extends Seeder
 
         foreach ($condominiums as $condominium) {
             $condoResidents = $residents->where('condominium_id', $condominium->id);
-            
+
             if ($condoResidents->isEmpty()) {
                 continue;
             }
 
             foreach ($adsData as $adData) {
                 $resident = $condoResidents->random();
-                
+
                 // Buscar um usuário associado ao condomínio
                 $user = \App\Models\User::where('condominium_id', $condominium->id)->first();
-                if (!$user) {
+                if (! $user) {
                     // Se não encontrar usuário do condomínio, usar o primeiro usuário disponível
                     $user = \App\Models\User::first();
                 }
-                
-                if (!$user) {
+
+                if (! $user) {
                     $this->command->warn('Nenhum usuário encontrado. Pulando criação de anúncios.');
+
                     continue;
                 }
-                
+
                 Ad::firstOrCreate(
                     [
                         'title' => $adData['title'],
@@ -147,6 +150,6 @@ class AdSeeder extends Seeder
             }
         }
 
-        $this->command->info('Anúncios classificados criados com sucesso para ' . $condominiums->count() . ' condomínio(s)!');
+        $this->command->info('Anúncios classificados criados com sucesso para '.$condominiums->count().' condomínio(s)!');
     }
-} 
+}

@@ -39,6 +39,7 @@ class ProfileController extends Controller
             ->mapWithKeys(function ($m) {
                 $id = $m['id'];
                 unset($m['id']);
+
                 return [$id => [
                     'can_view' => $m['can_view'] ?? false,
                     'can_create' => $m['can_create'] ?? false,
@@ -97,6 +98,7 @@ class ProfileController extends Controller
             ->mapWithKeys(function ($m) {
                 $id = $m['id'];
                 unset($m['id']);
+
                 return [$id => [
                     'can_view' => $m['can_view'] ?? false,
                     'can_create' => $m['can_create'] ?? false,
@@ -121,7 +123,7 @@ class ProfileController extends Controller
             })->toArray();
         }
 
-        if (!empty($modules)) {
+        if (! empty($modules)) {
             $profile->modules()->sync($modules);
         }
 

@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Models\OccurrencePhoto;
 use App\Models\Occurrence;
+use App\Models\OccurrencePhoto;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class OccurrencePhotoFactory extends Factory
 {

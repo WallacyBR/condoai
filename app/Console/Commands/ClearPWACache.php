@@ -2,10 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
 use Exception;
+use Illuminate\Console\Command;
 
 class ClearPWACache extends Command
 {
@@ -46,17 +44,18 @@ class ClearPWACache extends Command
             $this->generateCacheClearScript();
 
             $this->info('✅ Limpeza de cache PWA concluída com sucesso!');
-            
+
             if ($this->option('force')) {
                 $this->warn('⚠️ Modo force ativado - todos os caches foram forçadamente removidos');
             }
-            
+
             $this->info('💡 Dica: Para mostrar o banner de instalação novamente, use o console do navegador:');
             $this->info('   window.forceShowPWABanner() // em desenvolvimento');
             $this->info('   localStorage.removeItem("pwa-banner-dismissed") // em produção');
 
         } catch (Exception $e) {
-            $this->error('❌ Erro durante a limpeza: ' . $e->getMessage());
+            $this->error('❌ Erro durante a limpeza: '.$e->getMessage());
+
             return Command::FAILURE;
         }
 
@@ -86,4 +85,4 @@ class ClearPWACache extends Command
         // Implemente a lógica para gerar um script de limpeza de cache
         $this->info('✅ Cache do navegador limpo');
     }
-} 
+}

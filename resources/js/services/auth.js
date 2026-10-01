@@ -5,6 +5,7 @@ import {
     markTenantHydrationPending,
     resolveTenantHydration,
 } from '../utils/tenant';
+import { getPasskeyCredential } from '../utils/webauthn';
 
 // Lazy import do router para evitar dependência circular
 let router = null;
@@ -42,7 +43,6 @@ class AuthService {
             }).join(''));
             return JSON.parse(jsonPayload);
         } catch (e) {
-            console.error('Erro ao decodificar token:', e);
             return null;
         }
     }
@@ -54,7 +54,6 @@ class AuthService {
 
         const decoded = this.decodeToken(this.token);
         if (!decoded || !decoded.exp) {
-            console.warn('Token inválido ou sem expiração, removendo...');
             this.logout();
             return;
         }
@@ -65,7 +64,6 @@ class AuthService {
         
         // Se o token já expirou, fazer refresh imediatamente
         if (timeUntilExpiry <= 0) {
-            console.log('Token expirado, fazendo refresh imediato');
             this.refreshToken();
             return;
         }
@@ -74,10 +72,8 @@ class AuthService {
         const refreshTime = timeUntilExpiry - (5 * 60 * 1000);
         
         if (refreshTime > 0) {
-            console.log(`Agendando refresh do token em ${Math.round(refreshTime / 1000 / 60)} minutos`);
             this.refreshTimeout = setTimeout(() => this.refreshToken(), refreshTime);
         } else {
-            console.log('Token expira em menos de 5 minutos, fazendo refresh imediato');
             this.refreshToken();
         }
     }
@@ -102,6 +98,8 @@ class AuthService {
                 } finally {
                     resolveTenantHydration();
                 }
+
+                this.syncCurrentCondominium(response.data);
                 
                 return response.data;
             }
@@ -111,21 +109,39 @@ class AuthService {
         }
     }
 
+    async loginWithPasskey(email = '') {
+        const optionsResponse = await api.post('/auth/passkeys/login/options', { email: email || null });
+        const credential = await getPasskeyCredential(optionsResponse.data.publicKey);
+        const response = await api.post('/auth/passkeys/login/verify', {
+            token: optionsResponse.data.token,
+            credential
+        });
+
+        if (response.data && response.data.authorization && response.data.authorization.token) {
+            this.token = response.data.authorization.token;
+            localStorage.setItem('token', this.token);
+            this.setupTokenRefresh();
+            await this.fetchCurrentUser();
+            this.syncCurrentCondominium(response.data);
+
+            return response.data;
+        }
+
+        throw new Error('Token não recebido no login por passkey');
+    }
+
     async refreshToken() {
         // Se já há um refresh em andamento, aguardar o resultado
         if (this.refreshPromise) {
-            console.log('Refresh já em andamento, aguardando resultado...');
             return await this.refreshPromise;
         }
 
         // Evitar múltiplos refreshes simultâneos
         if (this.isRefreshing) {
-            console.log('Refresh já em andamento, aguardando...');
             return false;
         }
 
         this.isRefreshing = true;
-        console.log('Iniciando refresh do token...');
 
         // Criar promise para sincronizar múltiplas tentativas
         this.refreshPromise = this._performRefresh();
@@ -145,15 +161,13 @@ class AuthService {
                 this.token = response.data.authorization.token;
                 localStorage.setItem('token', this.token);
                 this.setupTokenRefresh();
+                this.syncCurrentCondominium(response.data);
                 await this.fetchCurrentUser();
-                console.log('Token refreshado com sucesso');
                 return true;
             }
-            console.warn('Resposta inválida no refresh do token');
             await this._handleAuthFailure();
             return false;
         } catch (error) {
-            console.error('Erro no refresh do token:', error);
             await this._handleAuthFailure();
             return false;
         } finally {
@@ -170,15 +184,25 @@ class AuthService {
         try {
             const response = await api.get('/auth/me');
             this.setUser(response.data);
+            this.syncCurrentCondominium({ user: response.data });
             return this.hydrateTenant(response.data);
         } catch (error) {
             console.error('Erro ao obter dados do usuário:', error);
+            this.setUser(null);
             return { needsSelection: true };
         }
     }
 
+    syncCurrentCondominium(payload) {
+        const condominium = payload?.current_condominium || payload?.user?.condominium;
+
+        if (condominium) {
+            localStorage.setItem('selectedCondominium', condominium.id);
+            localStorage.setItem('selectedCondominiumName', condominium.name);
+        }
+    }
+
     async _handleAuthFailure() {
-        console.log('Falha na autenticação, limpando estado...');
         if (this.refreshTimeout) {
             clearTimeout(this.refreshTimeout);
         }
@@ -199,20 +223,15 @@ class AuthService {
     }
 
     async logout() {
-        console.log('Fazendo logout...');
-        
         // Verificar se deve fazer chamada para API
         const shouldCallLogoutApi = this.token && this.isAuthenticated();
         
         if (shouldCallLogoutApi) {
             try {
                 await api.post('/auth/logout');
-                console.log('Logout na API realizado com sucesso');
             } catch (error) {
-                console.error('Erro no logout (ignorado, continuando com logout local):', error);
+                // O logout local deve continuar mesmo se a API recusar ou estiver indisponível.
             }
-        } else {
-            console.log('Token inválido/expirado, fazendo apenas logout local');
         }
         
         // Usar método centralizado para limpeza
@@ -231,6 +250,19 @@ class AuthService {
 
     getToken() {
         return this.token;
+    }
+    async fetchCurrentCondominium() {
+        try {
+            const response = await api.get('/auth/current-condominium');
+            if (response.data && response.data.current_condominium) {
+                localStorage.setItem('selectedCondominium', response.data.current_condominium.id);
+                localStorage.setItem('selectedCondominiumName', response.data.current_condominium.name);
+                return response.data.current_condominium;
+            }
+            return null;
+        } catch (error) {
+            return null;
+        }
     }
 }
 

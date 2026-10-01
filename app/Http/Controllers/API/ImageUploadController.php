@@ -19,9 +19,9 @@ class ImageUploadController extends Controller
         try {
             // Decodificar base64
             $imageData = $request->input('image');
-            
+
             // Verificar se é uma imagem base64 válida
-            if (!preg_match('/^data:image\/(\w+);base64,/', $imageData, $matches)) {
+            if (! preg_match('/^data:image\/(\w+);base64,/', $imageData, $matches)) {
                 return response()->json(['error' => 'Formato de imagem inválido'], 400);
             }
 
@@ -40,7 +40,7 @@ class ImageUploadController extends Controller
 
             // Gerar nome único para o arquivo
             $folder = $request->input('folder', 'residents');
-            $filename = Str::uuid() . '.' . $imageType;
+            $filename = Str::uuid().'.'.$imageType;
             $path = "public/images/{$folder}/{$filename}";
 
             // Salvar arquivo
@@ -53,12 +53,12 @@ class ImageUploadController extends Controller
                 'success' => true,
                 'url' => $url,
                 'filename' => $filename,
-                'path' => $path
+                'path' => $path,
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Erro ao fazer upload da imagem: ' . $e->getMessage()
+                'error' => 'Erro ao fazer upload da imagem: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -71,13 +71,14 @@ class ImageUploadController extends Controller
 
         try {
             $url = $request->input('url');
-            
+
             // Extrair caminho do arquivo da URL
             $path = str_replace('/storage/', 'public/', $url);
-            
+
             // Verificar se o arquivo existe
             if (Storage::exists($path)) {
                 Storage::delete($path);
+
                 return response()->json(['success' => true, 'message' => 'Imagem deletada com sucesso']);
             } else {
                 return response()->json(['error' => 'Arquivo não encontrado'], 404);
@@ -85,8 +86,8 @@ class ImageUploadController extends Controller
 
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Erro ao deletar imagem: ' . $e->getMessage()
+                'error' => 'Erro ao deletar imagem: '.$e->getMessage(),
             ], 500);
         }
     }
-} 
+}

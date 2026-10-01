@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\MaintenanceEquipment;
 use App\Models\Condominium;
 use App\Models\MaintenanceArea;
+use App\Models\MaintenanceEquipment;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -25,9 +25,9 @@ class MaintenanceEquipmentFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->words(2, true) . ' ' . $this->faker->randomElement(['Pump', 'Generator', 'Elevator', 'Filter']),
+            'name' => $this->faker->words(2, true).' '.$this->faker->randomElement(['Pump', 'Generator', 'Elevator', 'Filter']),
             'description' => $this->faker->sentence,
-            'location_details' => $this->faker->word . ' Room - ' . $this->faker->buildingNumber,
+            'location_details' => $this->faker->word.' Room - '.$this->faker->buildingNumber,
             'qr_code_hash' => Str::random(32),
             'qr_code_access_level' => $this->faker->randomElement(['public', 'internal_users', 'specific_users']),
             'condominium_id' => Condominium::factory(),

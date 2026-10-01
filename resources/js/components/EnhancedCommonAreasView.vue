@@ -320,6 +320,7 @@ import AuthenticatedLayout from './layouts/AuthenticatedLayout.vue';
 import NeonButton from './NeonButton.vue';
 import CommonAreaForm from './CommonAreaForm.vue';
 import CommonAreaCalendar from './CommonAreaCalendar.vue';
+import { apiRequest } from '../utils/api';
 
 export default {
   name: 'EnhancedCommonAreasView',
@@ -339,9 +340,7 @@ export default {
     const showCalendar = ref(false);
     const selectedArea = ref(null);
 
-    // Estado do condomínio selecionado
-    const selectedCondominiumId = ref(localStorage.getItem('selectedCondominium'));
-    const selectedCondominiumName = ref(localStorage.getItem('selectedCondominiumName'));
+    const selectedCondominiumName = ref(localStorage.getItem('selectedCondominiumName') || 'Condomínio atual');
 
     // Computed properties
     const filteredAreas = computed(() => {
@@ -375,28 +374,10 @@ export default {
         loading.value = true;
         error.value = '';
         
-        const token = localStorage.getItem('token');
-        const condo = localStorage.getItem('selectedCondominium');
-        
-        if (!condo) {
-          areas.value = [];
-          return;
-        }
-
-        const response = await fetch(`/api/common-areas?condominium_id=${condo}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (response.ok) {
-          areas.value = await response.json();
-        } else {
-          error.value = 'Erro ao carregar áreas comuns';
-        }
+        const data = await apiRequest('/common-areas');
+        areas.value = Array.isArray(data) ? data : (data?.data || []);
       } catch (e) {
-        error.value = 'Erro de conexão';
+        error.value = e.message || 'Erro ao carregar áreas comuns';
       } finally {
         loading.value = false;
       }
@@ -432,22 +413,10 @@ export default {
       }
 
       try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`/api/common-areas/${area.id}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (response.ok) {
-          await loadAreas();
-        } else {
-          error.value = 'Erro ao excluir área comum';
-        }
+        await apiRequest(`/common-areas/${area.id}`, { method: 'DELETE' });
+        await loadAreas();
       } catch (e) {
-        error.value = 'Erro de conexão';
+        error.value = e.message || 'Erro ao excluir área comum';
       }
     };
 
@@ -501,4 +470,4 @@ export default {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-</style> 
+</style>

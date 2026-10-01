@@ -1,6 +1,21 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl shadow-2xl overflow-hidden p-8 border-2 border-cyan-500/20">
+  <div class="relative min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 overflow-hidden bg-gray-950">
+    <!-- Imagem de fundo de condomínio com iluminação e vida condominial -->
+    <div 
+      class="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-1000 transform scale-100"
+      :style="{ backgroundImage: `url(${condoBgImage})` }"
+      aria-hidden="true"
+    ></div>
+
+    <!-- Overlay escuro com gradiente glassmorphism para garantir contraste e legibilidade -->
+    <div class="absolute inset-0 bg-gradient-to-t from-gray-950/95 via-gray-950/80 to-gray-900/80 backdrop-blur-[3px]"></div>
+
+    <!-- Luz ambiente suave (glow neon) -->
+    <div class="absolute -top-24 -left-24 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-pink-500/15 rounded-full blur-3xl pointer-events-none"></div>
+
+    <!-- Card de login em Glassmorphism -->
+    <div class="relative z-10 max-w-md w-full backdrop-blur-xl bg-gray-900/85 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.7),0_0_25px_rgba(6,182,212,0.15)] overflow-hidden p-8 border-2 border-cyan-500/25">
       <div class="text-center">
         <div class="flex justify-center mb-4">
           <img 
@@ -12,9 +27,6 @@
         </div>
         <p class="mt-2 text-center text-sm text-cyan-300">
           Faça login em sua conta
-        </p>
-        <p class="mt-1 text-center text-xs text-gray-400">
-          Para teste: teste@teste.com / teste
         </p>
       </div>
       <form class="mt-8 space-y-6" @submit.prevent="login">
@@ -107,10 +119,73 @@
           </NeonButton>
         </div>
 
+        <div>
+          <NeonButton
+            type="button"
+            variant="secondary"
+            :loading="loadingPasskey"
+            :disabled="loading || loadingPasskey || !supportsPasskeys"
+            size="md"
+            extraClass="w-full"
+            @click="loginWithPasskey"
+          >
+            Entrar com passkey
+          </NeonButton>
+          <p v-if="passkeyHelp" class="mt-2 text-center text-xs text-amber-200">
+            {{ passkeyHelp }}
+          </p>
+        </div>
+
         <div v-if="error" class="mt-3 p-3 bg-red-900/50 text-red-300 text-sm text-center rounded-2xl border-2 border-red-500/20">
           {{ error }}
         </div>
       </form>
+
+      <!-- Modo Teste Dev / Atalhos de Login -->
+      <div v-if="isDevMode" class="mt-6 pt-5 border-t border-cyan-500/20">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-semibold uppercase tracking-wider text-cyan-300 flex items-center gap-1.5">
+            <span class="inline-block w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+            Modo Teste Dev
+          </span>
+          <span class="text-[11px] text-gray-400">Atalhos de login</span>
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <NeonButton
+            type="button"
+            variant="secondary"
+            size="sm"
+            extraClass="w-full text-xs py-2 px-1 text-center justify-center font-medium"
+            :disabled="loading || loadingPasskey"
+            @click="quickLogin('admin')"
+            data-test="quick-login-admin"
+          >
+            Admin SaaS
+          </NeonButton>
+          <NeonButton
+            type="button"
+            variant="secondary"
+            size="sm"
+            extraClass="w-full text-xs py-2 px-1 text-center justify-center font-medium"
+            :disabled="loading || loadingPasskey"
+            @click="quickLogin('sindico')"
+            data-test="quick-login-sindico"
+          >
+            Síndico
+          </NeonButton>
+          <NeonButton
+            type="button"
+            variant="secondary"
+            size="sm"
+            extraClass="w-full text-xs py-2 px-1 text-center justify-center font-medium"
+            :disabled="loading || loadingPasskey"
+            @click="quickLogin('morador')"
+            data-test="quick-login-morador"
+          >
+            Morador
+          </NeonButton>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -120,34 +195,30 @@ import { ref, onMounted, nextTick, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import NeonButton from './NeonButton.vue';
 import auth from '../services/auth';
+import { browserSupportsPasskeys, passkeyOriginProblem } from '../utils/webauthn';
 import logoImage from '../../images/condo_ai_horizontal.png';
+import condoBgImage from '../../images/condo_bg.jpg';
 
-// Funções utilitárias DRY para localStorage
 function saveRememberedEmail(email) {
   localStorage.setItem('rememberedEmail', email);
 }
+
 function removeRememberedEmail() {
   localStorage.removeItem('rememberedEmail');
+  localStorage.removeItem('rememberedPassword');
 }
+
 function getRememberedEmail() {
   return localStorage.getItem('rememberedEmail') || '';
 }
-function saveRememberedPassword(password) {
-  localStorage.setItem('rememberedPassword', password);
-}
-function removeRememberedPassword() {
+
+function saveRememberedCredentials(email) {
+  saveRememberedEmail(email);
   localStorage.removeItem('rememberedPassword');
 }
-function getRememberedPassword() {
-  return localStorage.getItem('rememberedPassword') || '';
-}
-function saveRememberedCredentials(email, password) {
-  saveRememberedEmail(email);
-  saveRememberedPassword(password);
-}
+
 function removeRememberedCredentials() {
   removeRememberedEmail();
-  removeRememberedPassword();
 }
 
 export default {
@@ -164,51 +235,35 @@ export default {
     });
     const error = ref('');
     const loading = ref(false);
+    const loadingPasskey = ref(false);
     const showPassword = ref(false);
+    const supportsPasskeys = ref(false);
+    const passkeyHelp = ref('');
 
-    // Watcher para debugar mudanças no checkbox
     watch(() => form.value.remember, (newValue) => {
-      console.log('Checkbox mudou para:', newValue); // Debug
-      // Salva ou remove email imediatamente quando o checkbox muda
-      if (newValue && credentials.value.email.trim() !== '' && credentials.value.password.trim() !== '') {
-        saveRememberedCredentials(credentials.value.email, credentials.value.password);
-        console.log('Credenciais salvas imediatamente');
+      if (newValue && credentials.value.email.trim() !== '') {
+        saveRememberedCredentials(credentials.value.email);
       } else {
         removeRememberedCredentials();
-        console.log('Credenciais removidas imediatamente');
       }
     });
 
-    // Watcher para o campo email - salva automaticamente se checkbox estiver marcado
     watch(() => credentials.value.email, (newEmail) => {
-      if (form.value.remember && newEmail.trim() !== '' && credentials.value.password.trim() !== '') {
-        saveRememberedCredentials(newEmail, credentials.value.password);
-        console.log('Credenciais atualizadas automaticamente');
+      if (form.value.remember && newEmail.trim() !== '') {
+        saveRememberedCredentials(newEmail);
       }
     });
 
-    // Watcher para o campo senha - salva automaticamente se checkbox estiver marcado
-    watch(() => credentials.value.password, (newPassword) => {
-      if (form.value.remember && credentials.value.email.trim() !== '' && newPassword.trim() !== '') {
-        saveRememberedCredentials(credentials.value.email, newPassword);
-        console.log('Credenciais atualizadas automaticamente');
-      }
-    });
-
-    // Ao montar, verifica se há email salvo
     onMounted(async () => {
+      passkeyHelp.value = passkeyOriginProblem();
+      supportsPasskeys.value = browserSupportsPasskeys();
       const remembered = getRememberedEmail();
-      const rememberedPassword = getRememberedPassword();
-      console.log('Email lembrado:', remembered); // Debug
-      console.log('Senha lembrada:', rememberedPassword ? '***' : ''); // Debug
-      if (remembered && remembered.trim() !== '' && rememberedPassword && rememberedPassword.trim() !== '') {
+      localStorage.removeItem('rememberedPassword');
+
+      if (remembered && remembered.trim() !== '') {
         credentials.value.email = remembered;
-        credentials.value.password = rememberedPassword;
         form.value.remember = true;
-        await nextTick(); // Garante que a atualização seja processada
-        console.log('Email carregado:', credentials.value.email); // Debug
-        console.log('Senha carregada:', credentials.value.password ? '***' : ''); // Debug
-        console.log('Checkbox marcado:', form.value.remember); // Debug
+        await nextTick();
       }
     });
 
@@ -218,6 +273,12 @@ export default {
       
       try {
         await auth.login(credentials.value);
+
+        if (form.value.remember) {
+          saveRememberedCredentials(credentials.value.email);
+        } else {
+          removeRememberedCredentials();
+        }
         
         // Verifica se há uma rota salva para redirecionamento
         const savedRoute = localStorage.getItem('redirectAfterLogin');
@@ -235,6 +296,74 @@ export default {
       }
     };
 
+    const loginWithPasskey = async () => {
+      if (!supportsPasskeys.value) {
+        error.value = passkeyHelp.value || 'Este navegador ou origem não permite passkeys neste momento.';
+        return;
+      }
+
+      loadingPasskey.value = true;
+      error.value = '';
+
+      try {
+        await auth.loginWithPasskey(credentials.value.email);
+
+        if (form.value.remember && credentials.value.email.trim() !== '') {
+          saveRememberedCredentials(credentials.value.email);
+        }
+
+        const savedRoute = localStorage.getItem('redirectAfterLogin');
+        if (savedRoute) {
+          const route = JSON.parse(savedRoute);
+          localStorage.removeItem('redirectAfterLogin');
+          await router.push(route);
+        } else {
+          await router.push({ name: 'dashboard' });
+        }
+      } catch (e) {
+        error.value = e.message || 'Erro ao entrar com passkey';
+      } finally {
+        loadingPasskey.value = false;
+      }
+    };
+
+    const isDevMode = ref(
+      Boolean(
+        (typeof process !== 'undefined' && process.env?.NODE_ENV !== 'production') ||
+        (typeof window !== 'undefined' && (
+          window.location.hostname === 'localhost' ||
+          window.location.hostname === '127.0.0.1' ||
+          window.location.hostname.endsWith('.test') ||
+          window.location.port !== ''
+        ))
+      )
+    );
+
+    const devAccounts = {
+      admin: {
+        email: 'admin@sistema.com',
+        password: 'admin123',
+      },
+      sindico: {
+        email: 'sindico@teste.com',
+        password: 'teste',
+      },
+      morador: {
+        email: 'morador@teste.com',
+        password: 'teste',
+      },
+    };
+
+    const quickLogin = async (role) => {
+      const account = devAccounts[role];
+      if (!account) return;
+
+      credentials.value.email = account.email;
+      credentials.value.password = account.password;
+      await nextTick();
+      await login();
+    };
+
     const handleImageError = () => {
       console.error('Erro ao carregar a imagem do logo');
     };
@@ -244,10 +373,17 @@ export default {
       form,
       error,
       loading,
+      loadingPasskey,
       showPassword,
+      supportsPasskeys,
+      passkeyHelp,
+      isDevMode,
+      quickLogin,
       login,
+      loginWithPasskey,
       handleImageError,
-      logoImage
+      logoImage,
+      condoBgImage
     };
   }
 };
@@ -392,4 +528,4 @@ export default {
 .text-transparent {
   color: transparent;
 }
-</style> 
+</style>

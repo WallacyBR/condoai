@@ -68,7 +68,8 @@
         <div class="space-y-2 text-sm text-gray-300">
             <p><strong class="text-gray-400">Visitante:</strong> {{ accessRequest.visitor?.name }} ({{ accessRequest.visitor?.document }})</p>
             <p v-if="accessRequest.visitor_vehicle"><strong class="text-gray-400">Veículo:</strong> {{ accessRequest.visitor_vehicle?.plate }} - {{ accessRequest.visitor_vehicle?.model }}</p>
-            <p><strong class="text-gray-400">Morador Destino:</strong> {{ accessRequest.resident?.name }}</p>
+            <p><strong class="text-gray-400">Unidade de Destino:</strong> {{ accessRequest.apartment?.number || 'Não informada' }}</p>
+            <p v-if="accessRequest.resident?.name"><strong class="text-gray-400">Responsável:</strong> {{ accessRequest.resident.name }}</p>
             <p><strong class="text-gray-400">Status Atual:</strong> <span :class="statusInfo.textColor">{{ statusInfo.text }}</span></p>
             <p v-if="accessRequest.gatehouse_observation"><strong class="text-gray-400">Obs. Portaria (Original):</strong> {{ accessRequest.gatehouse_observation }}</p>
             <p v-if="accessRequest.resident_observation"><strong class="text-gray-400">Obs. Morador:</strong> {{ accessRequest.resident_observation }}</p>
@@ -132,7 +133,7 @@ const fetchAccessRequestDetails = async () => {
   loadingRequest.value = true;
   requestError.value = '';
   try {
-    const response = await api.get(`/api/access-control/access-requests/${accessRequestId}`);
+    const response = await api.get(`/access-control/access-requests/${accessRequestId}`);
     accessRequest.value = response.data;
     if (!accessRequest.value) {
         throw new Error("Solicitação não encontrada.");
@@ -172,7 +173,7 @@ const submitRecordEntry = async () => {
   }
   submitting.value = true;
   try {
-    await api.post(`/api/access-control/access-requests/${accessRequestId}/record-entry`, {
+    await api.post(`/access-control/access-requests/${accessRequestId}/record-entry`, {
       parking_spot_id: form.parking_spot_id,
       gatehouse_entry_observation: form.gatehouse_entry_observation,
     });

@@ -271,6 +271,7 @@ import { useRouter, useRoute } from 'vue-router';
 import AuthenticatedLayout from '../components/layouts/AuthenticatedLayout.vue';
 import StatsCard from '../components/ui/StatsCard.vue';
 import NeonButton from '../components/NeonButton.vue';
+import { apiRequest } from '../utils/api';
 
 export default {
   name: 'AreaBookingsPage',
@@ -394,41 +395,18 @@ export default {
     // Funções principais
     const loadArea = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`/api/common-areas/${route.params.id}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (response.ok) {
-          area.value = await response.json();
-        } else {
-          error.value = 'Erro ao carregar área comum';
-        }
+        area.value = await apiRequest(`/common-areas/${route.params.id}`);
       } catch (e) {
-        error.value = 'Erro de conexão';
+        error.value = e.message || 'Erro ao carregar área comum';
       }
     };
 
     const loadBookings = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`/api/common-areas/${route.params.id}/bookings`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (response.ok) {
-          bookings.value = await response.json();
-        } else {
-          error.value = 'Erro ao carregar reservas';
-        }
+        const data = await apiRequest(`/common-areas/${route.params.id}/bookings`);
+        bookings.value = Array.isArray(data) ? data : (data?.data || []);
       } catch (e) {
-        error.value = 'Erro de conexão';
+        error.value = e.message || 'Erro ao carregar reservas';
       } finally {
         loading.value = false;
       }
@@ -459,22 +437,10 @@ export default {
       }
 
       try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`/api/common-areas/${booking.common_area_id}/bookings/${booking.id}/cancel`, {
-          method: 'PATCH',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (response.ok) {
-          await loadBookings();
-        } else {
-          error.value = 'Erro ao cancelar reserva';
-        }
+        await apiRequest(`/common-areas/${booking.common_area_id}/bookings/${booking.id}/cancel`, { method: 'PATCH' });
+        await loadBookings();
       } catch (e) {
-        error.value = 'Erro de conexão';
+        error.value = e.message || 'Erro ao cancelar reserva';
       }
     };
 
@@ -510,4 +476,4 @@ export default {
     };
   }
 };
-</script> 
+</script>

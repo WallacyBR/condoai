@@ -13,7 +13,7 @@ class Receivable extends Model
 
     protected static function booted(): void
     {
-        static::addGlobalScope(new CondominiumScope());
+        static::addGlobalScope(new CondominiumScope);
     }
 
     protected $fillable = [
@@ -21,7 +21,10 @@ class Receivable extends Model
         'chart_account_id',
         'bank_id',
         'due_date',
+        'competence_date',
         'amount',
+        'counterpart_name',
+        'reference',
         'status',
         'description',
         'received_at',
@@ -29,6 +32,7 @@ class Receivable extends Model
 
     protected $casts = [
         'due_date' => 'date',
+        'competence_date' => 'date',
         'amount' => 'decimal:2',
         'received_at' => 'date',
     ];
@@ -51,5 +55,10 @@ class Receivable extends Model
     public function attachments()
     {
         return $this->hasMany(ReceivableAttachment::class);
+    }
+
+    public function settlements()
+    {
+        return $this->hasMany(FinanceSettlement::class);
     }
 }

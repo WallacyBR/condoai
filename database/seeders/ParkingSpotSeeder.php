@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\ParkingSpot;
-use App\Models\Condominium;
 use App\Models\Apartment;
+use App\Models\Condominium;
+use App\Models\ParkingSpot;
+use Illuminate\Database\Seeder;
 
 class ParkingSpotSeeder extends Seeder
 {
@@ -15,15 +15,16 @@ class ParkingSpotSeeder extends Seeder
     public function run(): void
     {
         $condominiums = Condominium::all();
-        
+
         if ($condominiums->isEmpty()) {
             $this->command->warn('Nenhum condomínio encontrado. Execute primeiro o CustomCondominiumResidentsSeeder.');
+
             return;
         }
 
         foreach ($condominiums as $condominium) {
             $apartments = Apartment::where('condominium_id', $condominium->id)->get();
-            
+
             if ($apartments->isEmpty()) {
                 continue;
             }
@@ -47,7 +48,7 @@ class ParkingSpotSeeder extends Seeder
             for ($i = 1; $i <= $extraSpots; $i++) {
                 $randomApartment = $apartments->random();
                 $rentedTo = rand(0, 1) ? $apartments->random() : null;
-                
+
                 ParkingSpot::firstOrCreate(
                     [
                         'identifier' => sprintf('EXTRA-%03d', $i),
@@ -62,6 +63,6 @@ class ParkingSpotSeeder extends Seeder
             }
         }
 
-        $this->command->info('Vagas de estacionamento criadas com sucesso para ' . $condominiums->count() . ' condomínio(s)!');
+        $this->command->info('Vagas de estacionamento criadas com sucesso para '.$condominiums->count().' condomínio(s)!');
     }
-} 
+}

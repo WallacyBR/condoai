@@ -50,6 +50,7 @@ class PayableAttachmentController extends Controller
         if ($payable->id !== $attachment->payable_id) {
             return response()->json(['message' => 'Attachment not found for this payable.'], 404);
         }
+
         return response()->json($attachment);
     }
 

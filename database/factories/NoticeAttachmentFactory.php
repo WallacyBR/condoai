@@ -25,4 +25,3 @@ class NoticeAttachmentFactory extends Factory
         ];
     }
 }
-

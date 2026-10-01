@@ -14,33 +14,33 @@ class DatabaseSeeder extends Seeder
     {
         // Ordem correta de execução respeitando dependências
         $this->call([
-            // 1. Criar perfis primeiro (não dependem de nada)
-            DefaultProfileSeeder::class,
-            
-            // 2. Criar módulos (não dependem de nada)
+            // 1. Criar módulos antes dos perfis para permitir vincular permissões
             ModuleSeeder::class,
-            
+
+            // 2. Criar perfis e associar módulos/permissões
+            DefaultProfileSeeder::class,
+
             // 3. Criar condomínios, usuários e estrutura básica
             TestUserSeeder::class,
             CustomCondominiumResidentsSeeder::class,
-            
+
             // 4. Criar dados complementares que dependem da estrutura básica
             MaintenanceAreasSeeder::class,
             ResidentClassificationSeeder::class,
-            
+
             // 5. Criar dados que dependem de usuários e condomínios
             NoticeSeeder::class,
             OccurrenceSeeder::class,
             ProtectiveMeasureSeeder::class,
-            
+
             // 6. Criar dados de infraestrutura
             CommonAreaSeeder::class,
             ParkingSpotSeeder::class,
             MaintenanceEquipmentSeeder::class,
-            
+
             // 7. Criar dados pessoais dos moradores
             VehiclePetSeeder::class,
-            
+
             // 8. Criar dados de atividades
             AdSeeder::class,
             PackageSeeder::class,
@@ -57,6 +57,9 @@ class DatabaseSeeder extends Seeder
             ReceivableSeeder::class,
             ExpenseRequestSeeder::class,
             CashFlowSeeder::class,
+
+            // 11. Imagens demonstrativas geradas para registros de seed
+            DemoImageSeeder::class,
         ]);
     }
 }

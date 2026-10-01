@@ -13,18 +13,21 @@ class FinanceWebhookController extends Controller
     public function stripe(Request $request, StripeGateway $gateway)
     {
         $gateway->handleWebhook($request);
+
         return response()->json(['ok' => true]);
     }
 
     public function mercadoPago(Request $request, MercadoPagoGateway $gateway)
     {
         $gateway->handleWebhook($request);
+
         return response()->json(['ok' => true]);
     }
 
     public function cnab(Request $request, CnabGateway $gateway)
     {
         $gateway->handleWebhook($request);
+
         return response()->json(['ok' => true]);
     }
 }

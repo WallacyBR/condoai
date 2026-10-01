@@ -14,3 +14,7 @@ test('barra superior responsiva existe', () => {
 test('botao do menu esta configurado', () => {
   expect(content).toMatch('@click="toggleSidebar"');
 });
+
+test('menu lateral nao contem itens vazios acidentais', () => {
+  expect(content).not.toMatch(/},\s*,/);
+});

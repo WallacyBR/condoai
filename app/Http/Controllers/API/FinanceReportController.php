@@ -2,89 +2,62 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Enums\TransactionType;
+use App\Http\Controllers\API\Concerns\ResolvesCurrentCondominium;
 use App\Http\Controllers\Controller;
-use App\Models\ChartAccount;
-use App\Models\Payable;
-use App\Models\Receivable;
+use App\Services\Finance\FinanceInsightsService;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class FinanceReportController extends Controller
 {
-    public function dre(Request $request)
+    use ResolvesCurrentCondominium;
+
+    /**
+     * Gera DRE gerencial por competência em tela ou PDF.
+     *
+     * @queryParam start_date date Data inicial obrigatória. Example: 2026-06-01
+     * @queryParam end_date date Data final obrigatória. Example: 2026-06-30
+     * @queryParam format string json ou pdf. Example: json
+     */
+    public function dre(Request $request, FinanceInsightsService $insights)
     {
         $validated = $request->validate([
-            'condominium_id' => ['required', Rule::exists('condominiums', 'id')],
-            'start_date' => 'required|date',
-            'end_date' => 'required|date',
+            'start_date' => ['required', 'date'],
+            'end_date' => ['required', 'date', 'after_or_equal:start_date'],
+            'format' => ['nullable', 'in:json,pdf'],
         ]);
+        $condominium = $this->currentCondominium($request);
+        $report = $insights->dre($condominium, Carbon::parse($validated['start_date'])->startOfDay(), Carbon::parse($validated['end_date'])->endOfDay());
 
-        $payables = Payable::where('condominium_id', $validated['condominium_id'])
-            ->whereBetween('due_date', [$validated['start_date'], $validated['end_date']])
-            ->get();
-
-        $receivables = Receivable::where('condominium_id', $validated['condominium_id'])
-            ->whereBetween('due_date', [$validated['start_date'], $validated['end_date']])
-            ->get();
-
-        $receitas = $receivables->sum('amount');
-        $despesas = $payables->sum('amount');
-        $resultado = $receitas - $despesas;
-
-        $pdf = Pdf::loadView('reports.dre', [
-            'receitas' => $receitas,
-            'despesas' => $despesas,
-            'resultado' => $resultado,
-            'periodo' => [$validated['start_date'], $validated['end_date']],
-        ]);
-
-        return $pdf->download('dre.pdf');
+        return $this->respond($report, $condominium->name, 'dre-gerencial', $validated['format'] ?? 'json');
     }
 
-    public function balancete(Request $request)
+    /**
+     * Gera balancete financeiro gerencial em tela ou PDF.
+     *
+     * @queryParam as_of_date date Data-base obrigatória. Example: 2026-06-30
+     * @queryParam format string json ou pdf. Example: json
+     */
+    public function balancete(Request $request, FinanceInsightsService $insights)
     {
         $validated = $request->validate([
-            'condominium_id' => ['required', Rule::exists('condominiums', 'id')],
-            'start_date' => 'required|date',
-            'end_date' => 'required|date',
+            'as_of_date' => ['required', 'date'],
+            'format' => ['nullable', 'in:json,pdf'],
         ]);
+        $condominium = $this->currentCondominium($request);
+        $report = $insights->balancete($condominium, Carbon::parse($validated['as_of_date'])->endOfDay());
 
-        $accounts = ChartAccount::where('condominium_id', $validated['condominium_id'])
-            ->with(['payables' => function ($q) use ($validated) {
-                $q->whereBetween('due_date', [$validated['start_date'], $validated['end_date']]);
-            }, 'receivables' => function ($q) use ($validated) {
-                $q->whereBetween('due_date', [$validated['start_date'], $validated['end_date']]);
-            }])->get();
+        return $this->respond($report, $condominium->name, 'balancete-financeiro-gerencial', $validated['format'] ?? 'json');
+    }
 
-        $reportData = [];
-        foreach ($accounts as $account) {
-            $debit = 0;
-            $credit = 0;
-
-            foreach ($account->payables as $payable) {
-                $debit += $payable->amount;
-            }
-
-            foreach ($account->receivables as $receivable) {
-                $credit += $receivable->amount;
-            }
-
-            $reportData[] = [
-                'account' => $account->name,
-                'type' => $account->type->value,
-                'debit' => $debit,
-                'credit' => $credit,
-                'balance' => $credit - $debit,
-            ];
+    private function respond(array $report, string $condominiumName, string $filename, string $format)
+    {
+        if ($format === 'json') {
+            return response()->json($report);
         }
 
-        $pdf = Pdf::loadView('reports.balancete', [
-            'accounts' => $accounts,
-            'periodo' => [$validated['start_date'], $validated['end_date']],
-        ]);
-
-        return $pdf->download('balancete.pdf');
+        return Pdf::loadView('reports.finance-gerencial', compact('report', 'condominiumName'))
+            ->download($filename.'.pdf');
     }
 }

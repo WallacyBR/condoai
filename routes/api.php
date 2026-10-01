@@ -9,20 +9,25 @@ use App\Http\Controllers\API\CommonAreaController;
 use App\Http\Controllers\API\CondominiumController;
 use App\Http\Controllers\API\ImageUploadController;
 use App\Http\Controllers\API\ModuleController;
-use App\Http\Controllers\Api\OccurrenceController;
+use App\Http\Controllers\API\OccurrenceController;
+use App\Http\Controllers\API\OperationalReportController;
 use App\Http\Controllers\API\ParkingSpotController;
+use App\Http\Controllers\API\PasskeyAuthController;
+use App\Http\Controllers\API\ProcurementController;
 use App\Http\Controllers\API\ProfileAnalyticsDashboardController;
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\ProfileManagementController;
 use App\Http\Controllers\API\ProfileSettingsController;
 use App\Http\Controllers\API\ProtectiveMeasureController;
+use App\Http\Controllers\API\PublicSupplierQuoteController;
 use App\Http\Controllers\API\ResidentController;
+use App\Http\Controllers\API\SecurityAdminController;
+use App\Http\Controllers\API\SecurityPasskeyController;
 use App\Http\Controllers\API\TowerController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\VehicleController;
 use App\Http\Controllers\API\VisitorController;
 use App\Http\Controllers\API\VisitorVehicleController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Health check endpoint
@@ -34,15 +39,6 @@ Route::get('/health', function () {
     ]);
 });
 
-// Rota de teste temporária para upload sem autenticação
-Route::post('test-upload', function (Request $request) {
-    return response()->json([
-        'success' => true,
-        'message' => 'Rota de teste funcionando',
-        'data' => $request->all(),
-    ]);
-});
-
 Route::controller(AuthController::class)->group(function () {
     Route::post('auth/login', 'login');
     Route::post('auth/register', 'register');
@@ -51,6 +47,14 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('auth/me', 'me');
 });
 
+Route::post('auth/passkeys/login/options', [PasskeyAuthController::class, 'options']);
+Route::post('auth/passkeys/login/verify', [PasskeyAuthController::class, 'verify']);
+
+Route::prefix('public/supplier-quotes')->middleware('throttle:30,1')->group(function () {
+    Route::get('{token}', [PublicSupplierQuoteController::class, 'show']);
+    Route::post('{token}', [PublicSupplierQuoteController::class, 'store']);
+    Route::post('{token}/attachments', [PublicSupplierQuoteController::class, 'upload']);
+});
 Route::middleware(['auth:api', 'tenant'])->group(function () {
     Route::get('auth/current-condominium', [AuthController::class, 'currentCondominium']);
     Route::get('profile', [ProfileSettingsController::class, 'show']);
@@ -67,6 +71,16 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
     Route::apiResource('profiles', ProfileController::class);
     Route::apiResource('modules', ModuleController::class);
     Route::apiResource('users', UserController::class);
+
+    Route::prefix('security')->name('security.')->group(function () {
+        Route::get('passkeys', [SecurityPasskeyController::class, 'index']);
+        Route::post('passkeys/register/options', [SecurityPasskeyController::class, 'registrationOptions']);
+        Route::post('passkeys/register/verify', [SecurityPasskeyController::class, 'verifyRegistration']);
+        Route::delete('passkeys/{passkey}', [SecurityPasskeyController::class, 'destroy']);
+        Route::get('access-logs', [SecurityAdminController::class, 'accessLogs']);
+        Route::get('users/{user}/passkeys', [SecurityAdminController::class, 'userPasskeys']);
+        Route::delete('users/{user}/passkeys/{passkey}', [SecurityAdminController::class, 'revokeUserPasskey']);
+    });
 
     // Profile Management Routes
     Route::prefix('profile-management')->name('profile-management.')->group(function () {
@@ -88,10 +102,12 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
     Route::apiResource('pets', \App\Http\Controllers\API\PetController::class);
     Route::apiResource('common-areas', CommonAreaController::class);
     Route::apiResource('packages', \App\Http\Controllers\API\PackageController::class);
+    Route::get('reports/operational', [OperationalReportController::class, 'show']);
+    Route::get('reports/operational/export', [OperationalReportController::class, 'export']);
 
     // Notice and Document Routes
-    Route::apiResource('notices', \App\Http\Controllers\Api\NoticeController::class);
-    Route::get('documents', [\App\Http\Controllers\Api\DocumentController::class, 'index'])->name('documents.index');
+    Route::apiResource('notices', \App\Http\Controllers\API\NoticeController::class);
+    Route::get('documents', [\App\Http\Controllers\API\DocumentController::class, 'index'])->name('documents.index');
 
     // Common Area Bookings Routes
     Route::get('common-area-bookings', [CommonAreaController::class, 'allBookings']);
@@ -176,6 +192,7 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
         Route::apiResource('protective-measures', ProtectiveMeasureController::class);
 
         // Access Requests
+        Route::get('check-protective-measure', [AccessRequestController::class, 'checkProtectiveMeasure'])->name('checkProtectiveMeasure');
         Route::get('access-requests', [AccessRequestController::class, 'index'])->name('access-requests.index');
         Route::post('access-requests', [AccessRequestController::class, 'store'])->name('access-requests.store');
         Route::get('access-requests/history', [AccessRequestController::class, 'history'])->name('access-requests.history');
@@ -192,7 +209,7 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
     Route::prefix('finance')->name('finance.')->group(function () {
         Route::apiResource('banks', \App\Http\Controllers\API\BankController::class);
         Route::apiResource('chart-accounts', \App\Http\Controllers\API\ChartAccountController::class);
-        Route::apiResource('transactions', \App\Http\Controllers\API\TransactionController::class);
+        Route::apiResource('transactions', \App\Http\Controllers\API\TransactionController::class)->only(['index', 'store']);
         Route::apiResource('payables', \App\Http\Controllers\API\PayableController::class);
         Route::apiResource('payables.attachments', \App\Http\Controllers\API\PayableAttachmentController::class)->except(['update']);
         Route::apiResource('receivables', \App\Http\Controllers\API\ReceivableController::class);
@@ -209,7 +226,21 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
         Route::apiResource('expense-requests', \App\Http\Controllers\API\ExpenseRequestController::class);
         Route::apiResource('expense-requests.attachments', \App\Http\Controllers\API\ExpenseRequestAttachmentController::class)->except(['update']);
         Route::post('expense-requests/{expense_request}/approve', [\App\Http\Controllers\API\ExpenseRequestController::class, 'approve']);
+        Route::post('expense-requests/{expense_request}/submit', [\App\Http\Controllers\API\ExpenseRequestController::class, 'submit']);
+        Route::post('expense-requests/{expense_request}/decision', [\App\Http\Controllers\API\ExpenseRequestController::class, 'decide']);
+        Route::post('expense-requests/{expense_request}/convert-to-payable', [\App\Http\Controllers\API\ExpenseRequestController::class, 'convertToPayable']);
+        Route::apiResource('expense-approval-rules', \App\Http\Controllers\API\ExpenseApprovalRuleController::class)->except(['show']);
+
+        Route::post('payables/{payable}/settlements', [\App\Http\Controllers\API\FinanceSettlementController::class, 'storePayable']);
+        Route::post('receivables/{receivable}/settlements', [\App\Http\Controllers\API\FinanceSettlementController::class, 'storeReceivable']);
+        Route::get('dashboard', [\App\Http\Controllers\API\FinanceDashboardController::class, 'forecast']);
         Route::get('dashboard/forecast', [\App\Http\Controllers\API\FinanceDashboardController::class, 'forecast']);
+
+        Route::apiResource('procurements', ProcurementController::class)->parameters(['procurements' => 'procurement_request'])->only(['index', 'store', 'show']);
+        Route::post('procurements/{procurement_request}/publish', [ProcurementController::class, 'publish']);
+        Route::post('procurements/{procurement_request}/invitations', [ProcurementController::class, 'invite']);
+        Route::post('procurements/{procurement_request}/close', [ProcurementController::class, 'close']);
+        Route::post('procurements/{procurement_request}/expense-requests', [ProcurementController::class, 'createExpenseRequest']);
 
         Route::post('webhooks/stripe', [\App\Http\Controllers\API\FinanceWebhookController::class, 'stripe']);
         Route::post('webhooks/mercadopago', [\App\Http\Controllers\API\FinanceWebhookController::class, 'mercadoPago']);

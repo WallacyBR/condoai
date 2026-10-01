@@ -9,12 +9,11 @@ import {
   waitForTenantHydration,
 } from './tenant';
 
-// Lazy import do auth para evitar dependência circular
 let auth = null;
 const getAuth = async () => {
   if (!auth) {
     const authModule = await import('../services/auth');
-    auth = authModule.default;
+    auth = authModule.default?.default || authModule.default || authModule;
   }
   return auth;
 };
@@ -179,13 +178,25 @@ export async function apiRequest(url, options = {}) {
     await waitForTenantHydration();
   }
 
+  const parseResponse = async (response) => {
+    if (response.status === 204) {
+      return null;
+    }
+    if (typeof response.text === 'function') {
+      const text = await response.text();
+      return text ? JSON.parse(text) : null;
+    }
+    if (typeof response.json === 'function') {
+      return await response.json();
+    }
+    return null;
+  };
+
   const executeRequest = async (headers) => {
-    const response = await fetch(fullUrl, {
+    return await fetch(fullUrl, {
       ...options,
       headers,
     });
-
-    return response;
   };
 
   try {
@@ -227,7 +238,7 @@ export async function apiRequest(url, options = {}) {
             throw new Error(errorMessage);
           }
 
-          return await response.json();
+          return await parseResponse(response);
         }
         return null;
       }
@@ -253,7 +264,7 @@ export async function apiRequest(url, options = {}) {
       throw new Error(errorMessage);
     }
 
-    return await response.json();
+    return await parseResponse(response);
   } catch (error) {
     if (error.message === 'Failed to fetch') {
       throw new Error('Erro de conexão com o servidor');

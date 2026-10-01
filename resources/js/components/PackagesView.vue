@@ -19,92 +19,26 @@
           </div>
         </template>
       </TopCard>
-      <!-- Aviso quando nenhum condomínio está selecionado -->
-      <div v-if="!selectedCondominiumName && !loading" class="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
-        <div class="flex items-center space-x-2">
-          <svg class="h-5 w-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-          </svg>
-          <span class="text-yellow-300 font-medium">Nenhum condomínio selecionado</span>
-        </div>
-        <p class="text-yellow-200 text-sm mt-1">Selecione um condomínio para visualizar as correspondências.</p>
+      <!-- Cards de Resumo Sóbrios -->
+      <div v-if="!loading" class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <StatsCard label="Total" :value="stats.total" variant="purple" />
+        <StatsCard label="Pendentes" :value="stats.pendentes" variant="orange" />
+        <StatsCard label="Retiradas" :value="stats.retiradas" variant="green" />
+        <StatsCard label="Taxa de Retirada" :value="stats.taxaRetirada" variant="blue" />
       </div>
 
-      <!-- Cards de Resumo -->
-      <div v-if="selectedCondominiumName && !loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <!-- Total de Correspondências -->
-        <div class="bg-gradient-to-br from-purple-900/50 via-purple-800/50 to-purple-900/50 rounded-2xl p-6 border-2 border-purple-500/30 shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-purple-500/50">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-purple-300 text-sm font-medium">Total de Correspondências</p>
-              <p class="text-2xl font-bold text-purple-100">{{ stats.total }}</p>
-            </div>
-            <div class="h-12 w-12 rounded-full bg-purple-500/20 flex items-center justify-center">
-              <svg class="h-6 w-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <!-- Pendentes -->
-        <div class="bg-gradient-to-br from-orange-900/50 via-orange-800/50 to-orange-900/50 rounded-2xl p-6 border-2 border-orange-500/30 shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-orange-500/50">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-orange-300 text-sm font-medium">Pendentes</p>
-              <p class="text-2xl font-bold text-orange-100">{{ stats.pendentes }}</p>
-            </div>
-            <div class="h-12 w-12 rounded-full bg-orange-500/20 flex items-center justify-center">
-              <svg class="h-6 w-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <!-- Retiradas -->
-        <div class="bg-gradient-to-br from-green-900/50 via-green-800/50 to-green-900/50 rounded-2xl p-6 border-2 border-green-500/30 shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-green-500/50">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-green-300 text-sm font-medium">Retiradas</p>
-              <p class="text-2xl font-bold text-green-100">{{ stats.retiradas }}</p>
-            </div>
-            <div class="h-12 w-12 rounded-full bg-green-500/20 flex items-center justify-center">
-              <svg class="h-6 w-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <!-- Taxa de Retirada -->
-        <div class="bg-gradient-to-br from-blue-900/50 via-blue-800/50 to-blue-900/50 rounded-2xl p-6 border-2 border-blue-500/30 shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-blue-500/50">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-blue-300 text-sm font-medium">Taxa de Retirada</p>
-              <p class="text-2xl font-bold text-blue-100">{{ stats.taxaRetirada }}</p>
-            </div>
-            <div class="h-12 w-12 rounded-full bg-blue-500/20 flex items-center justify-center">
-              <svg class="h-6 w-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Header Actions -->
-      <div v-if="selectedCondominiumName" class="flex flex-wrap justify-between items-center gap-4 mb-2">
-        <div class="flex flex-wrap gap-2 items-center">
-          <div class="relative">
+      <!-- Header Actions / Filtros -->
+      <div class="flex flex-wrap justify-between items-center gap-3 mb-2">
+        <div class="flex flex-wrap gap-2.5 items-center w-full">
+          <div class="relative flex-1 min-w-[200px] sm:max-w-xs">
             <input
               type="text"
               v-model="search"
               placeholder="Buscar por unidade, torre ou bloco..."
-              class="w-64 pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+              class="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors text-sm shadow-sm"
             />
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                       d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -112,21 +46,21 @@
           </div>
           <select
             v-model="towerFilter"
-            class="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+            class="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors text-sm shadow-sm"
           >
             <option value="all">Todas as Torres</option>
             <option v-for="tower in towers" :key="tower.id" :value="tower.id">{{ tower.name }}</option>
           </select>
           <select
             v-model="blockFilter"
-            class="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+            class="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors text-sm shadow-sm"
           >
             <option value="all">Todos os Blocos</option>
             <option v-for="block in blocks" :key="block.id" :value="block.id">{{ block.name }}</option>
           </select>
           <select
             v-model="statusFilter"
-            class="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+            class="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors text-sm shadow-sm"
           >
             <option value="all">Todos os Status</option>
             <option value="pending">Pendentes</option>
@@ -135,19 +69,19 @@
           <input
             type="date"
             v-model="dateFilter"
-            class="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+            class="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors text-sm shadow-sm"
           />
           <input
             type="text"
             v-model="locationFilter"
             placeholder="Local de retirada..."
-            class="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+            class="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors text-sm shadow-sm"
           />
           <NeonButton 
             v-if="isFilterActive" 
             @click="clearFilters" 
             size="sm" 
-            class="flex items-center bg-gray-600/40 hover:bg-gray-600/60"
+            variant="secondary"
           >
             <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -158,83 +92,76 @@
       </div>
 
       <!-- Filter Status -->
-      <div v-if="isFilterActive && selectedCondominiumName" class="bg-indigo-500/10 border border-indigo-500/30 rounded-lg p-4">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-4">
-            <div class="flex items-center space-x-2">
-              <svg class="h-5 w-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" />
-              </svg>
-              <span class="text-indigo-300 font-medium">Filtros Ativos:</span>
-            </div>
-            <div class="flex space-x-2">
-              <span v-if="search" class="px-2 py-1 bg-indigo-500/20 text-indigo-300 text-sm rounded-full border border-indigo-500/30">
-                Busca: "{{ search }}"
-              </span>
-              <span v-if="statusFilter !== 'all'" class="px-2 py-1 bg-indigo-500/20 text-indigo-300 text-sm rounded-full border border-indigo-500/30">
-                Status: {{ getStatusFilterLabel(statusFilter) }}
-              </span>
-              <span v-if="dateFilter" class="px-2 py-1 bg-indigo-500/20 text-indigo-300 text-sm rounded-full border border-indigo-500/30">
-                Data: {{ formatDate(dateFilter) }}
-              </span>
-              <span v-if="locationFilter" class="px-2 py-1 bg-indigo-500/20 text-indigo-300 text-sm rounded-full border border-indigo-500/30">
-                Local: "{{ locationFilter }}"
-              </span>
-            </div>
+      <div v-if="isFilterActive" class="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl p-3.5">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Filtros Ativos:</span>
+            <span v-if="search" class="px-2 py-0.5 bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 text-xs rounded-full font-medium border border-indigo-200 dark:border-indigo-800">
+              Busca: "{{ search }}"
+            </span>
+            <span v-if="statusFilter !== 'all'" class="px-2 py-0.5 bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 text-xs rounded-full font-medium border border-indigo-200 dark:border-indigo-800">
+              Status: {{ getStatusFilterLabel(statusFilter) }}
+            </span>
+            <span v-if="dateFilter" class="px-2 py-0.5 bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 text-xs rounded-full font-medium border border-indigo-200 dark:border-indigo-800">
+              Data: {{ formatDate(dateFilter) }}
+            </span>
+            <span v-if="locationFilter" class="px-2 py-0.5 bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 text-xs rounded-full font-medium border border-indigo-200 dark:border-indigo-800">
+              Local: "{{ locationFilter }}"
+            </span>
           </div>
-          <div class="text-sm text-indigo-400">
+          <div class="text-xs font-medium text-slate-500 dark:text-slate-400">
             {{ filteredPackages.length }} de {{ packages.length }} correspondências
           </div>
         </div>
       </div>
 
       <!-- Loading State -->
-      <div v-if="loading" class="flex justify-center items-center py-8">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+      <div v-if="loading" class="flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-8 w-8 border-2 border-indigo-600 border-t-transparent"></div>
       </div>
 
       <!-- Error State -->
-      <div v-else-if="error" class="bg-red-500/10 border border-red-500/30 rounded-lg p-4 text-red-300">
+      <div v-else-if="error" class="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-xl p-4 text-red-700 dark:text-red-300 text-sm">
         {{ error }}
       </div>
 
       <!-- Empty State -->
-      <div v-else-if="filteredPackages.length === 0 && selectedCondominiumName" class="text-center py-8">
-        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+      <div v-else-if="filteredPackages.length === 0" class="text-center py-12 bg-white dark:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-800 rounded-xl p-8">
+        <svg class="mx-auto h-12 w-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
         </svg>
-        <h3 class="mt-2 text-sm font-medium text-gray-300">Nenhuma correspondência encontrada</h3>
-        <p class="mt-1 text-sm text-gray-500">
+        <h3 class="mt-3 text-sm font-semibold text-slate-900 dark:text-slate-100">Nenhuma correspondência encontrada</h3>
+        <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
           {{ search || statusFilter !== 'all' || dateFilter || locationFilter ? 'Tente ajustar os filtros de busca' : 'Use o botão "Nova Correspondência" acima para registrar uma nova correspondência' }}
         </p>
       </div>
 
-      <!-- Packages Cards Grid -->
-      <div v-else-if="selectedCondominiumName" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Packages Cards Grid Sóbrio -->
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         <div 
           v-for="pkg in filteredPackages" 
           :key="pkg.id" 
-          class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl shadow-xl p-6 border-2 border-indigo-500/20 hover:border-indigo-500/40 transition-all duration-300 hover:shadow-2xl hover:scale-105"
+          class="bg-white dark:bg-slate-900 rounded-xl shadow-sm p-5 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-colors"
         >
           <!-- Header com Status -->
-          <div class="flex items-center justify-between mb-4">
+          <div class="flex items-start justify-between mb-4">
             <div class="flex items-center space-x-3">
-              <div class="h-12 w-12 rounded-full bg-indigo-100 flex items-center justify-center border-2 border-indigo-500/30">
-                <svg class="h-6 w-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="h-10 w-10 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center flex-shrink-0">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                 </svg>
               </div>
-              <div>
-                <h3 class="text-lg font-semibold text-white">Unidade {{ pkg.apartment.number }}</h3>
-                <div class="flex flex-wrap items-center gap-2 mt-1">
-                  <span v-if="pkg.apartment && pkg.apartment.tower" class="text-xs px-2 py-1 rounded-full bg-blue-900/40 text-blue-200 border border-blue-700/30">{{ pkg.apartment.tower.name }}</span>
-                  <span v-if="pkg.apartment && pkg.apartment.block" class="text-xs px-2 py-1 rounded-full bg-green-900/40 text-green-200 border border-green-700/30">{{ pkg.apartment.block.name }}</span>
+              <div class="min-w-0">
+                <h3 class="text-base font-semibold text-slate-900 dark:text-slate-100 truncate">Unidade {{ pkg.apartment?.number || 'N/A' }}</h3>
+                <div class="flex flex-wrap items-center gap-1.5 mt-1">
+                  <span v-if="pkg.apartment && pkg.apartment.tower" class="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 font-medium">{{ pkg.apartment.tower.name }}</span>
+                  <span v-if="pkg.apartment && pkg.apartment.block" class="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 font-medium">{{ pkg.apartment.block.name }}</span>
                 </div>
-                <p class="text-sm text-gray-400 mt-2">{{ formatDate(pkg.created_at) }}</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ formatDate(pkg.created_at) }}</p>
               </div>
             </div>
-            <div class="flex flex-col items-end space-y-1">
-              <span class="px-2 py-1 text-xs font-semibold rounded-full"
+            <div>
+              <span class="px-2 py-0.5 text-[11px] font-semibold rounded-full"
                     :class="getStatusBadgeClass(pkg)">
                 {{ getStatusLabel(pkg) }}
               </span>
@@ -242,68 +169,42 @@
           </div>
 
           <!-- Informações da Correspondência -->
-          <div class="bg-gray-800/50 rounded-lg p-4 mb-4 border border-gray-700/50">
+          <div class="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3.5 mb-4 border border-slate-100 dark:border-slate-800">
             <div class="space-y-2">
               <!-- Local de Retirada -->
               <div class="flex items-center space-x-2">
-                <svg class="h-4 w-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="h-4 w-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                <span class="text-sm text-blue-300">{{ pkg.pickup_location }}</span>
+                <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">{{ pkg.pickup_location }}</span>
               </div>
 
               <!-- Observação -->
-              <div v-if="pkg.observation" class="mt-3">
-                <div class="flex items-center space-x-2">
-                  <svg class="h-4 w-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4M7 16h10M3 4h18a2 2 0 012 2v12a2 2 0 01-2 2H3a2 2 0 01-2-2V6a2 2 0 012-2z" />
-                  </svg>
-                  <span class="text-sm text-yellow-300">Observação</span>
-                </div>
-                <p class="text-white text-sm mt-1">{{ pkg.observation }}</p>
+              <div v-if="pkg.observation" class="mt-2 text-xs text-slate-600 dark:text-slate-300">
+                <span class="font-medium text-slate-500 dark:text-slate-400">Obs:</span> {{ pkg.observation }}
               </div>
 
               <!-- Data de Retirada -->
-              <div v-if="pkg.retrieved_at" class="mt-3">
-                <div class="flex items-center space-x-2">
-                  <svg class="h-4 w-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span class="text-sm text-green-300">Retirada em</span>
-                </div>
-                <p class="text-white text-sm mt-1">{{ formatDate(pkg.retrieved_at) }}</p>
-              </div>
-
-              <!-- Responsável -->
-              <div v-if="pkg.user" class="mt-3">
-                <div class="flex items-center space-x-2">
-                  <svg class="h-4 w-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                  <span class="text-sm text-purple-300">Registrado por</span>
-                </div>
-                <p class="text-white text-sm mt-1">{{ pkg.user.name }}</p>
+              <div v-if="pkg.retrieved_at" class="mt-1 text-xs text-emerald-600 dark:text-emerald-400 flex items-center space-x-1">
+                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Retirado em {{ formatDate(pkg.retrieved_at) }}</span>
               </div>
             </div>
           </div>
 
           <!-- Ações -->
           <div class="flex space-x-2">
-            <NeonButton @click="openInfo(pkg)" size="sm" variant="info" class="flex-1">
-              <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <NeonButton @click="openInfo(pkg)" size="sm" variant="secondary" class="flex-1">
+              <svg class="h-3.5 w-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              Info
-            </NeonButton>
-            <NeonButton @click="editPackage(pkg)" size="sm" variant="info" class="flex-1">
-              <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
-              Editar
+              Detalhes
             </NeonButton>
             <NeonButton @click="showDeleteConfirmation(pkg)" size="sm" variant="danger" class="flex-1">
-              <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="h-3.5 w-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
               Excluir
@@ -391,13 +292,14 @@ import { useRouter } from 'vue-router';
 import AuthenticatedLayout from './layouts/AuthenticatedLayout.vue';
 import NeonButton from './NeonButton.vue';
 import TopCard from './ui/TopCard.vue';
+import StatsCard from './ui/StatsCard.vue';
 import { apiRequest } from '../utils/api';
 import { formatApartmentDescription } from '../utils/formatters';
 import PackageInfoModal from './PackageInfoModal.vue';
 
 export default {
   name: 'PackagesView',
-  components: { AuthenticatedLayout, NeonButton, PackageInfoModal, TopCard },
+  components: { AuthenticatedLayout, NeonButton, PackageInfoModal, TopCard, StatsCard },
   setup() {
     const router = useRouter();
     const packages = ref([]);
@@ -432,12 +334,12 @@ export default {
 
     // Variáveis para gerenciar filtro por condomínio
     const selectedCondominiumId = ref(localStorage.getItem('selectedCondominium'));
-    const selectedCondominiumName = ref(localStorage.getItem('selectedCondominiumName'));
+    const selectedCondominiumName = ref(localStorage.getItem('selectedCondominiumName') || 'Condomínio atual');
 
     // Função para atualizar as informações do condomínio selecionado
     const updateSelectedCondominium = () => {
       selectedCondominiumId.value = localStorage.getItem('selectedCondominium');
-      selectedCondominiumName.value = localStorage.getItem('selectedCondominiumName');
+      selectedCondominiumName.value = localStorage.getItem('selectedCondominiumName') || 'Condomínio atual';
     };
 
     // Computed para calcular estatísticas
@@ -495,8 +397,6 @@ export default {
     const buildUrl = () => {
       let url = '/packages';
       const params = [];
-      const condo = localStorage.getItem('selectedCondominium');
-      if (condo) params.push('condominium_id=' + condo);
       if (statusFilter.value !== 'all') params.push('status=' + statusFilter.value);
       if (dateFilter.value) params.push('date=' + dateFilter.value);
       if (locationFilter.value) params.push('pickup_location=' + locationFilter.value);
@@ -573,7 +473,7 @@ export default {
           pkg.created_at?.startsWith(dateFilter.value);
         // Filtro por local
         const matchesLocation = !locationFilter.value ||
-          pkg.pickup_location.toLowerCase().includes(locationFilter.value.toLowerCase());
+          (pkg.pickup_location || '').toLowerCase().includes(locationFilter.value.toLowerCase());
         return matchesSearch && matchesTower && matchesBlock && matchesStatus && matchesDate && matchesLocation;
       });
     });
@@ -608,7 +508,7 @@ export default {
       deleteConfirmation.value.loading = true;
 
       try {
-        const resp = await apiRequest(`/api/packages/${item.id}`, { method: 'DELETE' });
+        const resp = await apiRequest(`/packages/${item.id}`, { method: 'DELETE' });
         if (resp !== null) {
           packages.value = packages.value.filter(p => p.id !== item.id);
           closeDeleteConfirmation();

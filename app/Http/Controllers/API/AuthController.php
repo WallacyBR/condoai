@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\Security\AccessLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -13,7 +14,7 @@ class AuthController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register', 'logout', 'refresh']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
     public function register(Request $request)
@@ -49,7 +50,7 @@ class AuthController extends Controller
         ]);
     }
 
-    public function login(Request $request)
+    public function login(Request $request, AccessLogService $accessLogs)
     {
         $validated = $request->validate([
             'email' => 'required|string|email',
@@ -57,14 +58,18 @@ class AuthController extends Controller
         ]);
 
         $credentials = $request->only('email', 'password');
+        $attemptedUser = User::where('email', $validated['email'])->first();
 
         if (! $token = Auth::guard('api')->attempt($credentials)) {
+            $accessLogs->record($request, 'password', 'failed', $attemptedUser, $validated['email'], 'Credenciais inválidas');
+
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
         }
 
-        $user = Auth::guard('api')->user()->load(['profile.modules', 'condominiums']);
+        $user = Auth::guard('api')->user()->load(['profile.modules', 'condominiums', 'condominium']);
+        $accessLogs->record($request, 'password', 'success', $user);
 
         return response()->json([
             'status' => 'success',
@@ -79,8 +84,13 @@ class AuthController extends Controller
         ]);
     }
 
-    public function logout()
+    public function logout(Request $request, AccessLogService $accessLogs)
     {
+        $user = Auth::guard('api')->user();
+        if ($user) {
+            $accessLogs->record($request, 'logout', 'success', $user);
+        }
+
         Auth::guard('api')->logout();
 
         return response()->json([
@@ -91,11 +101,16 @@ class AuthController extends Controller
 
     public function refresh()
     {
-        $user = Auth::guard('api')->user()->load('profile.modules');
+        $user = Auth::guard('api')->user()->load(['profile.modules', 'condominium']);
 
         return response()->json([
             'status' => 'success',
             'user' => $user,
+            'current_condominium' => $user->condominium ? [
+                'id' => $user->condominium->id,
+                'name' => $user->condominium->name,
+                'domain' => $user->condominium->domain,
+            ] : null,
             'authorization' => [
                 'token' => Auth::guard('api')->refresh(),
                 'type' => 'bearer',
@@ -105,7 +120,7 @@ class AuthController extends Controller
 
     public function me()
     {
-        $user = Auth::guard('api')->user()->load(['profile.modules', 'condominiums']);
+        $user = Auth::guard('api')->user()->load(['profile.modules', 'condominiums', 'condominium']);
 
         return response()->json([
             ...$user->toArray(),

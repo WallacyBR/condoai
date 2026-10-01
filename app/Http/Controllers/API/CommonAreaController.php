@@ -7,14 +7,14 @@ use App\Http\Controllers\Controller;
 use App\Models\CommonArea;
 use App\Models\CommonAreaBooking;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 class CommonAreaController extends Controller
 {
     use ResolvesTenantCondominium;
+
     public function index(Request $request)
     {
         $query = CommonArea::query();
@@ -155,7 +155,7 @@ class CommonAreaController extends Controller
             if ($commonArea->main_photo) {
                 Storage::disk('public')->delete($commonArea->main_photo);
             }
-            
+
             if ($request->main_photo) {
                 $validated['main_photo'] = $this->processImage($request->main_photo, 'common-areas/main');
             } else {
@@ -171,7 +171,7 @@ class CommonAreaController extends Controller
                     Storage::disk('public')->delete($photo);
                 }
             }
-            
+
             if ($request->additional_photos) {
                 $additionalPhotos = [];
                 foreach ($request->additional_photos as $photo) {
@@ -199,7 +199,7 @@ class CommonAreaController extends Controller
         if ($commonArea->main_photo) {
             Storage::disk('public')->delete($commonArea->main_photo);
         }
-        
+
         if ($commonArea->additional_photos) {
             foreach ($commonArea->additional_photos as $photo) {
                 Storage::disk('public')->delete($photo);
@@ -262,46 +262,47 @@ class CommonAreaController extends Controller
         ]);
 
         // Verificar se a área está ativa
-        if (!$commonArea->active) {
+        if (! $commonArea->active) {
             return response()->json(['message' => 'Esta área comum não está disponível para reservas.'], 422);
         }
 
         // Verificar limites de reserva
         $bookingLimits = $commonArea->checkBookingLimits($validated['apartment_id'], date('Y-m-d', strtotime($validated['start_time'])));
-        
+
         $limitErrors = [];
         foreach ($bookingLimits as $period => $limit) {
-            if (!$limit['allowed']) {
+            if (! $limit['allowed']) {
                 $periodNames = [
                     'daily' => 'diário',
                     'monthly' => 'mensal',
-                    'yearly' => 'anual'
+                    'yearly' => 'anual',
                 ];
                 $limitErrors[] = "Limite {$periodNames[$period]} atingido ({$limit['current']}/{$limit['limit']})";
             }
         }
-        
-        if (!empty($limitErrors)) {
-            return response()->json(['message' => 'Limites de reserva excedidos: ' . implode(', ', $limitErrors)], 422);
+
+        if (! empty($limitErrors)) {
+            return response()->json(['message' => 'Limites de reserva excedidos: '.implode(', ', $limitErrors)], 422);
         }
 
         // Determinar tipo de reserva se não fornecido
-        if (!isset($validated['booking_type'])) {
+        if (! isset($validated['booking_type'])) {
             $validated['booking_type'] = 'custom';
         }
 
         // Verificar se o tipo de reserva é válido para o dia
         $date = date('Y-m-d', strtotime($validated['start_time']));
-        if (!$commonArea->validateBookingType($date, $validated['booking_type'])) {
+        if (! $commonArea->validateBookingType($date, $validated['booking_type'])) {
             $dayOfWeek = date('w', strtotime($date));
             $dayName = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'][$dayOfWeek];
             $bookingType = $commonArea->getBookingTypeForDay($dayOfWeek);
-            
-            if (!$bookingType) {
+
+            if (! $bookingType) {
                 return response()->json(['message' => "Este dia ({$dayName}) não está disponível para reservas."], 422);
             }
-            
+
             $typeName = $bookingType === 'period' ? 'períodos padrão' : 'por hora';
+
             return response()->json(['message' => "Neste dia ({$dayName}) apenas reservas {$typeName} são permitidas."], 422);
         }
 
@@ -309,14 +310,14 @@ class CommonAreaController extends Controller
         if ($validated['booking_type'] !== 'custom') {
             $periods = $commonArea->getDefaultBookingPeriods();
             $periodType = $validated['booking_type'];
-            
-            if (!isset($periods[$periodType]) || !$periods[$periodType]['enabled']) {
+
+            if (! isset($periods[$periodType]) || ! $periods[$periodType]['enabled']) {
                 return response()->json(['message' => 'Este período não está disponível para reserva.'], 422);
             }
 
             $period = $periods[$periodType];
-            $validated['start_time'] = $date . ' ' . $period['start_time'];
-            $validated['end_time'] = $date . ' ' . $period['end_time'];
+            $validated['start_time'] = $date.' '.$period['start_time'];
+            $validated['end_time'] = $date.' '.$period['end_time'];
         }
 
         // Verificar limites de tempo de reserva para reservas customizadas
@@ -327,19 +328,19 @@ class CommonAreaController extends Controller
 
             if ($duration < $commonArea->min_booking_hours) {
                 return response()->json([
-                    'message' => "O tempo mínimo de reserva é de {$commonArea->min_booking_hours} hora(s)."
+                    'message' => "O tempo mínimo de reserva é de {$commonArea->min_booking_hours} hora(s).",
                 ], 422);
             }
 
             if ($duration > $commonArea->max_booking_hours) {
                 return response()->json([
-                    'message' => "O tempo máximo de reserva é de {$commonArea->max_booking_hours} hora(s)."
+                    'message' => "O tempo máximo de reserva é de {$commonArea->max_booking_hours} hora(s).",
                 ], 422);
             }
         }
 
         // Verificar disponibilidade usando o método do modelo
-        if (!$commonArea->isAvailableAt($validated['start_time'], $validated['end_time'])) {
+        if (! $commonArea->isAvailableAt($validated['start_time'], $validated['end_time'])) {
             return response()->json(['message' => 'Horário indisponível'], 422);
         }
 
@@ -356,7 +357,7 @@ class CommonAreaController extends Controller
 
         $validated['status'] = $commonArea->requires_approval ? 'pending' : 'confirmed';
         $validated['total_price'] = $totalPrice;
-        
+
         $booking = $commonArea->bookings()->create($validated);
 
         return response()->json($booking->load(['apartment.tower', 'apartment.block']), 201);
@@ -371,7 +372,7 @@ class CommonAreaController extends Controller
         $date = $validated['date'];
         $dayOfWeek = date('w', strtotime($date));
         $bookingType = $commonArea->getBookingTypeForDay($dayOfWeek);
-        
+
         $slots = $commonArea->getAvailableTimeSlotsForDate($date);
 
         return response()->json([
@@ -387,7 +388,7 @@ class CommonAreaController extends Controller
                 'max_booking_hours' => $commonArea->max_booking_hours,
                 'price_per_hour' => $commonArea->price_per_hour,
                 'allow_custom_periods' => $commonArea->allow_custom_periods,
-            ]
+            ],
         ]);
     }
 
@@ -399,7 +400,7 @@ class CommonAreaController extends Controller
         }
 
         // Verificar se a reserva pode ser cancelada
-        if (!$booking->canBeCancelled()) {
+        if (! $booking->canBeCancelled()) {
             return response()->json(['message' => 'Esta reserva não pode ser cancelada'], 422);
         }
 
@@ -413,22 +414,22 @@ class CommonAreaController extends Controller
         try {
             // Remover o cabeçalho do base64
             if (strpos($base64Image, 'data:image/') === 0) {
-                list($type, $image) = explode(';', $base64Image);
-                list(, $image) = explode(',', $image);
+                [$type, $image] = explode(';', $base64Image);
+                [, $image] = explode(',', $image);
             } else {
                 $image = $base64Image;
                 $type = 'data:image/jpeg'; // Assumir JPEG se não especificado
             }
-            
+
             $imageData = base64_decode($image);
 
             // Gerar nome de arquivo único
             $extension = str_replace('data:image/', '', $type);
-            if (!in_array($extension, ['jpeg', 'jpg', 'png', 'gif', 'webp'])) {
+            if (! in_array($extension, ['jpeg', 'jpg', 'png', 'gif', 'webp'])) {
                 $extension = 'jpg';
             }
-            
-            $filename = $directory . '/' . Str::uuid() . '.' . $extension;
+
+            $filename = $directory.'/'.Str::uuid().'.'.$extension;
 
             // Salvar a imagem
             Storage::disk('public')->put($filename, $imageData);
@@ -436,7 +437,7 @@ class CommonAreaController extends Controller
             return $filename;
 
         } catch (\Exception $e) {
-            \Log::error('Erro ao processar imagem da área comum: ' . $e->getMessage());
+            \Log::error('Erro ao processar imagem da área comum: '.$e->getMessage());
             throw new \Exception('Erro ao processar a imagem.');
         }
     }
@@ -445,10 +446,10 @@ class CommonAreaController extends Controller
     private function calculatePeriodPrices($bookingPeriods, $pricePerHour)
     {
         foreach ($bookingPeriods as $periodType => &$period) {
-            if ($period['enabled'] && !isset($period['price'])) {
+            if ($period['enabled'] && ! isset($period['price'])) {
                 $startTime = \DateTime::createFromFormat('H:i', $period['start_time']);
                 $endTime = \DateTime::createFromFormat('H:i', $period['end_time']);
-                
+
                 if ($startTime && $endTime) {
                     $hours = ($endTime->getTimestamp() - $startTime->getTimestamp()) / 3600;
                     $period['price'] = $pricePerHour * $hours;

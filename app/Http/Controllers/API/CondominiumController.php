@@ -11,6 +11,7 @@ use Illuminate\Validation\Rule;
 class CondominiumController extends Controller
 {
     use AuthorizesCondominiumAccess;
+
     public function index(Request $request)
     {
         $user = $request->user();

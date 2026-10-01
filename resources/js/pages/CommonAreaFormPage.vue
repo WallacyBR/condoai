@@ -1,51 +1,40 @@
 <template>
   <AuthenticatedLayout :page-title="pageTitle">
-    <div class="max-w-6xl mx-auto space-y-6">
-      <!-- Header -->
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-3xl font-bold text-white">{{ pageTitle }}</h1>
-          <p class="text-gray-400 mt-1">{{ selectedCondominiumName }}</p>
-        </div>
-        
-        <div class="flex space-x-4">
-          <NeonButton 
-            @click="goBack" 
-            variant="secondary"
-            size="lg"
-          >
-            <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Voltar
-          </NeonButton>
-          
-          <NeonButton 
+    <div class="max-w-5xl mx-auto space-y-6">
+      <!-- Header unificado -->
+      <PageHeader
+        :title="pageTitle"
+        :subtitle="selectedCondominiumName"
+        show-back
+        @back="goBack"
+      >
+        <template #actions>
+          <AppButton 
             @click="saveDraft" 
             variant="secondary"
-            size="lg"
+            size="sm"
             :loading="savingDraft"
           >
-            <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
             </svg>
             Salvar Rascunho
-          </NeonButton>
-        </div>
-      </div>
+          </AppButton>
+        </template>
+      </PageHeader>
 
       <!-- Loading State -->
       <div v-if="loading" class="flex justify-center items-center py-12">
         <div class="flex items-center space-x-3">
           <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-          <span class="text-gray-400">Carregando área comum...</span>
+          <span class="text-slate-500 dark:text-slate-400 text-sm">Carregando área comum...</span>
         </div>
       </div>
 
       <!-- Error State -->
-      <div v-else-if="error" class="bg-red-500/10 border border-red-500/30 rounded-lg p-4 text-red-300">
+      <div v-else-if="error" class="bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/50 rounded-xl p-4 text-rose-700 dark:text-rose-300 text-sm">
         <div class="flex items-center space-x-2">
-          <svg class="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="h-5 w-5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <span>{{ error }}</span>
@@ -56,31 +45,31 @@
       <div v-else class="space-y-6">
         <form @submit.prevent="submit" class="space-y-6">
           <!-- Informações Básicas -->
-          <div class="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-xl p-6 border border-gray-700/50">
-            <h3 class="text-lg font-semibold text-indigo-300 mb-4 border-b border-indigo-500/30 pb-2">
+          <div class="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
+            <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-4 border-b border-slate-200 dark:border-slate-800 pb-2">
               Informações Básicas
             </h3>
             
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <!-- Nome -->
               <div class="lg:col-span-2">
-                <label class="block text-sm font-medium text-gray-300 mb-2">
+                <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                   Nome da Área Comum *
                 </label>
                 <input
                   v-model="form.name"
                   type="text"
                   required
-                  class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                  class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder-slate-400 text-sm focus:ring-2 focus:ring-indigo-500 shadow-sm"
                   placeholder="Ex: Piscina, Salão de Festas, Academia..."
-                  :class="{ 'border-red-500': errors.name }"
+                  :class="{ 'border-rose-500': errors.name }"
                 />
-                <p v-if="errors.name" class="mt-1 text-sm text-red-400">{{ errors.name }}</p>
+                <p v-if="errors.name" class="mt-1 text-xs text-rose-600 dark:text-rose-400">{{ errors.name }}</p>
               </div>
 
               <!-- Capacidade -->
               <div>
-                <label class="block text-sm font-medium text-gray-300 mb-2">
+                <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                   Capacidade Máxima *
                 </label>
                 <input
@@ -88,16 +77,16 @@
                   type="number"
                   min="1"
                   required
-                  class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                  class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder-slate-400 text-sm focus:ring-2 focus:ring-indigo-500 shadow-sm"
                   placeholder="Número de pessoas"
-                  :class="{ 'border-red-500': errors.capacity }"
+                  :class="{ 'border-rose-500': errors.capacity }"
                 />
-                <p v-if="errors.capacity" class="mt-1 text-sm text-red-400">{{ errors.capacity }}</p>
+                <p v-if="errors.capacity" class="mt-1 text-xs text-rose-600 dark:text-rose-400">{{ errors.capacity }}</p>
               </div>
 
               <!-- Preço por hora -->
               <div>
-                <label class="block text-sm font-medium text-gray-300 mb-2">
+                <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                   Preço por Hora (R$)
                 </label>
                 <input
@@ -105,26 +94,26 @@
                   type="number"
                   step="0.01"
                   min="0"
-                  class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                  class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder-slate-400 text-sm focus:ring-2 focus:ring-indigo-500 shadow-sm"
                   placeholder="0.00"
-                  :class="{ 'border-red-500': errors.price_per_hour }"
+                  :class="{ 'border-rose-500': errors.price_per_hour }"
                 />
-                <p v-if="errors.price_per_hour" class="mt-1 text-sm text-red-400">{{ errors.price_per_hour }}</p>
+                <p v-if="errors.price_per_hour" class="mt-1 text-xs text-rose-600 dark:text-rose-400">{{ errors.price_per_hour }}</p>
               </div>
 
               <!-- Descrição -->
               <div class="lg:col-span-2">
-                <label class="block text-sm font-medium text-gray-300 mb-2">
+                <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                   Descrição
                 </label>
                 <textarea
                   v-model="form.description"
                   rows="3"
-                  class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors resize-none"
+                  class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder-slate-400 text-sm focus:ring-2 focus:ring-indigo-500 shadow-sm resize-none"
                   placeholder="Descreva a área comum, suas características e facilidades..."
-                  :class="{ 'border-red-500': errors.description }"
+                  :class="{ 'border-rose-500': errors.description }"
                 ></textarea>
-                <p v-if="errors.description" class="mt-1 text-sm text-red-400">{{ errors.description }}</p>
+                <p v-if="errors.description" class="mt-1 text-xs text-rose-600 dark:text-rose-400">{{ errors.description }}</p>
               </div>
             </div>
           </div>
@@ -753,22 +742,23 @@
           </div>
 
           <!-- Botões -->
-          <div class="flex justify-end space-x-4 pt-6 border-t border-gray-700">
-            <NeonButton 
+          <div class="flex justify-end space-x-3 pt-6 border-t border-slate-200 dark:border-slate-800">
+            <AppButton 
               @click="goBack" 
               type="button" 
               variant="secondary"
-              size="lg"
+              size="md"
             >
               Cancelar
-            </NeonButton>
-            <NeonButton 
+            </AppButton>
+            <AppButton 
               type="submit" 
+              variant="primary"
               :loading="loading"
-              size="lg"
+              size="md"
             >
               {{ area ? 'Atualizar' : 'Criar' }} Área Comum
-            </NeonButton>
+            </AppButton>
           </div>
         </form>
       </div>
@@ -781,11 +771,14 @@ import { ref, reactive, computed, watch, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import AuthenticatedLayout from '../components/layouts/AuthenticatedLayout.vue';
 import NeonButton from '../components/NeonButton.vue';
+import AppButton from '../components/ui/AppButton.vue';
+import PageHeader from '../components/ui/PageHeader.vue';
 import WebcamCapture from '../components/WebcamCapture.vue';
+import { apiRequest } from '../utils/api';
 
 export default {
   name: 'CommonAreaFormPage',
-  components: { AuthenticatedLayout, NeonButton, WebcamCapture },
+  components: { AuthenticatedLayout, NeonButton, AppButton, PageHeader, WebcamCapture },
   setup() {
     const router = useRouter();
     const route = useRoute();
@@ -845,9 +838,8 @@ export default {
       end_date: ''
     });
 
-    // Estado do condomínio selecionado
-    const selectedCondominiumId = ref(localStorage.getItem('selectedCondominium'));
-    const selectedCondominiumName = ref(localStorage.getItem('selectedCondominiumName'));
+    // Nome exibido apenas como contexto visual; o tenant é resolvido no backend.
+    const selectedCondominiumName = ref(localStorage.getItem('selectedCondominiumName') || 'Condomínio atual');
 
     // Computed properties
     const pageTitle = computed(() => {
@@ -889,57 +881,44 @@ export default {
       try {
         loading.value = true;
         errors.value = {};
-        
-        const token = localStorage.getItem('token');
-        const response = await fetch(`/api/common-areas/${route.params.id}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
 
-        if (response.ok) {
-          area.value = await response.json();
-          // Preencher formulário com dados da área
-          Object.assign(form, {
-            name: area.value.name || '',
-            description: area.value.description || '',
-            capacity: area.value.capacity || 1,
-            main_photo: area.value.main_photo || null,
-            additional_photos: area.value.additional_photos || [],
-            active: area.value.active !== undefined ? area.value.active : true,
-            availability_schedule: area.value.availability_schedule || weekDays.map(() => ({
-              enabled: true,
-              start_time: '08:00',
-              end_time: '22:00'
-            })),
-            unavailability_periods: area.value.unavailability_periods || [],
-            price_per_hour: area.value.price_per_hour || null,
-            rules: area.value.rules || '',
-            min_booking_hours: area.value.min_booking_hours || 1,
-            max_booking_hours: area.value.max_booking_hours || 8,
-            requires_approval: area.value.requires_approval || false,
-            allow_custom_periods: area.value.allow_custom_periods || false,
-            booking_periods: area.value.booking_periods || {
-              morning: { enabled: true, start_time: '08:00', end_time: '12:00', price: null },
-              afternoon: { enabled: true, start_time: '12:00', end_time: '18:00', price: null },
-              evening: { enabled: true, start_time: '18:00', end_time: '22:00', price: null },
-              full_day: { enabled: true, start_time: '08:00', end_time: '22:00', price: null },
-            },
-            booking_schedule: area.value.booking_schedule || weekDays.map(() => ({
-              enabled: true,
-              type: 'period'
-            })),
-            max_bookings_per_day: area.value.max_bookings_per_day || null,
-            max_bookings_per_month: area.value.max_bookings_per_month || null,
-            max_bookings_per_year: area.value.max_bookings_per_year || null,
-          });
-        } else {
-          error.value = 'Erro ao carregar área comum';
-        }
-      } catch (error) {
-        console.error('Erro ao carregar área comum:', error);
-        error.value = 'Erro de conexão. Tente novamente.';
+        area.value = await apiRequest(`/common-areas/${route.params.id}`);
+        // Preencher formulário com dados da área
+        Object.assign(form, {
+          name: area.value.name || '',
+          description: area.value.description || '',
+          capacity: area.value.capacity || 1,
+          main_photo: area.value.main_photo || null,
+          additional_photos: area.value.additional_photos || [],
+          active: area.value.active !== undefined ? area.value.active : true,
+          availability_schedule: area.value.availability_schedule || weekDays.map(() => ({
+            enabled: true,
+            start_time: '08:00',
+            end_time: '22:00'
+          })),
+          unavailability_periods: area.value.unavailability_periods || [],
+          price_per_hour: area.value.price_per_hour || null,
+          rules: area.value.rules || '',
+          min_booking_hours: area.value.min_booking_hours || 1,
+          max_booking_hours: area.value.max_booking_hours || 8,
+          requires_approval: area.value.requires_approval || false,
+          allow_custom_periods: area.value.allow_custom_periods || false,
+          booking_periods: area.value.booking_periods || {
+            morning: { enabled: true, start_time: '08:00', end_time: '12:00', price: null },
+            afternoon: { enabled: true, start_time: '12:00', end_time: '18:00', price: null },
+            evening: { enabled: true, start_time: '18:00', end_time: '22:00', price: null },
+            full_day: { enabled: true, start_time: '08:00', end_time: '22:00', price: null },
+          },
+          booking_schedule: area.value.booking_schedule || weekDays.map(() => ({
+            enabled: true,
+            type: 'period'
+          })),
+          max_bookings_per_day: area.value.max_bookings_per_day || null,
+          max_bookings_per_month: area.value.max_bookings_per_month || null,
+          max_bookings_per_year: area.value.max_bookings_per_year || null,
+        });
+      } catch (err) {
+        error.value = err.message || 'Erro ao carregar área comum';
       } finally {
         loading.value = false;
       }
@@ -990,9 +969,8 @@ export default {
       savingDraft.value = true;
       try {
         // Implementar salvamento de rascunho se necessário
-        console.log('Salvando rascunho...');
       } catch (error) {
-        console.error('Erro ao salvar rascunho:', error);
+        errors.value = { general: error.message || 'Erro ao salvar rascunho' };
       } finally {
         savingDraft.value = false;
       }
@@ -1003,51 +981,21 @@ export default {
       errors.value = {};
 
       try {
-        const token = localStorage.getItem('token');
-        const condo = localStorage.getItem('selectedCondominium');
-        
-        if (!condo) {
-          errors.value = { general: 'Nenhum condomínio selecionado' };
-          return;
-        }
-
         const url = area.value 
-          ? `/api/common-areas/${area.value.id}`
-          : '/api/common-areas';
+          ? `/common-areas/${area.value.id}`
+          : '/common-areas';
         
         const method = area.value ? 'PUT' : 'POST';
-        
-        const body = {
-          ...form,
-          condominium_id: parseInt(condo)
-        };
 
-        const response = await fetch(url, {
+        await apiRequest(url, {
           method,
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify(body)
+          body: JSON.stringify(form)
         });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          if (data.errors) {
-            errors.value = data.errors;
-          } else {
-            errors.value = { general: data.message || 'Erro ao salvar área comum' };
-          }
-          return;
-        }
 
         // Redirecionar para a lista de áreas comuns
         router.push({ name: 'areas' });
       } catch (error) {
-        console.error('Erro ao salvar área comum:', error);
-        errors.value = { general: 'Erro de conexão. Tente novamente.' };
+        errors.value = { general: error.message || 'Erro ao salvar área comum' };
       } finally {
         loading.value = false;
       }
@@ -1059,7 +1007,6 @@ export default {
 
     // Carregar dados ao montar o componente
     onMounted(() => {
-      console.log('Formulário inicializado:', form.booking_schedule);
       loadArea();
     });
 
@@ -1089,4 +1036,4 @@ export default {
     };
   }
 };
-</script> 
+</script>

@@ -21,6 +21,7 @@ class MaintenanceAreaController extends Controller
      * Retorna uma lista paginada das áreas de manutenção do condomínio autenticado.
      *
      * @authenticated
+     *
      * @queryParam page int A página a ser retornada. Example: 1
      * @queryParam per_page int Número de itens por página. Example: 15
      *
@@ -30,15 +31,16 @@ class MaintenanceAreaController extends Controller
     public function index(Request $request)
     {
         $condominiumId = Auth::user()->condominium_id;
-        if (!$condominiumId && !$request->attributes->has('condominium')) {
+        if (! $condominiumId && ! $request->attributes->has('condominium')) {
             return response()->json(['message' => 'Condomínio não identificado para o usuário.'], 400);
         }
         $currentCondominiumId = $condominiumId ?? $request->attributes->get('condominium')->id;
 
         $perPage = $request->input('per_page', 15);
         $areas = MaintenanceArea::where('condominium_id', $currentCondominiumId)
-                                ->orderBy('name', 'asc')
-                                ->paginate($perPage);
+            ->orderBy('name', 'asc')
+            ->paginate($perPage);
+
         return response()->json($areas);
     }
 
@@ -46,6 +48,7 @@ class MaintenanceAreaController extends Controller
      * Criar uma nova área de manutenção.
      *
      * @authenticated
+     *
      * @bodyParam name string required Nome da área de manutenção. Example: "Elétrica Geral"
      * @bodyParam description string Descrição da área. Example: "Todas as instalações elétricas do prédio A."
      *
@@ -56,7 +59,7 @@ class MaintenanceAreaController extends Controller
     public function store(Request $request)
     {
         $condominiumId = Auth::user()->condominium_id;
-        if (!$condominiumId && !$request->attributes->has('condominium')) {
+        if (! $condominiumId && ! $request->attributes->has('condominium')) {
             return response()->json(['message' => 'Condomínio não identificado para o usuário.'], 400);
         }
         $currentCondominiumId = $condominiumId ?? $request->attributes->get('condominium')->id;
@@ -83,6 +86,7 @@ class MaintenanceAreaController extends Controller
      * Exibir uma área de manutenção específica.
      *
      * @authenticated
+     *
      * @urlParam area int required O ID da área de manutenção. Example: 1
      *
      * @responseFile status=200 scenario="Sucesso" storage/responses/maintenancearea.show.json
@@ -92,7 +96,7 @@ class MaintenanceAreaController extends Controller
     public function show(Request $request, MaintenanceArea $area)
     {
         $condominiumId = Auth::user()->condominium_id;
-        if (!$condominiumId && !$request->attributes->has('condominium')) {
+        if (! $condominiumId && ! $request->attributes->has('condominium')) {
             return response()->json(['message' => 'Condomínio não identificado para o usuário.'], 400);
         }
         $currentCondominiumId = $condominiumId ?? $request->attributes->get('condominium')->id;
@@ -109,7 +113,9 @@ class MaintenanceAreaController extends Controller
      * Atualizar uma área de manutenção.
      *
      * @authenticated
+     *
      * @urlParam area int required O ID da área de manutenção. Example: 1
+     *
      * @bodyParam name string Nome da área de manutenção. Example: "Elétrica Prédio B"
      * @bodyParam description string Descrição da área. Example: "Instalações elétricas atualizadas do prédio B."
      *
@@ -121,7 +127,7 @@ class MaintenanceAreaController extends Controller
     public function update(Request $request, MaintenanceArea $area)
     {
         $condominiumId = Auth::user()->condominium_id;
-        if (!$condominiumId && !$request->attributes->has('condominium')) {
+        if (! $condominiumId && ! $request->attributes->has('condominium')) {
             return response()->json(['message' => 'Condomínio não identificado para o usuário.'], 400);
         }
         $currentCondominiumId = $condominiumId ?? $request->attributes->get('condominium')->id;
@@ -149,9 +155,11 @@ class MaintenanceAreaController extends Controller
      * Excluir uma área de manutenção.
      *
      * @authenticated
+     *
      * @urlParam area int required O ID da área de manutenção. Example: 1
      *
      * @response status=204 scenario="Excluído com sucesso"
+     *
      * @responseFile status=404 scenario="Não encontrado" storage/responses/notfound.json
      * @responseFile status=401 scenario="Não autenticado" storage/responses/unauthenticated.json
      * @responseFile status=403 scenario="Proibido" storage/responses/forbidden.json
@@ -159,7 +167,7 @@ class MaintenanceAreaController extends Controller
     public function destroy(Request $request, MaintenanceArea $area)
     {
         $condominiumId = Auth::user()->condominium_id;
-        if (!$condominiumId && !$request->attributes->has('condominium')) {
+        if (! $condominiumId && ! $request->attributes->has('condominium')) {
             return response()->json(['message' => 'Condomínio não identificado para o usuário.'], 400);
         }
         $currentCondominiumId = $condominiumId ?? $request->attributes->get('condominium')->id;

@@ -1,10 +1,10 @@
 <?php
 
+use App\Enums\OccurrencePriority;
+use App\Enums\OccurrenceStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Enums\OccurrenceStatus;
-use App\Enums\OccurrencePriority;
 
 return new class extends Migration
 {

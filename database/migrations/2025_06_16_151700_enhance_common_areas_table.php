@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (!Schema::hasTable('common_areas')) {
+        if (! Schema::hasTable('common_areas')) {
             return;
         }
 
@@ -23,14 +23,14 @@ return new class extends Migration
             $table->integer('min_booking_hours')->default(1)->after('rules');
             $table->integer('max_booking_hours')->default(8)->after('min_booking_hours');
             $table->boolean('requires_approval')->default(false)->after('max_booking_hours');
-            
+
             // Configurações de períodos padrão
             $table->json('booking_periods')->nullable()->after('requires_approval'); // Períodos padrão (manhã, tarde, noite, dia todo)
             $table->boolean('allow_custom_periods')->default(true)->after('booking_periods'); // Permitir reservas customizadas
-            
+
             // Configurações de tipo de reserva por dia da semana
             $table->json('booking_schedule')->nullable()->after('allow_custom_periods'); // Tipo de reserva por dia (hourly/period)
-            
+
             // Limites de reserva
             $table->integer('max_bookings_per_day')->nullable()->after('booking_schedule'); // Máximo de reservas por dia
             $table->integer('max_bookings_per_month')->nullable()->after('max_bookings_per_day'); // Máximo de reservas por mês
@@ -40,7 +40,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (!Schema::hasTable('common_areas')) {
+        if (! Schema::hasTable('common_areas')) {
             return;
         }
 
@@ -61,8 +61,8 @@ return new class extends Migration
                 'booking_schedule',
                 'max_bookings_per_day',
                 'max_bookings_per_month',
-                'max_bookings_per_year'
+                'max_bookings_per_year',
             ]);
         });
     }
-}; 
+};

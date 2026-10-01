@@ -4,7 +4,6 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\MaintenanceEquipment;
-use App\Models\MaintenanceArea;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -25,6 +24,7 @@ class MaintenanceEquipmentController extends Controller
      * Pode ser filtrado por `maintenance_area_id`.
      *
      * @authenticated
+     *
      * @queryParam page int A página a ser retornada. Example: 1
      * @queryParam per_page int Número de itens por página. Example: 15
      * @queryParam maintenance_area_id int ID da área de manutenção para filtrar equipamentos. Example: 1
@@ -35,20 +35,21 @@ class MaintenanceEquipmentController extends Controller
     public function index(Request $request)
     {
         $condominiumId = Auth::user()->condominium_id;
-        if (!$condominiumId && !$request->attributes->has('condominium')) {
+        if (! $condominiumId && ! $request->attributes->has('condominium')) {
             return response()->json(['message' => 'Condomínio não identificado para o usuário.'], 400);
         }
         $currentCondominiumId = $condominiumId ?? $request->attributes->get('condominium')->id;
 
         $perPage = $request->input('per_page', 15);
         $query = MaintenanceEquipment::where('condominium_id', $currentCondominiumId)
-                                     ->with(['maintenanceArea:id,name', 'qrAccessUsers:id,name']); // Otimizar carregamento da área e usuários
+            ->with(['maintenanceArea:id,name', 'qrAccessUsers:id,name']); // Otimizar carregamento da área e usuários
 
         if ($request->has('maintenance_area_id')) {
             $query->where('maintenance_area_id', $request->maintenance_area_id);
         }
 
         $equipments = $query->orderBy('name', 'asc')->paginate($perPage);
+
         return response()->json($equipments);
     }
 
@@ -56,6 +57,7 @@ class MaintenanceEquipmentController extends Controller
      * Criar um novo equipamento de manutenção.
      *
      * @authenticated
+     *
      * @bodyParam name string required Nome do equipamento. Example: "Bomba Piscina Bloco A"
      * @bodyParam maintenance_area_id int required ID da área de manutenção à qual o equipamento pertence. Example: 1
      * @bodyParam description string Descrição do equipamento. Example: "Bomba responsável pela filtragem da piscina do Bloco A."
@@ -69,7 +71,7 @@ class MaintenanceEquipmentController extends Controller
     public function store(Request $request)
     {
         $condominiumId = Auth::user()->condominium_id;
-        if (!$condominiumId && !$request->attributes->has('condominium')) {
+        if (! $condominiumId && ! $request->attributes->has('condominium')) {
             return response()->json(['message' => 'Condomínio não identificado para o usuário.'], 400);
         }
         $currentCondominiumId = $condominiumId ?? $request->attributes->get('condominium')->id;
@@ -109,6 +111,7 @@ class MaintenanceEquipmentController extends Controller
      * Exibir um equipamento de manutenção específico.
      *
      * @authenticated
+     *
      * @urlParam equipment int required O ID do equipamento. Example: 1
      *
      * @responseFile status=200 scenario="Sucesso" storage/responses/maintenanceequipment.show.json
@@ -118,7 +121,7 @@ class MaintenanceEquipmentController extends Controller
     public function show(Request $request, MaintenanceEquipment $equipment)
     {
         $condominiumId = Auth::user()->condominium_id;
-        if (!$condominiumId && !$request->attributes->has('condominium')) {
+        if (! $condominiumId && ! $request->attributes->has('condominium')) {
             return response()->json(['message' => 'Condomínio não identificado para o usuário.'], 400);
         }
         $currentCondominiumId = $condominiumId ?? $request->attributes->get('condominium')->id;
@@ -128,6 +131,7 @@ class MaintenanceEquipmentController extends Controller
         }
 
         $equipment->load(['maintenanceArea:id,name', 'qrAccessUsers:id,name']); // Carregar informação da área e usuários
+
         return response()->json($equipment);
     }
 
@@ -135,7 +139,9 @@ class MaintenanceEquipmentController extends Controller
      * Atualizar um equipamento de manutenção.
      *
      * @authenticated
+     *
      * @urlParam equipment int required O ID do equipamento. Example: 1
+     *
      * @bodyParam name string Nome do equipamento. Example: "Bomba Piscina Bloco B"
      * @bodyParam maintenance_area_id int ID da área de manutenção. Example: 2
      * @bodyParam description string Descrição do equipamento.
@@ -149,7 +155,7 @@ class MaintenanceEquipmentController extends Controller
     public function update(Request $request, MaintenanceEquipment $equipment)
     {
         $condominiumId = Auth::user()->condominium_id;
-        if (!$condominiumId && !$request->attributes->has('condominium')) {
+        if (! $condominiumId && ! $request->attributes->has('condominium')) {
             return response()->json(['message' => 'Condomínio não identificado para o usuário.'], 400);
         }
         $currentCondominiumId = $condominiumId ?? $request->attributes->get('condominium')->id;
@@ -182,10 +188,11 @@ class MaintenanceEquipmentController extends Controller
             'maintenance_area_id',
             'description',
             'location_details',
-            'qr_code_access_level'
+            'qr_code_access_level',
         ]));
 
         $equipment->load(['maintenanceArea:id,name', 'qrAccessUsers:id,name']);
+
         return response()->json($equipment);
     }
 
@@ -193,16 +200,18 @@ class MaintenanceEquipmentController extends Controller
      * Excluir um equipamento de manutenção.
      *
      * @authenticated
+     *
      * @urlParam equipment int required O ID do equipamento. Example: 1
      *
      * @response status=204 scenario="Excluído com sucesso"
+     *
      * @responseFile status=404 scenario="Não encontrado" storage/responses/notfound.json
      * @responseFile status=403 scenario="Proibido" storage/responses/forbidden.json
      */
     public function destroy(Request $request, MaintenanceEquipment $equipment)
     {
         $condominiumId = Auth::user()->condominium_id;
-        if (!$condominiumId && !$request->attributes->has('condominium')) {
+        if (! $condominiumId && ! $request->attributes->has('condominium')) {
             return response()->json(['message' => 'Condomínio não identificado para o usuário.'], 400);
         }
         $currentCondominiumId = $condominiumId ?? $request->attributes->get('condominium')->id;
@@ -213,9 +222,8 @@ class MaintenanceEquipmentController extends Controller
 
         // Adicionar verificação se existem agendamentos/registros associados antes de excluir, se necessário
         if ($equipment->schedules()->exists()) {
-             return response()->json(['message' => 'Não é possível excluir o equipamento pois existem agendamentos de manutenção associados.'], 400);
+            return response()->json(['message' => 'Não é possível excluir o equipamento pois existem agendamentos de manutenção associados.'], 400);
         }
-
 
         $equipment->delete();
 
@@ -229,11 +237,14 @@ class MaintenanceEquipmentController extends Controller
      * Sincroniza a lista de usuários que podem acessar o relatório do QR Code.
      *
      * @authenticated
+     *
      * @urlParam equipment int required O ID do equipamento. Example: 1
+     *
      * @bodyParam user_ids array required Array de IDs de usuários. Example: [1, 2, 3]
      * @bodyParam user_ids.* int ID de um usuário. Example: 1
      *
      * @response status=200 scenario="Usuários atualizados" body={"message"="Usuários com acesso ao QR Code atualizados com sucesso."}
+     *
      * @responseFile status=404 scenario="Equipamento não encontrado" storage/responses/notfound.json
      * @responseFile status=403 scenario="Proibido" storage/responses/forbidden.json
      * @responseFile status=400 scenario="Dados inválidos" storage/responses/validation.error.json
@@ -241,7 +252,7 @@ class MaintenanceEquipmentController extends Controller
     public function syncQrAccessUsers(Request $request, MaintenanceEquipment $equipment)
     {
         $condominiumId = Auth::user()->condominium_id;
-        if (!$condominiumId && !$request->attributes->has('condominium')) {
+        if (! $condominiumId && ! $request->attributes->has('condominium')) {
             return response()->json(['message' => 'Condomínio não identificado para o usuário.'], 400);
         }
         $currentCondominiumId = $condominiumId ?? $request->attributes->get('condominium')->id;
@@ -253,8 +264,8 @@ class MaintenanceEquipmentController extends Controller
         // Permitir sincronização se for 'specific_users' OU se for um array vazio (limpeza durante mudança de nível)
         $userIds = $request->input('user_ids', []);
         $isClearing = empty($userIds);
-        
-        if ($equipment->qr_code_access_level !== 'specific_users' && !$isClearing) {
+
+        if ($equipment->qr_code_access_level !== 'specific_users' && ! $isClearing) {
             return response()->json(['message' => 'Este equipamento não está configurado para acesso específico de usuários.'], 400);
         }
 

@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::table('residents', function (Blueprint $table) {
             $table->enum('classification', ['proprietario', 'morador', 'inquilino'])
-                  ->default('morador')
-                  ->after('email');
+                ->default('morador')
+                ->after('email');
         });
     }
 

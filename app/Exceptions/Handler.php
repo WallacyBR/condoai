@@ -7,6 +7,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
@@ -53,6 +54,9 @@ class Handler extends ExceptionHandler
                 } elseif ($e instanceof NotFoundHttpException) {
                     $status = 404;
                     $response['message'] = 'Recurso não encontrado.';
+                } elseif ($e instanceof HttpExceptionInterface) {
+                    $status = $e->getStatusCode();
+                    $response['message'] = $e->getMessage() ?: 'Erro na requisição.';
                 }
 
                 if (config('app.debug')) {

@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\CommonAreaBooking;
 use App\Models\CommonArea;
-use App\Models\Resident;
+use App\Models\CommonAreaBooking;
 use App\Models\Condominium;
+use App\Models\Resident;
+use Illuminate\Database\Seeder;
 
 class CommonAreaBookingSeeder extends Seeder
 {
@@ -16,30 +16,33 @@ class CommonAreaBookingSeeder extends Seeder
     public function run(): void
     {
         $condominiums = Condominium::all();
-        
+
         if ($condominiums->isEmpty()) {
             $this->command->warn('Nenhum condomínio encontrado. Execute primeiro o CustomCondominiumResidentsSeeder.');
+
             return;
         }
 
         $commonAreas = CommonArea::all();
-        
+
         if ($commonAreas->isEmpty()) {
             $this->command->warn('Nenhuma área comum encontrada. Execute primeiro o CommonAreaSeeder.');
+
             return;
         }
 
         $residents = Resident::all();
-        
+
         if ($residents->isEmpty()) {
             $this->command->warn('Nenhum morador encontrado. Execute primeiro o CustomCondominiumResidentsSeeder.');
+
             return;
         }
 
         foreach ($condominiums as $condominium) {
             $condoAreas = $commonAreas->where('condominium_id', $condominium->id);
             $condoResidents = $residents->where('condominium_id', $condominium->id);
-            
+
             if ($condoAreas->isEmpty() || $condoResidents->isEmpty()) {
                 continue;
             }
@@ -48,15 +51,15 @@ class CommonAreaBookingSeeder extends Seeder
             for ($i = 0; $i < 20; $i++) {
                 $area = $condoAreas->random();
                 $resident = $condoResidents->random();
-                
+
                 // Definir data da reserva (pode ser passada, presente ou futura)
                 $bookingDate = now()->addDays(rand(-30, 60));
                 $startTime = $bookingDate->copy()->setHours(rand(8, 18))->setMinutes([0, 30][rand(0, 1)]);
                 $duration = [2, 3, 4, 6, 8][rand(0, 4)]; // duração em horas
                 $endTime = $startTime->copy()->addHours($duration);
-                
+
                 $status = $this->getBookingStatus($bookingDate);
-                
+
                 CommonAreaBooking::create([
                     'booking_date' => $bookingDate->format('Y-m-d'),
                     'start_time' => $startTime->format('H:i:s'),
@@ -83,13 +86,13 @@ class CommonAreaBookingSeeder extends Seeder
             }
         }
 
-        $this->command->info('Reservas de áreas comuns criadas com sucesso para ' . $condominiums->count() . ' condomínio(s)!');
+        $this->command->info('Reservas de áreas comuns criadas com sucesso para '.$condominiums->count().' condomínio(s)!');
     }
 
     private function getBookingStatus(\Carbon\Carbon $bookingDate): string
     {
         $now = now();
-        
+
         if ($bookingDate->isPast()) {
             // Para datas passadas, 90% são realizadas, 10% canceladas
             return rand(1, 10) <= 9 ? 'realizada' : 'cancelada';
@@ -106,20 +109,20 @@ class CommonAreaBookingSeeder extends Seeder
     {
         $purposes = [
             'Salão de Festas' => [
-                'Aniversário de 15 anos', 'Festa de casamento', 'Aniversário adulto', 
-                'Confraternização familiar', 'Festa de formatura', 'Chá de bebê'
+                'Aniversário de 15 anos', 'Festa de casamento', 'Aniversário adulto',
+                'Confraternização familiar', 'Festa de formatura', 'Chá de bebê',
             ],
             'Churrasqueira' => [
                 'Churrasco familiar', 'Confraternização amigos', 'Almoço de domingo',
-                'Reunião familiar', 'Aniversário informal'
+                'Reunião familiar', 'Aniversário informal',
             ],
             'Quadra Poliesportiva' => [
                 'Torneio de futebol', 'Aula de educação física', 'Treino de vôlei',
-                'Competição entre vizinhos', 'Atividade recreativa'
+                'Competição entre vizinhos', 'Atividade recreativa',
             ],
             'Academia' => [
                 'Treino personalizado', 'Aula particular', 'Sessão de fisioterapia',
-                'Treino em grupo', 'Atividade física'
+                'Treino em grupo', 'Atividade física',
             ],
         ];
 
@@ -129,4 +132,4 @@ class CommonAreaBookingSeeder extends Seeder
 
         return 'Evento social';
     }
-} 
+}

@@ -6,10 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Apartment;
 use App\Models\Package;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 class PackageController extends Controller
 {
@@ -37,33 +37,46 @@ class PackageController extends Controller
 
     public function store(Request $request)
     {
+        $condominiumId = $this->currentCondominiumId($request);
+
         $validated = $request->validate([
-            'apartment_id' => 'required|exists:apartments,id',
+            'apartment_id' => [
+                'required',
+                Rule::exists('apartments', 'id')->where(fn ($query) => $query->where('condominium_id', $condominiumId)),
+            ],
+            'recipient_name' => 'sometimes|nullable|string|max:255',
+            'recipient_apartment' => 'sometimes|nullable|string|max:255',
+            'recipient_phone' => 'sometimes|nullable|string|max:255',
+            'sender' => 'sometimes|nullable|string|max:255',
+            'description' => 'sometimes|nullable|string',
             'photo' => 'nullable|string',
             'pickup_location' => 'required|string|max:255',
             'observation' => 'nullable|string',
         ]);
 
-        $apartment = Apartment::find($validated['apartment_id']);
-        if (!$apartment) {
-            return response()->json(['message' => 'Apartamento não encontrado'], 404);
-        }
+        $apartment = Apartment::with(['owner', 'tenant'])->findOrFail($validated['apartment_id']);
 
         $data = $validated;
         $data['user_id'] = $request->user()->id;
         $data['condominium_id'] = $apartment->condominium_id;
+        $data['recipient_name'] = $validated['recipient_name']
+            ?? $apartment->owner?->name
+            ?? $apartment->tenant?->name
+            ?? 'Destinatário não informado';
+        $data['recipient_apartment'] = $validated['recipient_apartment'] ?? $apartment->number;
+        $data['sender'] = $validated['sender'] ?? 'Remetente não informado';
 
         if ($request->photo) {
             try {
                 $image = $request->photo;
                 // Remove o cabeçalho do base64
-                list($type, $image) = explode(';', $image);
-                list(, $image) = explode(',', $image);
+                [$type, $image] = explode(';', $image);
+                [, $image] = explode(',', $image);
                 $imageData = base64_decode($image);
 
                 // Gera um nome de arquivo único
                 $extension = str_replace('data:image/', '', $type);
-                $filename = 'packages/' . Str::uuid() . '.' . $extension;
+                $filename = 'packages/'.Str::uuid().'.'.$extension;
 
                 // Salva a imagem no armazenamento público
                 Storage::disk('public')->put($filename, $imageData);
@@ -72,7 +85,8 @@ class PackageController extends Controller
                 $data['photo'] = Storage::url($filename);
 
             } catch (\Exception $e) {
-                \Log::error('Erro ao processar a imagem da correspondência: ' . $e->getMessage());
+                \Log::error('Erro ao processar a imagem da correspondência: '.$e->getMessage());
+
                 // Opcional: retornar um erro se o upload da imagem for crítico
                 return response()->json(['message' => 'Erro ao processar a imagem.'], 500);
             }
@@ -89,57 +103,53 @@ class PackageController extends Controller
                 'error' => $e->getMessage(),
                 'data' => $data,
             ]);
+
             return response()->json(['message' => 'Erro interno do servidor'], 500);
         }
     }
 
-    public function show(string $id)
+    public function show(Package $package)
     {
-        return Package::with(['apartment.tower', 'apartment.block'])->findOrFail($id);
+        return $package->load(['apartment.tower', 'apartment.block']);
     }
 
     public function update(Request $request, Package $package)
     {
+        $condominiumId = $this->currentCondominiumId($request);
+
         $validated = $request->validate([
-            'apartment_id' => ['sometimes', 'integer', Rule::exists('apartments', 'id')],
+            'apartment_id' => [
+                'sometimes',
+                'integer',
+                Rule::exists('apartments', 'id')->where(fn ($query) => $query->where('condominium_id', $condominiumId)),
+            ],
+            'recipient_name' => 'sometimes|nullable|string|max:255',
+            'recipient_apartment' => 'sometimes|nullable|string|max:255',
+            'recipient_phone' => 'sometimes|nullable|string|max:255',
+            'sender' => 'sometimes|nullable|string|max:255',
+            'description' => 'sometimes|nullable|string',
             'photo' => 'sometimes|nullable|string',
             'pickup_location' => 'sometimes|string|max:255',
             'observation' => 'sometimes|nullable|string',
         ]);
 
-        // Log para depuração
-        \Log::info('Dados recebidos no PackageController::update', [
-            'package_id' => $package->id,
-            'user_id' => $request->user()->id,
-            'validated_data' => $validated,
-            'all_request_data' => $request->all()
-        ]);
-
-        // Se apartment_id está sendo atualizado, verificar se existe
         if (isset($validated['apartment_id'])) {
-            $apartment = \App\Models\Apartment::find($validated['apartment_id']);
-            if (!$apartment) {
-                \Log::error('Apartamento não encontrado para update', ['apartment_id' => $validated['apartment_id']]);
-                return response()->json(['message' => 'Apartamento não encontrado'], 422);
-            }
-            
-            \Log::info('Apartamento encontrado para update', [
-                'apartment' => $apartment,
-                'condominium_id' => $apartment->condominium_id
-            ]);
+            $apartment = Apartment::findOrFail($validated['apartment_id']);
+            $validated['condominium_id'] = $apartment->condominium_id;
+            $validated['recipient_apartment'] = $validated['recipient_apartment'] ?? $apartment->number;
         }
 
         try {
             $package->update($validated);
-            \Log::info('Package atualizado com sucesso', ['package_id' => $package->id]);
-            
+
             return $package->refresh()->load(['apartment.tower', 'apartment.block']);
         } catch (\Exception $e) {
-            \Log::error('Erro ao atualizar package', [
+            Log::error('Erro ao atualizar encomenda.', [
                 'package_id' => $package->id,
                 'error' => $e->getMessage(),
-                'data' => $validated
+                'data' => $validated,
             ]);
+
             return response()->json(['message' => 'Erro interno do servidor'], 500);
         }
     }
@@ -163,6 +173,10 @@ class PackageController extends Controller
             return response()->json(['message' => 'Código incorreto'], 422);
         }
 
+        if ($package->retrieved_at) {
+            return response()->json(['message' => 'Encomenda já retirada'], 422);
+        }
+
         $data = [
             'retrieved_at' => now(),
         ];
@@ -178,5 +192,18 @@ class PackageController extends Controller
         $package->update($data);
 
         return $package->refresh()->load(['apartment.tower', 'apartment.block']);
+    }
+
+    private function currentCondominiumId(Request $request): int
+    {
+        if (app()->bound('currentCondominium')) {
+            return app('currentCondominium')->id;
+        }
+
+        if ($request->attributes->has('condominium')) {
+            return $request->attributes->get('condominium')->id;
+        }
+
+        return (int) $request->user()->condominium_id;
     }
 }

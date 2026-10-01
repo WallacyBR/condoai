@@ -1,51 +1,55 @@
-import { mount } from '@vue/test-utils';
-import { format, startOfToday } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { vi } from 'vitest';
-import MyDailyMaintenanceTasks from '@/pages/maintenance/MyDailyMaintenanceTasks.vue';
+import { flushPromises, mount } from '@vue/test-utils';
+import MyDailyMaintenanceTasks from '@/pages/maintenance/MyDailyMaintenanceTasks.vue'; // Ajuste o caminho
 import api from '@/utils/api';
-import { mountOptionsWithLayoutStubs } from './helpers/mountWithLayoutStubs.js';
+import AuthenticatedLayout from '@/components/layouts/AuthenticatedLayout.vue'; // Stubbed
+const { format, startOfToday } = require('date-fns');
 
-const { mockApi } = vi.hoisted(() => ({
-  mockApi: {
-    get: vi.fn(),
+jest.mock('@/utils/api', () => ({
+  get: jest.fn(),
+}));
+
+const globalStubs = {
+  AuthenticatedLayout: {
+    template: '<div><slot name="page-title"/><slot/></div>',
   },
-}));
-
-const mockRouter = { push: vi.fn() };
-
-vi.mock('@/utils/api', () => ({
-  default: mockApi,
-}));
-
-vi.mock('vue-router', () => ({
-  useRouter: () => mockRouter,
-}));
+};
 
 describe('MyDailyMaintenanceTasks.vue', () => {
   let wrapper;
   const todayString = format(startOfToday(), 'yyyy-MM-dd');
-  const formattedToday = format(startOfToday(), "d 'de' MMMM 'de' yyyy", { locale: ptBR });
   const mockTasks = [
     { id: 1, title: 'Verificar Bomba A', equipment: { name: 'Bomba Piscina A' }, due_time: '10:00:00', description: 'Checar pressão e ruído.' },
     { id: 2, title: 'Limpar Hall Torre B', equipment: { name: 'Hall Torre B' }, due_time: '14:30:00', description: null },
   ];
 
   beforeEach(async () => {
-    mockApi.get.mockResolvedValue({ data: mockTasks });
-    wrapper = mount(MyDailyMaintenanceTasks, mountOptionsWithLayoutStubs());
-    await wrapper.vm.$nextTick();
+    api.get.mockResolvedValue({ data: mockTasks });
+    wrapper = mount(MyDailyMaintenanceTasks, {
+      global: {
+        stubs: globalStubs,
+      }
+    });
+    // Aguarda a promise de api.get resolver e o DOM atualizar
+    await flushPromises();
     await wrapper.vm.$nextTick();
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('renderiza o título e o seletor de data', () => {
-    expect(wrapper.text()).toContain(`Minhas Tarefas para ${formattedToday}`);
+    expect(wrapper.text()).toContain('Minhas Tarefas para');
     expect(wrapper.find('input[type="date"]').exists()).toBe(true);
     expect(wrapper.find('input[type="date"]').element.value).toBe(todayString);
   });
 
-  it('busca e exibe as tarefas do dia ao montar', () => {
-    expect(mockApi.get).toHaveBeenCalledWith(`/maintenance/schedules/my-today?date=${todayString}`);
+  it('busca e exibe as tarefas do dia ao montar', async () => {
+    expect(api.get).toHaveBeenCalledWith(expect.stringContaining(`/maintenance/schedules/my-today?date=${todayString}`));
+
+    // Aguardar a renderização após a chamada da API (já feito no beforeEach, mas pode ser necessário aqui se o estado mudar)
+    // await wrapper.vm.$nextTick();
+
     expect(wrapper.text()).toContain('Verificar Bomba A');
     expect(wrapper.text()).toContain('Bomba Piscina A');
     expect(wrapper.text()).toContain('10:00');
@@ -53,43 +57,58 @@ describe('MyDailyMaintenanceTasks.vue', () => {
   });
 
   it('exibe mensagem quando não há tarefas', async () => {
-    mockApi.get.mockResolvedValue({ data: [] });
-    await wrapper.vm.fetchMyTasks();
+    api.get.mockResolvedValue({ data: [] }); // Mock para API retornando array vazio
+    // Remontar ou forçar re-fetch
+    await wrapper.vm.fetchMyTasks(); // Chamar manualmente para simular
+    await flushPromises();
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.text()).toContain('Nenhuma tarefa encontrada');
+    expect(wrapper.text()).toContain('Você não possui tarefas de manutenção agendadas');
     expect(wrapper.text()).not.toContain('Verificar Bomba A');
   });
 
   it('busca tarefas novamente ao mudar a data', async () => {
     const newDate = '2024-09-15';
-    await wrapper.find('input[type="date"]').setValue(newDate);
-    await wrapper.vm.$nextTick();
+    const dateInput = wrapper.find('input[type="date"]');
+    await dateInput.setValue(newDate);
+    // O evento @change deve chamar fetchMyTasks
+    // await dateInput.trigger('change'); // trigger('change') é chamado automaticamente pelo setValue em input[type=date]
+
+    await flushPromises();
     await wrapper.vm.$nextTick();
 
-    expect(mockApi.get).toHaveBeenCalledWith(`/maintenance/schedules/my-today?date=${newDate}`);
+    expect(api.get).toHaveBeenCalledWith(expect.stringContaining(`/maintenance/schedules/my-today?date=${newDate}`));
   });
 
   it('mostra estado de carregamento', async () => {
-    mockApi.get.mockImplementation(() => new Promise((resolve) => {
-      setTimeout(() => resolve({ data: mockTasks }), 50);
-    }));
+    jest.useFakeTimers();
+    api.get.mockImplementation(() => new Promise(resolve => setTimeout(() => resolve({ data: mockTasks }), 100)));
 
-    const loadingWrapper = mount(MyDailyMaintenanceTasks, mountOptionsWithLayoutStubs());
-    expect(loadingWrapper.vm.isLoading).toBe(true);
-    expect(loadingWrapper.text()).toContain('Carregando suas tarefas...');
+    // Remonta o componente para que o isLoading seja ativado durante a chamada da API
+    wrapper = mount(MyDailyMaintenanceTasks, { global: { stubs: globalStubs } });
+    expect(wrapper.vm.isLoading).toBe(true); // Imediatamente após montar, antes da API resolver
+    expect(wrapper.text()).toContain('Carregando suas tarefas...');
 
-    await new Promise((resolve) => setTimeout(resolve, 60));
-    await loadingWrapper.vm.$nextTick();
-
-    expect(loadingWrapper.vm.isLoading).toBe(false);
+    jest.advanceTimersByTime(100);
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.isLoading).toBe(false);
+    const loadingText = wrapper.findAll('p').find(element => element.text() === 'Carregando suas tarefas...');
+    expect(loadingText.isVisible()).toBe(false);
+    jest.useRealTimers();
   });
 
-  it('aciona fluxo de registro ao clicar em "Registrar Execução"', async () => {
-    mockRouter.push.mockClear();
-    const actionButton = wrapper.findAll('button').find((button) => button.text().includes('Registrar Execução'));
-    expect(actionButton).toBeTruthy();
-    await actionButton.trigger('click');
-    expect(mockRouter.push).toHaveBeenCalled();
+  it('redireciona ao clicar em "Registrar Execução"', async () => {
+    await flushPromises();
+    await wrapper.vm.$nextTick(); // Garante que as tarefas estão renderizadas
+
+    const firstTaskButton = wrapper.findAll('button').find(button => button.text().includes('Registrar Execução'));
+    expect(firstTaskButton.exists()).toBe(true);
+    await firstTaskButton.trigger('click');
+    expect(global.__routerPush).toHaveBeenCalledWith({
+      name: 'maintenance.records.new',
+      params: { scheduleId: mockTasks[0].id },
+    });
   });
+
 });

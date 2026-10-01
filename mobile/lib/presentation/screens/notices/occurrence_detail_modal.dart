@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/utils/media_picker_helper.dart';
 import '../../../core/widgets/frosted_glass_card.dart';
 
 class OccurrenceMessage {
@@ -9,14 +12,14 @@ class OccurrenceMessage {
   final String text;
   final String time;
   final bool isFromResident;
-  final String? photoUrl;
+  final String? photoPath;
 
   OccurrenceMessage({
     required this.sender,
     required this.text,
     required this.time,
     required this.isFromResident,
-    this.photoUrl,
+    this.photoPath,
   });
 }
 
@@ -77,7 +80,7 @@ class _OccurrenceDetailModalState extends State<OccurrenceDetailModal> {
         text: 'A lâmpada do corredor em frente ao apartamento 402 está piscando e apagou completamente. Local muito escuro à noite.',
         time: widget.date,
         isFromResident: true,
-        photoUrl: 'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=500&auto=format&fit=crop&q=80',
+        photoPath: null,
       ),
       OccurrenceMessage(
         sender: 'Síndico Geral (Administração)',
@@ -244,12 +247,12 @@ class _OccurrenceDetailModalState extends State<OccurrenceDetailModal> {
                             color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
                           ),
                         ),
-                        if (msg.photoUrl != null) ...[
+                        if (msg.photoPath != null) ...[
                           const SizedBox(height: 10),
                           ClipRRect(
                             borderRadius: BorderRadius.circular(12),
-                            child: Image.network(
-                              msg.photoUrl!,
+                            child: Image.file(
+                              File(msg.photoPath!),
                               height: 130,
                               width: double.infinity,
                               fit: BoxFit.cover,
@@ -269,10 +272,20 @@ class _OccurrenceDetailModalState extends State<OccurrenceDetailModal> {
               child: Row(
                 children: [
                   IconButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Foto anexada da galeria.')),
-                      );
+                    onPressed: () async {
+                      final attachment = await MediaPickerHelper.pickPhoto();
+                      if (attachment == null || !mounted) return;
+                      setState(() {
+                        _messages.add(
+                          OccurrenceMessage(
+                            sender: 'Wallacy Silva (Morador)',
+                            text: 'Anexo enviado.',
+                            time: 'Agora mesmo',
+                            isFromResident: true,
+                            photoPath: attachment.path,
+                          ),
+                        );
+                      });
                     },
                     icon: const Icon(Icons.attach_file_rounded, color: AppColors.primary),
                   ),

@@ -1,11 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/utils/media_picker_helper.dart';
 import '../../../core/widgets/bokeh_scaffold.dart';
 import '../../../core/widgets/frosted_glass_card.dart';
 
-/// Tela completa de Nova Ocorrência com suporte a fotos, vídeos e níveis de gravidade
+/// Tela completa de Nova Ocorrência com suporte a fotos, vídeos e níveis de gravidade.
 class NewOccurrenceScreen extends StatefulWidget {
   final Function(String protocol, String title, String category, String date, String status)? onOccurrenceCreated;
 
@@ -24,7 +27,7 @@ class _NewOccurrenceScreenState extends State<NewOccurrenceScreen> {
   final _locationController = TextEditingController();
   String _selectedCategory = 'Manutenção Predial';
   String _selectedUrgency = 'Média';
-  final List<String> _attachedPhotos = [];
+  final List<MediaAttachment> _attachments = [];
 
   @override
   void dispose() {
@@ -34,18 +37,23 @@ class _NewOccurrenceScreenState extends State<NewOccurrenceScreen> {
     super.dispose();
   }
 
-  void _addMockPhoto() {
-    HapticFeedback.lightImpact();
-    setState(() {
-      _attachedPhotos.add(
-        'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=500&auto=format&fit=crop&q=80',
-      );
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Foto anexada com sucesso!'),
-        duration: Duration(seconds: 1),
-      ),
+  Future<void> _addMedia() async {
+    if (_attachments.length >= 3) return;
+
+    await MediaPickerHelper.showPhotoVideoPickerSheet(
+      context,
+      maxItems: 3,
+      currentCount: _attachments.length,
+      onSelected: (attachment) {
+        HapticFeedback.lightImpact();
+        setState(() => _attachments.add(attachment));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(attachment.isVideo ? 'Vídeo anexado!' : 'Foto anexada com sucesso!'),
+            duration: const Duration(seconds: 1),
+          ),
+        );
+      },
     );
   }
 
@@ -73,6 +81,19 @@ class _NewOccurrenceScreenState extends State<NewOccurrenceScreen> {
         backgroundColor: AppColors.success,
       ),
     );
+  }
+
+  Widget _attachmentPreview(MediaAttachment attachment) {
+    if (attachment.isVideo) {
+      return Container(
+        color: Colors.black87,
+        child: const Center(
+          child: Icon(Icons.videocam_rounded, color: Colors.white, size: 28),
+        ),
+      );
+    }
+
+    return Image.file(File(attachment.path), fit: BoxFit.cover);
   }
 
   @override
@@ -107,8 +128,6 @@ class _NewOccurrenceScreenState extends State<NewOccurrenceScreen> {
                 children: [
                   Text('Classificação', style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 14),
-
-                  // Categoria
                   DropdownButtonFormField<String>(
                     initialValue: _selectedCategory,
                     decoration: InputDecoration(
@@ -126,8 +145,6 @@ class _NewOccurrenceScreenState extends State<NewOccurrenceScreen> {
                     onChanged: (val) => setState(() => _selectedCategory = val!),
                   ),
                   const SizedBox(height: 14),
-
-                  // Nível de Urgência
                   Text('Gravidade / Urgência', style: AppTextStyles.labelSmall),
                   const SizedBox(height: 6),
                   Row(
@@ -159,7 +176,10 @@ class _NewOccurrenceScreenState extends State<NewOccurrenceScreen> {
                                 style: AppTextStyles.badge.copyWith(
                                   color: isSelected ? color : (isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
                                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                                  fontSize: 11,
                                 ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ),
@@ -170,9 +190,7 @@ class _NewOccurrenceScreenState extends State<NewOccurrenceScreen> {
                 ],
               ),
             ),
-
             const SizedBox(height: 16),
-
             FrostedGlassCard(
               borderRadius: 24,
               child: Column(
@@ -180,11 +198,8 @@ class _NewOccurrenceScreenState extends State<NewOccurrenceScreen> {
                 children: [
                   Text('Detalhes do Ocorrido', style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 14),
-
-                  // Título
                   TextField(
                     controller: _titleController,
-                    style: TextStyle(color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
                     decoration: InputDecoration(
                       labelText: 'Título do Chamado',
                       hintText: 'Ex: Lâmpada queimada no 4º andar',
@@ -192,11 +207,8 @@ class _NewOccurrenceScreenState extends State<NewOccurrenceScreen> {
                     ),
                   ),
                   const SizedBox(height: 14),
-
-                  // Localização
                   TextField(
                     controller: _locationController,
-                    style: TextStyle(color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
                     decoration: InputDecoration(
                       labelText: 'Local Específico',
                       hintText: 'Ex: Hall dos elevadores do Bloco Primavera',
@@ -205,12 +217,9 @@ class _NewOccurrenceScreenState extends State<NewOccurrenceScreen> {
                     ),
                   ),
                   const SizedBox(height: 14),
-
-                  // Descrição
                   TextField(
                     controller: _descController,
                     maxLines: 4,
-                    style: TextStyle(color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
                     decoration: InputDecoration(
                       labelText: 'Descrição Completa',
                       hintText: 'Descreva detalhadamente o ocorrido...',
@@ -220,10 +229,7 @@ class _NewOccurrenceScreenState extends State<NewOccurrenceScreen> {
                 ],
               ),
             ),
-
             const SizedBox(height: 16),
-
-            // Anexos de Mídia (Fotos / Vídeos)
             FrostedGlassCard(
               borderRadius: 24,
               child: Column(
@@ -233,17 +239,16 @@ class _NewOccurrenceScreenState extends State<NewOccurrenceScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Fotos & Comprovantes', style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.bold)),
-                      Text('${_attachedPhotos.length}/3 anexos', style: AppTextStyles.labelSmall),
+                      Text('${_attachments.length}/3 anexos', style: AppTextStyles.labelSmall),
                     ],
                   ),
                   const SizedBox(height: 12),
-
-                  if (_attachedPhotos.isNotEmpty)
+                  if (_attachments.isNotEmpty)
                     SizedBox(
                       height: 80,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
-                        itemCount: _attachedPhotos.length,
+                        itemCount: _attachments.length,
                         itemBuilder: (context, index) {
                           return Stack(
                             children: [
@@ -251,19 +256,17 @@ class _NewOccurrenceScreenState extends State<NewOccurrenceScreen> {
                                 margin: const EdgeInsets.only(right: 10),
                                 width: 80,
                                 height: 80,
+                                clipBehavior: Clip.hardEdge,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(14),
-                                  image: DecorationImage(
-                                    image: NetworkImage(_attachedPhotos[index]),
-                                    fit: BoxFit.cover,
-                                  ),
                                 ),
+                                child: _attachmentPreview(_attachments[index]),
                               ),
                               Positioned(
                                 top: 2,
                                 right: 12,
                                 child: GestureDetector(
-                                  onTap: () => setState(() => _attachedPhotos.removeAt(index)),
+                                  onTap: () => setState(() => _attachments.removeAt(index)),
                                   child: Container(
                                     padding: const EdgeInsets.all(3),
                                     decoration: const BoxDecoration(
@@ -279,10 +282,9 @@ class _NewOccurrenceScreenState extends State<NewOccurrenceScreen> {
                         },
                       ),
                     ),
-
                   const SizedBox(height: 12),
                   InkWell(
-                    onTap: _attachedPhotos.length >= 3 ? null : _addMockPhoto,
+                    onTap: _attachments.length >= 3 ? null : _addMedia,
                     borderRadius: BorderRadius.circular(16),
                     child: Container(
                       width: double.infinity,
@@ -298,20 +300,19 @@ class _NewOccurrenceScreenState extends State<NewOccurrenceScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(
-                            Icons.add_a_photo_rounded,
-                            color: AppColors.primary,
-                            size: 20,
-                          ),
+                          const Icon(Icons.add_a_photo_rounded, color: AppColors.primary, size: 20),
                           const SizedBox(width: 10),
-                          Text(
-                            _attachedPhotos.length >= 3
-                                ? 'Limite de 3 fotos atingido'
-                                : 'Tirar Foto ou Anexar Vídeo',
-                            style: AppTextStyles.titleSmall.copyWith(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
+                          Flexible(
+                            child: Text(
+                              _attachments.length >= 3
+                                  ? 'Limite de 3 anexos atingido'
+                                  : 'Tirar Foto ou Anexar Vídeo',
+                              style: AppTextStyles.titleSmall.copyWith(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
                           ),
                         ],
@@ -321,9 +322,7 @@ class _NewOccurrenceScreenState extends State<NewOccurrenceScreen> {
                 ],
               ),
             ),
-
             const SizedBox(height: 24),
-
             ElevatedButton.icon(
               onPressed: _submit,
               icon: const Icon(Icons.send_rounded, color: Colors.white),

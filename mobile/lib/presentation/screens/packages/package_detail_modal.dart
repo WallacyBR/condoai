@@ -6,6 +6,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/frosted_glass_card.dart';
+import '../../../core/widgets/info_row.dart';
 import '../../../data/models/package_item_model.dart';
 import '../../blocs/packages/packages_cubit.dart';
 
@@ -24,6 +25,8 @@ class PackageDetailModal extends StatefulWidget {
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       useSafeArea: true,
+      isDismissible: true,
+      enableDrag: true,
       builder: (ctx) => ConstrainedBox(
         constraints: BoxConstraints(
           maxHeight: MediaQuery.of(ctx).size.height * 0.88,
@@ -337,28 +340,28 @@ class _PackageDetailModalState extends State<PackageDetailModal> {
               ),
               child: Column(
                 children: [
-                  _InfoRow(
+                  InfoRow(
                     icon: Icons.person_outline_rounded,
                     label: 'Destinatário',
                     value: widget.package.recipientName,
                     isDark: isDark,
                   ),
                   const Divider(height: 14),
-                  _InfoRow(
+                  InfoRow(
                     icon: Icons.access_time_rounded,
                     label: 'Recebido em',
                     value: timeFormatter.format(widget.package.receivedAt),
                     isDark: isDark,
                   ),
                   const Divider(height: 14),
-                  _InfoRow(
+                  InfoRow(
                     icon: Icons.badge_outlined,
                     label: 'Recebido por',
                     value: widget.package.porterName,
                     isDark: isDark,
                   ),
                   const Divider(height: 14),
-                  _InfoRow(
+                  InfoRow(
                     icon: Icons.place_outlined,
                     label: 'Localização',
                     value: widget.package.storageLocation ?? 'Portaria',
@@ -433,48 +436,3 @@ class _PackageDetailModalState extends State<PackageDetailModal> {
   }
 }
 
-class _InfoRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  final bool isDark;
-
-  const _InfoRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.isDark,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(
-          icon,
-          size: 16,
-          color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-        ),
-        const SizedBox(width: 8),
-        Text(
-          label,
-          style: AppTextStyles.labelSmall.copyWith(
-            color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            value,
-            textAlign: TextAlign.end,
-            style: AppTextStyles.bodyMedium.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
-    );
-  }
-}

@@ -14,6 +14,9 @@ class RemoteGateModal extends StatefulWidget {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
+      useSafeArea: true,
+      isDismissible: true,
+      enableDrag: true,
       builder: (ctx) => const RemoteGateModal(),
     );
   }
@@ -86,16 +89,35 @@ class _RemoteGateModalState extends State<RemoteGateModal> {
             ),
           ),
           const SizedBox(height: 16),
-          Text(
-            'Abertura Remota de Portão',
-            style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Comando direto para as fechaduras eletrônicas',
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Abertura Remota de Portão',
+                      style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Comando direto para as fechaduras eletrônicas',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.close_rounded,
+                  color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                ),
+                tooltip: 'Fechar',
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
           ),
           const SizedBox(height: 20),
 

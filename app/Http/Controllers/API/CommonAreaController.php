@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Enums\AccountType;
 use App\Http\Controllers\Concerns\ResolvesTenantCondominium;
 use App\Http\Controllers\Controller;
+use App\Models\ChartAccount;
 use App\Models\CommonArea;
 use App\Models\CommonAreaBooking;
+use App\Models\Receivable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -346,21 +349,93 @@ class CommonAreaController extends Controller
 
         // Calcular preço total
         $totalPrice = null;
+        $startTime = new \DateTime($validated['start_time']);
+        $endTime = new \DateTime($validated['end_time']);
+        $duration = max(1, $endTime->diff($startTime)->h + ($endTime->diff($startTime)->i / 60));
+
         if ($validated['booking_type'] === 'custom' && $commonArea->price_per_hour) {
-            $startTime = new \DateTime($validated['start_time']);
-            $endTime = new \DateTime($validated['end_time']);
-            $duration = $endTime->diff($startTime)->h + ($endTime->diff($startTime)->i / 60);
             $totalPrice = $commonArea->price_per_hour * $duration;
         } else {
             $totalPrice = $commonArea->calculatePeriodPrice($validated['booking_type']);
         }
 
+        $apartment = \App\Models\Apartment::find($validated['apartment_id']);
+        $residentId = $request->input('resident_id');
+        if (! $residentId && $apartment) {
+            $residentId = $apartment->owner_id ?? $apartment->tenant_id;
+        }
+        if (! $residentId && Auth::check()) {
+            $residentId = \App\Models\Resident::where('user_id', Auth::id())->value('id');
+        }
+
+        $validated['condominium_id'] = $commonArea->condominium_id;
+        $validated['resident_id'] = $residentId;
+        $validated['booking_date'] = date('Y-m-d', strtotime($validated['start_time']));
+        $validated['duration_hours'] = (int) ceil($duration);
         $validated['status'] = $commonArea->requires_approval ? 'pending' : 'confirmed';
         $validated['total_price'] = $totalPrice;
+        $validated['total_amount'] = $totalPrice;
 
         $booking = $commonArea->bookings()->create($validated);
 
-        return response()->json($booking->load(['apartment.tower', 'apartment.block']), 201);
+        if ($booking->status === 'confirmed' && $totalPrice > 0) {
+            $this->createReceivableForBooking($booking);
+        }
+
+        return response()->json($booking->load(['apartment.tower', 'apartment.block', 'receivable']), 201);
+    }
+
+    public function approveBooking(Request $request, CommonArea $commonArea, CommonAreaBooking $booking)
+    {
+        if ($booking->common_area_id !== $commonArea->id) {
+            return response()->json(['message' => 'Reserva não encontrada'], 404);
+        }
+
+        if ($booking->status !== CommonAreaBooking::STATUS_PENDING) {
+            return response()->json(['message' => 'Apenas reservas pendentes podem ser aprovadas'], 422);
+        }
+
+        $booking->update([
+            'status' => CommonAreaBooking::STATUS_CONFIRMED,
+            'confirmation_date' => now(),
+        ]);
+
+        $receivable = null;
+        if ((float) $booking->total_price > 0) {
+            $receivable = $this->createReceivableForBooking($booking);
+        }
+
+        return response()->json([
+            'message' => 'Reserva aprovada com sucesso',
+            'booking' => $booking->fresh(['apartment.tower', 'apartment.block', 'receivable']),
+            'receivable' => $receivable,
+        ]);
+    }
+
+    public function rejectBooking(Request $request, CommonArea $commonArea, CommonAreaBooking $booking)
+    {
+        if ($booking->common_area_id !== $commonArea->id) {
+            return response()->json(['message' => 'Reserva não encontrada'], 404);
+        }
+
+        $request->validate([
+            'reason' => 'nullable|string|max:500',
+        ]);
+
+        $booking->update([
+            'status' => CommonAreaBooking::STATUS_CANCELLED,
+            'cancelled_at' => now(),
+            'cancellation_reason' => $request->input('reason', 'Rejeitada pela administração'),
+        ]);
+
+        if ($booking->receivable && $booking->receivable->status === 'pendente') {
+            $booking->receivable->update(['status' => 'cancelado']);
+        }
+
+        return response()->json([
+            'message' => 'Reserva rejeitada com sucesso',
+            'booking' => $booking->fresh(),
+        ]);
     }
 
     public function getAvailableSlots(Request $request, CommonArea $commonArea)
@@ -404,9 +479,73 @@ class CommonAreaController extends Controller
             return response()->json(['message' => 'Esta reserva não pode ser cancelada'], 422);
         }
 
-        $booking->update(['status' => 'cancelled']);
+        $booking->update([
+            'status' => 'cancelled',
+            'cancelled_at' => now(),
+            'cancellation_reason' => $request->input('reason', 'Cancelada pelo usuário'),
+        ]);
+
+        if ($booking->receivable && $booking->receivable->status === 'pendente') {
+            $booking->receivable->update(['status' => 'cancelado']);
+        }
 
         return response()->json(['message' => 'Reserva cancelada com sucesso']);
+    }
+
+    /**
+     * Gera uma conta a receber no financeiro correspondente à taxa de reserva da área comum
+     */
+    protected function createReceivableForBooking(CommonAreaBooking $booking): ?Receivable
+    {
+        $amount = (float) ($booking->total_price ?? $booking->total_amount ?? 0);
+        if ($amount <= 0) {
+            return null;
+        }
+
+        if ($booking->receivable_id && $booking->receivable) {
+            return $booking->receivable;
+        }
+
+        $condoId = $booking->condominium_id ?? $booking->commonArea?->condominium_id;
+
+        $chartAccount = ChartAccount::where('condominium_id', $condoId)
+            ->where('type', AccountType::RECEITA->value)
+            ->first();
+
+        if (! $chartAccount) {
+            $chartAccount = ChartAccount::create([
+                'condominium_id' => $condoId,
+                'name' => 'Receitas de Áreas Comuns',
+                'account_number' => '1.01.05',
+                'type' => AccountType::RECEITA->value,
+            ]);
+        }
+
+        $apartment = $booking->apartment;
+        $unitNumber = $apartment ? $apartment->number : 'Unidade';
+        $residentName = $booking->resident?->name ?? 'Morador';
+        $areaName = $booking->commonArea?->name ?? 'Área Comum';
+        $bookingDateStr = $booking->booking_date ? $booking->booking_date->format('Y-m-d') : now()->toDateString();
+
+        $receivable = Receivable::create([
+            'condominium_id' => $condoId,
+            'chart_account_id' => $chartAccount->id,
+            'due_date' => $bookingDateStr,
+            'competence_date' => $bookingDateStr,
+            'amount' => $amount,
+            'counterpart_name' => "Apt {$unitNumber} - {$residentName}",
+            'reference' => "Reserva #{$booking->id} - {$areaName}",
+            'status' => 'pendente',
+            'description' => "Taxa de reserva da área comum {$areaName} para {$bookingDateStr}",
+            'booking_id' => $booking->id,
+        ]);
+
+        $booking->update([
+            'receivable_id' => $receivable->id,
+            'payment_status' => 'pending',
+        ]);
+
+        return $receivable;
     }
 
     private function processImage($base64Image, $directory)

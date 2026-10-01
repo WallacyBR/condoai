@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Enums\AccountType;
 use App\Http\Controllers\Controller;
+use App\Models\ChartAccount;
+use App\Models\ExpenseRequest;
 use App\Models\MaintenanceRecord;
 use App\Models\MaintenanceRecordPhoto;
 use App\Models\MaintenanceRecordSignature;
@@ -118,18 +121,22 @@ class MaintenanceRecordController extends Controller
             'photos' => 'nullable|array|max:5', // Max 5 photos
             'photos.*' => 'image|mimes:jpeg,png,jpg|max:5120', // Max 5MB per photo
             'signature' => 'nullable|string', // Base64 encoded image
+            'cost' => 'nullable|numeric|min:0',
+            'invoice_number' => 'nullable|string|max:100',
+            'create_expense_request' => 'nullable|boolean',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
 
-        $data = $request->only(['maintenance_schedule_id', 'performed_at', 'notes', 'status']);
+        $data = $request->only(['maintenance_schedule_id', 'performed_at', 'notes', 'status', 'cost', 'invoice_number']);
         $data['condominium_id'] = $currentCondominiumId;
         $data['user_id'] = $request->input('user_id', Auth::id()); // Default to authenticated user
 
         // Garantir que o status seja 'completed' se não especificado
         $data['status'] = $request->input('status', 'completed');
+        $data['cost'] = (float) $request->input('cost', 0);
 
         // Log para debug
         \Log::info('Criando registro de manutenção', [
@@ -174,7 +181,40 @@ class MaintenanceRecordController extends Controller
             }
         }
 
-        $record->load(['photos', 'signature', 'user:id,name', 'schedule:id,title']);
+        // Integração Financeira: Criação de Solicitação de Despesa para custos de manutenção
+        if ($record->cost > 0 && $request->boolean('create_expense_request')) {
+            $chartAccount = ChartAccount::where('condominium_id', $currentCondominiumId)
+                ->where('type', AccountType::DESPESA->value)
+                ->first();
+
+            if (! $chartAccount) {
+                $chartAccount = ChartAccount::create([
+                    'condominium_id' => $currentCondominiumId,
+                    'name' => 'Manutenção Predial e Reparos',
+                    'account_number' => '2.01.03',
+                    'type' => AccountType::DESPESA->value,
+                ]);
+            }
+
+            $scheduleTitle = $record->schedule?->title ?? "Manutenção #{$record->id}";
+            $invoiceNote = $record->invoice_number ? " NF/Recibo: {$record->invoice_number}." : '';
+            $expenseRequest = (new ExpenseRequest)->forceFill([
+                'condominium_id' => $currentCondominiumId,
+                'requested_by' => Auth::id(),
+                'title' => "Despesa de Manutenção: {$scheduleTitle}",
+                'description' => "Custo de manutenção referente a [{$scheduleTitle}].{$invoiceNote} ".($record->notes ?? ''),
+                'amount' => (float) $record->cost,
+                'due_date' => now()->addDays(5)->toDateString(),
+                'chart_account_id' => $chartAccount->id,
+                'reference' => "MANUT-{$record->id}".($record->invoice_number ? "-{$record->invoice_number}" : ''),
+                'status' => 'pending',
+            ]);
+            $expenseRequest->save();
+
+            $record->update(['expense_request_id' => $expenseRequest->id]);
+        }
+
+        $record->load(['photos', 'signature', 'user:id,name', 'schedule:id,title', 'expenseRequest']);
 
         // Log para confirmar criação
         \Log::info('Registro de manutenção criado com sucesso', [

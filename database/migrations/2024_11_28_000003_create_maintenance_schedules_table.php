@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('maintenance_schedules', function (Blueprint $table) {
             $table->id();
             $table->foreignId('condominium_id')->constrained('condominiums')->onDelete('cascade');
-            $table->foreignId('maintenance_equipment_id')->constrained('maintenance_equipments')->onDelete('cascade');
+            $table->foreignId('maintenance_equipment_id')->nullable()->constrained('maintenance_equipments')->nullOnDelete();
 
             $table->string('title');
             $table->text('description')->nullable();
-            $table->enum('type', ['daily', 'weekly', 'biweekly', 'monthly', 'semiannual', 'annual', 'specific_days']);
+            $table->string('type')->default('corretiva');
             $table->date('start_date');
             $table->date('end_date')->nullable();
             $table->time('due_time')->nullable();

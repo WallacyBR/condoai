@@ -6,6 +6,7 @@ use App\Enums\OccurrencePriority;
 use App\Enums\OccurrenceStatus;
 use App\Http\Controllers\Concerns\ResolvesTenantCondominium;
 use App\Http\Controllers\Controller;
+use App\Models\MaintenanceSchedule;
 use App\Models\Occurrence;
 use App\Models\OccurrenceComment;
 use App\Models\OccurrencePhoto;
@@ -305,5 +306,72 @@ class OccurrenceController extends Controller
         $comment->delete();
 
         return response()->json(null, 204);
+    }
+
+    /**
+     * @group Ocorrências
+     *
+     * @authenticated
+     * Converte uma ocorrência aberta em Ordem de Manutenção / Agendamento.
+     *
+     * @urlParam occurrence integer required ID da ocorrência. Example: 1
+     *
+     * @bodyParam type string Tipo de manutenção (preventiva, corretiva, emergencial). Example: corretiva
+     * @bodyParam start_date date Data de início prevista. Example: 2026-10-02
+     * @bodyParam end_date date Data de conclusão prevista. Example: 2026-10-04
+     * @bodyParam due_time string Horário previsto. Example: 14:00
+     * @bodyParam maintenance_equipment_id integer ID do equipamento vinculado (opcional). Example: 2
+     * @bodyParam assigned_user_ids integer[] IDs dos usuários técnicos/manutencistas atribuídos. Example: [1, 2]
+     * @bodyParam notes string Observações adicionais para a equipe técnica. Example: Verificar vazamento no 3º andar
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function convertToMaintenance(Request $request, Occurrence $occurrence)
+    {
+        $this->authorize('update', $occurrence);
+
+        $validated = $request->validate([
+            'type' => 'nullable|string|in:preventiva,corretiva,emergencial',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+            'due_time' => 'nullable|string',
+            'maintenance_equipment_id' => 'nullable|exists:maintenance_equipments,id',
+            'assigned_user_ids' => 'nullable|array',
+            'assigned_user_ids.*' => 'exists:users,id',
+            'notes' => 'nullable|string',
+        ]);
+
+        $schedule = MaintenanceSchedule::create([
+            'condominium_id' => $occurrence->condominium_id,
+            'occurrence_id' => $occurrence->id,
+            'maintenance_equipment_id' => $validated['maintenance_equipment_id'] ?? null,
+            'title' => "[Ocorrência #{$occurrence->id}] {$occurrence->title}",
+            'description' => $occurrence->description.(! empty($validated['notes']) ? "\n\nNotas adicionais: ".$validated['notes'] : ''),
+            'type' => $validated['type'] ?? 'corretiva',
+            'start_date' => $validated['start_date'] ?? now()->toDateString(),
+            'end_date' => $validated['end_date'] ?? now()->addDays(2)->toDateString(),
+            'due_time' => $validated['due_time'] ?? '17:00',
+            'is_recurring' => false,
+        ]);
+
+        if (! empty($validated['assigned_user_ids'])) {
+            $schedule->responsibleUsers()->sync($validated['assigned_user_ids']);
+        }
+
+        $occurrence->update([
+            'status' => OccurrenceStatus::IN_PROGRESS,
+            'converted_to_maintenance_id' => $schedule->id,
+        ]);
+
+        $occurrence->comments()->create([
+            'user_id' => Auth::id(),
+            'comment' => "Ocorrência convertida na Ordem de Manutenção #{$schedule->id}.",
+        ]);
+
+        return response()->json([
+            'message' => 'Ocorrência convertida em ordem de manutenção com sucesso.',
+            'schedule' => $schedule->load(['equipment', 'responsibleUsers']),
+            'occurrence' => $occurrence->fresh(['user:id,name', 'photos', 'comments.user:id,name', 'maintenanceSchedule']),
+        ], 201);
     }
 }

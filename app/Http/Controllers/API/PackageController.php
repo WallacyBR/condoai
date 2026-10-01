@@ -206,4 +206,18 @@ class PackageController extends Controller
 
         return (int) $request->user()->condominium_id;
     }
+
+    /**
+     * Busca rápida de encomenda pelo código de retirada para portaria e morador.
+     */
+    public function showByCode(Request $request, string $code)
+    {
+        $condominiumId = $this->currentCondominiumId($request);
+        $package = Package::where('condominium_id', $condominiumId)
+            ->where('code', strtoupper($code))
+            ->with(['apartment.tower', 'apartment.block'])
+            ->firstOrFail();
+
+        return response()->json($package);
+    }
 }

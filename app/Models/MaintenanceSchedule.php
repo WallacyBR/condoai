@@ -24,6 +24,7 @@ class MaintenanceSchedule extends Model
         'specific_days_of_week',
         'day_of_month',
         'month_of_year',
+        'occurrence_id',
     ];
 
     protected $casts = [
@@ -55,6 +56,11 @@ class MaintenanceSchedule extends Model
     public function records()
     {
         return $this->hasMany(MaintenanceRecord::class);
+    }
+
+    public function occurrence()
+    {
+        return $this->belongsTo(Occurrence::class);
     }
 
     /**

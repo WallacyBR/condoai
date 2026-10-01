@@ -20,6 +20,7 @@ class Occurrence extends Model
         'priority',
         'user_id',
         'condominium_id',
+        'converted_to_maintenance_id',
     ];
 
     protected $casts = [
@@ -55,5 +56,10 @@ class Occurrence extends Model
     public function comments()
     {
         return $this->hasMany(OccurrenceComment::class);
+    }
+
+    public function maintenanceSchedule()
+    {
+        return $this->belongsTo(MaintenanceSchedule::class, 'converted_to_maintenance_id');
     }
 }

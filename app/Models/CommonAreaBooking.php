@@ -39,6 +39,7 @@ class CommonAreaBooking extends Model
         'booking_type',
         'total_price', // Mantido para compatibilidade
         'notes',
+        'receivable_id',
     ];
 
     protected $casts = [
@@ -92,6 +93,11 @@ class CommonAreaBooking extends Model
     public function condominium()
     {
         return $this->belongsTo(Condominium::class);
+    }
+
+    public function receivable()
+    {
+        return $this->belongsTo(Receivable::class);
     }
 
     // Obter nome do tipo de reserva

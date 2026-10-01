@@ -15,6 +15,12 @@ class AccessRequest extends Model
     protected static function booted(): void
     {
         static::addGlobalScope(new CondominiumScope);
+
+        static::creating(function ($request) {
+            if (empty($request->invite_token)) {
+                $request->invite_token = \Illuminate\Support\Str::random(32);
+            }
+        });
     }
 
     protected $fillable = [
@@ -30,6 +36,7 @@ class AccessRequest extends Model
         'duration_hours',
         'purpose',
         'status',             // Alterado de status_solicitacao
+        'invite_token',
         'observations',
         'authorized_by',
         'authorized_at',

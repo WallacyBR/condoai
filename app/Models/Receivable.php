@@ -28,6 +28,7 @@ class Receivable extends Model
         'status',
         'description',
         'received_at',
+        'booking_id',
     ];
 
     protected $casts = [
@@ -60,5 +61,10 @@ class Receivable extends Model
     public function settlements()
     {
         return $this->hasMany(FinanceSettlement::class);
+    }
+
+    public function booking()
+    {
+        return $this->belongsTo(CommonAreaBooking::class, 'booking_id');
     }
 }

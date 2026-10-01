@@ -26,8 +26,8 @@ class AccessRequestController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:api');
-        $this->middleware('tenant');
+        $this->middleware('auth:api')->except(['publicInvite']);
+        $this->middleware('tenant')->except(['publicInvite']);
     }
 
     /**
@@ -705,5 +705,74 @@ class AccessRequestController extends Controller
         return Resident::where('condominium_id', $apartment->condominium_id)
             ->where('apartment_id', $apartment->id)
             ->first();
+    }
+
+    /**
+     * @group Controle de Acessos
+     *
+     * Consulta pública de convite digital de visitante via token para portaria ou convidado (QR Code).
+     *
+     * @unauthenticated
+     *
+     * @urlParam token string required Token seguro do convite. Example: 4fa6791e847c28...
+     */
+    public function publicInvite(string $token)
+    {
+        $accessRequest = AccessRequest::withoutGlobalScopes()
+            ->where('invite_token', $token)
+            ->with([
+                'condominium:id,name',
+                'apartment.tower',
+                'apartment.block',
+                'resident:id,name',
+                'visitor:id,name',
+                'visitorVehicle',
+            ])
+            ->firstOrFail();
+
+        return response()->json([
+            'id' => $accessRequest->id,
+            'invite_token' => $accessRequest->invite_token,
+            'status' => $accessRequest->status,
+            'visitor_name' => $accessRequest->visitor_name,
+            'visitor_document' => $accessRequest->visitor_document,
+            'visit_date' => $accessRequest->visit_date,
+            'visit_time' => $accessRequest->visit_time,
+            'purpose' => $accessRequest->purpose,
+            'condominium' => [
+                'id' => $accessRequest->condominium?->id,
+                'name' => $accessRequest->condominium?->name,
+            ],
+            'apartment' => [
+                'number' => $accessRequest->apartment?->number,
+                'tower' => $accessRequest->apartment?->tower?->name,
+                'block' => $accessRequest->apartment?->block?->name,
+            ],
+            'resident_name' => $accessRequest->resident?->name,
+            'qr_payload' => json_encode([
+                'type' => 'condo_invite',
+                'token' => $accessRequest->invite_token,
+                'id' => $accessRequest->id,
+            ]),
+        ]);
+    }
+
+    /**
+     * @group Controle de Acessos
+     *
+     * @authenticated
+     * Busca rápida da autorização de acesso pelo token lido via QR Code na portaria.
+     *
+     * @urlParam token string required Token seguro do convite. Example: 4fa6791e847c28...
+     */
+    public function showByToken(Request $request, string $token)
+    {
+        $condoId = $this->tenantCondominiumId($request);
+        $accessRequest = AccessRequest::where('condominium_id', $condoId)
+            ->where('invite_token', $token)
+            ->with(['visitor', 'visitorVehicle', 'resident', 'apartment.tower', 'apartment.block', 'parkingSpot'])
+            ->firstOrFail();
+
+        return response()->json($accessRequest);
     }
 }

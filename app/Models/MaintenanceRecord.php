@@ -20,12 +20,16 @@ class MaintenanceRecord extends Model
         'status',
         'reviewed_by_user_id', // User who reviewed
         'reviewed_at',
+        'cost',
+        'invoice_number',
+        'expense_request_id',
     ];
 
     protected $casts = [
         'performed_at' => 'datetime',
         'reviewed_at' => 'datetime',
         'status' => 'string', // Manter como string, já que o Enum é no DB
+        'cost' => 'decimal:2',
     ];
 
     /**
@@ -65,5 +69,10 @@ class MaintenanceRecord extends Model
     {
         // Assuming one signature per record for simplicity, change to hasMany if multiple are needed
         return $this->hasOne(MaintenanceRecordSignature::class);
+    }
+
+    public function expenseRequest()
+    {
+        return $this->belongsTo(ExpenseRequest::class);
     }
 }

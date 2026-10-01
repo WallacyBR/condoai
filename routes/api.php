@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\AccessControlDashboardController;
 use App\Http\Controllers\API\AccessRequestController;
 use App\Http\Controllers\API\ApartmentController;
+use App\Http\Controllers\API\AssemblyController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\BlockController;
 use App\Http\Controllers\API\CommonAreaController;
@@ -55,6 +56,8 @@ Route::prefix('public/supplier-quotes')->middleware('throttle:30,1')->group(func
     Route::post('{token}', [PublicSupplierQuoteController::class, 'store']);
     Route::post('{token}/attachments', [PublicSupplierQuoteController::class, 'upload']);
 });
+
+Route::get('public/invites/{token}', [AccessRequestController::class, 'publicInvite'])->middleware('throttle:60,1');
 Route::middleware(['auth:api', 'tenant'])->group(function () {
     Route::get('auth/current-condominium', [AuthController::class, 'currentCondominium']);
     Route::get('profile', [ProfileSettingsController::class, 'show']);
@@ -115,10 +118,13 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
     Route::get('common-areas/{common_area}/bookings', [CommonAreaController::class, 'bookings']);
     Route::post('common-areas/{common_area}/bookings', [CommonAreaController::class, 'book']);
     Route::patch('common-areas/{common_area}/bookings/{booking}/cancel', [CommonAreaController::class, 'cancelBooking']);
+    Route::patch('common-areas/{common_area}/bookings/{booking}/approve', [CommonAreaController::class, 'approveBooking']);
+    Route::patch('common-areas/{common_area}/bookings/{booking}/reject', [CommonAreaController::class, 'rejectBooking']);
     Route::get('common-areas/{common_area}/available-slots', [CommonAreaController::class, 'getAvailableSlots']);
 
     Route::post('parking-spots/batch', [ParkingSpotController::class, 'batchStore']);
     Route::post('parking-spots/{parking_spot}/rent', [ParkingSpotController::class, 'rent']);
+    Route::get('packages/by-code/{code}', [\App\Http\Controllers\API\PackageController::class, 'showByCode']);
     Route::post('packages/{package}/withdraw', [\App\Http\Controllers\API\PackageController::class, 'withdraw']);
 
     // Rotas adicionais para gerenciar moradores de apartamentos
@@ -144,6 +150,7 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
     Route::delete('occurrences/{occurrence}/photos/{photo}', [OccurrenceController::class, 'deletePhoto']);
     Route::post('occurrences/{occurrence}/comments', [OccurrenceController::class, 'addComment']);
     Route::delete('occurrences/{occurrence}/comments/{comment}', [OccurrenceController::class, 'deleteComment']);
+    Route::post('occurrences/{occurrence}/convert-to-maintenance', [OccurrenceController::class, 'convertToMaintenance']);
 
     // Maintenance Module Routes
     Route::prefix('maintenance')->name('maintenance.')->group(function () {
@@ -198,12 +205,23 @@ Route::middleware(['auth:api', 'tenant'])->group(function () {
         Route::get('access-requests/history', [AccessRequestController::class, 'history'])->name('access-requests.history');
         Route::get('access-requests/gatehouse', [AccessRequestController::class, 'listForGatehouse'])->name('access-requests.listForGatehouse');
         Route::get('access-requests/my-requests', [AccessRequestController::class, 'listMyRequestsAsResident'])->name('access-requests.listMyRequestsAsResident');
+        Route::get('access-requests/by-token/{token}', [AccessRequestController::class, 'showByToken'])->name('access-requests.showByToken');
         Route::get('access-requests/{access_request}', [AccessRequestController::class, 'show'])->name('access-requests.show');
         Route::post('access-requests/{access_request}/respond', [AccessRequestController::class, 'respondToRequest'])->name('access-requests.respond');
         Route::post('access-requests/{access_request}/record-entry', [AccessRequestController::class, 'recordEntry'])->name('access-requests.recordEntry');
         Route::post('access-requests/{access_request}/record-exit', [AccessRequestController::class, 'recordExit'])->name('access-requests.recordExit');
         Route::post('access-requests/{access_request}/cancel', [AccessRequestController::class, 'cancelRequest'])->name('access-requests.cancel');
     });
+
+    // Módulo de Assembleias Virtuais e Votações Digitais
+    Route::apiResource('assemblies', AssemblyController::class);
+    Route::post('assemblies/{assembly}/start', [AssemblyController::class, 'start']);
+    Route::post('assemblies/{assembly}/close', [AssemblyController::class, 'close']);
+    Route::post('assemblies/{assembly}/agendas', [AssemblyController::class, 'addAgenda']);
+    Route::post('assemblies/{assembly}/agendas/{agenda}/open', [AssemblyController::class, 'openAgendaVoting']);
+    Route::post('assemblies/{assembly}/agendas/{agenda}/close', [AssemblyController::class, 'closeAgendaVoting']);
+    Route::post('assemblies/{assembly}/agendas/{agenda}/vote', [AssemblyController::class, 'vote']);
+    Route::get('assemblies/{assembly}/agendas/{agenda}/results', [AssemblyController::class, 'results']);
 
     // Finance Module Routes
     Route::prefix('finance')->name('finance.')->group(function () {

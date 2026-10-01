@@ -342,6 +342,24 @@ const routes = [
     component: () => import('../pages/PublicSupplierQuotePage.vue'),
     meta: { requiresAuth: false }
   },
+  {
+    path: '/invite/:token',
+    name: 'public.visitor-invite',
+    component: () => import('../pages/PublicVisitorInvitePage.vue'),
+    meta: { requiresAuth: false }
+  },
+  {
+    path: '/assemblies',
+    name: 'assemblies.index',
+    component: () => import('../views/AssembliesView.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
+    path: '/assemblies/:id',
+    name: 'assemblies.show',
+    component: () => import('../views/AssemblyDetailPage.vue'),
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
   // Maintenance Module Routes
   {
     path: '/maintenance/dashboard',

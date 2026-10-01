@@ -225,6 +225,16 @@ git diff --check
 
 Ao implementar uma funcionalidade, adicione ou atualize testes PHPUnit em `tests/` e testes Jest em `resources/tests/`. Mudancas de rota tambem exigem uma nova geracao do Scribe.
 
+### Filas (dev local vs staging/prod)
+
+Local e CI usam `QUEUE_CONNECTION=sync` (fan-out sincrono, sem worker). Em staging/prod, use `QUEUE_CONNECTION=redis` com `REDIS_CLIENT=phpredis` (requer ext-redis) e um processo worker:
+
+```bash
+php artisan queue:work redis --queue=default --tries=3 --backoff=10,30,60 --max-time=3600
+```
+
+Com conexao diferente de `sync`, o HTTP retorna antes do fan-out de notificacoes. Jobs falhos: `php artisan queue:failed` e `php artisan queue:retry all`. Veja o bloco comentado em `.env.example`.
+
 ## Build de producao
 
 Antes de publicar uma versao, instale dependencias de producao, gere os assets otimizados, aplique as migrations e recarregue os caches do Laravel:

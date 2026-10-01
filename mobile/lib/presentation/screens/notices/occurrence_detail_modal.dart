@@ -49,6 +49,7 @@ class OccurrenceDetailModal extends StatefulWidget {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
+      useSafeArea: true,
       builder: (ctx) => OccurrenceDetailModal(
         protocol: protocol,
         title: title,
@@ -135,31 +136,47 @@ class _OccurrenceDetailModalState extends State<OccurrenceDetailModal> {
             ),
             const SizedBox(height: 16),
 
-            // Topo: Protocolo e Status
+            // Topo: Protocolo, Status e Botão Fechar
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.warningLight,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    'PROTOCOLO #${widget.protocol}',
-                    style: AppTextStyles.badge.copyWith(color: AppColors.warning),
-                  ),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.warningLight,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        'PROTOCOLO #${widget.protocol}',
+                        style: AppTextStyles.badge.copyWith(color: AppColors.warning),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.info.withAlpha(30),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        widget.status,
+                        style: AppTextStyles.badge.copyWith(color: AppColors.info),
+                      ),
+                    ),
+                  ],
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.info.withAlpha(30),
-                    borderRadius: BorderRadius.circular(8),
+                IconButton(
+                  icon: Icon(
+                    Icons.close_rounded,
+                    size: 20,
+                    color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
                   ),
-                  child: Text(
-                    widget.status,
-                    style: AppTextStyles.badge.copyWith(color: AppColors.info),
-                  ),
+                  tooltip: 'Fechar',
+                  onPressed: () => Navigator.pop(context),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                 ),
               ],
             ),

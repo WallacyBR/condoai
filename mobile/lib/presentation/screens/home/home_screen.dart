@@ -373,7 +373,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Hoje',
+                  'Atualizado agora',
                   style: AppTextStyles.labelSmall.copyWith(
                     color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
                   ),
@@ -382,7 +382,7 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // Item 1: Encomendas Pendentes
+            // Item 1: Encomendas
             BlocBuilder<PackagesCubit, PackagesState>(
               builder: (context, packageState) {
                 final pendingCount = packageState is PackagesLoaded
@@ -390,6 +390,7 @@ class HomeScreen extends StatelessWidget {
                     : 2;
 
                 return FrostedGlassCard(
+                  borderRadius: 20,
                   onTap: () {
                     HapticFeedback.lightImpact();
                     Navigator.push(
@@ -400,16 +401,16 @@ class HomeScreen extends StatelessWidget {
                   child: Row(
                     children: [
                       Container(
-                        width: 48,
-                        height: 48,
+                        width: 44,
+                        height: 44,
                         decoration: BoxDecoration(
-                          color: isDark ? const Color(0x33F59E0B) : AppColors.warningLight,
-                          borderRadius: BorderRadius.circular(16),
+                          color: isDark ? const Color(0x22FFFFFF) : const Color(0xFFF1F5F9),
+                          borderRadius: BorderRadius.circular(14),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.inventory_2_outlined,
-                          color: AppColors.warning,
-                          size: 26,
+                          color: isDark ? Colors.white70 : const Color(0xFF334155),
+                          size: 22,
                         ),
                       ),
                       const SizedBox(width: 14),
@@ -422,78 +423,72 @@ class HomeScreen extends StatelessWidget {
                                 Expanded(
                                   child: Text(
                                     pendingCount > 0
-                                        ? '$pendingCount Encomenda${pendingCount > 1 ? 's' : ''} na Portaria'
-                                        : 'Nenhuma Encomenda Pendente',
-                                    style: AppTextStyles.titleSmall,
+                                        ? '$pendingCount ${pendingCount > 1 ? 'Encomendas' : 'Encomenda'} na Portaria'
+                                        : 'Nenhuma Encomenda',
+                                    style: AppTextStyles.titleSmall.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14,
+                                    ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                                const SizedBox(width: 8),
                                 if (pendingCount > 0)
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.warning,
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                    child: const Text(
-                                      'Aguardando',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 9,
-                                        fontWeight: FontWeight.bold,
+                                  Row(
+                                    children: [
+                                      Container(
+                                        width: 6,
+                                        height: 6,
+                                        decoration: const BoxDecoration(
+                                          color: AppColors.warning,
+                                          shape: BoxShape.circle,
+                                        ),
                                       ),
-                                    ),
+                                      const SizedBox(width: 5),
+                                      Text(
+                                        'Aguardando',
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          color: isDark ? Colors.white70 : AppColors.lightTextSecondary,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                               ],
                             ),
                             const SizedBox(height: 3),
                             Text(
                               pendingCount > 0
-                                  ? 'Fotos reais da portaria • QR Codes e Código'
+                                  ? 'Fotos da entrega e QR Code de liberação'
                                   : 'Histórico de entregas recebidas',
                               style: AppTextStyles.bodyMedium.copyWith(
-                                color: isDark
-                                    ? AppColors.darkTextSecondary
-                                    : AppColors.lightTextSecondary,
+                                color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                                fontSize: 12,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            const SizedBox(height: 4),
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.qr_code_2_rounded,
-                                  size: 14,
-                                  color: AppColors.primary,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  'Toque para ver fotos e retirar',
-                                  style: AppTextStyles.labelSmall.copyWith(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
                           ],
                         ),
                       ),
-                      const SizedBox(width: 4),
-                      const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+                      const SizedBox(width: 6),
+                      Icon(
+                        Icons.chevron_right_rounded,
+                        color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                        size: 20,
+                      ),
                     ],
                   ),
                 );
               },
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
 
-            // Item 2: Próxima Reserva Ativa
+            // Item 2: Próxima Reserva
             FrostedGlassCard(
+              borderRadius: 20,
               onTap: () {
                 HapticFeedback.lightImpact();
                 final mockActiveBooking = BookingItem(
@@ -504,25 +499,21 @@ class HomeScreen extends StatelessWidget {
                   status: 'Confirmada',
                   photoUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop&q=80',
                 );
-                BookingDetailModal.show(
-                  context,
-                  mockActiveBooking,
-                  () {},
-                );
+                BookingDetailModal.show(context, mockActiveBooking, () {});
               },
               child: Row(
                 children: [
                   Container(
-                    width: 48,
-                    height: 48,
+                    width: 44,
+                    height: 44,
                     decoration: BoxDecoration(
-                      color: isDark ? const Color(0x330EA5E9) : const Color(0xFFF0F9FF),
-                      borderRadius: BorderRadius.circular(16),
+                      color: isDark ? const Color(0x22FFFFFF) : const Color(0xFFF1F5F9),
+                      borderRadius: BorderRadius.circular(14),
                     ),
-                    child: const Icon(
-                      Icons.outdoor_grill_outlined,
-                      color: AppColors.info,
-                      size: 26,
+                    child: Icon(
+                      Icons.calendar_today_outlined,
+                      color: isDark ? Colors.white70 : const Color(0xFF334155),
+                      size: 22,
                     ),
                   ),
                   const SizedBox(width: 14),
@@ -534,66 +525,66 @@ class HomeScreen extends StatelessWidget {
                           children: [
                             Expanded(
                               child: Text(
-                                'Próxima Reserva Ativa',
-                                style: AppTextStyles.titleSmall,
+                                'Espaço Gourmet & Churrasqueira',
+                                style: AppTextStyles.titleSmall.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: AppColors.success,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: const Text(
-                                'Confirmada',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.bold,
+                            Row(
+                              children: [
+                                Container(
+                                  width: 6,
+                                  height: 6,
+                                  decoration: const BoxDecoration(
+                                    color: AppColors.success,
+                                    shape: BoxShape.circle,
+                                  ),
                                 ),
-                              ),
+                                const SizedBox(width: 5),
+                                Text(
+                                  'Confirmada',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: isDark ? Colors.white70 : AppColors.lightTextSecondary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
                         const SizedBox(height: 3),
                         Text(
-                          'Espaço Gourmet • Sáb, 12:00 às 18:00',
+                          'Sábado, 12:00 às 18:00 • Voucher e QR Code',
                           style: AppTextStyles.bodyMedium.copyWith(
-                            color: isDark
-                                ? AppColors.darkTextSecondary
-                                : AppColors.lightTextSecondary,
+                            color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                            fontSize: 12,
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.confirmation_number_outlined,
-                              size: 14,
-                              color: AppColors.info,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              'Ver Voucher e Política de Cancelamento',
-                              style: AppTextStyles.labelSmall.copyWith(
-                                color: AppColors.info,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
                   ),
-                  const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+                  const SizedBox(width: 6),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                    size: 20,
+                  ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
 
             // Item 3: Mural / Último Comunicado
             FrostedGlassCard(
+              borderRadius: 20,
               onTap: () {
                 HapticFeedback.lightImpact();
                 NoticeDetailModal.show(
@@ -609,16 +600,16 @@ class HomeScreen extends StatelessWidget {
               child: Row(
                 children: [
                   Container(
-                    width: 48,
-                    height: 48,
+                    width: 44,
+                    height: 44,
                     decoration: BoxDecoration(
-                      color: isDark ? const Color(0x33EF4444) : const Color(0xFFFEF2F2),
-                      borderRadius: BorderRadius.circular(16),
+                      color: isDark ? const Color(0x22FFFFFF) : const Color(0xFFF1F5F9),
+                      borderRadius: BorderRadius.circular(14),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.campaign_outlined,
-                      color: AppColors.danger,
-                      size: 26,
+                      color: isDark ? Colors.white70 : const Color(0xFF334155),
+                      size: 22,
                     ),
                   ),
                   const SizedBox(width: 14),
@@ -631,59 +622,65 @@ class HomeScreen extends StatelessWidget {
                             Expanded(
                               child: Text(
                                 'Manutenção dos Elevadores',
-                                style: AppTextStyles.titleSmall,
+                                style: AppTextStyles.titleSmall.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: AppColors.danger,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: const Text(
-                                'Importante',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.bold,
+                            Row(
+                              children: [
+                                Container(
+                                  width: 6,
+                                  height: 6,
+                                  decoration: const BoxDecoration(
+                                    color: AppColors.danger,
+                                    shape: BoxShape.circle,
+                                  ),
                                 ),
-                              ),
+                                const SizedBox(width: 5),
+                                Text(
+                                  'Aviso',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: isDark ? Colors.white70 : AppColors.lightTextSecondary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
                         const SizedBox(height: 3),
                         Text(
-                          'Torre A • Parada parcial na sexta-feira às 09h',
+                          'Torre A • Parada parcial nesta sexta às 09h',
                           style: AppTextStyles.bodyMedium.copyWith(
-                            color: isDark
-                                ? AppColors.darkTextSecondary
-                                : AppColors.lightTextSecondary,
+                            color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                            fontSize: 12,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Toque para ler comunicado na íntegra',
-                          style: AppTextStyles.labelSmall.copyWith(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
                       ],
                     ),
                   ),
-                  const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+                  const SizedBox(width: 6),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                    size: 20,
+                  ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
 
-            // Item 4: Minhas Ocorrências Recentes
+            // Item 4: Ocorrência Recente
             FrostedGlassCard(
+              borderRadius: 20,
               onTap: () {
                 HapticFeedback.lightImpact();
                 OccurrenceDetailModal.show(
@@ -692,22 +689,22 @@ class HomeScreen extends StatelessWidget {
                   title: 'Infiltração na vaga de garagem G2',
                   category: 'MANUTENÇÃO PREDIAL',
                   date: 'Criado em 28/Set/2026',
-                  status: 'Em Análise',
+                  status: 'Em Atendimento',
                 );
               },
               child: Row(
                 children: [
                   Container(
-                    width: 48,
-                    height: 48,
+                    width: 44,
+                    height: 44,
                     decoration: BoxDecoration(
-                      color: isDark ? const Color(0x338B5CF6) : const Color(0xFFF5F3FF),
-                      borderRadius: BorderRadius.circular(16),
+                      color: isDark ? const Color(0x22FFFFFF) : const Color(0xFFF1F5F9),
+                      borderRadius: BorderRadius.circular(14),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.chat_bubble_outline_rounded,
-                      color: Color(0xFF8B5CF6),
-                      size: 26,
+                      color: isDark ? Colors.white70 : const Color(0xFF334155),
+                      size: 22,
                     ),
                   ),
                   const SizedBox(width: 14),
@@ -719,50 +716,57 @@ class HomeScreen extends StatelessWidget {
                           children: [
                             Expanded(
                               child: Text(
-                                'Ocorrência #2026-0891',
-                                style: AppTextStyles.titleSmall,
+                                'Infiltração na Garagem G2',
+                                style: AppTextStyles.titleSmall.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF8B5CF6),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: const Text(
-                                'Em Análise',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.bold,
+                            Row(
+                              children: [
+                                Container(
+                                  width: 6,
+                                  height: 6,
+                                  decoration: const BoxDecoration(
+                                    color: AppColors.primary,
+                                    shape: BoxShape.circle,
+                                  ),
                                 ),
-                              ),
+                                const SizedBox(width: 5),
+                                Text(
+                                  'Em Análise',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: isDark ? Colors.white70 : AppColors.lightTextSecondary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
                         const SizedBox(height: 3),
                         Text(
-                          'Infiltração na garagem • Síndico respondeu há 2h',
+                          'Protocolo #2026-0891 • Síndico respondeu há 2h',
                           style: AppTextStyles.bodyMedium.copyWith(
-                            color: isDark
-                                ? AppColors.darkTextSecondary
-                                : AppColors.lightTextSecondary,
+                            color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                            fontSize: 12,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Toque para ver histórico e réplica',
-                          style: AppTextStyles.labelSmall.copyWith(
-                            color: const Color(0xFF8B5CF6),
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
                       ],
                     ),
                   ),
-                  const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+                  const SizedBox(width: 6),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                    size: 20,
+                  ),
                 ],
               ),
             ),

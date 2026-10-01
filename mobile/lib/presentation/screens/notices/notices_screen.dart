@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/widgets/bokeh_scaffold.dart';
 import '../../../core/widgets/frosted_glass_card.dart';
 import 'new_occurrence_screen.dart';
 import 'notice_detail_modal.dart';
@@ -73,43 +74,74 @@ class _NoticesScreenState extends State<NoticesScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final canPop = Navigator.canPop(context);
 
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 120),
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return BokehScaffold(
+      appBar: canPop
+          ? AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              leading: IconButton(
+                icon: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                ),
+                onPressed: () => Navigator.pop(context),
+              ),
+              title: Text(
+                'Comunicação',
+                style: AppTextStyles.titleMedium.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                ),
+              ),
+              centerTitle: true,
+            )
+          : null,
+      body: SafeArea(
+        top: !canPop,
+        bottom: false,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 120),
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Row(
               children: [
-                Text(
-                  'Comunicação',
-                  style: AppTextStyles.titleLarge.copyWith(
-                    color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (!canPop) ...[
+                        Text(
+                          'Comunicação',
+                          style: AppTextStyles.titleLarge.copyWith(
+                            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                      ],
+                      Text(
+                        'Mural oficial e abertura de chamados',
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  'Mural oficial e abertura de chamados',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                const SizedBox(width: 8),
+                IconButton.filled(
+                  onPressed: _openNewOccurrenceScreen,
+                  icon: const Icon(Icons.add_rounded, size: 20, color: Colors.white),
+                  tooltip: 'Novo Chamado',
+                  style: IconButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    padding: const EdgeInsets.all(10),
                   ),
                 ),
               ],
             ),
-            ElevatedButton.icon(
-              onPressed: _openNewOccurrenceScreen,
-              icon: const Icon(Icons.add, size: 16, color: Colors.white),
-              label: const Text('Novo Chamado', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              ),
-            ),
-          ],
-        ),
         const SizedBox(height: 18),
 
         // Alternador de Abas (Avisos Oficiais / Minhas Ocorrências)
@@ -385,6 +417,8 @@ class _NoticesScreenState extends State<NoticesScreen> {
           }),
         ],
       ],
-    );
+    ),
+  ),
+);
   }
 }

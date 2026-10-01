@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/frosted_glass_card.dart';
@@ -13,6 +12,8 @@ class NoticeDetailModal extends StatefulWidget {
   final String category;
   final bool initialRead;
 
+  final VoidCallback? onRead;
+
   const NoticeDetailModal({
     super.key,
     required this.title,
@@ -21,6 +22,7 @@ class NoticeDetailModal extends StatefulWidget {
     this.author = 'Administração / Síndico Geral',
     this.category = 'COMUNICADO OFICIAL',
     this.initialRead = false,
+    this.onRead,
   });
 
   static void show(
@@ -31,18 +33,26 @@ class NoticeDetailModal extends StatefulWidget {
     String author = 'Administração / Síndico Geral',
     String category = 'COMUNICADO OFICIAL',
     bool initialRead = false,
+    VoidCallback? onRead,
   }) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (ctx) => NoticeDetailModal(
-        title: title,
-        content: content,
-        date: date,
-        author: author,
-        category: category,
-        initialRead: initialRead,
+      useSafeArea: true,
+      builder: (ctx) => ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(ctx).size.height * 0.88,
+        ),
+        child: NoticeDetailModal(
+          title: title,
+          content: content,
+          date: date,
+          author: author,
+          category: category,
+          initialRead: initialRead,
+          onRead: onRead,
+        ),
       ),
     );
   }
@@ -52,12 +62,11 @@ class NoticeDetailModal extends StatefulWidget {
 }
 
 class _NoticeDetailModalState extends State<NoticeDetailModal> {
-  late bool _isRead;
-
   @override
   void initState() {
     super.initState();
-    _isRead = widget.initialRead;
+    // Confirmação de leitura automática ao abrir
+    widget.onRead?.call();
   }
 
   @override
@@ -86,22 +95,38 @@ class _NoticeDetailModalState extends State<NoticeDetailModal> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.primarySoft,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  widget.category,
-                  style: AppTextStyles.badge.copyWith(color: AppColors.primary),
-                ),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.primarySoft,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      widget.category,
+                      style: AppTextStyles.badge.copyWith(color: AppColors.primary),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    widget.date,
+                    style: AppTextStyles.labelSmall.copyWith(
+                      color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                    ),
+                  ),
+                ],
               ),
-              Text(
-                widget.date,
-                style: AppTextStyles.labelSmall.copyWith(
+              IconButton(
+                icon: Icon(
+                  Icons.close_rounded,
+                  size: 20,
                   color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
                 ),
+                tooltip: 'Fechar',
+                onPressed: () => Navigator.pop(context),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
               ),
             ],
           ),
@@ -178,33 +203,29 @@ class _NoticeDetailModalState extends State<NoticeDetailModal> {
               ],
             ),
           ),
-          const SizedBox(height: 20),
-          ElevatedButton.icon(
-            onPressed: () {
-              HapticFeedback.mediumImpact();
-              setState(() {
-                _isRead = true;
-              });
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Confirmação de leitura registrada com sucesso!'),
-                  backgroundColor: AppColors.success,
+          const SizedBox(height: 18),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0x2610B981) : const Color(0xFFECFDF5),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: AppColors.success.withAlpha(isDark ? 80 : 50),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.check_circle_rounded, color: AppColors.success, size: 18),
+                const SizedBox(width: 8),
+                Text(
+                  'Leitura registrada automaticamente',
+                  style: AppTextStyles.labelSmall.copyWith(
+                    color: AppColors.success,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              );
-            },
-            icon: Icon(
-              _isRead ? Icons.check_circle_rounded : Icons.mark_email_read_outlined,
-              color: Colors.white,
-            ),
-            label: Text(
-              _isRead ? 'Leitura Confirmada' : 'Confirmar Leitura do Comunicado',
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: _isRead ? AppColors.success : AppColors.primary,
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              ],
             ),
           ),
         ],

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/widgets/bokeh_scaffold.dart';
 import '../../../core/widgets/frosted_glass_card.dart';
 import 'booking_detail_modal.dart';
 
@@ -245,24 +246,52 @@ class _BookingsScreenState extends State<BookingsScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final dateFormatter = DateFormat('dd/MM/yyyy');
+    final canPop = Navigator.canPop(context);
 
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 120),
-      children: [
-        Text(
-          'Espaços & Reservas',
-          style: AppTextStyles.titleLarge.copyWith(
-            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          'Agende áreas comuns do condomínio com confirmação imediata',
-          style: AppTextStyles.bodyMedium.copyWith(
-            color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-          ),
-        ),
-        const SizedBox(height: 18),
+    return BokehScaffold(
+      appBar: canPop
+          ? AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              leading: IconButton(
+                icon: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                ),
+                onPressed: () => Navigator.pop(context),
+              ),
+              title: Text(
+                'Espaços & Reservas',
+                style: AppTextStyles.titleMedium.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                ),
+              ),
+              centerTitle: true,
+            )
+          : null,
+      body: SafeArea(
+        top: !canPop,
+        bottom: false,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 120),
+          children: [
+            if (!canPop) ...[
+              Text(
+                'Espaços & Reservas',
+                style: AppTextStyles.titleLarge.copyWith(
+                  color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                ),
+              ),
+              const SizedBox(height: 4),
+            ],
+            Text(
+              'Agende áreas comuns do condomínio com confirmação imediata',
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+              ),
+            ),
+            const SizedBox(height: 18),
 
         // Alternador de Abas
         Container(
@@ -537,7 +566,9 @@ class _BookingsScreenState extends State<BookingsScreen> {
                 ),
               );
             }),
-      ],
+          ],
+        ),
+      ),
     );
   }
 }

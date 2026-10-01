@@ -22,7 +22,13 @@ class BookingDetailModal extends StatelessWidget {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (ctx) => BookingDetailModal(booking: booking, onCancel: onCancel),
+      useSafeArea: true,
+      builder: (ctx) => ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(ctx).size.height * 0.88,
+        ),
+        child: BookingDetailModal(booking: booking, onCancel: onCancel),
+      ),
     );
   }
 
@@ -94,31 +100,47 @@ class BookingDetailModal extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Topo: Status do Voucher
+            // Topo: Status do Voucher e Botão Fechar
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.successLight,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    'VOUCHER #${booking.id}',
-                    style: AppTextStyles.badge.copyWith(color: AppColors.success),
-                  ),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.successLight,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        'VOUCHER #${booking.id}',
+                        style: AppTextStyles.badge.copyWith(color: AppColors.success),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.primarySoft,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        booking.status,
+                        style: AppTextStyles.badge.copyWith(color: AppColors.primary),
+                      ),
+                    ),
+                  ],
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.primarySoft,
-                    borderRadius: BorderRadius.circular(8),
+                IconButton(
+                  icon: Icon(
+                    Icons.close_rounded,
+                    size: 20,
+                    color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
                   ),
-                  child: Text(
-                    booking.status,
-                    style: AppTextStyles.badge.copyWith(color: AppColors.primary),
-                  ),
+                  tooltip: 'Fechar',
+                  onPressed: () => Navigator.pop(context),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                 ),
               ],
             ),

@@ -281,13 +281,41 @@ class _NewOccurrenceScreenState extends State<NewOccurrenceScreen> {
                     ),
 
                   const SizedBox(height: 12),
-                  OutlinedButton.icon(
-                    onPressed: _attachedPhotos.length >= 3 ? null : _addMockPhoto,
-                    icon: const Icon(Icons.add_a_photo_outlined),
-                    label: const Text('Tirar Foto ou Anexar Vídeo'),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  InkWell(
+                    onTap: _attachedPhotos.length >= 3 ? null : _addMockPhoto,
+                    borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                      decoration: BoxDecoration(
+                        color: isDark ? const Color(0x266366F1) : AppColors.primarySoft,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: isDark ? const Color(0x4D818CF8) : const Color(0x334F46E5),
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.add_a_photo_rounded,
+                            color: AppColors.primary,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            _attachedPhotos.length >= 3
+                                ? 'Limite de 3 fotos atingido'
+                                : 'Tirar Foto ou Anexar Vídeo',
+                            style: AppTextStyles.titleSmall.copyWith(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],

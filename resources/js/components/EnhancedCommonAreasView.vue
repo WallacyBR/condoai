@@ -159,7 +159,7 @@
         <div 
           v-for="area in filteredAreas" 
           :key="area.id" 
-          class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl shadow-xl border-2 border-indigo-500/20 hover:border-indigo-500/40 transition-all duration-300 hover:shadow-2xl hover:scale-105 overflow-hidden"
+          class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all overflow-hidden"
         >
           <!-- Imagem da área -->
           <div class="relative h-48 bg-gray-800">

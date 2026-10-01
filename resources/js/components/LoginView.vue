@@ -479,23 +479,7 @@ export default {
   --tw-gradient-to: #f472b6;
 }
 
-.from-cyan-500 {
-  --tw-gradient-from: #06b6d4;
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(6, 182, 212, 0));
-}
 
-.to-pink-500 {
-  --tw-gradient-to: #ec4899;
-}
-
-.hover\:from-pink-500:hover {
-  --tw-gradient-from: #ec4899;
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(236, 72, 153, 0));
-}
-
-.hover\:to-cyan-500:hover {
-  --tw-gradient-to: #06b6d4;
-}
 
 .hover\:-translate-y-0\.5:hover {
   --tw-translate-y: -0.125rem;

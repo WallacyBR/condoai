@@ -31,8 +31,8 @@ O CondoAI adota um design visual **SaaS moderno, corporativo e sóbrio** (inspir
 1. **Sobriedade e Profissionalismo**: Eliminação de efeitos retrô, reflexos de vidro excessivos, bordas fluorescentes de 2px e degradês neon chamativos (ex: ciano para rosa/magenta). O foco é no conteúdo e nos dados operacionais do condomínio.
 2. **Consistência Dual (Modo Claro & Escuro)**: Todas as telas, componentes, inputs e tabelas devem funcionar com legibilidade impecável tanto no tema claro quanto no escuro. Nunca use cores de fundo ou texto fixas sem as classes variantes `dark:`.
 3. **Consistência de Raios de Borda**:
-   - `rounded-lg` (8px): Para botões, inputs, selects e tags pequenas.
-   - `rounded-xl` (12px): Para cards, painéis, modais e containers de seção.
+   - `rounded-lg` (8px): Para botões, inputs, selects e abas.
+   - `rounded-2xl` (16px): Para cards de métricas, painéis, modais e containers de seção (arredondamento moderno e suave, evitando cantos agudos/quadrados sem cair no exagero de bordas circulares).
    - `rounded-full`: Exclusivamente para avatares, badges de status e toggles/switches circulares.
 4. **Sem Efeitos Exagerados de Hover**: Nunca utilize `hover:scale-105` ou transformações espalhafatosas em cards. Utilize transições suaves de cor de borda (`transition-colors hover:border-slate-300 dark:hover:border-slate-700`).
 

@@ -88,7 +88,7 @@
         <div 
           v-for="equipment in filteredEquipments" 
           :key="equipment.id" 
-          class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl shadow-xl p-6 border-2 border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-300 hover:shadow-2xl hover:scale-105"
+          class="bg-white dark:bg-slate-900 rounded-xl shadow-sm p-6 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all"
         >
           <!-- Header com Nome e Status -->
           <div class="flex items-center justify-between mb-4">

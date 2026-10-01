@@ -74,18 +74,18 @@
       <!-- Condominiums Grid -->
       <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div v-for="condo in filteredCondominiums" :key="condo.id" 
-             class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl shadow-xl border-2 border-cyan-500/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-          <div class="p-8">
+             class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all p-6 flex flex-col justify-between">
+          <div>
             <div class="flex items-center justify-between mb-4">
-              <h3 class="text-lg font-semibold text-cyan-300">{{ condo.name }}</h3>
-              <span class="px-3 py-1 text-sm rounded-full font-semibold shadow"
-                    :class="condo.status === 'active' ? 'bg-green-900/40 text-green-300 border border-green-400' : 'bg-gray-800/60 text-gray-400 border border-gray-500'">
+              <h3 class="text-base font-semibold text-slate-900 dark:text-slate-100">{{ condo.name }}</h3>
+              <span class="px-2.5 py-1 text-xs rounded-full font-semibold border"
+                    :class="condo.status === 'active' ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/40' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700'">
                 {{ condo.status === 'active' ? 'Ativo' : 'Inativo' }}
               </span>
             </div>
-            <div class="space-y-2 text-cyan-100">
+            <div class="space-y-2 text-sm text-slate-600 dark:text-slate-400">
               <p class="flex items-center">
-                <svg class="h-5 w-5 mr-2 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="h-4 w-4 mr-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                         d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
@@ -94,24 +94,21 @@
                 {{ condo.city }}/{{ condo.state }}
               </p>
               <p class="flex items-center">
-                <svg class="h-5 w-5 mr-2 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="h-4 w-4 mr-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                         d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                 </svg>
                 {{ condo.units }} unidades
               </p>
             </div>
-            <div class="mt-6 pt-6 border-t border-cyan-800/40 flex space-x-2">
-              <NeonButton @click="editCondominium(condo)" size="sm" variant="primary-action" class="flex-1">
-                Gerenciar
-              </NeonButton>
-              <button class="p-2 rounded-full bg-gray-900/60 text-cyan-300 hover:bg-cyan-900/40 hover:text-pink-400 transition-all duration-200 shadow-md">
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                </svg>
-              </button>
-            </div>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center space-x-2">
+            <button 
+              @click="editCondominium(condo)" 
+              class="flex-1 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors"
+            >
+              Gerenciar
+            </button>
           </div>
         </div>
       </div>

@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-150">
+  <div class="min-h-screen bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-150 overflow-x-hidden">
     <!-- Sidebar -->
     <aside 
-      class="fixed top-0 left-0 h-screen bg-white dark:bg-slate-900 shadow-lg transform transition-all duration-200 ease-in-out z-40 border-r border-slate-200 dark:border-slate-800 flex flex-col"
+      class="fixed top-0 left-0 h-screen bg-white dark:bg-slate-900 shadow-lg transform transition-all duration-200 ease-in-out z-40 border-r border-slate-200 dark:border-slate-800 flex flex-col overflow-x-hidden"
       :class="{ 
         '-translate-x-full': !isSidebarOpen, 
         'translate-x-0': isSidebarOpen, 
@@ -12,8 +12,8 @@
       }"
     >
       <!-- Logo -->
-      <div class="h-16 flex flex-col items-center justify-center border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex-shrink-0">
-        <div v-if="!isCollapsed && isSidebarOpen" class="flex items-center justify-center">
+      <div class="h-16 flex flex-col items-center justify-center border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex-shrink-0 px-2 overflow-hidden">
+        <div class="flex items-center justify-center">
           <img 
             :src="logoImage" 
             alt="CondoAI Logo" 
@@ -21,46 +21,32 @@
             @error="handleImageError"
           />
         </div>
-        <div v-if="isCollapsed && isSidebarOpen" class="flex items-center justify-center">
-          <img 
-            :src="logoImage" 
-            alt="CondoAI Logo" 
-            class="h-8 w-8 object-contain"
-            @error="handleImageError"
-          />
-        </div>
-        <div v-if="selectedCondoName && !isCollapsed && isSidebarOpen" class="mt-1 flex items-center gap-1.5">
-          <div class="h-1.5 w-1.5 rounded-full bg-indigo-500"></div>
+        <div v-if="selectedCondoName && !isCollapsed && isSidebarOpen" class="mt-1 flex items-center gap-1.5 overflow-hidden">
+          <div class="h-1.5 w-1.5 rounded-full bg-indigo-500 flex-shrink-0"></div>
           <span class="text-xs text-slate-500 dark:text-slate-400 font-medium truncate max-w-[180px]">{{ selectedCondoName }}</span>
         </div>
       </div>
 
       <!-- Menu de Navegação -->
-      <nav class="flex-1 overflow-y-auto glass-scrollbar p-3 space-y-1" v-if="isSidebarOpen">
+      <nav class="flex-1 overflow-y-auto overflow-x-hidden glass-scrollbar p-3 space-y-1" v-if="isSidebarOpen">
         <template v-for="item in menuItems" :key="item.path">
           <!-- Item principal sem filhos -->
           <div v-if="!item.children">
             <router-link
               :to="item.path"
+              @click="handleNavigate"
               class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 rounded-lg transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 group relative font-medium text-sm"
               :class="{
                 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-semibold': isCurrentRoute(item.path),
                 'justify-center': isCollapsed
               }"
+              :title="isCollapsed ? item.name : ''"
             >
-              <span v-html="item.icon" class="h-5 w-5 transition-all flex-shrink-0" :class="{ 'mr-3': isFullyExpanded }"></span>
-              <span
-                class="transition-all overflow-hidden whitespace-nowrap flex-1"
-                :class="{
-                  'w-0 opacity-0': !isFullyExpanded,
-                  'w-auto opacity-100': isFullyExpanded
-                }"
-              >
-                {{ item.name }}
-              </span>
+              <span v-html="item.icon" class="h-5 w-5 transition-all flex-shrink-0" :class="{ 'mr-3': !isCollapsed }"></span>
+              <span v-if="!isCollapsed" class="truncate flex-1">{{ item.name }}</span>
               <!-- Badge de Notificação -->
               <span 
-                v-if="item.badge && isFullyExpanded" 
+                v-if="item.badge && !isCollapsed" 
                 class="ml-auto px-2 py-0.5 text-xs font-semibold text-white rounded-full"
                 :class="item.badgeColor || 'bg-red-500'"
               >
@@ -68,40 +54,32 @@
               </span>
               <span 
                 v-if="item.badge && isCollapsed" 
-                class="absolute -top-1 -right-1 px-1.5 py-0.5 text-xs font-semibold text-white rounded-full"
+                class="absolute -top-1 -right-1 px-1.5 py-0.5 text-[10px] font-semibold text-white rounded-full"
                 :class="item.badgeColor || 'bg-red-500'"
               >
                 {{ item.badge }}
-              </span>
-              <span v-if="isCollapsed" class="absolute left-full ml-2 px-2.5 py-1 bg-slate-900 text-white rounded-lg text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-50 whitespace-nowrap">
-                {{ item.name }}
               </span>
             </router-link>
           </div>
 
           <!-- Item com submenu -->
-          <div v-else>
-            <button
-              @click="toggleSubmenu(item.path)"
-              class="w-full flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 rounded-lg transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 group relative font-medium text-sm"
+          <div v-else class="relative group">
+            <div
+              @click="handleParentClick(item)"
+              class="w-full flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 rounded-lg transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 group font-medium text-sm cursor-pointer"
               :class="{
                 'bg-indigo-50/50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 font-semibold': isCurrentRoute(item.path) || item.children.some(child => isCurrentRoute(child.path)) || expandedSubmenus[item.path],
                 'justify-center': isCollapsed
               }"
+              :title="isCollapsed ? item.name : ''"
             >
-              <span v-html="item.icon" class="h-5 w-5 transition-all flex-shrink-0" :class="{ 'mr-3': isFullyExpanded }"></span>
-              <span
-                class="transition-all overflow-hidden whitespace-nowrap flex-1 text-left"
-                :class="{
-                  'w-0 opacity-0': !isFullyExpanded,
-                  'w-auto opacity-100': isFullyExpanded
-                }"
-              >
+              <span v-html="item.icon" class="h-5 w-5 transition-all flex-shrink-0" :class="{ 'mr-3': !isCollapsed }"></span>
+              <span v-if="!isCollapsed" class="truncate flex-1 text-left">
                 {{ item.name }}
               </span>
               <!-- Badge -->
               <span 
-                v-if="item.badge && isFullyExpanded" 
+                v-if="item.badge && !isCollapsed" 
                 class="px-2 py-0.5 text-xs font-semibold text-white rounded-full mr-2"
                 :class="item.badgeColor || 'bg-red-500'"
               >
@@ -109,8 +87,8 @@
               </span>
               <!-- Ícone de expansão -->
               <svg 
-                v-if="isFullyExpanded"
-                class="h-4 w-4 transition-transform duration-200 text-slate-400"
+                v-if="!isCollapsed"
+                class="h-4 w-4 transition-transform duration-200 text-slate-400 flex-shrink-0"
                 :class="{ 'rotate-90': expandedSubmenus[item.path] }"
                 fill="none" 
                 stroke="currentColor" 
@@ -118,26 +96,18 @@
               >
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
-              <span v-if="isCollapsed" class="absolute left-full ml-2 px-2.5 py-1 bg-slate-900 text-white rounded-lg text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-50 whitespace-nowrap">
-                {{ item.name }}
-              </span>
-            </button>
+            </div>
 
-            <!-- Submenu -->
+            <!-- Submenu Inline (quando expandido) -->
             <div 
-              v-if="item.children && (expandedSubmenus[item.path] || (isCollapsed && hoveredSubmenu === item.path))"
-              class="transition-all duration-200 ease-in-out"
-              :class="{
-                'ml-3 mt-1 space-y-0.5 border-l border-slate-200 dark:border-slate-800 pl-3': !isCollapsed,
-                'absolute left-full top-0 ml-2 min-w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 p-2 space-y-1 z-50': isCollapsed
-              }"
-              @mouseenter="handleSubmenuHover(item.path, true)"
-              @mouseleave="handleSubmenuHover(item.path, false)"
+              v-if="!isCollapsed && item.children && expandedSubmenus[item.path]"
+              class="ml-3 mt-1 space-y-0.5 border-l border-slate-200 dark:border-slate-800 pl-3 transition-all duration-200"
             >
               <router-link
                 v-for="child in item.children"
                 :key="child.path"
                 :to="child.path"
+                @click="handleNavigate"
                 class="flex items-center px-2.5 py-1.5 text-slate-500 dark:text-slate-400 rounded-md text-xs font-medium transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 group relative"
                 :class="{
                   'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 font-semibold': isCurrentRoute(child.path)
@@ -154,45 +124,46 @@
                 </span>
               </router-link>
             </div>
+
+            <!-- Submenu Flyout (quando recolhido, acessível no hover) -->
+            <div 
+              v-if="isCollapsed && item.children"
+              class="hidden group-hover:block absolute left-full top-0 ml-2 min-w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 p-2 space-y-1 z-50 pointer-events-auto"
+            >
+              <div class="px-2.5 py-1 text-xs font-semibold text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-slate-800 mb-1">
+                {{ item.name }}
+              </div>
+              <router-link
+                v-for="child in item.children"
+                :key="child.path"
+                :to="child.path"
+                @click="handleNavigate"
+                class="flex items-center px-2.5 py-1.5 text-slate-600 dark:text-slate-300 rounded-lg text-xs font-medium transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100"
+                :class="{
+                  'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 font-semibold': isCurrentRoute(child.path)
+                }"
+              >
+                <span v-html="child.icon" class="h-4 w-4 mr-2 flex-shrink-0"></span>
+                <span class="truncate flex-1">{{ child.name }}</span>
+              </router-link>
+            </div>
           </div>
         </template>
       </nav>
 
-      <!-- User Info -->
-      <div class="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3.5 flex-shrink-0" v-if="isSidebarOpen">
+      <!-- User Info (Sóbrio, sem botão redundante de sair) -->
+      <div class="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3.5 flex-shrink-0 overflow-hidden" v-if="isSidebarOpen">
         <div class="flex items-center gap-3" :class="{ 'justify-center': isCollapsed }">
           <div class="flex-shrink-0">
             <div class="h-9 w-9 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm">
               {{ userInitials }}
             </div>
           </div>
-          <div 
-            class="transition-all duration-200 overflow-hidden"
-            :class="{ 
-              'w-0 opacity-0': !isFullyExpanded,
-              'w-auto opacity-100 ml-1': isFullyExpanded
-            }"
-          >
-            <p class="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate max-w-[120px]">{{ userName }}</p>
-            <button @click="logout" class="text-xs text-slate-500 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 transition-colors font-medium">
-              Sair do sistema
-            </button>
+          <div v-if="!isCollapsed" class="overflow-hidden">
+            <p class="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate max-w-[130px]">{{ userName }}</p>
+            <p class="text-xs text-slate-400 truncate max-w-[130px]">{{ selectedCondoName || 'CondoAI' }}</p>
           </div>
         </div>
-      </div>
-
-      <!-- Recolher / Expandir Menu (Interno à Sidebar) -->
-      <div v-if="isSidebarOpen && isDesktop" class="px-3 py-2 border-t border-slate-100 dark:border-slate-800/60 bg-white dark:bg-slate-900">
-        <button
-          @click="toggleCollapse"
-          class="w-full flex items-center justify-center p-2 rounded-lg text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-xs font-medium"
-          :title="isCollapsed ? 'Expandir Menu' : 'Recolher Menu'"
-        >
-          <svg class="h-4 w-4 transform transition-transform duration-200" :class="{ 'rotate-180': isCollapsed }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-          </svg>
-          <span v-if="!isCollapsed" class="ml-2">Recolher Menu</span>
-        </button>
       </div>
     </aside>
 
@@ -825,32 +796,55 @@ export default {
       hoveredSubmenu.value = isHovered ? path : null;
     };
 
+    const handleNavigate = () => {
+      if (!isDesktop.value) {
+        isSidebarOpen.value = false;
+      }
+    };
+
+    const handleParentClick = (item) => {
+      if (isCollapsed.value) {
+        if (item.path) {
+          router.push(item.path);
+        } else if (item.children && item.children.length > 0) {
+          router.push(item.children[0].path);
+        }
+        if (!isDesktop.value) {
+          isSidebarOpen.value = false;
+        }
+      } else {
+        expandedSubmenus.value[item.path] = !expandedSubmenus.value[item.path];
+      }
+    };
+
     // Observar mudanças de rota para atualizar submenus
     watch(route, () => {
       initializeSubmenus();
     }, { immediate: true });
 
-          return {
-        isSidebarOpen,
-        isCollapsed,
-        isDesktop,
-        isFullyExpanded,
-        menuItems,
-        selectedCondoName,
-        toggleSidebar,
-        toggleCollapse,
-        isCurrentRoute,
-        logout,
-        userName,
-        userInitials,
-        handleImageError,
-        logoImage,
-        expandedSubmenus,
-        hoveredSubmenu,
-        toggleSubmenu,
-        handleSubmenuHover,
-        initializeSubmenus
-      };
+    return {
+      isSidebarOpen,
+      isCollapsed,
+      isDesktop,
+      isFullyExpanded,
+      menuItems,
+      selectedCondoName,
+      toggleSidebar,
+      toggleCollapse,
+      isCurrentRoute,
+      handleNavigate,
+      handleParentClick,
+      logout,
+      userName,
+      userInitials,
+      handleImageError,
+      logoImage,
+      expandedSubmenus,
+      hoveredSubmenu,
+      toggleSubmenu,
+      handleSubmenuHover,
+      initializeSubmenus
+    };
   }
 };
 </script>

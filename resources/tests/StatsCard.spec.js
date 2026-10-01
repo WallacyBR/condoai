@@ -13,7 +13,7 @@ describe('StatsCard component', () => {
 
     expect(wrapper.text()).toContain('Total de Moradores');
     expect(wrapper.text()).toContain('142');
-    expect(wrapper.find('.rounded-xl.border').exists()).toBe(true);
+    expect(wrapper.find('.rounded-2xl.border').exists()).toBe(true);
   });
 
   test('aceita prop title como alternativa para label', () => {

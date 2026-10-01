@@ -266,6 +266,11 @@ const routes = [
   },
   // Finance Module Routes
   {
+    path: '/finance',
+    redirect: '/finance/dashboard',
+    meta: { requiresAuth: true, requiresCondo: true }
+  },
+  {
     path: '/finance/accounts',
     name: 'finance.accounts',
     component: () => import('../finance/AccountsView.vue'),

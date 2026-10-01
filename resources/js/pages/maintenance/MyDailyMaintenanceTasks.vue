@@ -5,14 +5,14 @@
       <div class="mb-6">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <!-- Total de Tarefas -->
-          <div class="bg-gradient-to-br from-blue-900/50 via-blue-800/50 to-blue-900/50 rounded-2xl p-6 border-2 border-blue-500/30 shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-blue-500/50">
+          <div class="bg-white dark:bg-slate-900 rounded-xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm transition-all">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-blue-300 text-sm font-medium">Total de Tarefas</p>
-                <p class="text-2xl font-bold text-blue-100">{{ tasks.length }}</p>
+                <p class="text-slate-500 dark:text-slate-400 text-xs font-medium">Total de Tarefas</p>
+                <p class="text-2xl font-bold text-slate-900 dark:text-slate-100 mt-1">{{ tasks.length }}</p>
               </div>
-              <div class="h-12 w-12 rounded-full bg-blue-500/20 flex items-center justify-center">
-                <svg class="h-6 w-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="h-10 w-10 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40 flex items-center justify-center">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                 </svg>
               </div>
@@ -20,14 +20,14 @@
           </div>
           
           <!-- Próxima Tarefa -->
-          <div class="bg-gradient-to-br from-green-900/50 via-green-800/50 to-green-900/50 rounded-2xl p-6 border-2 border-green-500/30 shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-green-500/50">
+          <div class="bg-white dark:bg-slate-900 rounded-xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm transition-all">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-green-300 text-sm font-medium">Próxima Tarefa</p>
-                <p class="text-lg font-semibold text-green-100">{{ nextTaskTime || 'Nenhuma' }}</p>
+                <p class="text-slate-500 dark:text-slate-400 text-xs font-medium">Próxima Tarefa</p>
+                <p class="text-base font-semibold text-slate-900 dark:text-slate-100 mt-1">{{ nextTaskTime || 'Nenhuma' }}</p>
               </div>
-              <div class="h-12 w-12 rounded-full bg-green-500/20 flex items-center justify-center">
-                <svg class="h-6 w-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="h-10 w-10 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40 flex items-center justify-center">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
               </div>
@@ -35,14 +35,14 @@
           </div>
           
           <!-- Data Selecionada -->
-          <div class="bg-gradient-to-br from-purple-900/50 via-purple-800/50 to-purple-900/50 rounded-2xl p-6 border-2 border-purple-500/30 shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-purple-500/50">
+          <div class="bg-white dark:bg-slate-900 rounded-xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm transition-all">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-purple-300 text-sm font-medium">Data Selecionada</p>
-                <p class="text-lg font-semibold text-purple-100">{{ formattedTargetDate }}</p>
+                <p class="text-slate-500 dark:text-slate-400 text-xs font-medium">Data Selecionada</p>
+                <p class="text-base font-semibold text-slate-900 dark:text-slate-100 mt-1">{{ formattedTargetDate }}</p>
               </div>
-              <div class="h-12 w-12 rounded-full bg-purple-500/20 flex items-center justify-center">
-                <svg class="h-6 w-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="h-10 w-10 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/40 flex items-center justify-center">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                 </svg>
               </div>
@@ -52,9 +52,9 @@
       </div>
 
       <!-- Controles -->
-      <div class="bg-gray-800/50 backdrop-blur-md shadow-xl rounded-2xl p-6 border border-cyan-500/30 mb-6">
+      <div class="bg-white dark:bg-slate-900 shadow-sm rounded-xl p-6 border border-slate-200 dark:border-slate-800 mb-6">
         <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-          <h2 class="text-2xl font-semibold text-white">Minhas Tarefas para {{ formattedTargetDate }}</h2>
+          <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100">Minhas Tarefas para {{ formattedTargetDate }}</h2>
           <div class="flex items-end space-x-3">
             <button @click="refreshTasks" 
                     class="p-2 bg-cyan-600/20 hover:bg-cyan-600/30 rounded-lg transition-colors duration-200"

@@ -107,21 +107,21 @@
         <div
           v-for="ad in ads"
           :key="ad.id"
-          class="group bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl shadow-xl p-6 border-2 border-transparent hover:border-indigo-500/50 transition-all duration-300 hover:transform hover:scale-105 cursor-pointer"
+          class="group bg-white dark:bg-slate-900 rounded-xl shadow-sm p-5 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all cursor-pointer"
           @click="viewAd(ad.id)"
         >
           <img v-if="ad.images.length > 0" :src="`/storage/${ad.images[0].image_path}`" alt="Ad Image" class="w-full h-48 object-cover rounded-lg mb-4" />
-          <div v-else class="w-full h-48 bg-gray-700 rounded-lg mb-4 flex items-center justify-center text-gray-400">
+          <div v-else class="w-full h-48 bg-slate-100 dark:bg-slate-800 rounded-lg mb-4 flex items-center justify-center text-slate-400 text-sm">
             Sem Imagem
           </div>
-          <h3 class="text-lg font-semibold text-white mb-2 line-clamp-2 group-hover:text-indigo-300 transition-colors">
+          <h3 class="text-base font-semibold text-slate-900 dark:text-slate-100 mb-2 line-clamp-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
             {{ ad.title }}
           </h3>
-          <p class="text-gray-300 text-sm mb-4 line-clamp-3">
+          <p class="text-slate-600 dark:text-slate-400 text-sm mb-4 line-clamp-3">
             {{ ad.description }}
           </p>
-          <div class="flex items-center justify-between text-sm text-gray-400">
-            <span>{{ formatCurrency(ad.price, ad.currency) }}</span>
+          <div class="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800">
+            <span class="font-semibold text-slate-900 dark:text-slate-100">{{ formatCurrency(ad.price, ad.currency) }}</span>
             <span>{{ ad.category }}</span>
           </div>
         </div>

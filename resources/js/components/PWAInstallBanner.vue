@@ -78,7 +78,7 @@
                                     @click="dismissBanner" 
                                     class="px-4 py-2 text-sm text-white/90 hover:text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-xl border border-white/20 hover:border-white/40 transition-all duration-300 font-medium min-w-[100px] flex items-center justify-center group"
                                 >
-                                    <span class="group-hover:scale-105 transition-transform duration-200">Agora não</span>
+                                    <span>Agora não</span>
                                 </button>
                                 
                                                                  <!-- Botão Instalar - Destaque -->

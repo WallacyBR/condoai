@@ -1,20 +1,10 @@
 <template>
   <AuthenticatedLayout page-title="Dashboard">
-    <TopCard
-      v-if="selectedCondoName"
-      title="Visão Geral"
-      :subtitle="`Condomínio: ${selectedCondoName}`"
-      :icon="BuildingIcon"
-    >
-      <template #actions>
-        <AppButton @click="changeCondominium" size="sm" variant="secondary">
-          <svg class="h-4 w-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-          </svg>
-          Trocar Condomínio
-        </AppButton>
-      </template>
-    </TopCard>
+    <!-- Header sutil e métricas operacionais -->
+    <div class="mb-6">
+      <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Visão Geral</h1>
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Indicadores operacionais e resumo em tempo real do condomínio.</p>
+    </div>
 
     <!-- Stats Cards Sóbrios e Consistentes -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
@@ -44,9 +34,7 @@
 
 <script>
 import AuthenticatedLayout from './layouts/AuthenticatedLayout.vue';
-import TopCard from './ui/TopCard.vue';
 import StatsCard from './ui/StatsCard.vue';
-import AppButton from './ui/AppButton.vue';
 import { ref, onMounted, onUnmounted, h } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '../utils/api';
@@ -57,9 +45,7 @@ export default {
   name: 'DashboardView',
   components: {
     AuthenticatedLayout,
-    TopCard,
-    StatsCard,
-    AppButton
+    StatsCard
   },
   setup() {
     const router = useRouter();

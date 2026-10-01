@@ -113,12 +113,12 @@
         <div 
           v-for="schedule in schedules" 
           :key="schedule.id" 
-          class="bg-gradient-to-br from-gray-900/50 via-gray-800/50 to-gray-900/50 rounded-2xl border-2 border-gray-700/50 shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-cyan-500/50 group"
+          class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm transition-all hover:border-slate-300 dark:hover:border-slate-700 group"
         >
           <!-- Header do Card -->
-          <div class="p-6 border-b border-gray-600/30">
+          <div class="p-6 border-b border-slate-100 dark:border-slate-800">
             <div class="flex justify-between items-start mb-3">
-              <h3 class="text-lg font-semibold text-white group-hover:text-cyan-400 transition-colors">
+              <h3 class="text-base font-semibold text-slate-900 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                 {{ schedule.title }}
               </h3>
               <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">

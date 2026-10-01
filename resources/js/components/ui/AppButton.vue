@@ -49,13 +49,13 @@ const handleClick = (event) => {
 const sizeClass = computed(() => {
   switch (props.size) {
     case 'sm':
-      return 'px-2.5 py-1.5 text-xs rounded-lg gap-1.5';
+      return 'px-3 py-1.5 text-xs rounded-xl gap-1.5';
     case 'lg':
-      return 'px-5 py-2.5 text-base rounded-xl gap-2.5';
+      return 'px-5 py-2.5 text-base rounded-xl gap-2.5 shadow-sm';
     case 'icon':
-      return 'p-2 rounded-lg';
+      return 'p-2.5 rounded-xl';
     default:
-      return 'px-3.5 py-2 text-sm rounded-lg gap-2';
+      return 'px-4 py-2 text-sm rounded-xl gap-2 shadow-xs';
   }
 });
 

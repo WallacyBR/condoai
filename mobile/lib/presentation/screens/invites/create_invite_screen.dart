@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/widgets/bokeh_scaffold.dart';
 import '../../../core/widgets/frosted_glass_card.dart';
 
 /// Tela funcional de Criação de Convite com Passe QR Code para Visitantes
@@ -53,8 +54,7 @@ class _CreateInviteScreenState extends State<CreateInviteScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final dateFormatter = DateFormat('dd/MM/yyyy');
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
+    return BokehScaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

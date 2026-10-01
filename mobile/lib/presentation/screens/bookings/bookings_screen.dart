@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/frosted_glass_card.dart';
+import 'booking_detail_modal.dart';
 
 /// Modelo simples para gerenciar as reservas ativas
 class BookingItem {
@@ -436,6 +437,12 @@ class _BookingsScreenState extends State<BookingsScreen> {
               return FrostedGlassCard(
                 borderRadius: 22,
                 margin: const EdgeInsets.only(bottom: 14),
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  BookingDetailModal.show(context, b, () {
+                    setState(() => _myBookings.remove(b));
+                  });
+                },
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -458,11 +465,48 @@ class _BookingsScreenState extends State<BookingsScreen> {
                           tooltip: 'Cancelar Reserva',
                           onPressed: () {
                             HapticFeedback.mediumImpact();
-                            setState(() => _myBookings.remove(b));
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Reserva cancelada com sucesso.'),
-                                backgroundColor: AppColors.danger,
+                            showDialog(
+                              context: context,
+                              builder: (dialogCtx) => AlertDialog(
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+                                title: const Text('Cancelar Agendamento?'),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Atenção à Política de Cancelamento:',
+                                      style: AppTextStyles.labelSmall.copyWith(fontWeight: FontWeight.bold, color: AppColors.danger),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    const Text(
+                                      '• Cancelamento gratuito até 48 horas antes da data do evento.\n'
+                                      '• Cancelamento tardio libera a área para outros condôminos mas retém a taxa de limpeza.\n\n'
+                                      'Tem certeza de que deseja cancelar esta reserva?',
+                                      style: TextStyle(fontSize: 13, height: 1.4),
+                                    ),
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(dialogCtx),
+                                    child: const Text('Manter Reserva'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pop(dialogCtx);
+                                      setState(() => _myBookings.remove(b));
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Reserva cancelada conforme a política do condomínio.'),
+                                          backgroundColor: AppColors.danger,
+                                        ),
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(backgroundColor: AppColors.danger),
+                                    child: const Text('Sim, Cancelar', style: TextStyle(color: Colors.white)),
+                                  ),
+                                ],
                               ),
                             );
                           },
@@ -480,6 +524,14 @@ class _BookingsScreenState extends State<BookingsScreen> {
                       style: AppTextStyles.bodyMedium.copyWith(
                         color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
                       ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Text('Toque para ver voucher e QR Code de entrada', style: AppTextStyles.labelSmall.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600)),
+                        const SizedBox(width: 4),
+                        const Icon(Icons.arrow_forward_ios_rounded, size: 11, color: AppColors.primary),
+                      ],
                     ),
                   ],
                 ),

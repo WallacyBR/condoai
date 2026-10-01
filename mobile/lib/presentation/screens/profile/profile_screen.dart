@@ -8,8 +8,8 @@ import '../../../data/models/unit_model.dart';
 import '../../blocs/unit/unit_cubit.dart';
 import '../../blocs/unit/unit_state.dart';
 
-/// Tela de Perfil do Morador com dados da unidade e gestão completa de dependentes, veículos e boletos
-class ProfileScreen extends StatelessWidget {
+/// Tela de Perfil do Morador com dados da unidade e gestão completa e funcional de dependentes, veículos e boletos
+class ProfileScreen extends StatefulWidget {
   final VoidCallback onToggleTheme;
   final bool isDarkMode;
 
@@ -19,6 +19,180 @@ class ProfileScreen extends StatelessWidget {
     required this.isDarkMode,
   });
 
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final List<Map<String, String>> _residents = [
+    {
+      'name': 'Wallacy Silva',
+      'role': 'Titular da Unidade',
+      'initials': 'WS',
+      'tag': 'Titular',
+    },
+    {
+      'name': 'Larissa Silva',
+      'role': 'Cônjuge • Acesso facial liberado',
+      'initials': 'LS',
+      'tag': 'Dependente',
+    },
+  ];
+
+  final List<Map<String, String>> _vehicles = [
+    {
+      'title': 'Jeep Compass Cinza',
+      'subtitle': 'Placa: BRA-4X91 • Tag Sem Parar Ativa',
+      'type': 'car',
+    },
+    {
+      'title': 'Honda CB 500F Preta',
+      'subtitle': 'Placa: SP-9912 • Vaga de Moto M-08',
+      'type': 'bike',
+    },
+  ];
+
+  final List<Map<String, String>> _pets = [
+    {
+      'name': 'Thor',
+      'breed': 'Golden Retriever',
+      'size': 'Porte Grande',
+      'status': 'Vacinação em dia',
+    },
+  ];
+
+  void _openAddResidentDialog(BuildContext context, StateSetter modalSetState) {
+    final nameCtrl = TextEditingController();
+    final docCtrl = TextEditingController();
+    String relation = 'Filho(a)';
+
+    showDialog(
+      context: context,
+      builder: (dlgCtx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+        title: const Text('Cadastrar Novo Morador'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameCtrl,
+              decoration: const InputDecoration(labelText: 'Nome Completo', hintText: 'Ex: Arthur Silva'),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: docCtrl,
+              decoration: const InputDecoration(labelText: 'CPF ou RG', hintText: '000.000.000-00'),
+            ),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<String>(
+              initialValue: relation,
+              decoration: const InputDecoration(labelText: 'Grau de Parentesco'),
+              items: const [
+                DropdownMenuItem(value: 'Filho(a)', child: Text('Filho(a)')),
+                DropdownMenuItem(value: 'Cônjuge', child: Text('Cônjuge')),
+                DropdownMenuItem(value: 'Pai/Mãe', child: Text('Pai / Mãe')),
+                DropdownMenuItem(value: 'Outro', child: Text('Outro Morador')),
+              ],
+              onChanged: (val) => relation = val!,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dlgCtx), child: const Text('Cancelar')),
+          ElevatedButton(
+            onPressed: () {
+              if (nameCtrl.text.trim().isEmpty) return;
+              HapticFeedback.mediumImpact();
+              final name = nameCtrl.text.trim();
+              final initials = name.split(' ').map((e) => e.isNotEmpty ? e[0] : '').take(2).join().toUpperCase();
+
+              setState(() {
+                _residents.add({
+                  'name': name,
+                  'role': '$relation • Cadastro ativo',
+                  'initials': initials.isNotEmpty ? initials : 'MD',
+                  'tag': 'Dependente',
+                });
+              });
+              modalSetState(() {});
+              Navigator.pop(dlgCtx);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Morador $name cadastrado com sucesso!'), backgroundColor: AppColors.success),
+              );
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+            child: const Text('Salvar Cadastro', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _openAddPetDialog(BuildContext context, StateSetter modalSetState) {
+    final petNameCtrl = TextEditingController();
+    final breedCtrl = TextEditingController();
+    String size = 'Médio';
+
+    showDialog(
+      context: context,
+      builder: (dlgCtx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+        title: const Text('Cadastrar Novo Pet'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: petNameCtrl,
+              decoration: const InputDecoration(labelText: 'Nome do Pet', hintText: 'Ex: Mel / Bob'),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: breedCtrl,
+              decoration: const InputDecoration(labelText: 'Raça ou Espécie', hintText: 'Ex: Shih-tzu / SRD'),
+            ),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<String>(
+              initialValue: size,
+              decoration: const InputDecoration(labelText: 'Porte'),
+              items: const [
+                DropdownMenuItem(value: 'Pequeno', child: Text('Porte Pequeno')),
+                DropdownMenuItem(value: 'Médio', child: Text('Porte Médio')),
+                DropdownMenuItem(value: 'Grande', child: Text('Porte Grande')),
+              ],
+              onChanged: (val) => size = val!,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dlgCtx), child: const Text('Cancelar')),
+          ElevatedButton(
+            onPressed: () {
+              if (petNameCtrl.text.trim().isEmpty) return;
+              HapticFeedback.mediumImpact();
+              final petName = petNameCtrl.text.trim();
+
+              setState(() {
+                _pets.add({
+                  'name': petName,
+                  'breed': breedCtrl.text.trim().isNotEmpty ? breedCtrl.text.trim() : 'SRD',
+                  'size': 'Porte $size',
+                  'status': 'Carteira de Vacinação OK',
+                });
+              });
+              modalSetState(() {});
+              Navigator.pop(dlgCtx);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Pet $petName adicionado com sucesso!'), backgroundColor: AppColors.success),
+              );
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+            child: const Text('Salvar Pet', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showDependentsModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -27,59 +201,75 @@ class ProfileScreen extends StatelessWidget {
       builder: (ctx) {
         final isDark = Theme.of(ctx).brightness == Brightness.dark;
 
-        return FrostedGlassCard(
-          borderRadius: 32,
-          margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text('Moradores & Dependentes', style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 4),
-              Text('Pessoas autorizadas a entrar e receber visitantes nesta unidade', style: AppTextStyles.bodyMedium),
-              const SizedBox(height: 16),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const CircleAvatar(backgroundColor: AppColors.primary, child: Text('WS', style: TextStyle(color: Colors.white))),
-                title: const Text('Wallacy Silva', style: TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: const Text('Titular da Unidade'),
-                trailing: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(color: AppColors.primarySoft, borderRadius: BorderRadius.circular(8)),
-                  child: Text('Titular', style: AppTextStyles.badge.copyWith(color: AppColors.primary)),
-                ),
+        return StatefulBuilder(
+          builder: (modalCtx, setModalState) {
+            return FrostedGlassCard(
+              borderRadius: 32,
+              margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Moradores & Dependentes', style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.bold)),
+                      IconButton(
+                        icon: const Icon(Icons.person_add_rounded, color: AppColors.primary),
+                        tooltip: 'Adicionar Morador',
+                        onPressed: () => _openAddResidentDialog(context, setModalState),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text('Pessoas autorizadas a entrar e receber visitantes nesta unidade', style: AppTextStyles.bodyMedium),
+                  const SizedBox(height: 16),
+                  ..._residents.map((r) {
+                    final isTitular = r['tag'] == 'Titular';
+                    return Column(
+                      children: [
+                        ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: CircleAvatar(
+                            backgroundColor: isTitular ? AppColors.primary : Colors.pink.shade400,
+                            child: Text(r['initials']!, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                          ),
+                          title: Text(r['name']!, style: const TextStyle(fontWeight: FontWeight.bold)),
+                          subtitle: Text(r['role']!),
+                          trailing: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: isTitular ? AppColors.primarySoft : (isDark ? const Color(0x33EC4899) : Colors.pink.shade50),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              r['tag']!,
+                              style: AppTextStyles.badge.copyWith(
+                                color: isTitular ? AppColors.primary : Colors.pink.shade400,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const Divider(),
+                      ],
+                    );
+                  }),
+                  const SizedBox(height: 12),
+                  ElevatedButton.icon(
+                    onPressed: () => _openAddResidentDialog(context, setModalState),
+                    icon: const Icon(Icons.person_add_rounded, color: Colors.white),
+                    label: const Text('Cadastrar Novo Morador', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    ),
+                  ),
+                ],
               ),
-              const Divider(),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: CircleAvatar(backgroundColor: Colors.pink.shade400, child: const Text('LS', style: TextStyle(color: Colors.white))),
-                title: const Text('Larissa Silva', style: TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: const Text('Cônjuge • Acesso facial liberado'),
-                trailing: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(color: isDark ? const Color(0x33EC4899) : Colors.pink.shade50, borderRadius: BorderRadius.circular(8)),
-                  child: Text('Dependente', style: AppTextStyles.badge.copyWith(color: Colors.pink.shade400)),
-                ),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.pop(ctx);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Convite para novo morador enviado por e-mail!'), backgroundColor: AppColors.primary),
-                  );
-                },
-                icon: const Icon(Icons.person_add_rounded, color: Colors.white),
-                label: const Text('Adicionar Novo Morador', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                ),
-              ),
-            ],
-          ),
+            );
+          },
         );
       },
     );
@@ -102,19 +292,18 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 4),
               Text('Vagas vinculadas: Vaga 42 (Coberta)', style: AppTextStyles.bodyMedium),
               const SizedBox(height: 16),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.directions_car_filled_rounded, color: AppColors.primary, size: 32),
-                title: const Text('Jeep Compass Cinza', style: TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: const Text('Placa: BRA-4X91 • Tag Sem Parar Ativa'),
-              ),
-              const Divider(),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.two_wheeler_rounded, color: AppColors.info, size: 32),
-                title: const Text('Honda CB 500F Preta', style: TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: const Text('Placa: SP-9912 • Vaga de Moto M-08'),
-              ),
+              ..._vehicles.map((v) {
+                return ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(
+                    v['type'] == 'car' ? Icons.directions_car_filled_rounded : Icons.two_wheeler_rounded,
+                    color: v['type'] == 'car' ? AppColors.primary : AppColors.info,
+                    size: 30,
+                  ),
+                  title: Text(v['title']!, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Text(v['subtitle']!),
+                );
+              }),
             ],
           ),
         );
@@ -126,28 +315,55 @@ class ProfileScreen extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       builder: (ctx) {
-        return FrostedGlassCard(
-          borderRadius: 32,
-          margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text('Pets da Unidade', style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 4),
-              Text('Cadastro para circulação nas áreas pet do condomínio', style: AppTextStyles.bodyMedium),
-              const SizedBox(height: 16),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const CircleAvatar(backgroundColor: AppColors.warningLight, child: Icon(Icons.pets, color: AppColors.warning)),
-                title: const Text('Thor', style: TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: const Text('Golden Retriever • Porte Grande • Vacinação em dia'),
-                trailing: const Icon(Icons.verified_rounded, color: AppColors.success, size: 20),
+        return StatefulBuilder(
+          builder: (modalCtx, setModalState) {
+            return FrostedGlassCard(
+              borderRadius: 32,
+              margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Pets da Unidade', style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.bold)),
+                      IconButton(
+                        icon: const Icon(Icons.add_circle_outline_rounded, color: AppColors.primary),
+                        tooltip: 'Adicionar Pet',
+                        onPressed: () => _openAddPetDialog(context, setModalState),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text('Cadastro para circulação nas áreas pet do condomínio', style: AppTextStyles.bodyMedium),
+                  const SizedBox(height: 16),
+                  ..._pets.map((p) {
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const CircleAvatar(backgroundColor: AppColors.warningLight, child: Icon(Icons.pets, color: AppColors.warning)),
+                      title: Text(p['name']!, style: const TextStyle(fontWeight: FontWeight.bold)),
+                      subtitle: Text('${p['breed']} • ${p['size']} • ${p['status']}'),
+                      trailing: const Icon(Icons.verified_rounded, color: AppColors.success, size: 20),
+                    );
+                  }),
+                  const SizedBox(height: 14),
+                  OutlinedButton.icon(
+                    onPressed: () => _openAddPetDialog(context, setModalState),
+                    icon: const Icon(Icons.pets, size: 18),
+                    label: const Text('Cadastrar Novo Pet'),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         );
       },
     );
@@ -271,10 +487,10 @@ class ProfileScreen extends StatelessWidget {
               borderRadius: 24,
               child: Row(
                 children: [
-                  CircleAvatar(
+                  const CircleAvatar(
                     radius: 32,
                     backgroundColor: AppColors.primary,
-                    child: const Text(
+                    child: Text(
                       'WS',
                       style: TextStyle(
                         color: Colors.white,
@@ -331,7 +547,7 @@ class ProfileScreen extends StatelessWidget {
                   Row(
                     children: [
                       Icon(
-                        isDarkMode ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
+                        widget.isDarkMode ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
                         color: AppColors.primary,
                         size: 24,
                       ),
@@ -343,9 +559,9 @@ class ProfileScreen extends StatelessWidget {
                     ],
                   ),
                   Switch.adaptive(
-                    value: isDarkMode,
+                    value: widget.isDarkMode,
                     activeTrackColor: AppColors.primary,
-                    onChanged: (_) => onToggleTheme(),
+                    onChanged: (_) => widget.onToggleTheme(),
                   ),
                 ],
               ),
@@ -353,11 +569,11 @@ class ProfileScreen extends StatelessWidget {
 
             const SizedBox(height: 12),
 
-            // Itens de Gestão da Unidade (100% Funcionais com Modais)
+            // Itens de Gestão da Unidade (100% Funcionais com Modais e Cadastros)
             _ProfileNavOption(
               icon: Icons.people_outline_rounded,
               title: 'Dependentes & Moradores',
-              subtitle: 'Gerenciar pessoas autorizadas na unidade',
+              subtitle: '${_residents.length} pessoas autorizadas na unidade',
               onTap: () {
                 HapticFeedback.lightImpact();
                 _showDependentsModal(context);
@@ -367,7 +583,7 @@ class ProfileScreen extends StatelessWidget {
             _ProfileNavOption(
               icon: Icons.directions_car_outlined,
               title: 'Veículos Cadastrados',
-              subtitle: '2 veículos vinculados às vagas',
+              subtitle: '${_vehicles.length} veículos vinculados às vagas',
               onTap: () {
                 HapticFeedback.lightImpact();
                 _showVehiclesModal(context);
@@ -377,7 +593,7 @@ class ProfileScreen extends StatelessWidget {
             _ProfileNavOption(
               icon: Icons.pets_outlined,
               title: 'Pets da Unidade',
-              subtitle: '1 pet registrado',
+              subtitle: '${_pets.length} pet(s) registrado(s)',
               onTap: () {
                 HapticFeedback.lightImpact();
                 _showPetsModal(context);

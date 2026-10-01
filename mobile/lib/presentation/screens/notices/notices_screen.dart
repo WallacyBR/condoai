@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/frosted_glass_card.dart';
+import 'new_occurrence_screen.dart';
+import 'notice_detail_modal.dart';
+import 'occurrence_detail_modal.dart';
 
 class OccurrenceItem {
   final String protocol;
@@ -20,7 +23,7 @@ class OccurrenceItem {
   });
 }
 
-/// Tela de Avisos e Ocorrências com interatividade completa
+/// Tela de Avisos e Ocorrências com interatividade completa e detalhamento
 class NoticesScreen extends StatefulWidget {
   const NoticesScreen({super.key});
 
@@ -41,149 +44,29 @@ class _NoticesScreenState extends State<NoticesScreen> {
     ),
   ];
 
-  void _openNewOccurrenceModal() {
-    final titleController = TextEditingController();
-    final descController = TextEditingController();
-    String selectedCategory = 'Manutenção Predial';
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (ctx) {
-        final isDark = Theme.of(ctx).brightness == Brightness.dark;
-
-        return StatefulBuilder(
-          builder: (modalCtx, setModalState) {
-            return FrostedGlassCard(
-              borderRadius: 32,
-              margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 44,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: isDark ? Colors.white24 : Colors.black12,
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Registrar Ocorrência',
-                      style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Seu relato será enviado diretamente para a administração',
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-                      ),
-                    ),
-                    const SizedBox(height: 18),
-
-                    // Categoria
-                    DropdownButtonFormField<String>(
-                      initialValue: selectedCategory,
-                      decoration: InputDecoration(
-                        labelText: 'Categoria',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-                      ),
-                      items: const [
-                        DropdownMenuItem(value: 'Manutenção Predial', child: Text('Manutenção Predial')),
-                        DropdownMenuItem(value: 'Barulho Excessivo', child: Text('Barulho / Convivência')),
-                        DropdownMenuItem(value: 'Vaga de Garagem', child: Text('Vaga de Garagem')),
-                        DropdownMenuItem(value: 'Limpeza de Áreas', child: Text('Limpeza e Conservação')),
-                        DropdownMenuItem(value: 'Segurança', child: Text('Segurança Patrimonial')),
-                      ],
-                      onChanged: (val) => setModalState(() => selectedCategory = val!),
-                    ),
-                    const SizedBox(height: 14),
-
-                    // Assunto / Título
-                    TextField(
-                      controller: titleController,
-                      style: TextStyle(
-                        color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                      ),
-                      decoration: InputDecoration(
-                        labelText: 'Título da Ocorrência',
-                        hintText: 'Ex: Barulho após horário permitido',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-
-                    // Descrição
-                    TextField(
-                      controller: descController,
-                      maxLines: 3,
-                      style: TextStyle(
-                        color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                      ),
-                      decoration: InputDecoration(
-                        labelText: 'Descrição Detalhada',
-                        hintText: 'Descreva o que ocorreu e local exato...',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-                      ),
-                    ),
-                    const SizedBox(height: 18),
-
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        if (titleController.text.trim().isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Por favor, informe o título da ocorrência.'),
-                              backgroundColor: AppColors.danger,
-                            ),
-                          );
-                          return;
-                        }
-
-                        HapticFeedback.heavyImpact();
-                        final newProtocol = 'OC-${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}';
-                        setState(() {
-                          _myOccurrences.insert(
-                            0,
-                            OccurrenceItem(
-                              protocol: newProtocol,
-                              title: titleController.text.trim(),
-                              category: selectedCategory,
-                              date: 'Agora',
-                            ),
-                          );
-                          _activeTab = 1;
-                        });
-                        Navigator.pop(ctx);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Ocorrência #$newProtocol registrada com sucesso!'),
-                            backgroundColor: AppColors.success,
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.send_rounded, color: Colors.white, size: 18),
-                      label: const Text('Enviar para o Síndico', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                      ),
-                    ),
-                  ],
+  void _openNewOccurrenceScreen() {
+    HapticFeedback.lightImpact();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => NewOccurrenceScreen(
+          onOccurrenceCreated: (protocol, title, category, date, status) {
+            setState(() {
+              _myOccurrences.insert(
+                0,
+                OccurrenceItem(
+                  protocol: protocol,
+                  title: title,
+                  category: category,
+                  date: date,
+                  status: status,
                 ),
-              ),
-            );
+              );
+              _activeTab = 1;
+            });
           },
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -215,23 +98,21 @@ class _NoticesScreenState extends State<NoticesScreen> {
                 ),
               ],
             ),
-            IconButton(
-              onPressed: _openNewOccurrenceModal,
-              icon: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: const BoxDecoration(
-                  color: AppColors.primary,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.add, color: Colors.white, size: 20),
+            ElevatedButton.icon(
+              onPressed: _openNewOccurrenceScreen,
+              icon: const Icon(Icons.add, size: 16, color: Colors.white),
+              label: const Text('Novo Chamado', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               ),
-              tooltip: 'Abrir Ocorrência',
             ),
           ],
         ),
         const SizedBox(height: 18),
 
-        // Alternador de Abas
+        // Alternador de Abas (Avisos Oficiais / Minhas Ocorrências)
         Container(
           padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
@@ -305,8 +186,19 @@ class _NoticesScreenState extends State<NoticesScreen> {
         const SizedBox(height: 20),
 
         if (_activeTab == 0) ...[
+          // Comunicado 1
           FrostedGlassCard(
             borderRadius: 22,
+            onTap: () {
+              HapticFeedback.lightImpact();
+              NoticeDetailModal.show(
+                context,
+                title: 'Manutenção Preventiva dos Elevadores',
+                category: 'COMUNICADO OFICIAL',
+                date: 'Hoje às 09:30',
+                content: 'Informamos que nesta quinta-feira das 14h às 16h haverá manutenção programada preventiva de lubrificação e calibragem no Elevador Social do Bloco Primavera. O elevador de serviço permanecerá em operação normal.\n\nAgradecemos a colaboração de todos.',
+              );
+            },
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -339,18 +231,38 @@ class _NoticesScreenState extends State<NoticesScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Informamos que nesta quinta-feira das 14h às 16h haverá manutenção programada no Elevador Social do Bloco Primavera. O elevador de serviço permanecerá em operação normal.',
+                  'Informamos que nesta quinta-feira das 14h às 16h haverá manutenção programada no Elevador Social...',
                   style: AppTextStyles.bodyMedium.copyWith(
                     color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
                     height: 1.4,
                   ),
                 ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Text('Toque para ler comunicado completo', style: AppTextStyles.labelSmall.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600)),
+                    const SizedBox(width: 4),
+                    const Icon(Icons.arrow_forward_ios_rounded, size: 11, color: AppColors.primary),
+                  ],
+                ),
               ],
             ),
           ),
           const SizedBox(height: 14),
+
+          // Comunicado 2
           FrostedGlassCard(
             borderRadius: 22,
+            onTap: () {
+              HapticFeedback.lightImpact();
+              NoticeDetailModal.show(
+                context,
+                title: 'Convocação: Assembleia Geral Ordinária',
+                category: 'ASSEMBLEIA VIRTUAL',
+                date: 'Ontem',
+                content: 'Convocamos todos os senhores condôminos para a Assembleia Geral Ordinária com votação digital diretamente através deste aplicativo CondoAI.\n\nPautas:\n1. Prestação de contas do exercício 2025/2026.\n2. Previsão orçamentária do próximo ano.\n3. Pintura e revitalização das fachadas.\n\nA votação estará aberta do dia 15 ao dia 20.',
+              );
+            },
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -383,30 +295,40 @@ class _NoticesScreenState extends State<NoticesScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'A votação digital para aprovação das contas do exercício anterior estará aberta pelo app a partir do dia 15 deste mês.',
+                  'A votação digital para aprovação das contas do exercício anterior estará aberta pelo app...',
                   style: AppTextStyles.bodyMedium.copyWith(
                     color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
                     height: 1.4,
                   ),
                 ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Text('Toque para ler pautas e detalhes', style: AppTextStyles.labelSmall.copyWith(color: AppColors.success, fontWeight: FontWeight.w600)),
+                    const SizedBox(width: 4),
+                    const Icon(Icons.arrow_forward_ios_rounded, size: 11, color: AppColors.success),
+                  ],
+                ),
               ],
             ),
           ),
         ] else ...[
-          OutlinedButton.icon(
-            onPressed: _openNewOccurrenceModal,
-            icon: const Icon(Icons.add_circle_outline_rounded, size: 18),
-            label: const Text('Nova Ocorrência ou Reclamação'),
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            ),
-          ),
-          const SizedBox(height: 16),
+          // Minhas Ocorrências
           ..._myOccurrences.map((occ) {
             return FrostedGlassCard(
               borderRadius: 20,
               margin: const EdgeInsets.only(bottom: 12),
+              onTap: () {
+                HapticFeedback.lightImpact();
+                OccurrenceDetailModal.show(
+                  context,
+                  protocol: occ.protocol,
+                  title: occ.title,
+                  category: occ.category,
+                  date: occ.date,
+                  status: occ.status,
+                );
+              },
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -448,6 +370,14 @@ class _NoticesScreenState extends State<NoticesScreen> {
                     style: AppTextStyles.labelSmall.copyWith(
                       color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
                     ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Text('Ver histórico e respostas do síndico', style: AppTextStyles.labelSmall.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600)),
+                      const SizedBox(width: 4),
+                      const Icon(Icons.arrow_forward_ios_rounded, size: 11, color: AppColors.primary),
+                    ],
                   ),
                 ],
               ),

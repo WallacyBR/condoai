@@ -89,10 +89,15 @@ class UserResidentLinkTest extends TestCase
         ]);
 
         $targetUser = User::factory()->create([
-            'condominium_id' => null,
+            'condominium_id' => $this->condominiumB->id,
             'profile_id' => null,
         ]);
-        $targetUser->condominiums()->detach();
+
+        $this->assertFalse($targetUser->belongsToCondominium($this->condominiumA->id));
+        $this->assertDatabaseMissing('condominium_user', [
+            'user_id' => $targetUser->id,
+            'condominium_id' => $this->condominiumA->id,
+        ]);
 
         $this->actingAsTenant($this->staffUser, $this->condominiumA);
 
@@ -104,6 +109,10 @@ class UserResidentLinkTest extends TestCase
 
         $targetUser->refresh();
         $this->assertTrue($targetUser->belongsToCondominium($this->condominiumA->id));
+        $this->assertDatabaseHas('condominium_user', [
+            'user_id' => $targetUser->id,
+            'condominium_id' => $this->condominiumA->id,
+        ]);
         $this->assertSame('Morador', $targetUser->profile?->name);
     }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../core/theme/app_theme.dart';
+import 'blocs/packages/packages_cubit.dart';
 import 'blocs/unit/unit_cubit.dart';
 import 'blocs/visitor_call/visitor_call_cubit.dart';
 import 'screens/main_shell_screen.dart';
@@ -28,6 +29,7 @@ class _CondoAIAppState extends State<CondoAIApp> {
       providers: [
         BlocProvider(create: (_) => UnitCubit()),
         BlocProvider(create: (_) => VisitorCallCubit()),
+        BlocProvider(create: (_) => PackagesCubit()),
       ],
       child: MaterialApp(
         title: 'CondoAI Morador',

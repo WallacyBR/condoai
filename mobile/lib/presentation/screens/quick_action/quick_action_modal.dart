@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/frosted_glass_card.dart';
+import '../gates/remote_gate_modal.dart';
+import '../invites/create_invite_screen.dart';
 
 /// Modal de Ação Rápida disparado pelo botão central da barra inferior
 class QuickActionModal extends StatelessWidget {
@@ -59,11 +61,9 @@ class QuickActionModal extends StatelessWidget {
             onTap: () {
               HapticFeedback.lightImpact();
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Passe QR Code gerado! Compartilhamento aberto.'),
-                  backgroundColor: AppColors.primary,
-                ),
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const CreateInviteScreen()),
               );
             },
           ),
@@ -74,14 +74,9 @@ class QuickActionModal extends StatelessWidget {
             subtitle: 'Acionar portaria virtual ou portão de pedestres',
             color: AppColors.success,
             onTap: () {
-              HapticFeedback.heavyImpact();
+              HapticFeedback.mediumImpact();
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Comando de abertura enviado com sucesso!'),
-                  backgroundColor: AppColors.success,
-                ),
-              );
+              RemoteGateModal.show(context);
             },
           ),
           const SizedBox(height: 12),
@@ -95,7 +90,7 @@ class QuickActionModal extends StatelessWidget {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Portaria avisada da sua aproximação.'),
+                  content: Text('Portaria notificada: seu veículo está a caminho!'),
                   backgroundColor: AppColors.info,
                 ),
               );

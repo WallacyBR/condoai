@@ -2,7 +2,7 @@
 
 ## 🎯 Status Atual
 
-O Vitest foi **instalado e configurado com sucesso** no projeto CondoAI. Todos os arquivos de configuração foram criados e os testes estão funcionando corretamente.
+O Vitest foi **instalado e configurado com sucesso** no projeto PrediHub. Todos os arquivos de configuração foram criados e os testes estão funcionando corretamente.
 
 ## 📁 Arquivos Criados/Modificados
 

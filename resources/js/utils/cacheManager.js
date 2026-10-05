@@ -2,9 +2,9 @@
 class CacheManager {
     constructor() {
         this.cacheNames = {
-            static: 'condoai-static-v1',
-            dynamic: 'condoai-dynamic-v1',
-            api: 'condoai-api-v1'
+            static: 'predihub-static-v1',
+            dynamic: 'predihub-dynamic-v1',
+            api: 'predihub-api-v1'
         };
     }
 

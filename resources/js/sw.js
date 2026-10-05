@@ -1,7 +1,7 @@
-// Service Worker customizado para CondoAI
-const CACHE_NAME = 'condoai-v1';
-const STATIC_CACHE = 'condoai-static-v1';
-const DYNAMIC_CACHE = 'condoai-dynamic-v1';
+// Service Worker customizado para PrediHub
+const CACHE_NAME = 'predihub-v1';
+const STATIC_CACHE = 'predihub-static-v1';
+const DYNAMIC_CACHE = 'predihub-dynamic-v1';
 
 // Placeholder para injeção do manifest pelo Workbox
 self.__WB_MANIFEST;

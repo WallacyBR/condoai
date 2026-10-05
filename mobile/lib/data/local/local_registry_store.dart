@@ -34,7 +34,7 @@ class LocalRegistryStore {
       ResidentRegistry(
         id: 'seed-1',
         name: 'Wallacy Silva',
-        email: 'wallacy@condoai.com',
+        email: 'wallacy@predihub.com.br',
         cpf: '412.000.000-89',
         rg: '12.345.678-9',
         cellPhone: '(11) 98765-4321',
@@ -48,7 +48,7 @@ class LocalRegistryStore {
       ResidentRegistry(
         id: 'seed-2',
         name: 'Larissa Silva',
-        email: 'larissa@condoai.com',
+        email: 'larissa@predihub.com.br',
         cpf: '389.000.000-20',
         cellPhone: '(11) 97654-3210',
         whatsapp: '(11) 97654-3210',

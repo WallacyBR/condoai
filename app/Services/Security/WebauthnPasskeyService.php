@@ -45,7 +45,7 @@ class WebauthnPasskeyService
     {
         $challenge = random_bytes(32);
         $options = PublicKeyCredentialCreationOptions::create(
-            PublicKeyCredentialRpEntity::create(config('app.name', 'CondoAI'), $this->publicRpId($request)),
+            PublicKeyCredentialRpEntity::create(config('app.name', 'PrediHub'), $this->publicRpId($request)),
             PublicKeyCredentialUserEntity::create($user->email, $this->userHandle($user), $user->name),
             $challenge,
             [

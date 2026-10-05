@@ -16,7 +16,7 @@
         <div class="flex items-center justify-center">
           <img 
             :src="logoImage" 
-            alt="CondoAI Logo" 
+            alt="PrediHub Logo" 
             class="h-8 w-8 object-contain"
             @error="handleImageError"
           />
@@ -161,7 +161,7 @@
           </div>
           <div v-if="!isCollapsed" class="overflow-hidden">
             <p class="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate max-w-[130px]">{{ userName }}</p>
-            <p class="text-xs text-slate-400 truncate max-w-[130px]">{{ selectedCondoName || 'CondoAI' }}</p>
+            <p class="text-xs text-slate-400 truncate max-w-[130px]">{{ selectedCondoName || 'PrediHub' }}</p>
           </div>
         </div>
       </div>

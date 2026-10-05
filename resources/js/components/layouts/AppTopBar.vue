@@ -23,7 +23,7 @@
           to="/dashboard"
           class="font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
         >
-          CondoAI
+          PrediHub
         </router-link>
         <span class="text-slate-400 dark:text-slate-600">/</span>
         <span class="font-semibold text-slate-900 dark:text-slate-100">

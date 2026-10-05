@@ -53,7 +53,7 @@ class UnitModel extends Equatable {
       apartmentId: json['apartment_id'] as int,
       unitNumber: json['unit_number'] as String? ?? '',
       blockOrTower: json['block_or_tower'] as String? ?? '',
-      condominiumName: json['condominium_name'] as String? ?? 'CondoAI',
+      condominiumName: json['condominium_name'] as String? ?? 'PrediHub',
       role: ResidentRole.fromString(json['classification'] as String?),
       isDefault: json['is_default'] as bool? ?? false,
     );

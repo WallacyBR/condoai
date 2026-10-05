@@ -62,9 +62,9 @@ void main() {
     });
   });
 
-  group('CondoAIApp Widget Tests', () {
+  group('PrediHubApp Widget Tests', () {
     testWidgets('renderiza o app com navegação inferior e título', (WidgetTester tester) async {
-      await tester.pumpWidget(const CondoAIApp());
+      await tester.pumpWidget(const PrediHubApp());
       await tester.pumpAndSettle();
 
       expect(find.text('Olá, Wallace'), findsOneWidget);

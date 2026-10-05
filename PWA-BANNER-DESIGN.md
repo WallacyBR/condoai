@@ -2,7 +2,7 @@
 
 ## Visão Geral
 
-O banner de instalação PWA do CondoAI foi completamente redesenhado com foco em **experiência do usuário**, **atratividade visual** e **conversão** de instalações.
+O banner de instalação PWA do PrediHub foi completamente redesenhado com foco em **experiência do usuário**, **atratividade visual** e **conversão** de instalações.
 
 ## 🌟 Melhorias Implementadas
 
@@ -197,7 +197,7 @@ window.forceShowPWABanner()
 
 ---
 
-**Desenvolvido com ❤️ para o CondoAI**  
+**Desenvolvido com ❤️ para o PrediHub**  
 **Data:** 30/06/2025  
 **Versão:** 1.0.0 - Design Moderno  
 **Status:** ✅ **IMPLEMENTADO** 

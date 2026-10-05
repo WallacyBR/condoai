@@ -20,7 +20,7 @@
         <div class="flex justify-center mb-4">
           <img 
             :src="logoImage" 
-            alt="CondoAI Logo" 
+            alt="PrediHub Logo" 
             class="h-20 w-auto object-contain"
             @error="handleImageError"
           />

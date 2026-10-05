@@ -48,7 +48,7 @@ export class NotificationManager {
             vibrate: [100, 50, 100],
             requireInteraction: false,
             silent: false,
-            tag: 'condoai-notification'
+            tag: 'predihub-notification'
         };
 
         const notificationOptions = { ...defaultOptions, ...options };
@@ -195,7 +195,7 @@ export class NotificationManager {
         // Exemplo: enviar notificação a cada 30 minutos (apenas para demonstração)
         setInterval(() => {
             this.sendLocalNotification(
-                'CondoAI - Lembrete',
+                'PrediHub - Lembrete',
                 {
                     body: 'Verifique as atualizações do seu condomínio',
                     tag: 'reminder'

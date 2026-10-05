@@ -99,7 +99,7 @@
 
     <!-- Rodapé -->
     <p class="text-xs text-slate-400 mt-6 text-center">
-      Powered by CondoAI • Sistema Inteligente de Gestão Condominial
+      Powered by PrediHub • Sistema Inteligente de Gestão Condominial
     </p>
   </div>
 </template>

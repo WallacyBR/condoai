@@ -43,7 +43,7 @@
                                 <!-- Conteúdo Principal -->
                                 <div class="text-white flex-1">
                                     <h3 class="text-xl sm:text-2xl font-bold mb-2 bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
-                                        📱 CondoAI para {{ deviceType }}
+                                        📱 PrediHub para {{ deviceType }}
                                     </h3>
                                     <p class="text-blue-100 text-sm sm:text-base mb-3 leading-relaxed">
                                         Adicione à sua tela inicial para uma experiência nativa completa

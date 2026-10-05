@@ -7,7 +7,7 @@
           <div class="flex justify-center mb-3">
             <img 
               :src="logoImage" 
-              alt="CondoAI Logo" 
+              alt="PrediHub Logo" 
               class="h-16 w-auto object-contain"
               @error="handleImageError"
             />
@@ -46,7 +46,7 @@
       <!-- Footer -->
       <div class="text-center mt-6">
         <p class="text-slate-400 text-xs">
-          CondoAI • Gestão Inteligente para Condomínios
+          PrediHub • Gestão Inteligente para Condomínios
         </p>
       </div>
     </div>

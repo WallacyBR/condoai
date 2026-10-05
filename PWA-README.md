@@ -1,8 +1,8 @@
-# CondoAI - Progressive Web App (PWA)
+# PrediHub - Progressive Web App (PWA)
 
 ## Visão Geral
 
-O CondoAI foi transformado em um Progressive Web App (PWA) completo, oferecendo uma experiência de aplicativo nativo com funcionalidades offline, notificações push e instalação no dispositivo.
+O PrediHub foi transformado em um Progressive Web App (PWA) completo, oferecendo uma experiência de aplicativo nativo com funcionalidades offline, notificações push e instalação no dispositivo.
 
 ## Funcionalidades PWA Implementadas
 
@@ -33,7 +33,7 @@ O CondoAI foi transformado em um Progressive Web App (PWA) completo, oferecendo 
 ## Estrutura de Arquivos
 
 ```
-condoai/
+predihub/
 ├── resources/
 │   ├── js/
 │   │   ├── composables/
@@ -257,4 +257,4 @@ Para contribuir com melhorias PWA:
 
 ---
 
-**CondoAI PWA** - Transformando a gestão de condomínios em uma experiência mobile-first! 🏢📱 
+**PrediHub PWA** - Transformando a gestão de condomínios em uma experiência mobile-first! 🏢📱 

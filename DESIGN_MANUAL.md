@@ -1,4 +1,4 @@
-# Manual de Design - CondoAI
+# Manual de Design - PrediHub
 
 ## Guia de Interface e Experiência do Usuário (SaaS Moderno & Sóbrio)
 
@@ -25,7 +25,7 @@
 
 ## 🎨 Filosofia de Design
 
-O CondoAI adota um design visual **SaaS moderno, corporativo e sóbrio** (inspirado em referências como Tailwind UI, Linear e Stripe). 
+O PrediHub adota um design visual **SaaS moderno, corporativo e sóbrio** (inspirado em referências como Tailwind UI, Linear e Stripe). 
 
 ### Princípios Fundamentais:
 1. **Sobriedade e Profissionalismo**: Eliminação de efeitos retrô, reflexos de vidro excessivos, bordas fluorescentes de 2px e degradês neon chamativos (ex: ciano para rosa/magenta). O foco é no conteúdo e nos dados operacionais do condomínio.

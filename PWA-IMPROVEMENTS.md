@@ -1,4 +1,4 @@
-# Melhorias no PWA - CondoAI
+# Melhorias no PWA - PrediHub
 
 ## Problemas Identificados e Soluções
 

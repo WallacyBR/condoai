@@ -40,7 +40,7 @@ class SecurityPasskeyTest extends TestCase
         $service = Mockery::mock(WebauthnPasskeyService::class);
         $service->shouldReceive('registrationOptions')->once()->andReturn([
             'token' => 'token-teste',
-            'publicKey' => ['challenge' => 'abc', 'rp' => ['name' => 'CondoAI'], 'user' => ['id' => 'abc']],
+            'publicKey' => ['challenge' => 'abc', 'rp' => ['name' => 'PrediHub'], 'user' => ['id' => 'abc']],
         ]);
         $service->shouldReceive('verifyRegistration')->once()->andReturn($passkey);
         $this->app->instance(WebauthnPasskeyService::class, $service);

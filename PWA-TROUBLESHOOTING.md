@@ -1,4 +1,4 @@
-# 🔧 Guia de Solução de Problemas - PWA CondoAI
+# 🔧 Guia de Solução de Problemas - PWA PrediHub
 
 ## ✅ PROBLEMA RESOLVIDO: Erro "non-precached-url" em Produção
 

@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "br.com.condoai" "\0"
-            VALUE "FileDescription", "condoai_app" "\0"
+            VALUE "FileDescription", "PrediHub" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "condoai_app" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 br.com.condoai. All rights reserved." "\0"
             VALUE "OriginalFilename", "condoai_app.exe" "\0"
-            VALUE "ProductName", "condoai_app" "\0"
+            VALUE "ProductName", "PrediHub" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

@@ -16,9 +16,9 @@
     <meta name="msapplication-tap-highlight" content="no">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/images/predihub_quadrado.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/images/predihub_quadrado.png">
-    <link rel="apple-touch-icon" href="/images/predihub_quadrado.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/predihub_icon_32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/predihub_icon_16.png">
+    <link rel="apple-touch-icon" href="/pwa-192x192.png">
     <link rel="mask-icon" href="/masked-icon.svg" color="#1e293b">
     
     <!-- PWA Manifest -->

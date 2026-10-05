@@ -57,7 +57,7 @@
 import CondominiumList from './CondominiumList.vue';
 import { useRouter } from 'vue-router';
 import { useTenantStore } from '../stores/tenant';
-import logoImage from '../../images/predihub_horizontal.png';
+import { usePredihubLogo } from '../composables/usePredihubLogo.js';
 
 export default {
   name: 'CondominiumSelectView',
@@ -65,6 +65,7 @@ export default {
   setup() {
     const router = useRouter();
     const tenantStore = useTenantStore();
+    const { logo: logoImage } = usePredihubLogo();
 
     const selectCondominium = (condo) => {
       const result = tenantStore.select(condo);

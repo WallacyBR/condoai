@@ -17,7 +17,7 @@
           <img 
             :src="logoImage" 
             alt="PrediHub Logo" 
-            class="h-8 w-8 object-contain"
+            :class="isCollapsed ? 'h-8 w-8 object-contain' : 'h-12 w-auto object-contain'"
             @error="handleImageError"
           />
         </div>
@@ -218,7 +218,7 @@ import { useUser } from '../../composables/useUser.js';
 import auth from '../../services/auth.js';
 import ToastContainer from '../ToastContainer.vue';
 import AppTopBar from './AppTopBar.vue';
-import logoImage from '../../../images/predihub_quadrado.png';
+import { usePredihubLogo } from '../../composables/usePredihubLogo.js';
 
 export default {
   name: 'AuthenticatedLayout',
@@ -232,6 +232,7 @@ export default {
     const route = useRoute();
     const { notifications, getBadgeColor, loadNotificationsFromServer } = useNotifications();
     const { user } = useUser();
+    const { logo: logoImage } = usePredihubLogo();
     const isSidebarOpen = ref(window.innerWidth >= 1024);
     const isCollapsed = ref(false);
     const isDesktop = ref(window.innerWidth >= 1024);

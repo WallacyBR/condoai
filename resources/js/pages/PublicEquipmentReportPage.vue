@@ -74,7 +74,7 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import api from '@/utils/api'; // Supondo que api.js lida com base URL e token se necessário
-import logoImage from '../../images/predihub_quadrado.png';
+import { logoDark as logoImage } from '../../composables/usePredihubLogo.js';
 
 const route = useRoute();
 const router = useRouter();

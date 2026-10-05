@@ -196,7 +196,7 @@ import { useRouter } from 'vue-router';
 import NeonButton from './NeonButton.vue';
 import auth from '../services/auth';
 import { browserSupportsPasskeys, passkeyOriginProblem } from '../utils/webauthn';
-import logoImage from '../../images/predihub_horizontal.png';
+import { logoDark as logoImage } from '../../composables/usePredihubLogo.js';
 import condoBgImage from '../../images/condo_bg.jpg';
 
 function saveRememberedEmail(email) {

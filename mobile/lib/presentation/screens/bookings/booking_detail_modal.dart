@@ -173,7 +173,7 @@ class BookingDetailModal extends StatelessWidget {
               child: Column(
                 children: [
                   QrImageView(
-                    data: 'condoai:booking:${booking.id}:${booking.amenityName}',
+                    data: 'predihub:booking:${booking.id}:${booking.amenityName}',
                     version: QrVersions.auto,
                     size: 160.0,
                     backgroundColor: Colors.white,

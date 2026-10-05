@@ -218,7 +218,7 @@ import { useUser } from '../../composables/useUser.js';
 import auth from '../../services/auth.js';
 import ToastContainer from '../ToastContainer.vue';
 import AppTopBar from './AppTopBar.vue';
-import logoImage from '../../../images/condo_ai_quadrado.png';
+import logoImage from '../../../images/predihub_quadrado.png';
 
 export default {
   name: 'AuthenticatedLayout',

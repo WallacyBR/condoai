@@ -222,7 +222,7 @@ class _PackageDetailModalState extends State<PackageDetailModal> {
                         ],
                       ),
                       child: QrImageView(
-                        data: 'condoai:pkg:${widget.package.id}:${widget.package.withdrawalCode}',
+                        data: 'predihub:pkg:${widget.package.id}:${widget.package.withdrawalCode}',
                         version: QrVersions.auto,
                         size: 150.0,
                         backgroundColor: Colors.white,

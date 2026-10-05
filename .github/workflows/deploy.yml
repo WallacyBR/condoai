@@ -20,17 +20,17 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /var/www/condoai
+            cd /var/www/predihub
             
             # Configura git para o diretório
-            git config --global --add safe.directory /var/www/condoai
+            git config --global --add safe.directory /var/www/predihub
             
             # Corrige dono do repositório inteiro para evitar erros do git
-            sudo chown -R ubuntu:ubuntu /var/www/condoai
+            sudo chown -R ubuntu:ubuntu /var/www/predihub
             
             # Garante permissões corretas para o git funcionar
-            sudo find /var/www/condoai -type f -exec chmod 644 {} \;
-            sudo find /var/www/condoai -type d -exec chmod 755 {} \;
+            sudo find /var/www/predihub -type f -exec chmod 644 {} \;
+            sudo find /var/www/predihub -type d -exec chmod 755 {} \;
             
             # Atualiza o código
             git pull origin master

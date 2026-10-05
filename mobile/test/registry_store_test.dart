@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:condoai_app/data/local/local_registry_store.dart';
-import 'package:condoai_app/data/local/tenant_scope.dart';
-import 'package:condoai_app/data/models/registry_models.dart';
+import 'package:predihub_app/data/local/local_registry_store.dart';
+import 'package:predihub_app/data/local/tenant_scope.dart';
+import 'package:predihub_app/data/models/registry_models.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

@@ -264,7 +264,7 @@ class _CreateInviteScreenState extends State<CreateInviteScreen> {
                   ],
                 ),
                 child: QrImageView(
-                  data: 'condoai:guest:$_inviteToken:${_nameController.text}',
+                  data: 'predihub:guest:$_inviteToken:${_nameController.text}',
                   version: QrVersions.auto,
                   size: 190.0,
                   backgroundColor: Colors.white,

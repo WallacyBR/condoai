@@ -275,7 +275,7 @@ class WebauthnPasskeyService
 
     private function userHandle(User $user): string
     {
-        return 'condoai-user-'.$user->id;
+        return 'predihub-user-'.$user->id;
     }
 
     private function base64Url(string $value): string

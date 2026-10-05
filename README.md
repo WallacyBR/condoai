@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/images/condo_ai_horizontal.png" alt="PrediHub" width="360">
+  <img src="public/images/predihub_horizontal.png" alt="PrediHub" width="360">
 </p>
 
 <p align="center">

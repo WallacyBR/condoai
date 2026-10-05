@@ -86,7 +86,7 @@ export default defineConfig({
                 lang: 'pt-BR',
                 screenshots: [
                     {
-                        "src": "/images/condo_ai_horizontal.png",
+                        "src": "/images/predihub_horizontal.png",
                         "type": "image/png",
                         "sizes": "1280x720",
                         "form_factor": "wide",

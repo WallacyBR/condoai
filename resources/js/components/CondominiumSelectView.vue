@@ -57,7 +57,7 @@
 import CondominiumList from './CondominiumList.vue';
 import { useRouter } from 'vue-router';
 import { useTenantStore } from '../stores/tenant';
-import logoImage from '../../images/condo_ai_horizontal.png';
+import logoImage from '../../images/predihub_horizontal.png';
 
 export default {
   name: 'CondominiumSelectView',

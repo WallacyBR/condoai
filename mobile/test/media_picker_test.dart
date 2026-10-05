@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:condoai_app/core/utils/media_picker_helper.dart';
+import 'package:predihub_app/core/utils/media_picker_helper.dart';
 
 void main() {
   group('MediaPickerHelper', () {

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:condoai_app/core/widgets/airbnb_bottom_nav.dart';
-import 'package:condoai_app/core/widgets/bokeh_background.dart';
-import 'package:condoai_app/presentation/blocs/visitor_call/visitor_call_cubit.dart';
-import 'package:condoai_app/presentation/blocs/visitor_call/visitor_call_state.dart';
-import 'package:condoai_app/presentation/screens/bookings/bookings_screen.dart';
-import 'package:condoai_app/presentation/screens/home/home_screen.dart';
-import 'package:condoai_app/presentation/screens/notices/notices_screen.dart';
-import 'package:condoai_app/presentation/screens/profile/profile_screen.dart';
-import 'package:condoai_app/presentation/screens/quick_action/quick_action_modal.dart';
-import 'package:condoai_app/presentation/screens/visitor_call/incoming_call_screen.dart';
+import 'package:predihub_app/core/widgets/airbnb_bottom_nav.dart';
+import 'package:predihub_app/core/widgets/bokeh_background.dart';
+import 'package:predihub_app/presentation/blocs/visitor_call/visitor_call_cubit.dart';
+import 'package:predihub_app/presentation/blocs/visitor_call/visitor_call_state.dart';
+import 'package:predihub_app/presentation/screens/bookings/bookings_screen.dart';
+import 'package:predihub_app/presentation/screens/home/home_screen.dart';
+import 'package:predihub_app/presentation/screens/notices/notices_screen.dart';
+import 'package:predihub_app/presentation/screens/profile/profile_screen.dart';
+import 'package:predihub_app/presentation/screens/quick_action/quick_action_modal.dart';
+import 'package:predihub_app/presentation/screens/visitor_call/incoming_call_screen.dart';
 
 /// Container Principal do Aplicativo (Shell com Navegação Airbnb e Interfone Noknox)
 class MainShellScreen extends StatefulWidget {

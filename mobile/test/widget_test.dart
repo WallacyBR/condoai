@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:condoai_app/presentation/app.dart';
-import 'package:condoai_app/presentation/blocs/unit/unit_cubit.dart';
-import 'package:condoai_app/presentation/blocs/unit/unit_state.dart';
-import 'package:condoai_app/presentation/blocs/visitor_call/visitor_call_cubit.dart';
-import 'package:condoai_app/presentation/blocs/visitor_call/visitor_call_state.dart';
-import 'package:condoai_app/domain/entities/access_decision.dart';
-import 'package:condoai_app/data/models/unit_model.dart';
+import 'package:predihub_app/presentation/app.dart';
+import 'package:predihub_app/presentation/blocs/unit/unit_cubit.dart';
+import 'package:predihub_app/presentation/blocs/unit/unit_state.dart';
+import 'package:predihub_app/presentation/blocs/visitor_call/visitor_call_cubit.dart';
+import 'package:predihub_app/presentation/blocs/visitor_call/visitor_call_state.dart';
+import 'package:predihub_app/domain/entities/access_decision.dart';
+import 'package:predihub_app/data/models/unit_model.dart';
 
 void main() {
   group('UnitCubit Tests', () {

@@ -6,15 +6,15 @@ import 'blocs/unit/unit_cubit.dart';
 import 'blocs/visitor_call/visitor_call_cubit.dart';
 import 'screens/main_shell_screen.dart';
 
-/// Ponto de entrada do Widget da Aplicação CondoAI Mobile
-class CondoAIApp extends StatefulWidget {
-  const CondoAIApp({super.key});
+/// Ponto de entrada do Widget da Aplicação PrediHub Mobile
+class PrediHubApp extends StatefulWidget {
+  const PrediHubApp({super.key});
 
   @override
-  State<CondoAIApp> createState() => _CondoAIAppState();
+  State<PrediHubApp> createState() => _PrediHubAppState();
 }
 
-class _CondoAIAppState extends State<CondoAIApp> {
+class _PrediHubAppState extends State<PrediHubApp> {
   ThemeMode _themeMode = ThemeMode.light;
 
   void _toggleTheme() {
@@ -32,7 +32,7 @@ class _CondoAIAppState extends State<CondoAIApp> {
         BlocProvider(create: (_) => PackagesCubit()),
       ],
       child: MaterialApp(
-        title: 'CondoAI Morador',
+        title: 'PrediHub Morador',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,

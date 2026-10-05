@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/images/condo_ai_horizontal.png" alt="CondoAI" width="360">
+  <img src="public/images/predihub_horizontal.png" alt="PrediHub" width="360">
 </p>
 
 <p align="center">
@@ -13,9 +13,9 @@
   <a href="#licenca"><img src="https://img.shields.io/badge/licenca-MIT-blue.svg" alt="Licenca MIT"></a>
 </p>
 
-## Sobre o CondoAI
+## Sobre o PrediHub
 
-O CondoAI e uma aplicacao web para centralizar a rotina administrativa e operacional de condominios. Ele reune cadastro de unidades e moradores, controle de acesso, portaria, encomendas, reservas de areas, manutencao, ocorrencias, financeiro e relatorios em uma experiencia unica, responsiva e instalavel como PWA.
+O PrediHub e uma aplicacao web para centralizar a rotina administrativa e operacional de condominios. Ele reune cadastro de unidades e moradores, controle de acesso, portaria, encomendas, reservas de areas, manutencao, ocorrencias, financeiro e relatorios em uma experiencia unica, responsiva e instalavel como PWA.
 
 O projeto foi construido para cenarios multi-condominio. Cada requisicao autenticada recebe um contexto de condominio no backend, evitando que dados operacionais de um condominio sejam exibidos em outro.
 
@@ -97,14 +97,14 @@ npm ci
 Crie o banco de dados e copie o arquivo de exemplo:
 
 ```bash
-mysql -u root -p -e "CREATE DATABASE condoai CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+mysql -u root -p -e "CREATE DATABASE predihub CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 cp .env.example .env
 ```
 
 No arquivo `.env`, ajuste ao menos estas variaveis para o seu MySQL local:
 
 ```dotenv
-APP_NAME=CondoAI
+APP_NAME=PrediHub
 APP_URL=http://127.0.0.1:8000
 APP_ENV=local
 APP_DEBUG=true
@@ -112,7 +112,7 @@ APP_DEBUG=true
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=condoai
+DB_DATABASE=predihub
 DB_USERNAME=root
 DB_PASSWORD=
 

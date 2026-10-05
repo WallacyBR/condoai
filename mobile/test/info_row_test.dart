@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:condoai_app/core/widgets/info_row.dart';
+import 'package:predihub_app/core/widgets/info_row.dart';
 
 void main() {
   testWidgets('InfoRow não estoura com textos longos', (tester) async {

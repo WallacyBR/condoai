@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Cores do Design System do CondoAI Mobile
+/// Cores do Design System do PrediHub Mobile
 /// Inspirado na sobriedade corporativa do DESIGN_MANUAL.md com a sofisticação acolhedora do Airbnb.
 class AppColors {
   // Paleta Brand / Indigo

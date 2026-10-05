@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 export 'app_text_styles.dart';
 
-/// Temas Claro e Escuro do CondoAI
+/// Temas Claro e Escuro do PrediHub
 class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(

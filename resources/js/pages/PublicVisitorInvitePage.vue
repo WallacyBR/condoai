@@ -99,7 +99,7 @@
 
     <!-- Rodapé -->
     <p class="text-xs text-slate-400 mt-6 text-center">
-      Powered by CondoAI • Sistema Inteligente de Gestão Condominial
+      Powered by PrediHub • Sistema Inteligente de Gestão Condominial
     </p>
   </div>
 </template>
@@ -123,7 +123,7 @@ export default {
     qrCodeUrl() {
       if (!this.invite?.invite_token) return '';
       // Gera URL rápida do QR code com alta resolução
-      const data = encodeURIComponent(`CONDOAI_INVITE:${this.invite.invite_token}`);
+      const data = encodeURIComponent(`PREDIHUB_INVITE:${this.invite.invite_token}`);
       return `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${data}&margin=10`;
     },
     statusLabel() {

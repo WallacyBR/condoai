@@ -1,7 +1,7 @@
 {
     "name": "laravel/laravel",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "PrediHub - Plataforma de gestão inteligente para condomínios.",
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {

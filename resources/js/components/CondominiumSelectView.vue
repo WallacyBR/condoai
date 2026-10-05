@@ -7,7 +7,7 @@
           <div class="flex justify-center mb-3">
             <img 
               :src="logoImage" 
-              alt="CondoAI Logo" 
+              alt="PrediHub Logo" 
               class="h-16 w-auto object-contain"
               @error="handleImageError"
             />
@@ -46,7 +46,7 @@
       <!-- Footer -->
       <div class="text-center mt-6">
         <p class="text-slate-400 text-xs">
-          CondoAI • Gestão Inteligente para Condomínios
+          PrediHub • Gestão Inteligente para Condomínios
         </p>
       </div>
     </div>
@@ -57,7 +57,7 @@
 import CondominiumList from './CondominiumList.vue';
 import { useRouter } from 'vue-router';
 import { useTenantStore } from '../stores/tenant';
-import logoImage from '../../images/condo_ai_horizontal.png';
+import logoImage from '../../images/predihub_horizontal.png';
 
 export default {
   name: 'CondominiumSelectView',

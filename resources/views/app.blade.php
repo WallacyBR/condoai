@@ -9,22 +9,22 @@
     <meta name="theme-color" content="#1e293b">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="CondoAI">
+    <meta name="apple-mobile-web-app-title" content="PrediHub">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="CondoAI">
+    <meta name="application-name" content="PrediHub">
     <meta name="msapplication-TileColor" content="#1e293b">
     <meta name="msapplication-tap-highlight" content="no">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/images/condo_ai_quadrado.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/images/condo_ai_quadrado.png">
-    <link rel="apple-touch-icon" href="/images/condo_ai_quadrado.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/predihub_quadrado.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/predihub_quadrado.png">
+    <link rel="apple-touch-icon" href="/images/predihub_quadrado.png">
     <link rel="mask-icon" href="/masked-icon.svg" color="#1e293b">
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="/build/manifest.webmanifest">
     
-    <title>CondoAI - Gestão de Condomínios</title>
+    <title>PrediHub - Gestão de Condomínios</title>
     @vite(["resources/css/app.css", "resources/js/app.js"])
 </head>
 <body class="min-h-screen bg-background font-sans antialiased">

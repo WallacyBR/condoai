@@ -64,7 +64,7 @@
             <p v-else class="text-gray-300">Nenhum registro de manutenção concluída encontrado.</p>
           </section>
         </div>
-         <p class="text-center text-xs text-gray-500 mt-8">QR Code gerado por CondoAI &copy; {{ new Date().getFullYear() }}</p>
+         <p class="text-center text-xs text-gray-500 mt-8">QR Code gerado por PrediHub &copy; {{ new Date().getFullYear() }}</p>
       </div>
     </div>
   </div>
@@ -74,7 +74,7 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import api from '@/utils/api'; // Supondo que api.js lida com base URL e token se necessário
-import logoImage from '../../images/condo_ai_quadrado.png';
+import logoImage from '../../images/predihub_quadrado.png';
 
 const route = useRoute();
 const router = useRouter();

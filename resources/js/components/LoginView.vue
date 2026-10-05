@@ -20,7 +20,7 @@
         <div class="flex justify-center mb-4">
           <img 
             :src="logoImage" 
-            alt="CondoAI Logo" 
+            alt="PrediHub Logo" 
             class="h-20 w-auto object-contain"
             @error="handleImageError"
           />
@@ -196,7 +196,7 @@ import { useRouter } from 'vue-router';
 import NeonButton from './NeonButton.vue';
 import auth from '../services/auth';
 import { browserSupportsPasskeys, passkeyOriginProblem } from '../utils/webauthn';
-import logoImage from '../../images/condo_ai_horizontal.png';
+import logoImage from '../../images/predihub_horizontal.png';
 import condoBgImage from '../../images/condo_bg.jpg';
 
 function saveRememberedEmail(email) {

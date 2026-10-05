@@ -1,4 +1,4 @@
-# Auditoria frontend e lista de correcao - CondoAI
+# Auditoria frontend e lista de correcao - PrediHub
 
 Atualizado em: 2026-06-26
 

@@ -43,7 +43,7 @@
                                 <!-- Texto -->
                                 <div class="text-white">
                                     <h3 class="text-xl sm:text-2xl font-bold mb-2 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
-                                        📱 Instale o CondoAI
+                                        📱 Instale o PrediHub
                                     </h3>
                                     <p class="text-blue-100 text-sm sm:text-base mb-2 max-w-md">
                                         Tenha acesso rápido e offline às funcionalidades do seu condomínio

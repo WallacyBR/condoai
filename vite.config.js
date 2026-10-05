@@ -73,8 +73,8 @@ export default defineConfig({
             },
             includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
             manifest: {
-                name: 'CondoAI - Gestão de Condomínios',
-                short_name: 'CondoAI',
+                name: 'PrediHub - Gestão de Condomínios',
+                short_name: 'PrediHub',
                 description: 'Sistema inteligente para gestão de condomínios',
                 theme_color: '#1e293b',
                 background_color: '#0f172a',
@@ -86,11 +86,11 @@ export default defineConfig({
                 lang: 'pt-BR',
                 screenshots: [
                     {
-                        "src": "/images/condo_ai_horizontal.png",
+                        "src": "/images/predihub_horizontal.png",
                         "type": "image/png",
                         "sizes": "1280x720",
                         "form_factor": "wide",
-                        "label": "Tela principal do CondoAI"
+                        "label": "Tela principal do PrediHub"
                     }
                 ],
                 icons: [

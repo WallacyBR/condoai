@@ -10,7 +10,7 @@ import '../../../core/widgets/optional_network_image.dart';
 import '../../../data/models/package_item_model.dart';
 import '../../blocs/packages/packages_cubit.dart';
 import '../../blocs/packages/packages_state.dart';
-import 'package:condoai_app/presentation/screens/packages/package_detail_modal.dart';
+import 'package:predihub_app/presentation/screens/packages/package_detail_modal.dart';
 
 /// Tela completa de Encomendas do Morador (Aguardando e Histórico)
 class PackagesScreen extends StatefulWidget {

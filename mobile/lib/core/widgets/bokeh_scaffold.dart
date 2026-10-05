@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import 'bokeh_background.dart';
 
-/// Scaffold padrão do CondoAI que garante que o fundo Bokeh e cores do tema
+/// Scaffold padrão do PrediHub que garante que o fundo Bokeh e cores do tema
 /// sejam sempre renderizados corretamente, eliminando falhas de tela preta em transições.
 class BokehScaffold extends StatelessWidget {
   final PreferredSizeWidget? appBar;

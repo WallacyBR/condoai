@@ -2,7 +2,7 @@
 
 ## Visão Geral
 
-O iOS possui limitações significativas para PWAs comparado ao Android e desktop. Este documento apresenta **soluções inteligentes** implementadas no CondoAI para maximizar a adoção de PWA em dispositivos Apple.
+O iOS possui limitações significativas para PWAs comparado ao Android e desktop. Este documento apresenta **soluções inteligentes** implementadas no PrediHub para maximizar a adoção de PWA em dispositivos Apple.
 
 ## 📱 Limitações do iOS para PWA
 
@@ -273,7 +273,7 @@ window.forceShowiOSBanner(); // Função de debug
 
 ## 🏁 Conclusão
 
-Com essas implementações, o CondoAI oferece uma **experiência PWA otimizada** para iOS que supera as limitações nativas da plataforma através de:
+Com essas implementações, o PrediHub oferece uma **experiência PWA otimizada** para iOS que supera as limitações nativas da plataforma através de:
 
 - ✅ **Detecção inteligente** de capacidades
 - ✅ **Tutorial interativo** e educativo  

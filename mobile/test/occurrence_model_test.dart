@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:condoai_app/data/models/occurrence_model.dart';
+import 'package:predihub_app/data/models/occurrence_model.dart';
 
 void main() {
   test('OccurrenceItem serializa anexos e metadados completos', () {

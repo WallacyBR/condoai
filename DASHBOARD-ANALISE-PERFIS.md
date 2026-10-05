@@ -2,7 +2,7 @@
 
 ## Visão Geral
 
-O Dashboard de Análise de Perfis e Privilégios é uma ferramenta completa para visualização e análise de dados relacionados ao sistema de permissões do CondoAI. Fornece insights detalhados sobre distribuição de usuários, uso de módulos, privilégios concedidos e análise de segurança.
+O Dashboard de Análise de Perfis e Privilégios é uma ferramenta completa para visualização e análise de dados relacionados ao sistema de permissões do PrediHub. Fornece insights detalhados sobre distribuição de usuários, uso de módulos, privilégios concedidos e análise de segurança.
 
 ## Funcionalidades Implementadas
 
@@ -203,6 +203,6 @@ GET /api/profile-analytics/dashboard
 
 ---
 
-**Desenvolvimento**: Sistema completo implementado seguindo padrões do CondoAI
+**Desenvolvimento**: Sistema completo implementado seguindo padrões do PrediHub
 **Manutenção**: Código modular e reutilizável para fácil manutenção
 **Escalabilidade**: Arquitetura preparada para expansões futuras 

@@ -1,0 +1,12 @@
+{
+    "message": "The given data was invalid.",
+    "errors": {
+        "field_name": [
+            "The field_name field is required.",
+            "Another validation error for this field."
+        ],
+        "another_field": [
+            "This field has an error."
+        ]
+    }
+}

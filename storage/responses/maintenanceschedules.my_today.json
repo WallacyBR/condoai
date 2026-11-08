@@ -1,0 +1,62 @@
+[
+    {
+        "id": 1,
+        "condominium_id": 1,
+        "maintenance_equipment_id": 1,
+        "title": "Verificação Diária da Bomba da Piscina",
+        "description": "Checar níveis de cloro, pH e funcionamento geral da bomba.",
+        "type": "daily",
+        "start_date": "2024-07-01",
+        "end_date": null,
+        "due_time": "09:00:00",
+        "is_recurring": true,
+        "specific_days_of_week": null,
+        "day_of_month": null,
+        "month_of_year": null,
+        "created_at": "2024-07-01T10:00:00.000000Z",
+        "updated_at": "2024-07-01T10:00:00.000000Z",
+        "deleted_at": null,
+        "equipment": {
+            "id": 1,
+            "name": "Bomba da Piscina Principal"
+        },
+        "responsible_users": [
+            {
+                "id": 5,
+                "name": "Carlos Zelador"
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "condominium_id": 1,
+        "maintenance_equipment_id": 3,
+        "title": "Limpeza Semanal do Hall Bloco A",
+        "description": "Limpeza completa do piso, vidros e elevadores do hall do Bloco A.",
+        "type": "weekly",
+        "start_date": "2024-07-05",
+        "end_date": "2025-07-05",
+        "due_time": "14:00:00",
+        "is_recurring": true,
+        "specific_days_of_week": [5],
+        "day_of_month": null,
+        "month_of_year": null,
+        "created_at": "2024-07-01T11:00:00.000000Z",
+        "updated_at": "2024-07-03T15:30:00.000000Z",
+        "deleted_at": null,
+        "equipment": {
+            "id": 3,
+            "name": "Hall de Entrada - Bloco A"
+        },
+        "responsible_users": [
+            {
+                "id": 5,
+                "name": "Carlos Zelador"
+            },
+            {
+                "id": 8,
+                "name": "Equipe Limpeza Extra"
+            }
+        ]
+    }
+]

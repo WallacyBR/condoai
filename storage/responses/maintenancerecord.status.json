@@ -1,0 +1,28 @@
+{
+    "id": 1,
+    "condominium_id": 1,
+    "maintenance_schedule_id": 1,
+    "user_id": 2,
+    "performed_at": "2024-07-15T14:05:00.000000Z",
+    "notes": "Manutenção realizada com sucesso. Pressão da bomba normalizada.\nNota de Revisão/Status (Admin em 15/07/2024 15:10): Colocado em revisão para checagem adicional.",
+    "status": "under_review",
+    "reviewed_by_user_id": 1,
+    "reviewed_at": "2024-07-15T15:10:00.000000Z",
+    "created_at": "2024-07-15T14:05:00.000000Z",
+    "updated_at": "2024-07-15T15:10:00.000000Z",
+    "deleted_at": null,
+    "photos": [],
+    "signature": null,
+    "user": {
+        "id": 2,
+        "name": "Técnico João Silva"
+    },
+    "reviewer": {
+        "id": 1,
+        "name": "Admin CondoAI"
+    },
+    "schedule": {
+        "id": 1,
+        "title": "Verificação Semanal da Bomba X"
+    }
+}

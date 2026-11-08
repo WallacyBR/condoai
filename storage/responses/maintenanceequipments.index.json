@@ -1,0 +1,66 @@
+{
+    "current_page": 1,
+    "data": [
+        {
+            "id": 1,
+            "condominium_id": 1,
+            "maintenance_area_id": 1,
+            "name": "Bomba Piscina Bloco A",
+            "description": "Bomba responsável pela filtragem da piscina do Bloco A.",
+            "location_details": "Casa de máquinas, subsolo.",
+            "qr_code_hash": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4",
+            "qr_code_access_level": "internal_users",
+            "created_at": "2024-07-15T11:00:00.000000Z",
+            "updated_at": "2024-07-15T11:00:00.000000Z",
+            "deleted_at": null,
+            "maintenance_area": {
+                "id": 1,
+                "name": "Elétrica Geral"
+            }
+        },
+        {
+            "id": 2,
+            "condominium_id": 1,
+            "maintenance_area_id": 1,
+            "name": "Elevador Social Torre 1",
+            "description": "Elevador social da Torre 1.",
+            "location_details": "Hall Torre 1",
+            "qr_code_hash": "f6e5d4c3b2a1f6e5d4c3b2a1f6e5d4c3",
+            "qr_code_access_level": "public",
+            "created_at": "2024-07-15T11:05:00.000000Z",
+            "updated_at": "2024-07-15T11:05:00.000000Z",
+            "deleted_at": null,
+            "maintenance_area": {
+                "id": 1,
+                "name": "Elétrica Geral"
+            }
+        }
+    ],
+    "first_page_url": "/api/maintenance/equipments?page=1",
+    "from": 1,
+    "last_page": 1,
+    "last_page_url": "/api/maintenance/equipments?page=1",
+    "links": [
+        {
+            "url": null,
+            "label": "&laquo; Previous",
+            "active": false
+        },
+        {
+            "url": "/api/maintenance/equipments?page=1",
+            "label": "1",
+            "active": true
+        },
+        {
+            "url": null,
+            "label": "Next &raquo;",
+            "active": false
+        }
+    ],
+    "next_page_url": null,
+    "path": "/api/maintenance/equipments",
+    "per_page": 15,
+    "prev_page_url": null,
+    "to": 2,
+    "total": 2
+}

@@ -1,0 +1,25 @@
+{
+    "data": [
+        {
+            "id": 1,
+            "status": "authorized",
+            "request_timestamp": "2024-07-20T13:00:00Z",
+            "resident_response_timestamp": "2024-07-20T14:00:00Z",
+            "visitor": {
+                "id": 1,
+                "name": "Joao Silva",
+                "document": "123.456.789-00",
+                "phone": "(11) 99999-9999",
+                "photo_url": null
+            },
+            "resident": {
+                "id": 1,
+                "name": "Maria Santos"
+            },
+            "visitor_vehicle": null,
+            "resident_observation": "Visitante autorizado",
+            "gatehouse_observation": "Documentacao verificada"
+        }
+    ],
+    "message": "Dados de exemplo - Funcionalidade em desenvolvimento"
+}

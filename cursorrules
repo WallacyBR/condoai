@@ -1,0 +1,4 @@
+# Cursor Rules
+- Toda rota de API deve ser documentada utilizando Laravel Scribe.
+- Execute `php artisan scribe:generate` sempre que houver novas rotas ou alteracoes.
+- Comite os arquivos gerados em `public/docs` para manter a documentacao versionada.

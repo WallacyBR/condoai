@@ -1,0 +1,62 @@
+{
+    "current_page": 1,
+    "data": [
+        {
+            "id": 1,
+            "name": "João Zelador",
+            "email": "joao.zelador@example.com",
+            "email_verified_at": null,
+            "profile_id": 3,
+            "condominium_id": 1,
+            "created_at": "2024-07-01T10:00:00.000000Z",
+            "updated_at": "2024-07-01T10:00:00.000000Z",
+            "profile": {
+                "id": 3,
+                "name": "Zelador",
+                "description": "Responsável pela zeladoria do condomínio."
+            }
+        },
+        {
+            "id": 5,
+            "name": "Ana Limpeza",
+            "email": "ana.limpeza@example.com",
+            "email_verified_at": null,
+            "profile_id": 4,
+            "condominium_id": 1,
+            "created_at": "2024-07-02T11:00:00.000000Z",
+            "updated_at": "2024-07-02T11:00:00.000000Z",
+            "profile": {
+                "id": 4,
+                "name": "Equipe de Limpeza",
+                "description": "Responsável pela limpeza das áreas comuns."
+            }
+        }
+    ],
+    "first_page_url": "/api/users?page=1",
+    "from": 1,
+    "last_page": 1,
+    "last_page_url": "/api/users?page=1",
+    "links": [
+        {
+            "url": null,
+            "label": "&laquo; Previous",
+            "active": false
+        },
+        {
+            "url": "/api/users?page=1",
+            "label": "1",
+            "active": true
+        },
+        {
+            "url": null,
+            "label": "Next &raquo;",
+            "active": false
+        }
+    ],
+    "next_page_url": null,
+    "path": "/api/users",
+    "per_page": 15,
+    "prev_page_url": null,
+    "to": 2,
+    "total": 2
+}

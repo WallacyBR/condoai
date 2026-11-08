@@ -1,0 +1,68 @@
+{
+    "current_page": 1,
+    "data": [
+        {
+            "id": 1,
+            "condominium_id": 1,
+            "maintenance_schedule_id": 1,
+            "user_id": 2,
+            "performed_at": "2024-07-15T14:05:00.000000Z",
+            "notes": "Manutenção realizada com sucesso. Pressão da bomba normalizada.",
+            "status": "completed",
+            "reviewed_by_user_id": null,
+            "reviewed_at": null,
+            "created_at": "2024-07-15T14:05:00.000000Z",
+            "updated_at": "2024-07-15T14:05:00.000000Z",
+            "deleted_at": null,
+            "schedule": {
+                "id": 1,
+                "title": "Verificação Semanal da Bomba X"
+            },
+            "user": {
+                "id": 2,
+                "name": "Técnico João Silva"
+            },
+            "reviewer": null,
+            "equipment_name": "Bomba Piscina Bloco A"
+        },
+        {
+            "id": 2,
+            "condominium_id": 1,
+            "maintenance_schedule_id": 2,
+            "user_id": 3,
+            "performed_at": null,
+            "notes": "Aguardando peça para substituição.",
+            "status": "pending",
+            "reviewed_by_user_id": null,
+            "reviewed_at": null,
+            "created_at": "2024-07-14T10:00:00.000000Z",
+            "updated_at": "2024-07-14T10:00:00.000000Z",
+            "deleted_at": null,
+            "schedule": {
+                "id": 2,
+                "title": "Lubrificação Anual Elevador T1"
+            },
+            "user": {
+                "id": 3,
+                "name": "Técnica Maria Oliveira"
+            },
+            "reviewer": null,
+            "equipment_name": "Elevador Social Torre 1"
+        }
+    ],
+    "first_page_url": "/api/maintenance/records?page=1",
+    "from": 1,
+    "last_page": 1,
+    "last_page_url": "/api/maintenance/records?page=1",
+    "links": [
+        {"url": null, "label": "&laquo; Previous", "active": false},
+        {"url": "/api/maintenance/records?page=1", "label": "1", "active": true},
+        {"url": null, "label": "Next &raquo;", "active": false}
+    ],
+    "next_page_url": null,
+    "path": "/api/maintenance/records",
+    "per_page": 15,
+    "prev_page_url": null,
+    "to": 2,
+    "total": 2
+}

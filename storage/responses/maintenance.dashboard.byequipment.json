@@ -1,0 +1,41 @@
+[
+    {
+        "id": 1,
+        "name": "Bomba Piscina Bloco A",
+        "maintenance_area_id": 1,
+        "total_schedules_count": 5,
+        "pending_schedules_count": 1,
+        "completed_schedules_count": 3,
+        "overdue_schedules_count": 1,
+        "maintenance_area": {
+            "id": 1,
+            "name": "Hidráulica"
+        }
+    },
+    {
+        "id": 2,
+        "name": "Elevador Social Torre 1",
+        "maintenance_area_id": 2,
+        "total_schedules_count": 2,
+        "pending_schedules_count": 0,
+        "completed_schedules_count": 1,
+        "overdue_schedules_count": 1,
+        "maintenance_area": {
+            "id": 2,
+            "name": "Elétrica"
+        }
+    },
+    {
+        "id": 3,
+        "name": "Portão Garagem Principal",
+        "maintenance_area_id": 2,
+        "total_schedules_count": 3,
+        "pending_schedules_count": 1,
+        "completed_schedules_count": 2,
+        "overdue_schedules_count": 0,
+        "maintenance_area": {
+            "id": 2,
+            "name": "Elétrica"
+        }
+    }
+]

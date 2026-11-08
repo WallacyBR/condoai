@@ -1,0 +1,41 @@
+{
+    "equipment": {
+        "id": 1,
+        "name": "Bomba Piscina Bloco A",
+        "description": "Bomba responsável pela filtragem da piscina do Bloco A.",
+        "location_details": "Casa de máquinas, subsolo.",
+        "condominium_name": "Condomínio Teste Principal",
+        "maintenance_area_name": "Hidráulica"
+    },
+    "last_maintenances": [
+        {
+            "id": 10,
+            "performed_at": "2024-07-10T10:00:00.000000Z",
+            "notes": "Limpeza de filtro e verificação de pressão.",
+            "user_id": 2,
+            "status": "completed",
+            "user": {
+                "id": 2,
+                "name": "Técnico João Silva"
+            }
+        },
+        {
+            "id": 8,
+            "performed_at": "2024-07-03T09:30:00.000000Z",
+            "notes": "Verificação de ruídos e lubrificação.",
+            "user_id": 2,
+            "status": "completed",
+            "user": {
+                "id": 2,
+                "name": "Técnico João Silva"
+            }
+        }
+    ],
+    "next_scheduled_maintenance": {
+        "record_id": 15,
+        "title": "Verificação Semanal da Bomba X",
+        "status": "pending",
+        "scheduled_date": "20/07/2024",
+        "scheduled_time": "14:30"
+    }
+}

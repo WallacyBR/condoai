@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "name": "Hidráulica",
+        "equipments_count": 10,
+        "pending_schedules_count": 5,
+        "completed_schedules_count": 25,
+        "overdue_schedules_count": 2
+    },
+    {
+        "id": 2,
+        "name": "Elétrica",
+        "equipments_count": 15,
+        "pending_schedules_count": 8,
+        "completed_schedules_count": 40,
+        "overdue_schedules_count": 3
+    },
+    {
+        "id": 3,
+        "name": "Jardinagem",
+        "equipments_count": 5,
+        "pending_schedules_count": 2,
+        "completed_schedules_count": 10,
+        "overdue_schedules_count": 0
+    }
+]

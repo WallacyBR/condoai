@@ -1,0 +1,5 @@
+# Cabeçalho
+<Assunto da mudança em português>
+
+# Corpo opcional
+<Detalhes adicionais sobre a mudança>

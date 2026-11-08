@@ -1,0 +1,64 @@
+{
+    "current_page": 1,
+    "data": [
+        {
+            "id": 1,
+            "condominium_id": 1,
+            "maintenance_equipment_id": 1,
+            "title": "Verificação Semanal da Bomba X",
+            "description": "Checar pressão, ruídos e vazamentos.",
+            "type": "weekly",
+            "start_date": "2024-08-01",
+            "end_date": null,
+            "due_time": "14:30:00",
+            "is_recurring": true,
+            "specific_days_of_week": [1],
+            "day_of_month": null,
+            "month_of_year": null,
+            "created_at": "2024-07-15T12:00:00.000000Z",
+            "updated_at": "2024-07-15T12:00:00.000000Z",
+            "deleted_at": null,
+            "equipment": {
+                "id": 1,
+                "name": "Bomba Piscina Bloco A"
+            }
+        },
+        {
+            "id": 2,
+            "condominium_id": 1,
+            "maintenance_equipment_id": 2,
+            "title": "Lubrificação Anual Elevador T1",
+            "description": "Lubrificação completa dos cabos e motor.",
+            "type": "annual",
+            "start_date": "2024-09-15",
+            "end_date": null,
+            "due_time": "09:00:00",
+            "is_recurring": true,
+            "specific_days_of_week": null,
+            "day_of_month": 15,
+            "month_of_year": 9,
+            "created_at": "2024-07-15T12:05:00.000000Z",
+            "updated_at": "2024-07-15T12:05:00.000000Z",
+            "deleted_at": null,
+            "equipment": {
+                "id": 2,
+                "name": "Elevador Social Torre 1"
+            }
+        }
+    ],
+    "first_page_url": "/api/maintenance/schedules?page=1",
+    "from": 1,
+    "last_page": 1,
+    "last_page_url": "/api/maintenance/schedules?page=1",
+    "links": [
+        {"url": null, "label": "&laquo; Previous", "active": false},
+        {"url": "/api/maintenance/schedules?page=1", "label": "1", "active": true},
+        {"url": null, "label": "Next &raquo;", "active": false}
+    ],
+    "next_page_url": null,
+    "path": "/api/maintenance/schedules",
+    "per_page": 15,
+    "prev_page_url": null,
+    "to": 2,
+    "total": 2
+}

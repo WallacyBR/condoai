@@ -1,0 +1,48 @@
+{
+    "id": 1,
+    "condominium_id": 1,
+    "maintenance_schedule_id": 1,
+    "user_id": 2,
+    "performed_at": "2024-07-15T14:05:00.000000Z",
+    "notes": "Manutenção realizada com sucesso. Pressão da bomba normalizada.",
+    "status": "completed",
+    "reviewed_by_user_id": null,
+    "reviewed_at": null,
+    "created_at": "2024-07-15T14:05:00.000000Z",
+    "updated_at": "2024-07-15T14:05:00.000000Z",
+    "deleted_at": null,
+    "schedule": {
+        "id": 1,
+        "title": "Verificação Semanal da Bomba X",
+        "maintenance_equipment_id": 1,
+        "equipment": {
+            "id": 1,
+            "name": "Bomba Piscina Bloco A"
+        }
+    },
+    "user": {
+        "id": 2,
+        "name": "Técnico João Silva"
+    },
+    "reviewer": null,
+    "photos": [
+        {
+            "id": 1,
+            "condominium_id": 1,
+            "maintenance_record_id": 1,
+            "file_path": "maintenance_photos/condo_1/record_1/photo1.jpg",
+            "uploaded_at": "2024-07-15T14:05:00.000000Z",
+            "created_at": "2024-07-15T14:05:00.000000Z",
+            "updated_at": "2024-07-15T14:05:00.000000Z"
+        }
+    ],
+    "signature": {
+        "id": 1,
+        "condominium_id": 1,
+        "maintenance_record_id": 1,
+        "signature_path": "maintenance_signatures/condo_1/signature_record_1_1626350700.png",
+        "signed_at": "2024-07-15T14:05:00.000000Z",
+        "created_at": "2024-07-15T14:05:00.000000Z",
+        "updated_at": "2024-07-15T14:05:00.000000Z"
+    }
+}

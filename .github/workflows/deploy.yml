@@ -1,0 +1,79 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v3
+
+      - name: Deploy remoto via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /var/www/condoai
+            
+            # Configura git para o diretório
+            git config --global --add safe.directory /var/www/condoai
+            
+            # Corrige dono do repositório inteiro para evitar erros do git
+            sudo chown -R ubuntu:ubuntu /var/www/condoai
+            
+            # Garante permissões corretas para o git funcionar
+            sudo find /var/www/condoai -type f -exec chmod 644 {} \;
+            sudo find /var/www/condoai -type d -exec chmod 755 {} \;
+            
+            # Atualiza o código
+            git pull origin master
+            
+            # Instala dependências do PHP
+            composer install --no-dev --optimize-autoloader --no-interaction
+            
+            # Limpa caches antes de recriar
+            php artisan view:clear         # Limpa views compiladas
+            php artisan route:clear        # Limpa rotas cacheadas
+            php artisan config:clear       # Limpa configurações
+            sudo php artisan cache:clear        # Limpa o cache de aplicação
+            php artisan clear-compiled     # Limpa arquivos compilados (services.php etc.)
+            
+            # Executa migrações
+            php artisan migrate:fresh --seed
+            
+            # Instala dependências do Node.js
+            npm install
+            
+            # Build dos assets
+            npm run prod
+            
+            # Recria caches
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            
+            # Permissões adequadas para Laravel (NGINX/PHP-FPM usa www-data)
+            bash scripts/set-permissions.sh ubuntu www-data
+            
+            # Garante que o diretório de uploads existe e tem permissões corretas
+            sudo mkdir -p storage/app/public
+            sudo chown -R ubuntu:www-data storage/app/public
+            sudo chmod -R 775 storage/app/public
+            
+            # Cria link simbólico para storage se não existir
+            if [ ! -L public/storage ]; then
+              php artisan storage:link
+            fi
+            
+            # Reinicia serviços para aplicar mudanças
+            sudo systemctl reload php8.3-fpm
+            sudo systemctl reload nginx
+            
+            echo "Deploy concluído com sucesso!"
